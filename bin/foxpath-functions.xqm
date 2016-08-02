@@ -36,9 +36,19 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 replace($arg, '/', '\\')
                 
+        (: function `echoString` 
+           ================= :)
+        else if ($fname eq 'echo-string') then
+            let $arg := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                return
+                    ($explicit, $context)[1]
+            return
+                string($arg)
+                
         (: function `eval-xpath` 
            ===================== :)
-        else if ($fname eq 'eval-xpath') then
+        else if ($fname = ('eval-xpath', 'xpath')) then
             let $xpath := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)  
             let $xpathContext :=
                 let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
@@ -316,7 +326,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $char3 := ($arg3, ' ')[1]
             return
                 f:rpad($arg1, $arg2, $arg3)
-                   
+
         (: function `xroot` 
            ================ :)
         else if ($fname eq 'xroot') then
