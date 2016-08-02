@@ -40,6 +40,15 @@ goto :NEXTPAR
   
 set FOXPATH=%~1
 
+if "%FOXPATH%"=="?" (
+    echo Usage: foxpath [-p] [-b] foxpath
+    echo foxpath : a foxpath expression
+    echo -p      : show the parse tree, rather than evaluate the expression
+    echo -b      : within the foxpath expression path and foxpath operator are swapped;
+    echo           using the option: path operator = / , foxpath operator = \
+    echo           without option:   path operator = \ , foxpath operator = /
+    exit /b
+)
 if "%PARSE%"=="Y" (set MODE=parse) else (set MODE=eval)
 set CMD=basex -b mode=%MODE% -b sep=%SEP% -b "foxpath=%FOXPATH%" %HERE%/fox.xq
 rem echo %CMD%
