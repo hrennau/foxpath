@@ -39,8 +39,8 @@ declare function f:parseFoxpath($text as xs:string?)
  : @return expression tree representing the expression text
  :)
 declare function f:parseFoxpath($text as xs:string?, $options as map(*)?)
-        as element()+ {
-    (: let $DEBUG := f:trace($text, 'parse.text.foxpath', 'INTEXT_FOXPATH: ') :)
+        as element()+ {        
+    let $DEBUG := f:trace($text, 'parse.text.foxpath', 'INTEXT_FOXPATH: ')
     let $context := f:getInitialParsingContext($options)
     let $seqExprEtc := f:trace(f:parseSeqExpr($text, $context) , 'tree', 'PARSED: ')
     let $textAfter := f:extractTextAfter($seqExprEtc)    
