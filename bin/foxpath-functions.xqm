@@ -240,7 +240,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `has-xroot` 
            =================== :)
-        else if ($fname eq 'has-xroot') then
+        else if ($fname eq 'has-xroot' or $fname eq 'xroot') then
             if (not(doc-available($context))) then false() else
             
             let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)           
@@ -327,6 +327,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 f:rpad($arg1, $arg2, $arg3)
 
+(:  see above - has-xroot (20160810,hjr)
         (: function `xroot` 
            ================ :)
         else if ($fname eq 'xroot') then
@@ -338,7 +339,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (not(try {doc-available($arg)} catch * {()})) then () else
                     doc($arg)/*/local-name(.)
                 (: try catch in order to avoid errors in case of invalid URIs :)
-                
+  :)
+  
         (: ################################################################
          : p a r t  2:    s t a n d a r d    f u n c t i o n s
          : ################################################################ :)
