@@ -71,14 +71,9 @@ declare function f:resolveFoxpath($foxpath as xs:string?,
                file name pattern :)
             sort(distinct-values(
                 for $path in $value return
-                    if (not(file:is-dir($path))) then $path
+                    if (not(i:isDirectory($path))) then $path
                     else
                         f:childUriCollection($path, $defaultFileName)
-(:                        
-                        file:list($path, false(), $defaultFileName) 
-                        ! replace(., '\\', '/') 
-                        ! replace(., '/$', '')
-:)                        
                         ! concat($path, '/', .)
             ))                        
 };
@@ -316,7 +311,7 @@ declare function f:resolveFoxpathRC($n as node(),
     case element(union) return
         f:resolveUnionExpr($n, $ebvMode, $context, $position, $last, $vars)
             
-    case element(var) return
+    case element(var) return   
         let $value := f:getVarValue($n, $vars)
         return
             if ($ebvMode) then f:getEbv($value) else $value
@@ -348,10 +343,14 @@ declare function f:resolveFoxpathExpr($foxpath as element(foxpath),
                                       $last as xs:integer?,
                                       $vars as map(*)?)                                      
         as item()* {
-    let $initialRoot := $foxpath/*[1][self::foxRoot or self::root]        
+    let $initialRoot := $foxpath/*[1][self::foxRoot or self::root]   
+    
+    (: the context wherein to evaluate the first step :)
     let $initialContext := 
+        (: leading step to the root resource :)
         if ($initialRoot/self::foxRoot) then 
             $initialRoot/@path
+        (: leading step to the root node :)
         else if ($initialRoot/self::root) then 
             if ($context instance of node()) then root($context)
             else if (exists($context)) then 
@@ -361,6 +360,8 @@ declare function f:resolveFoxpathExpr($foxpath as element(foxpath),
                 f:createFoxpathError('SYNTAX_ERROR', 
                     concat('Absolute node path encountered, but no context provided; ',
                         'expr=', $foxpath/@text))
+        (: no initial step to the root resource or root node;
+           the context item defaults to the current directory! :) 
         else 
             ($context, $foxpath/@context)[1]
     return
@@ -443,17 +444,13 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                 if ($deep) then f:descendantUriCollection#2 
                            else f:childUriCollection#2
             return
-                for $ctxt in $context[file:is-dir(.)]
+                for $ctxt in $context[i:isDirectory(.)]
                 let $useCtxt := if (matches($ctxt, '^.:$')) then concat($ctxt, '/') else $ctxt 
                 (:     file:list('c:') delivers the current working directory files, not the root directory files :)
             
                 let $prefix := replace($useCtxt, '/$', '')
                 let $descendants := 
                     $listFunction($ctxt, $name)
-(:                    
-                    file:list($ctxt, $deep, $name)           
-                    ! replace(., '\\', '/')
-:)                    
                     ! replace(., '/$', '')
                     [not($regex) or matches(replace(., '.*/', ''), $regex, 'i')]            
                     ! concat($prefix, '/', .)
@@ -482,11 +479,6 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                 let $parent := (replace($ctxt, '/[^/]*$', '')[string()], '/')[1]
                 let $followingSiblings := 
                     f:childUriCollection($parent, '*')
-(:                    
-                    file:list($parent, false(), '*')
-                    ! replace(., '\\', '/')
-                    ! replace(., '/$', '')
-:)                    
                     [lower-case(replace(., '.*/', '')) gt lower-case(replace($ctxt, '.*/', ''))]                    
                     [not($regex) or matches(replace(., '.*/', ''), $regex, 'i')]            
                     ! concat($parent, '/', .)                
@@ -539,11 +531,6 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                 let $parent := (replace($ctxt, '/[^/]*$', '')[string()], '/')[1]
                 let $precedingSiblings := 
                     f:childUriCollection($parent, '*')
-(:                    
-                    file:list($parent, false(), '*')
-                    ! replace(., '\\', '/')
-                    ! replace(., '/$', '')
-:)                    
                     [lower-case(replace(., '.*/', '')) lt lower-case(replace($ctxt, '.*/', ''))]                    
                     [not($regex) or matches(replace(., '.*/', ''), $regex, 'i')]            
                     ! concat($parent, '/', .)                
@@ -868,8 +855,9 @@ declare function f:resolveFlworExpr_let($let as element(let),
     let $varName := $let/var[1]/@localName        
     let $varValue := f:resolveFoxpathRC($let/*[2], false(), $context, $position, $last, $vars)
     let $vars := map:put($vars, $varName, $varValue)
+    let $DUMMY := string-join(map:keys($vars), ' ')
     let $exprValue :=
-        if ($nextClause is $let/following-sibling::*[last()]) then
+        if ($nextClause is $let/following-sibling::*[last()]) then       
             f:resolveFoxpathRC($nextClause, $ebvMode, $context, $position, $last, $vars)
         else            
             typeswitch($nextClause)
@@ -1582,26 +1570,26 @@ declare function f:resolveFunctionCall($call as element(),
  : Resolves a variable reference.
  :)
 declare function f:getVarValue($varSpec as element(var), $vars as map(*)?)
-        as item()* {
+        as item()* {       
     let $varName := $varSpec/@localName
-    let $valueFromMap :=
-        if (empty($vars)) then ()
-        else if( map:contains($vars, $varName)) then 
-            $vars($varName)
-        else ()
     return
-        if (exists($valueFromMap)) then $valueFromMap 
-        else if (matches($varName, '^value_[\d.]+$')) then
-            number(substring($varName, 7))
-        else if (matches($varName, '^string_.*$')) then
-            substring($varName, 8)
-        else if (matches($varName, '^string_$')) then
-            ''
-        else if (matches($varName, '^empty')) then
-            ()
-        else
-            error(QName((), 'UNEXPECTED_VARIABLE_NAME'), 
-                concat('Unexpected variable name: ', $varName))        
+        if (empty($vars) or not(map:contains($vars, $varName))) then
+            (: several artificial variable names, defined for test purposes :)
+            if (matches($varName, '^value_[\d.]+$')) then
+                number(substring($varName, 7))
+            else if (matches($varName, '^string_.*$')) then
+                substring($varName, 8)
+            else if (matches($varName, '^string_$')) then
+                ''
+            else if (matches($varName, '^empty')) then
+                ()
+            else        
+                error(QName((), 'UNEXPECTED_VARIABLE_NAME'), 
+                    concat('Unexpected variable name: ', $varName))        
+        else        
+            let $valueFromMap := $vars($varName)
+            return
+                $valueFromMap
 };
 
 (: 

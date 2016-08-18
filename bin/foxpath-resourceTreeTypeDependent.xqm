@@ -4,13 +4,17 @@ import module namespace i="http://www.ttools.org/xquery-functions" at
     "foxpath-util.xqm";
 
 declare function f:childUriCollection($uri as xs:string, $name as xs:string?) {
-    file:list($uri, false(), $name)           
-    ! replace(., '\\', '/')
-    ! replace(., '/$', '')
+    try {
+        file:list($uri, false(), $name)           
+        ! replace(., '\\', '/')
+        ! replace(., '/$', '')
+    } catch * {()}
 };
 
 declare function f:descendantUriCollection($uri as xs:string, $name as xs:string?) {
-    file:list($uri, true(), $name)           
-    ! replace(., '\\', '/')
-    ! replace(., '/$', '')
+    try {
+        file:list($uri, true(), $name)           
+        ! replace(., '\\', '/')
+        ! replace(., '/$', '')
+    } catch * {()}        
 };

@@ -1,5 +1,7 @@
 module namespace f="http://www.ttools.org/xquery-functions";
-import module namespace i="http://www.ttools.org/xquery-functions" at "foxpath-util.xqm";
+import module namespace i="http://www.ttools.org/xquery-functions" at 
+   "foxpath-util.xqm",
+   "foxpath-processorDependent.xqm";
 
 declare variable $f:FOXSTEP_SEPERATOR := '/';
 declare variable $f:NODESTEP_SEPERATOR := '\';
@@ -981,6 +983,8 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
     let $FOXSTEP_SEPERATOR := map:get($context, 'FOXSTEP_SEPERATOR')
     let $NODESTEP_SEPERATOR := map:get($context, 'NODESTEP_SEPERATOR')
     
+    (: parse initial root step (/ or \) 
+       ================================ :) 
     let $root :=
         if (matches($text, concat('^[a-zA-Z]:', $FOXSTEP_SEPERATOR_REGEX))) then 
             let $path := replace(substring($text, 1, 3), '\\', '/')
@@ -989,73 +993,92 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
         else if (starts-with($text, $NODESTEP_SEPERATOR)) then <root/>
         else ()
 
-    (: startHerePrefix = ./ or .\ :)
-    let $startHerePrefix :=
-        replace($text, 
-            concat('^(\.\s*(', $FOXSTEP_SEPERATOR_REGEX, '|', $NODESTEP_SEPERATOR_REGEX, ')).*'), 
-            '$1', 'sx')[not(. eq $text)]
-
-    let $textSteps :=
-        replace(
-            let $rootPath := $root/self::foxRoot/@path
-            return
-                if ($rootPath) then substring($text, 1 + string-length($rootPath))
-            else if ($root/self::root) then substring($text, 2)
-            else if ($startHerePrefix) then substring($text, 1 + string-length($startHerePrefix))
-            else $text
-        , '^\s+', '')
+    (: parse steps etc
+       =============== :) 
+    let $stepsEtc :=
     
-    (: 
-       update IS_CONTEXT_URI entry of the context:
-         if the initial operator is \, the context is an URI; 
-         if the initial operator is /, the context is not an URI;
-         otherwise (first step is relative), the context is an URI if the 
-           context of the parent expression is an URI;       
-       if the context is an URI, the first step cannot be a node axis step, and the shortcut 
-         syntax for foxstep names is accepted;
-       if the context is not an URI, the first step may be a node axis step or a fox axis step; 
-         if it is a fox axis step, it must not use abbreviated syntax, as this cannot be 
-         disambiguated from a node axis step - consider the path /foo - is foo a
-         node axis step or a foxpath step? Disambiguation requires non-abbreviated syntax:
-         /`foo`
-    :)
-    let $isContextUri :=
-        if ($root/self::foxRoot) then true()
-        else if ($root/self::root) then false()
-        else if ($startHerePrefix) then 
-            $FOXSTEP_SEPERATOR eq substring($startHerePrefix, string-length($startHerePrefix))
-        else f:trace( map:get($context, 'IS_CONTEXT_URI') , 'parse.foxstep', 
-            concat('PATH=', $text, ' IMPORTED_IS_CONTEXT_URI: '))
-    let $newContext :=
-        if ($isContextUri eq map:get($context, 'IS_CONTEXT_URI')) then $context
-        else map:put($context, 'IS_CONTEXT_URI', $isContextUri)
+        (: startHerePrefix = ./ or .\ :)
+        let $startHerePrefix :=
+            replace($text, 
+                concat('^(\.\s*(', $FOXSTEP_SEPERATOR_REGEX, '|', $NODESTEP_SEPERATOR_REGEX, ')).*'), 
+                '$1', 'sx')[not(. eq $text)]
+
+        let $textSteps :=
+            replace(
+                let $rootPath := $root/self::foxRoot/@path
+                return
+                    if ($rootPath) then substring($text, 1 + string-length($rootPath))
+                else if ($root/self::root) then substring($text, 2)
+                else if ($startHerePrefix) then substring($text, 1 + string-length($startHerePrefix))
+                else $text
+            , '^\s+', '')
+    
+        (: 
+           update context component IS_CONTEXT_URI:
+             if the initial operator is \: true 
+             if the initial operator is /: false
+             otherwise: IS_CONTEXT_URI from context of the parent expression
+               
+           if true: the first step cannot be a node axis step, and the shortcut 
+             syntax for foxstep names is accepted;
+           if false: the first step may be a node axis step or a fox axis step; 
+             if the first step is a fox axis step without explicit fox axis, 
+             it must not use abbreviated syntax, as this cannot be disambiguated 
+             from a node axis step; consider the path foo - if IS_CONTEXT_URI is 
+             false, it would be interpreted as a node axis step, not a fox axis step.
+        :)
+        let $isContextUri :=
+            if ($root/self::foxRoot) then true()
+            else if ($root/self::root) then false()
+            else if ($startHerePrefix) then 
+                $FOXSTEP_SEPERATOR eq substring($startHerePrefix, string-length($startHerePrefix))
+            else map:get($context, 'IS_CONTEXT_URI')
+                
+        (: update context component 'IS_CONTEXT_URI' :)        
+        let $newContext :=
+            if ($isContextUri eq map:get($context, 'IS_CONTEXT_URI')) then $context
+            else map:put($context, 'IS_CONTEXT_URI', $isContextUri)
      
-    let $precedingOperator := 
-        if ($root/self::foxRoot) then $FOXSTEP_SEPERATOR
-        else if ($root/self::root) then $NODESTEP_SEPERATOR
-        else ()    
-    let $stepsEtc := f:parseSteps($textSteps, $precedingOperator, $newContext)
+        let $precedingOperator := 
+            if ($root/self::foxRoot) then $FOXSTEP_SEPERATOR
+            else if ($root/self::root) then $NODESTEP_SEPERATOR
+            else ()
+            
+        return
+            f:parseSteps($textSteps, $precedingOperator, $newContext)
+    
     let $steps := $stepsEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($stepsEtc)
-    let $exprText :=
-        let $raw :=
-            if (not($textAfter)) then $text
-            else replace(substring($text, 1, string-length($text) - string-length($textAfter)), '^\s+', '')
-        let $raw := replace($raw, '&#xA;', ' ')
-        let $raw := replace($raw, 
-                            concat($NODESTEP_SEPERATOR_REGEX, 'descendant-or-self::node()', $NODESTEP_SEPERATOR_REGEX),
-                            $NODESTEP_SEPERATOR_REGEX)
-        return $raw
+    
+    (: parse tree
+       ========== :)    
     let $parsed :=
-        if ($root or count($steps) > 1 or $steps[1]/self::foxStep/@axis or $steps[1]/self::step/@axis) then
-            <foxpath>{
-                if ($root) then () else 
-                    let $curDir := replace(replace(file:current-dir(), '\\', '/'), '/$', '')                    
-                    return attribute context {$curDir},
-                attribute text {$exprText},
-                $root,
-                $steps
-            }</foxpath>
+        if ($root or count($steps) > 1 or 
+            $steps[1]/self::foxStep/@axis or 
+            $steps[1]/self::step/@axis) 
+        then
+            let $exprText :=
+                let $raw :=
+                    if (not($textAfter)) then $text
+                    else
+                        let $exprTextLen := string-length($text) - string-length($textAfter)
+                        return substring($text, 1, $exprTextLen)
+                let $raw := replace($raw, '^\s+', '')
+                let $raw := replace($raw, '&#xA;', ' ')
+                return
+                    replace($raw, 
+                            concat($NODESTEP_SEPERATOR_REGEX, 'descendant-or-self::node()', 
+                                   $NODESTEP_SEPERATOR_REGEX),
+                            concat($NODESTEP_SEPERATOR, $NODESTEP_SEPERATOR))                            
+                            (: $NODESTEP_SEPERATOR_REGEX) :)
+                            (: changed: 20160813, hjr :)
+            return
+                <foxpath>{
+                    attribute context {i:currentDirectory()}[not($root)],
+                    attribute text {$exprText},
+                    $root,
+                    $steps
+                }</foxpath>
         else
             $steps
     return (
@@ -1201,9 +1224,13 @@ declare function f:parseStep($text as xs:string?,
                             ($nodeAxisStep, $textAfter)
 };
 
+(:~
+ : Parses a fox axis step, consisting of an explicit or implicit axis
+ : and a name test.
+ :)
 declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.text.step.fox_axis', 'INTEXT_AXIS_STEP: ')
+    let $DEBUG := f:trace($text, 'parse.text.step.fox_axis', 'INTEXT_FOX_AXIS_STEP: ')
     let $acceptAbbrevSyntax := map:get($context, 'IS_CONTEXT_URI') eq true()
     let $FOXSTEP_SEPERATOR := map:get($context, 'FOXSTEP_SEPERATOR')
     let $FOXSTEP_NAME_DELIM := map:get($context, 'FOXSTEP_NAME_DELIM')
@@ -1225,8 +1252,9 @@ declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
         
     let $forwardAxis := 
         if ($reverseAxis) then ()
-        else if (starts-with($text, $FOXSTEP_SEPERATOR)) then $FOXSTEP_SEPERATOR
+        else if (starts-with($text, $FOXSTEP_SEPERATOR)) then $FOXSTEP_SEPERATOR        
         else if (starts-with($text, 'self~::')) then 'self~::'        
+        else if (starts-with($text, 'child~::')) then 'child~::'        
         else if (starts-with($text, 'descendant~::')) then 'descendant~::'        
         else if (starts-with($text, 'descendant-or-self~::')) then 'descendant-or-self~::'       
         else if (starts-with($text, 'following-sibling~::')) then 'following-sibling~::'       
@@ -1234,8 +1262,9 @@ declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
             
     let $axis := ($reverseAxis, $forwardAxis)
     let $axisName :=
-        if ($axis eq $FOXSTEP_SEPERATOR) then 'descendant'
+        if ($axis eq $FOXSTEP_SEPERATOR) then 'descendant'       
         else if ($axis eq 'self~::') then 'self'        
+        else if ($axis eq 'child~::') then 'child'        
         else if ($axis eq 'descendant~::') then 'descendant'        
         else if ($axis eq 'descendant-or-self~::') then 'descendant-or-self'
         else if ($axis eq 'following-sibling~::') then 'following-sibling'        
@@ -1254,8 +1283,8 @@ declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
         
     let $afterAxis := f:skipOperator($text, $axis)
     
-    (: step name in non-abbreviated syntax :)
-    let $nameNotAbbrev :=
+    (: name test in canonical syntax :)
+    let $nameCanonical :=
         if (not(starts-with($afterAxis, $FOXSTEP_NAME_DELIM))) then ()
         else if (matches($afterAxis,
             concat('^', $FOXSTEP_NAME_DELIM, 
@@ -1268,20 +1297,21 @@ declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
                         ')*', 
                         $FOXSTEP_NAME_DELIM, ').*'), 
                         '$1', 's')[not(. eq $afterAxis)]
-
-    (: if non-abbeviated syntax is expected but no conformant name is encountered,
+                        
+    (: if canonical syntax is expected but no conformant name is encountered,
        abort the attempt to parse the step as a fox axis step :)
-    return if (not($nameNotAbbrev) and not($acceptAbbrevSyntax)) then () else
+    return if (not($nameCanonical) and not($acceptAbbrevSyntax)) then () else
     
     (: abbreviated name, containing escapes :)
     let $nameAbbrevEsc :=
-        if ($nameNotAbbrev) then () 
+        if ($nameCanonical) then () 
         else       
                 if (not(matches($afterAxis,
                 concat(
                 '^ (',               '[^ ', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \d . ] |',
                     $FOXSTEP_ESCAPE, '[  ', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \d . ] )'
-                   ), 'x'))) then ()
+                   ), 'x'))) 
+                then ()
                 else
                 replace($afterAxis,
                 concat(
@@ -1298,17 +1328,23 @@ declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
                Escape character: ~
             :)
 
+    
+    (: 20160818, hjr: if no valid name test is found, 
+       abort the attempt to parse the step as a fox axis step;
+       but needs refinement, for example needs to deal with .. :)
+    (: return if (not($nameCanonical) and not($nameAbbrevEsc)) then () else :)
+    
     (: name, any escapes removed :)
     let $name :=
         (: non-abbreviated name: remove delimiters, un-double occurrences of the delimiter :)
-        if ($nameNotAbbrev) then
-            replace(substring($nameNotAbbrev, 2, string-length($nameNotAbbrev) - 2), 
+        if ($nameCanonical) then
+            replace(substring($nameCanonical, 2, string-length($nameCanonical) - 2), 
                 concat($FOXSTEP_NAME_DELIM, $FOXSTEP_NAME_DELIM),
                        $FOXSTEP_NAME_DELIM)
         (: abbreviated name: remove escapes :)
         else
             replace($nameAbbrevEsc, concat($FOXSTEP_ESCAPE, '(.)'), '$1')
-            
+
     let $regex := 
         if (not($name)) then ()
         else 
@@ -1322,11 +1358,11 @@ declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
             return $raw
             
     let $afterName :=
-        if ($afterAxis = ($nameNotAbbrev, $nameAbbrevEsc)) then ()
-        else if ($nameNotAbbrev) then f:skipOperator($afterAxis, $nameNotAbbrev)
+        if ($afterAxis = ($nameCanonical, $nameAbbrevEsc)) then ()
+        else if ($nameCanonical) then f:skipOperator($afterAxis, $nameCanonical)
         else if ($nameAbbrevEsc) then f:skipOperator($afterAxis, $nameAbbrevEsc)
         else $afterAxis
-        
+
     return
         if (starts-with($afterName, '[')) then
             (: update context - context is URI (as the current step is a fox axis step) :)
@@ -1704,7 +1740,7 @@ declare function f:parsePrimaryExpr($text as xs:string, $context as map(*))
     else if (starts-with($text, '(')) then f:parseParenthesizedExpr($text, $context)
     else if (matches($text, '^["&apos;]')) then f:parseStringLiteral($text, $context)
     else if (matches($text, '^(\d|\.\d)')) then f:parseNumericLiteral($text, $context)
-    else if (matches($text, '^\.([^./].*)?$')) then f:parseContextItem($text, $context) 
+    else if (matches($text, '^\.([^./].*)?$', 's')) then f:parseContextItem($text, $context) 
     else if (matches($text, '^function\s*\(', 's')) then f:parseInlineFunctionExpr($text, $context)    
     else if (matches($text, '^\i\c*\s*\(')) then f:parseFunctionCall($text, $context)
     else if (matches($text, '^\i\c*\s*#\s*\d', 's')) then f:parseNamedFunctionItem($text, $context)   
