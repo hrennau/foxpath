@@ -1186,6 +1186,8 @@ declare function f:parseStep($text as xs:string?,
     let $postfixExprEtc := f:parsePostfixExpr($text, $context)
     let $postfixExpr := $postfixExprEtc[. instance of node()]
     return
+        (: first, try to parse step as postfix expr 
+           (primary expr + optional postfix) :)
         if ($postfixExpr) then
             let $textAfter := f:extractTextAfter($postfixExprEtc)
             let $wrapperName :=
@@ -1203,7 +1205,8 @@ declare function f:parseStep($text as xs:string?,
             return 
                 ($parsed, $textAfter)
                 (: ($postfixExpr, $textAfter) :)
-        else 
+        else
+            (: then, try to parse as fox axis step :)
             let $foxAxisStepEtc := f:parseFoxAxisStep($text, $context)
             let $foxAxisStep := $foxAxisStepEtc[. instance of node()]
             return
@@ -1212,6 +1215,7 @@ declare function f:parseStep($text as xs:string?,
                     return 
                         ($foxAxisStep, $textAfter)
                 else
+                    (: finally, try to parse as node axis step :)
                     let $nodeAxisStepEtc := f:parseNodeAxisStep($text, $context)
                     let $nodeAxisStep := $nodeAxisStepEtc[. instance of node()]
                     let $textAfter := f:extractTextAfter($nodeAxisStepEtc)
@@ -1241,8 +1245,9 @@ declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
         else
             concat('descendant-or-self~::*', $FOXSTEP_SEPERATOR, substring($text, 2))
     let $reverseAxis :=
+        (: .. or ... :)
         if ($acceptAbbrevSyntax and matches($text, '(^\.\.(\.)?)')) then
-            replace($text, '(^\.\.(\.)?).*', '$1', 's')
+             replace($text, '(^\.\.(\.)?).*', '$1', 's')
         else if (starts-with($text, 'parent~::')) then 'parent~::'            
         else if (starts-with($text, 'ancestor~::')) then 'ancestor~::'        
         else if (starts-with($text, 'ancestor-or-self~::')) then 'ancestor-or-self~::'        
@@ -1284,85 +1289,34 @@ declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
     let $afterAxis := f:skipOperator($text, $axis)
     
     (: name test in canonical syntax :)
-    let $nameCanonical :=
-        if (not(starts-with($afterAxis, $FOXSTEP_NAME_DELIM))) then ()
-        else if (matches($afterAxis,
-            concat('^', $FOXSTEP_NAME_DELIM, 
-                        '([^', $FOXSTEP_NAME_DELIM, ']|', $FOXSTEP_NAME_DELIM, $FOXSTEP_NAME_DELIM, 
-                        ')*', 
-                        $FOXSTEP_NAME_DELIM, '$'), 's')) then $afterAxis
-        else replace($afterAxis, 
-            concat('^(', $FOXSTEP_NAME_DELIM, 
-                        '([^', $FOXSTEP_NAME_DELIM, ']|', $FOXSTEP_NAME_DELIM, $FOXSTEP_NAME_DELIM, 
-                        ')*', 
-                        $FOXSTEP_NAME_DELIM, ').*'), 
-                        '$1', 's')[not(. eq $afterAxis)]
-                        
-    (: if canonical syntax is expected but no conformant name is encountered,
-       abort the attempt to parse the step as a fox axis step :)
-    return if (not($nameCanonical) and not($acceptAbbrevSyntax)) then () else
-    
-    (: abbreviated name, containing escapes :)
-    let $nameAbbrevEsc :=
-        if ($nameCanonical) then () 
-        else       
-                if (not(matches($afterAxis,
-                concat(
-                '^ (',               '[^ ', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \d . ] |',
-                    $FOXSTEP_ESCAPE, '[  ', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \d . ] )'
-                   ), 'x'))) 
-                then ()
-                else
-                replace($afterAxis,
-                concat(
-                '^(',
-                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \d . ] |',
-                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \d . ] )',
-                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \s ] |',
-                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \s ] )*', 
-                ' ).*'), '$1', 'sx')
-    
-            (: name is terminated by any of the following characters (unless escaped): 
-                  FOXSTEP_ESCAPE [] \/ <> () =!|,
-               Additional rule: a leading digit must be escaped.
-               Escape character: ~
-            :)
+    let $nameEtc :=
+        let $canonicalNameEtc :=
+            f:parseItem_canonicalFoxnameTest($afterAxis, $FOXSTEP_NAME_DELIM)            
+        return 
+            if (exists($canonicalNameEtc)) then $canonicalNameEtc
+            else if ($acceptAbbrevSyntax) then 
+                f:parseItem_abbreviatedFoxnameTest($afterAxis, $FOXSTEP_ESCAPE)
+            else ()
 
+    (: canonical name test expected and not found => return :)
+    return if (empty($nameEtc) and not($acceptAbbrevSyntax)) then () else
     
-    (: 20160818, hjr: if no valid name test is found, 
-       abort the attempt to parse the step as a fox axis step;
-       but needs refinement, for example needs to deal with .. :)
-    (: return if (not($nameCanonical) and not($nameAbbrevEsc)) then () else :)
-    
-    (: name, any escapes removed :)
-    let $name :=
-        (: non-abbreviated name: remove delimiters, un-double occurrences of the delimiter :)
-        if ($nameCanonical) then
-            replace(substring($nameCanonical, 2, string-length($nameCanonical) - 2), 
-                concat($FOXSTEP_NAME_DELIM, $FOXSTEP_NAME_DELIM),
-                       $FOXSTEP_NAME_DELIM)
-        (: abbreviated name: remove escapes :)
-        else
-            replace($nameAbbrevEsc, concat($FOXSTEP_ESCAPE, '(.)'), '$1')
-
+    let $name := $nameEtc[1]                        
+    let $afterName := 
+        if (not($name)) then $afterAxis
+        else $nameEtc[2]
+        
     let $regex := 
-        if (not($name)) then ()
-        else 
-            let $raw := concat('^', 
-                        replace(replace(replace(replace($name, '\.', '\\.'), 
-                                                               '\*', '.*', 's'), 
-                                                               '\+', '\\+', 's'),                                                               
-                                                               '\?', '.', 's'), 
-                               '$')
-            let $raw := replace($raw, '[()]', '\\$0')
-            return $raw
-            
-    let $afterName :=
-        if ($afterAxis = ($nameCanonical, $nameAbbrevEsc)) then ()
-        else if ($nameCanonical) then f:skipOperator($afterAxis, $nameCanonical)
-        else if ($nameAbbrevEsc) then f:skipOperator($afterAxis, $nameAbbrevEsc)
-        else $afterAxis
-
+        if (not($name)) then () else
+ 
+        let $raw := concat('^', 
+                    replace(replace(replace(replace($name, '\.', '\\.'), 
+                                                            '\*', '.*', 's'), 
+                                                            '\+', '\\+', 's'),                                                               
+                                                            '\?', '.', 's'), 
+                    '$')
+        let $raw := replace($raw, '[()]', '\\$0')
+        return $raw
     return
         if (starts-with($afterName, '[')) then
             (: update context - context is URI (as the current step is a fox axis step) :)
@@ -2942,3 +2896,109 @@ declare function f:skipOperator($text as xs:string, $operator as xs:string?)
         as xs:string {
     replace(substring($text, 1 + string-length($operator)), '^\s+', '')
 };
+
+(:~
+ : Parses a text which may begin with a canonical fox name test.
+ : If this is not the case, the function returns the empty sequence.
+ : Otherwise, it returns one or two strings: (1) the name pattern
+ : encoded by the name test; (2) if the name test is followed by
+ : further text - the text following the canonical name test.
+ :
+ : @param text the text to be parsd
+ : @param FOXSTEP_NAME_DELIM the character used as delimiter of canonical fox name tests
+ : @return the name pattern and the string following it, if any;
+ :        the empty sequence if the text does not begin with an
+ :        abbreviated name test
+ :) 
+declare function f:parseItem_canonicalFoxnameTest($text as xs:string, $FOXSTEP_NAME_DELIM as xs:string)
+        as xs:string* {
+        
+    if (not(starts-with($text, $FOXSTEP_NAME_DELIM))) then () else
+    
+    let $patternText :=
+    
+        (: complete text is a fox name test :)
+        if (matches($text,
+            concat('^', $FOXSTEP_NAME_DELIM, 
+                   '([^', $FOXSTEP_NAME_DELIM, ']|', $FOXSTEP_NAME_DELIM, $FOXSTEP_NAME_DELIM, ')*', 
+                        $FOXSTEP_NAME_DELIM, '$'), 's')) 
+        then $text
+    
+        (: the text starts with a fox name test :)
+        else replace($text, 
+                concat('^(', $FOXSTEP_NAME_DELIM, 
+                        '([^', $FOXSTEP_NAME_DELIM, ']|', $FOXSTEP_NAME_DELIM, $FOXSTEP_NAME_DELIM, 
+                        ')*', 
+                        $FOXSTEP_NAME_DELIM, ').*'), 
+                '$1', 's')
+                [not(. eq $text)]
+    return
+        if (empty($patternText)) then () else (
+        
+        (: remove delimiters and escaping :)
+            replace(
+                substring($patternText, 2, string-length($patternText) - 2), 
+                concat($FOXSTEP_NAME_DELIM, $FOXSTEP_NAME_DELIM),
+                $FOXSTEP_NAME_DELIM
+            )
+            ,
+            substring($text, string-length($patternText) + 1)
+        )
+};
+
+(:~
+ : Parses a text which may begin with an abbreviated fox name test.
+ : If this is not the case, the function returns the empty sequence.
+ : Otherwise, it returns one or two strings: (1) the name pattern
+ : encoded by the name test; (2) if the name test is followed by
+ : further text - the text following the abbreviated name test.
+ :
+ : @param text the text to be parsd
+ : @param FOXSTEP_ESCAPE the character used within abbreviated fox name tests
+ :        as escape character
+ : @return the name pattern and the string following it, if any;
+ :        the empty sequence if the text does not begin with an
+ :        abbreviated name test
+ :) 
+declare function f:parseItem_abbreviatedFoxnameTest($text as xs:string, $FOXSTEP_ESCAPE as xs:string)
+        as xs:string* {
+
+    (: 
+       The name test is terminated by any of the following characters (unless escaped): 
+       FOXSTEP_ESCAPE [] \/ <> () =!|,
+       Any of these characters occurring within the name pattern must be escaped
+       by a preceding escape character.
+       
+       Additional rule: a leading digit must be escaped.
+       
+       Escape character: ~
+       
+       The pattern consists of a sequence of items consisting of 
+       (1) one of the characters which are not escaped, 
+       (2) or an escape character followed by one of the characters which are escaped       
+    :)
+
+    if (not(matches($text,
+            concat(
+            '^(',            '[^ ', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \d . ] |',
+            $FOXSTEP_ESCAPE, '[  ', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \d . ] )'
+            ), 'sx'))) 
+    then ()
+            
+    else
+        let $namePattern :=
+            replace($text,
+                concat(
+                '^(',
+                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \d . ] |',
+                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \d . ] )',
+                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \s ] |',
+                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \s ] )*', 
+                ' ).*'), '$1', 'sx')
+                
+        return (
+            (: name, after removing escapes :)
+            replace($namePattern, concat($FOXSTEP_ESCAPE, '(.)'), '$1'),
+            substring($text, string-length($namePattern) + 1)
+        )
+};        
