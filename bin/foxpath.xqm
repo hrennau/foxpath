@@ -199,6 +199,8 @@ declare function f:resolveFoxpathRC($n as node(),
         return
             if ($ebvMode) then f:getEbv($value) else $value
 
+    case element(emptySequence) return ()       
+
      case element(filterExpr) return
         let $unfiltered := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars)
         let $predicates := tail($n/*)

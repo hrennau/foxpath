@@ -1730,7 +1730,7 @@ declare function f:parseVariableRef($text as xs:string, $context as map(*))
  : Parses a parenthesized expression.
  :
  : Syntax: 
- :     '(' Expr ')'
+ :     '(' Expr? ')'
  :
  : @param text the text to be parsed
  : @return a structured representation of the parenthesized expression, followed
@@ -1739,6 +1739,13 @@ declare function f:parseVariableRef($text as xs:string, $context as map(*))
 declare function f:parseParenthesizedExpr($text as xs:string, $context as map(*))
         as item()+ {
     let $textAfterOpen := replace($text, '^\(\s*', '')
+    return
+        (: special case: empty sequence () :)
+        if (starts-with($textAfterOpen, ')')) then (
+            <emptySequence/>,
+            f:skipOperator($textAfterOpen, ')')
+        ) else
+        
     let $seqExprEtc := f:parseSeqExpr($textAfterOpen, $context)
     let $seqExpr := $seqExprEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($seqExprEtc)    
