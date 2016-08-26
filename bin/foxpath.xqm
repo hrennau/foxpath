@@ -831,6 +831,8 @@ declare function f:resolveFlworExpr_for($for as element(for),
                 typeswitch($nextClause)
                 case element(for) return 
                     f:resolveFlworExpr_for($nextClause, $ebvMode, $context, $position, $last, $vars)
+                case element(let) return 
+                    f:resolveFlworExpr_let($nextClause, $ebvMode, $context, $position, $last, $vars)
                 default return
                     f:createFoxpathError('NOT_YET_IMPLEMENTED', 
                         concat('Flwor clause not yet implemented: ', local-name($nextClause)))
@@ -863,6 +865,8 @@ declare function f:resolveFlworExpr_let($let as element(let),
             f:resolveFoxpathRC($nextClause, $ebvMode, $context, $position, $last, $vars)
         else            
             typeswitch($nextClause)
+            case element(for) return 
+                f:resolveFlworExpr_for($nextClause, $ebvMode, $context, $position, $last, $vars)
             case element(let) return 
                 f:resolveFlworExpr_let($nextClause, $ebvMode, $context, $position, $last, $vars)
             default return
@@ -1200,6 +1204,10 @@ declare function f:resolveInlineFunctionExpression(
                                            $last as xs:integer?,
                                            $vars as map(*)?)                                       
         as item()* {
+    if (1 eq 1) then
+        f:resolveInlineFunctionExpression_new($inlineFuncExpr, $context, $position, $last, $vars)
+    else
+    
     let $inlineFuncBody := $inlineFuncExpr/body/*
     let $funcItem :=
        function(
@@ -1213,6 +1221,63 @@ declare function f:resolveInlineFunctionExpression(
     }
     
     return $funcItem
+};    
+
+(:
+ : Resolves a parsed inline function expression to a function item.
+ :)
+declare function f:resolveInlineFunctionExpression_new(
+                                           $inlineFuncExpr as element(),
+                                           $context as item()?, 
+                                           $position as xs:integer?, 
+                                           $last as xs:integer?,
+                                           $vars as map(*)?)                                       
+        as item()* {
+    let $inlineFuncBody := $inlineFuncExpr/body/*
+    let $funcItemText_params :=
+        string-join(
+            for $param in $inlineFuncExpr/params/param
+            let $name := $param/@localName
+            let $seqType := $param/sequenceType/concat(' as ', @text)
+            return concat('$', $name, $seqType)
+            , ', ')
+    let $funcItemText_result := $inlineFuncExpr/return/sequenceType/concat(' as ', @text)
+    
+    (: shift parameters into vars map and launch the resolver :)
+    let $funcItemText_launch :=
+        string-join((
+            'let $vars := map:merge((',
+            '$vars,',
+            string-join(
+                for $param in $inlineFuncExpr/params/param return 
+                    $param
+                    /concat('map:entry(''', @localName, ''', $', @localName, ')')
+                , ',&#xA;'),
+            '))',
+            'let $body := ',
+            $inlineFuncExpr/body/*/serialize(.),
+            'return $resolver($body, false(), (), 1, 1, $vars)'
+        ), '&#xA;')
+    let $baseURI := static-base-uri()
+(:    
+    let $funcItemText :=
+        concat(
+            'import module namespace f="http://www.ttools.org/xquery-functions" &#xA;',
+            '   at "', static-base-uri(), '";&#xA;',
+            'let $resolver := f:resolveFoxpathRC#6 return&#xA; ',
+            'function(', $funcItemText_params, ')', $funcItemText_result, 
+            ' {', $funcItemText_launch, '}')
+:)            
+    let $funcItemText :=
+        string-join((
+            'declare variable $resolver as function(*) external;',
+            'declare variable $vars as map(*)? external;',            
+            concat('function(', $funcItemText_params, ')', $funcItemText_result), 
+            ' {', $funcItemText_launch, '}')
+        , '&#xA;')
+    let $funcItem := xquery:eval($funcItemText, map{'resolver':f:resolveFoxpathRC#6, 'vars':$vars})
+    return
+        $funcItem
 };    
 
 (: 
@@ -1242,17 +1307,19 @@ declare function f:resolveDynFunctionCall($callExpr as element(),
     
     (: @TODO@ assignment `isInlineFunction`:
               Find a better way to recognize the use of an inline function expression :)
+    (:              
     let $isInlineFunction := 
         $funcItem instance of 
-            function(xs:string, item()?, xs:integer, xs:integer, map(*)?) as item()*
-            
+            function(xs:string, item()?, xs:integer, xs:integer, map(*)?, element(nevernever)) as item()*
+    :)        
     return
+        (:
         if ($isInlineFunction) then
             f:resolveInlineFunctionCall($funcItem, $argExprs, $context, $position, $last, $vars)
-
-        else if ($argExprs/self::argPlaceholder) then
-            f:resolvePartialFunctionCall($funcItem, $argExprs, $context, $position, $last, $vars)
-            
+        :)
+        
+        if ($argExprs/self::argPlaceholder) then
+            f:resolvePartialFunctionCall($funcItem, $argExprs, $context, $position, $last, $vars)            
         else if (count($argExprs) eq 0) then 
             $funcItem()
         else if (count($argExprs) eq 1) then
@@ -1267,7 +1334,7 @@ declare function f:resolveDynFunctionCall($callExpr as element(),
         else if (count($argExprs) eq 3) then
             let $arg1 := $argExprs[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
             let $arg2 := $argExprs[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg3 := $argExprs[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)            
+            let $arg3 := $argExprs[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)            
             return
                 $funcItem($arg1, $arg2, $arg3)
         else
@@ -1275,6 +1342,7 @@ declare function f:resolveDynFunctionCall($callExpr as element(),
                 concat('Dynamic function call with >3 arguments; # arguments: ', count($argExprs)))
 };    
 
+(:
 (:~
  : Resolves the dynamic call of an inline function expression.
  :)
@@ -1303,6 +1371,7 @@ declare function f:resolveInlineFunctionCall($funcItem as function(*),
             return
                 $funcItem('value', $context, $position, $last, $useVars)
 };    
+:)
 
 (: 
  : ===============================================================================

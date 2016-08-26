@@ -216,6 +216,15 @@ declare function f:parseExprSingle($text as xs:string, $context as map(*))
  : ===============================================================================
  :)
 
+(:~
+ : Parses a simple FLWOR expression consisting of for and/or let clauses and
+ : a return clause. Note that whereas XPath allows only a single for or let
+ : clause, foxpath allows multiple for and/or let clauses, as XQuery does.
+ :
+ : @param test the text to be parsed
+ : @param context the parsing context
+ : @return the parsed FLWOR expression followed by the remaining unparsed text
+ :)
 declare function f:parseForLetExpr($text as xs:string, $context as map(*))
         as item()* {
     let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_FOR_LET_EXPR: ') return
@@ -263,7 +272,7 @@ declare function f:parseForLetExpr($text as xs:string, $context as map(*))
  :)
 declare function f:parseVarBindings($text as xs:string, $clauseKind as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_VAR_BINDINGS: ') return
+    let $DEBUG := f:trace($text, 'parse.var.bindings.text', 'INTEXT_VAR_BINDINGS: ') return
     let $op := if ($clauseKind eq 'for') then 'in' else ':='
     
     let $varNameEtc := f:parseVarName($text, $context)
@@ -280,11 +289,26 @@ declare function f:parseVarBindings($text as xs:string, $clauseKind as xs:string
         }
     return (
         $clause,
+        if (starts-with($textAfterClause, ',')) then
+            let $textRemainingClauses := f:skipOperator($textAfterClause, ',')
+            return
+                f:parseVarBindings($textRemainingClauses, $clauseKind, $context)
+
+        else if (matches($textAfterClause, '^(for|let)\s+\$')) then    
+            let $clauseKind := replace($textAfterClause, '^(for|let).*', '$1', 's')    
+            let $textVarBindingsEtc := replace($textAfterClause, concat('^', $clauseKind, '\s+'), '')
+            return
+                f:parseVarBindings($textVarBindingsEtc, $clauseKind, $context)
+        else 
+            $textAfterClause
+
+(:
         if (not(starts-with($textAfterClause, ','))) then $textAfterClause
         else
             let $textRemainingClauses := f:skipOperator($textAfterClause, ',')
             return
                 f:parseVarBindings($textRemainingClauses, $clauseKind, $context)
+:)                
     )
 };
 
@@ -500,15 +524,20 @@ declare function f:parseAndExprRC($text as xs:string, $context as map(*))
 declare function f:parseComparisonExpr($text as xs:string, $context as map(*))
         as item()+ {
     let $nodeComp := "(is|<<|>>)"        
+    let $nodeCompMatch := "(is\s|<<|>>)"
+    
     (: let $generalComp := "(=|!=|<=|<|>=|>|~~~|~~|~)" :)
     let $generalComp := "(=|!=|<=|<|>=|>)"
+    let $generalCompMatch := "(=|!=|<=|<|>=|>)"
+    
     let $valueComp := "(eq|ne|lt|le|gt|ge)"
+    let $valueCompMatch := "(eq|ne|lt|le|gt|ge)\s"
     
     let $leftExprEtc := f:parseStringConcatExpr($text, $context)
     let $leftExpr := $leftExprEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($leftExprEtc)    
     return 
-        if (matches($textAfter, concat('^', $nodeComp))) then            
+        if (matches($textAfter, concat('^', $nodeCompMatch))) then            
             let $op := replace($textAfter, concat('^(', $nodeComp, ').*'), '$1', 's')
             let $textAfterOp := f:skipOperator($textAfter, $op)
             let $rightExprEtc := f:parseStringConcatExpr($textAfterOp, $context)
@@ -521,7 +550,8 @@ declare function f:parseComparisonExpr($text as xs:string, $context as map(*))
                 }</cmpN>,
                 $textAfter2
             )
-        else if (matches($textAfter, concat('^', $valueComp))) then
+        (: note the whitespace required behind the operator :)
+        else if (matches($textAfter, concat('^', $valueCompMatch))) then
             let $op := replace($textAfter, concat('^(', $valueComp, ').*'), '$1', 's')
             let $textAfterOp := f:skipOperator($textAfter, $op)
             let $rightExprEtc := f:parseStringConcatExpr($textAfterOp, $context)
@@ -534,7 +564,7 @@ declare function f:parseComparisonExpr($text as xs:string, $context as map(*))
                 }</cmpV>,
                 $textAfter2
             )
-        else if (matches($textAfter, concat('^', $generalComp))) then            
+        else if (matches($textAfter, concat('^', $generalCompMatch))) then            
             let $op := replace($textAfter, concat('^(', $generalComp, ').*'), '$1', 's')
             let $textAfterOp := f:skipOperator($textAfter, $op)
             let $rightExprEtc := f:parseStringConcatExpr($textAfterOp, $context)
@@ -1353,14 +1383,14 @@ declare function f:parseNodeAxisStep($text as xs:string?, $context as map(*))
             concat('descendant-or-self::node()', $NODESTEP_SEPERATOR, substring($text, 2))
         else $text
         
-    let $explicitAxis := 
+    let $explicitAxis :=
         replace($text, 
             concat(
                 '^(\.\.|@|',
                 '(child|descendant|descendant-or-self|self|attribute|following-sibling|following',
                 '|parent|ancestor|ancestor-or-self|preceding-sibling|preceding)::).*'), '$1', 'sx')
             [not(. eq $text)]
-            
+
     let $axisName :=
         if (not($explicitAxis)) then 'child'
         else if ($explicitAxis eq '@') then 'attribute'
@@ -1371,7 +1401,7 @@ declare function f:parseNodeAxisStep($text as xs:string?, $context as map(*))
         if (not($explicitAxis)) then $text
         else if ($explicitAxis eq '..') then ()
         else f:skipOperator($text, $explicitAxis)
-        
+
     let $nodeTestEtc :=
         if ($explicitAxis eq '..') then (
             <kindTest nodeKind="node"/>,
@@ -2518,13 +2548,13 @@ declare function f:parseNodeTextCommentPiTest($text as xs:string, $context as ma
         as item()* {
     let $parsedEtc :=
         if (matches($text, '^(node|text|comment|processing-instruction)\s*\(\s*\)')) then
-            let $kind := replace($text, '^(node|text|comment|processing-instruction).*', '$1')
+            let $kind := replace($text, '^(node|text|comment|processing-instruction).*', '$1', 'sx')
             let $textAfter := replace($text, concat('^', $kind, '\s*\(\s*\)\s*'), '')
             let $kindTestText := concat($kind, '()')
             let $kindTest := <kindTest nodeKind="{$kind}" text="{$kindTestText}"/>
             return ($kindTest, $textAfter)     
-        else if (matches($text, '^processing-instruction \s*\(\s* ([^)\s]+) \s*\)', 'x')) then
-            let $nameRaw := replace($text, '^processing-instruction \s*\(\s* ([^)\s]+) \s*\).*', '$1', 'x')
+        else if (matches($text, '^processing-instruction \s*\(\s* ([^)\s]+) \s*\)', 'sx')) then
+            let $nameRaw := replace($text, '^processing-instruction \s*\(\s* ([^)\s]+) \s*\).*', '$1', 'sx')
             let $name := (
                 if (matches($nameRaw, '^["'']')) then
                     let $nameEtc := f:parseStringLiteral($nameRaw, $context)
