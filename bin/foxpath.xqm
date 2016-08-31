@@ -13,7 +13,7 @@ import module namespace i="http://www.ttools.org/xquery-functions" at
  : @return the expression value, which is an XDM value
  :)
 declare function f:resolveFoxpath($foxpath as xs:string?) as item()* {
-    f:resolveFoxpath($foxpath, ())
+    f:resolveFoxpath($foxpath, (), ())
 };
 
 (:~
@@ -23,7 +23,7 @@ declare function f:resolveFoxpath($foxpath as xs:string?) as item()* {
  : @return the expression value, which is an XDM value
  :)
 declare function f:resolveFoxpathInURIContext($foxpath as xs:string?) as item()* {
-    f:resolveFoxpath($foxpath, map:entry('IS_CONTEXT_URI', true()))
+    f:resolveFoxpath($foxpath, map:entry('IS_CONTEXT_URI', true()), ())
 };
 
 
@@ -35,8 +35,10 @@ declare function f:resolveFoxpathInURIContext($foxpath as xs:string?) as item()*
  : @return the expression value, which is an XDM value
  :)
 declare function f:resolveFoxpath($foxpath as xs:string?, 
-                                  $options as map(*)?) as item()* {
-    f:resolveFoxpath($foxpath, false(), (), (), $options)
+                                  $options as map(*)?,
+                                  $externalVariableBindings as map(xs:QName, item()*)?) 
+        as item()* {
+    f:resolveFoxpath($foxpath, false(), (), (), $options, $externalVariableBindings)
 };
 
 (:~
@@ -57,11 +59,13 @@ declare function f:resolveFoxpath($foxpath as xs:string?,
                                   $ebvMode as xs:boolean?,
                                   $context as xs:string?,
                                   $defaultFileName as xs:string?,
-                                  $options as map(*)?)
+                                  $options as map(*)?,
+                                  $externalVariableBindings as map(xs:QName, item()*)?)
         as item()* {
     if (not($foxpath)) then () else
     
-    let $value := f:resolveFoxpath($foxpath, $ebvMode, $context, $options)
+    let $value := f:resolveFoxpath($foxpath, $ebvMode, $context, $options, 
+                    $externalVariableBindings)
     return 
         if (not($defaultFileName) or $value instance of element(errors)) 
         then $value 
@@ -91,15 +95,153 @@ declare function f:resolveFoxpath($foxpath as xs:string?,
 declare function f:resolveFoxpath($foxpath as xs:string, 
                                   $ebvMode as xs:boolean?, 
                                   $context as xs:string?,
-                                  $options as map(*)?)
+                                  $options as map(*)?,
+                                  $externalVariableBindings as map(xs:QName, item()*)?)
         as item()* {
     let $DEBUG := f:trace($foxpath, 'resolve.foxpath', 'RESOLVE_FOXPATH_INTEXT: ')
     let $tree := f:trace(i:parseFoxpath($foxpath, $options), 'parse', 'FOXPATH_ELEM: ')
-    let $errors := $tree[@error eq 'true']/* 
+    let $errors := $tree/self::errors 
     return 
-        if ($errors) then $errors 
-        else f:resolveFoxpathRC($tree, $ebvMode, $context, (), (), ())
+        if ($errors) then $errors
+        else
+            let $expr := $tree/*[not(self::prolog)]
+            let $vars := f:initVars($tree/prolog, $externalVariableBindings, $context)
+            return
+                f:resolveFoxpathRC($expr, $ebvMode, $context, (), (), $vars)
 };
+
+(:~
+ : Initializes the map of variable bindings with the result of evaluating
+ : the variable declarations.
+ :)
+declare function f:initVars($prolog as element(prolog)?, 
+                            $externalVariableBindings as map(xs:QName, item()*)?,
+                            $context as xs:string?)
+        as map(*)? {
+    if (empty($prolog)) then () else
+    
+    let $varDecls := $prolog/varDecls/varDecl
+    return if (not($varDecls)) then () else
+    
+    let $vars := map{}    
+    let $vars := f:bindVars($vars, $varDecls, $externalVariableBindings, $context)
+    return
+        $vars
+};
+
+(:~
+ : Enters the values of variable declarations into the map of variable bindings.
+ :
+ : @param vars the map of variable bindings
+ : @param varDecls variable declarations
+ : @param externalVariableBindings a map associating the names of external
+ :    variables with values supplied from without
+ :)
+declare function f:bindVars($vars as map(*),
+                            $varDecls as element(varDecl)*,
+                            $externalVariableBindings as map(xs:QName, item()*)?,
+                            $context as xs:string?)
+        as map(*) {
+    let $varDecl := head($varDecls)
+    let $tail := tail($varDecls)
+    
+    let $localName := $varDecl/@localName
+    let $namespace := $varDecl/@namespace
+    let $qname := QName($namespace, $localName)
+    let $varName := $localName
+    let $isExternal := $varDecl/@external
+    
+    let $mapEntry :=
+        if ($isExternal eq 'true') then
+            let $externalVariableBindingNames := 
+                if (empty($externalVariableBindings)) then () else
+                    map:keys($externalVariableBindings)
+            return
+                if ($qname = $externalVariableBindingNames) then
+                    let $valueRaw := $externalVariableBindings($qname)                            
+                    let $value := 
+                        let $seqType := $varDecl/sequenceType
+                        return f:applyFunctionConversionRules($valueRaw, $seqType)
+                    return map:entry($varName, $value)
+                else 
+                    let $valueExpr := $varDecl/*[not(self::sequenceType)]
+                    return
+                        if (not($valueExpr)) then
+                            error(QName((), 'MISSING_EXTERNAL_VARIABLE_VALUE'), 
+                                concat('No value supplied for external variables: ', 
+                                $varName))
+                        else
+                            let $valueRaw := f:resolveFoxpathRC($valueExpr, false(), $context, (), (), $vars)                            
+                            let $value := 
+                                let $seqType := $varDecl/sequenceType
+                                return f:applyFunctionConversionRules($valueRaw, $seqType)
+                            return
+                                map:entry($varName, $value)
+        else
+            let $valueExpr := $varDecl/*[not(self::sequenceType)]
+            let $valueRaw := f:resolveFoxpathRC($valueExpr, false(), $context, (), (), $vars)            
+            let $value := 
+                let $seqType := $varDecl/sequenceType
+                return f:applyFunctionConversionRules($valueRaw, $seqType)
+            return
+                map:entry($varName, $value)
+    
+    let $newVars := map:merge(($vars, $mapEntry))
+    return 
+        if ($tail) then 
+            f:bindVars($newVars, $tail, $externalVariableBindings, $context)
+        else
+            $newVars
+};        
+
+(:
+(:~
+ : Enters the bindings of external variables into the map of variable bindings.
+ :
+ : @param vars the map of variable bindings 
+ : @param prolog the parse tree of the expression prolog
+ : @param externalVariableBindings a map associating the names of external
+ :    variables with values supplied from without
+ :)
+declare function f:bindExternalVars(
+    $vars as map(*),
+    $prolog as element(prolog),
+    $externalVariableBindings as map(xs:QName, item()*)?)
+        as map(*) {
+
+    let $externalVariableBindingNames := map:keys($externalVariableBindings)
+    let $externalVariableNames :=
+        for $varDecl in $prolog/varDecl[@external eq 'true']
+        let $localName := $varDecl/@localName
+        let $namespace := $varDecl/@namespace
+        return
+            QName($namespace, $localName)
+    let $missingBindingNames := $externalVariableNames[not(. = $externalVariableBindingNames)]
+    return
+        if (exists($missingBindingNames)) then
+            let $varNames :=
+                string-join(
+                    for $name in $missingBindingNames return local-name-from-QName($name)
+                    , ', ')
+            return
+                error(QName((), 'MISSING_EXTERNAL_VARIABLE_VALUE'), 
+                    concat('No value supplied for external variables: ', $varNames))
+        else            
+    map:merge(
+        $vars,
+        for $varDecl in $prolog/varDecl[@external eq 'true']
+        let $localName := $varDecl/@localName
+        let $namespace := $varDecl/@namespace
+        let $varName := QName($namespace, $localName)
+        let $valueRaw := $externalVariableBindings($varName)
+        
+        let $seqType := $varDecl/sequenceType        
+        let $value := f:applyFunctionConversionRules($value, $seqType)
+        return
+            map:entry($varName, $value)
+    )
+};
+:)
 
 (:~
  : Resolves a foxpath, provided as an expression tree.
@@ -571,7 +713,7 @@ declare function f:resolveNodeAxisStep($axisStep as element()+,
     
     (: edit context, transforming atomic values into document nodes :)
     (: let $DUMMY := trace($context, 'CONTEXT: ') :)
-    let $context :=
+    let $context := 
         for $c in $context return
             if ($c instance of node()) then $c
             else              
@@ -581,7 +723,6 @@ declare function f:resolveNodeAxisStep($axisStep as element()+,
                     error(QName((), 'INVALID_EXPR'), 
                         concat('Invalid expression - path step applied to non-node: ', $c))
                 }
-    
     let $axis := $axisStep/@axis
     let $localName := $axisStep/@localName
     let $uri := $axisStep/@namespace    
@@ -820,7 +961,7 @@ declare function f:resolveFlworExpr_for($for as element(for),
         as item()* {
     let $nextClause := $for/following-sibling::*[1]        
     let $varName := $for/var[1]/@localName        
-    let $varValue := f:resolveFoxpathRC($for/*[2], false(), $context, $position, $last, $vars)
+    let $varValue := f:resolveFoxpathRC($for/*[2], false(), $context, $position, $last, $vars)                     
     let $exprValue :=
         for $item in $varValue
         let $vars := map:put($vars, $varName, $item)
@@ -859,7 +1000,6 @@ declare function f:resolveFlworExpr_let($let as element(let),
     let $varName := $let/var[1]/@localName        
     let $varValue := f:resolveFoxpathRC($let/*[2], false(), $context, $position, $last, $vars)
     let $vars := map:put($vars, $varName, $varValue)
-    let $DUMMY := string-join(map:keys($vars), ' ')
     let $exprValue :=
         if ($nextClause is $let/following-sibling::*[last()]) then       
             f:resolveFoxpathRC($nextClause, $ebvMode, $context, $position, $last, $vars)

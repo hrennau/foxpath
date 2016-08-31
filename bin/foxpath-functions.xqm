@@ -36,38 +36,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 replace($arg, '/', '\\')
                 
-        (: function `echoString` 
-           ================= :)
-        else if ($fname eq 'echo-string') then
-            let $arg := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-                return
-                    ($explicit, $context)[1]
-            return
-                string($arg)
-                
-        (: function `eval-xpath` 
-           ===================== :)
-        else if ($fname = ('eval-xpath', 'xpath')) then
-            let $xpath := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)  
-            let $xpathContext :=
-                let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-                return ($arg2, $context)
-            let $xpathContextNode :=
-                if ($xpathContext instance of node()) then $xpathContext
-                else if (exists($xpathContext) and doc-available($xpathContext)) then doc($xpathContext)
-                else ()
-            return
-                i:xquery($xpath, map{'':$xpathContextNode})
-            
-        (: function `file-content` 
-           ======================= :)
-        else if ($fname eq 'file-content') then
-            let $uri := ($call/*[99], $context)[1]
-            let $text := try {unparsed-text($uri)} catch * {()}
-            return
-                $text
-            
         (: function `file-contains` 
            ======================= :)
         else if ($fname eq 'file-contains') then
@@ -94,6 +62,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return
                     matches($text, $regex, 's')
             
+        (: function `file-content` 
+           ======================= :)
+        else if ($fname eq 'file-content') then
+            let $uri := ($call/*[99], $context)[1]
+            let $text := try {unparsed-text($uri)} catch * {()}
+            return
+                $text
+            
         (: function `file-date` 
            ==================== :)
         else if ($fname eq 'file-date' or $fname eq 'fdate') then
@@ -103,6 +79,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     ($explicit, $context)[1]
             return
                 f:fileDate($arg)
+            
+        (: function `file-ext` 
+           ================== :)
+        else if ($fname eq 'file-ext') then
+            let $uri := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
+                return
+                    ($explicit, $context)[1]
+            return
+                replace(replace($uri, '.*/', ''), '.*\.', '')
             
         (: function `file-info` 
            ==================== :)
@@ -132,6 +118,24 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 $lines 
 
+        (: function `file-name` 
+           ==================== :)
+        else if ($fname eq 'file-name' or $fname eq 'fname') then
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg := if (empty($arg)) then $context else $arg
+            return
+                replace($arg[1], '.*/', '')
+            
+       (: function `file-size` 
+           =================== :)
+        else if ($fname eq 'file-size' or $fname eq 'size') then
+            let $uri := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                return
+                    ($explicit, $context)[1]
+            return
+                f:fileSize($uri)
+
        (: function `grep` 
           =============== :)
         else if ($fname eq 'grep') then
@@ -150,85 +154,34 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (empty($lines)) then () else 
                     string-join((concat('##### ', $uri, ' #####'), $lines, '----------'), '&#xA;')
 
-        (: function `file-ext` 
-           ================== :)
-        else if ($fname eq 'file-ext') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg := if (empty($arg)) then $context else $arg
-            return
-                replace(replace($arg[1], '.*/', ''), '.*\.', '')
-            
-        (: function `file-name` 
-           ==================== :)
-        else if ($fname eq 'file-name' or $fname eq 'fname') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg := if (empty($arg)) then $context else $arg
-            return
-                replace($arg[1], '.*/', '')
-            
-       (: function `file-size` 
-           =================== :)
-        else if ($fname eq 'file-size' or $fname eq 'size') then
-            let $arg := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-                return
-                    ($explicit, $context)[1]
-            return
-                f:fileSize($arg)
-
-        (: function `has-xroot` 
-           =================== :)
-        else if ($fname eq 'has-xroot' or $fname eq 'xroot') then
-            if (not(doc-available($context))) then false() else
-            
-            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)           
-            let $name := normalize-space($name)
-            let $lname :=
-                if (empty($name)) then () else
-                    let $pattern := substring-before(concat($name, ' '), ' ') 
-                    return f:pattern2Regex($pattern)
-            let $ns := 
-                if (empty($name) or not(contains($name, ' '))) then () else
-                    let $pattern := substring-after($name, ' ') 
-                    return f:pattern2Regex($pattern)
-            let $xpath :=
-                let $itemSelector := concat(
-                    concat('[matches(local-name(.), "', $lname, '", "i")]')[$lname],
-                    concat('[matches(namespace-uri(.), "', $ns, '", "i")]')[$ns] 
-                )
-                return concat('/*', $itemSelector)                       
-            let $doc := doc($context)                    
-            return
-                boolean(i:xquery($xpath, map{'':$doc}))
-
         (: function `is-dir` 
            ================= :)
         else if ($fname eq 'is-dir' or $fname eq 'isDir') then
-            let $arg := 
+            let $uri := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
                 return
                     ($explicit, $context)[1]
             return
-                i:isDirectory($arg)
+                i:isDirectory($uri)
             
         (: function `is-file` 
            ================== :)
         else if ($fname eq 'is-file' or $fname eq 'isFile') then
-            let $arg := 
+            let $uri := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
                 return
                     ($explicit, $context)[1]
             return
-                i:isFile($arg)
+                i:isFile($uri)
             
-        (: function `isXml` 
-           =============== :)
+        (: function `is-xml` 
+           ================ :)
         else if ($fname eq 'is-xml' or $fname eq 'isXml') then
-            let $arg := 
+            let $uri := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
                 return ($explicit, $context)[1]
             return
-                doc-available($arg)
+                doc-available($uri)
             
        (: function `linefeed` 
            ================== :)
@@ -242,42 +195,31 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `lpad` 
            =============== :)
         else if ($fname eq 'lpad') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
-            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $char3 := ($arg3, ' ')[1]
+            let $string := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $width := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
+            let $fillChar := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $fillChar := ($fillChar, ' ')[1]
             return
-                f:lpad($arg1, $arg2, $arg3)
+                f:lpad($string, $width, $fillChar)
             
-        (: function `matches-xpath` 
-           ======================= :)
-        (: *TODO* Not yet quite sure how to deal with non-node context which cannot be resolved to a document :)
-        else if ($fname eq 'matches-xpath') then
-            let $xpath := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)  
-            let $xpathContext :=
-                let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-                return ($arg2, $context)[1]
-            let $xpathContextNode :=
-                if ($xpathContext instance of node()) then $xpathContext
-                else if (exists($xpathContext) and doc-available($xpathContext)) then doc($xpathContext)
-                else ()
-            return
-                boolean(i:xquery($xpath, map{'':$xpathContextNode})[1])
-                   
         (: function `rpad` 
            =============== :)
         else if ($fname eq 'rpad') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
-            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $char3 := ($arg3, ' ')[1]
+            let $string := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $width := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
+            let $fillChar := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $fillChar := ($fillChar, ' ')[1]
             return
-                f:rpad($arg1, $arg2, $arg3)
+                f:rpad($string, $width, $fillChar)
 
         (: function `xatt` 
            =============== :)
         else if ($fname eq 'has-xatt' or $fname eq 'xatt') then
-            if (not(doc-available($context))) then false() else
+            let $uri := 
+                let $explicit := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                return
+                    ($explicit, $context)[1]
+            return if (not(doc-available($uri))) then false() else
             
             let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
             let $val := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
@@ -353,6 +295,35 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 (: boolean(i:xquery($xpath, map{'':$doc})) :)
                 i:xquery($xpath, map{'':$doc})
                 
+        (: function `xroot` 
+           ================ :)
+        else if ($fname eq 'xroot') then
+            let $uri := 
+                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                return
+                    ($explicit, $context)[1]
+            return if (not(doc-available($uri))) then false() else
+            
+            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)           
+            let $name := normalize-space($name)
+            let $lname_regex :=
+                if (empty($name)) then () else
+                    let $pattern := substring-before(concat($name, ' '), ' ') 
+                    return f:pattern2Regex($pattern)
+            let $ns_regex := 
+                if (empty($name) or not(contains($name, ' '))) then () else
+                    let $pattern := substring-after($name, ' ') 
+                    return f:pattern2Regex($pattern)
+            let $xpath :=
+                let $itemSelector := concat(
+                    concat('[matches(local-name(.), "', $lname_regex, '", "i")]')[$lname_regex],
+                    concat('[matches(namespace-uri(.), "', $ns_regex, '", "i")]')[$ns_regex] 
+                )
+                return concat('/*', $itemSelector)                       
+            let $doc := doc($uri)                    
+            return
+                boolean(i:xquery($xpath, map{'':$doc}))
+
         (: function `xroot-name` 
            ==================== :)
         else if ($fname eq 'xroot-name') then
@@ -379,20 +350,41 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 element {$qname} {$val}
 
-(:  see above - has-xroot (20160810,hjr)
-        (: function `xroot` 
-           ================ :)
-        else if ($fname eq 'xroot') then
-            let $arg :=
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-                return
-                    ($explicit, $context)[1]
-            return        
-                if (not(try {doc-available($arg)} catch * {()})) then () else
-                    doc($arg)/*/local-name(.)
-                (: try catch in order to avoid errors in case of invalid URIs :)
-  :)
-  
+(: the following two functions are at risk:
+    eval-xpath
+    matches-xpath    
+:)
+        (: function `eval-xpath` 
+           ===================== :)
+        else if ($fname = ('eval-xpath', 'xpath')) then
+            let $xpath := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)  
+            let $xpathContext :=
+                let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                return ($arg2, $context)
+            let $xpathContextNode :=
+                if ($xpathContext instance of node()) then $xpathContext
+                else if (exists($xpathContext) and doc-available($xpathContext)) then doc($xpathContext)
+                else ()
+            return
+                i:xquery($xpath, map{'':$xpathContextNode})
+
+        (: function `matches-xpath` 
+           ======================= :)
+        (: *TODO* Not yet quite sure how to deal with non-node context which cannot be resolved to a document :)
+        else if ($fname eq 'matches-xpath') then
+            let $xpath := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $xpathContext :=
+                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                return ($explicit, $context)[1]
+            let $xpathContextNode :=
+                if ($xpathContext instance of node()) then $xpathContext
+                else if (exists($xpathContext) and doc-available($xpathContext)) then 
+                    doc($xpathContext)
+                else ()
+            return
+                boolean(i:xquery($xpath, map{'':$xpathContextNode})[1])
+                   
+
         (: ################################################################
          : p a r t  2:    s t a n d a r d    f u n c t i o n s
          : ################################################################ :)
@@ -791,31 +783,47 @@ declare function f:fileName($uri as xs:string?)
         as xs:string? {
     $uri ! replace(., '.*/', '')
 };
-                
+
+(:~
+ : Returns a string describing a resource identified by a URI.
+ :)
 declare function f:fileInfo($content as xs:string?, $uri as xs:string?)
         as xs:string? {
-    let $co := ($content, 'p60. s10. d')[1]
+    let $co := ($content, 'p60. s-10_ d')[1]
     let $items := tokenize(normalize-space($co), ' ')
     let $line := string-join((
         for $item in $items
         let $kind := substring($item, 1, 1)
         let $format := substring($item, 2)[string()]
-        let $width := $format ! replace($format, '\D', '') ! xs:integer(.)
+        let $padWidth := $format ! replace($format, '\D', '') ! xs:integer(.)
+        let $padSide := if (starts-with($format, '-')) then 'l' else 'r'
         let $fillChar := 
-            if (empty($format)) then () else (replace($format, '^\d+', '')[string()], ' ')[1]
+            if (empty($format)) then () else (replace($format, '^-?\d+', '')[string()], ' ')[1]
+        let $isDir := file:is-dir($uri)            
         let $value :=
             if ($kind eq 'p') then $uri
             else if ($kind eq 'n') then f:fileName($uri)
-            else if ($kind eq 's') then f:fileSize($uri)
+            else if ($kind eq 's') then 
+                if (file:is-dir($uri)) then '/' else f:fileSize($uri)
             else if ($kind eq 'd') then f:fileDate($uri)
             else if ($kind eq 'r') then
                 if (not(doc-available($uri))) then '-'
                 else doc($uri)/*/local-name(.)
+            else if ($kind eq 't') then
+                if (not(doc-available($uri))) then '-'
+                else doc($uri)/*/concat(local-name(.), ' / ', string-join(sort(distinct-values(*/local-name()), lower-case#1), ' '))
+            else if ($kind eq 'e') then
+                if (not(doc-available($uri))) then '-'
+                else doc($uri)/*/concat(local-name(.), ' / ', string-join(sort(distinct-values(.//*/local-name()), lower-case#1), ' '))
+            else if ($kind eq 'a') then
+                if (not(doc-available($uri))) then '-'
+                else doc($uri)/string-join(sort(distinct-values(.//@*/local-name()), lower-case#1), ' ')
             else ()
-        return
-            if (empty($width)) then $value else 
-                if ($kind eq 's') then f:lpad($value, $width, $fillChar)
-                else f:rpad($value, $width, $fillChar)
+        return            
+            if (empty($padWidth)) then $value
+            else if ($kind eq 's' and $isDir) then f:rpad('/', $padWidth, ' ')            
+            else if ($padSide eq 'l') then f:lpad($value, $padWidth, $fillChar)
+                else f:rpad($value, $padWidth, $fillChar)
         ), ' ')            
     return
         $line

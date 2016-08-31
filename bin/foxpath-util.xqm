@@ -31,6 +31,14 @@ declare function f:createFoxpathErrors($code as xs:string, $msg as xs:string)
     <errors>{f:createFoxpathError($code, $msg)}</errors>            
 };
 
+(:~
+ : Wraps a sequence of `error` elements in an `errors` element.
+ :)
+declare function f:finalizeFoxpathErrors($errors as element()*)
+        as element(errors)? {
+    if (not($errors)) then () else <errors>{$errors}</errors>    
+};
+
 
 declare function f:trace($items as item()*, 
                          $logFilter as xs:string, 
@@ -41,3 +49,18 @@ declare function f:trace($items as item()*,
         then trace($items, $logLabel)
     else $items        
 };        
+
+(:~
+ : Applies the function conversion rules to a value given a sequence type specificationb.
+ : @TODO - shift call of `xquery:eval` into foxpath-processorDependent.xqm.
+ :)
+declare function f:applyFunctionConversionRules(
+    $value as item()*, 
+    $seqType as element(sequenceType)?)
+        as item()* {
+    if (not($seqType)) then $value else
+    
+    let $funcText := 'function($value as ' || $seqType/@text || '){$value}'
+    let $func := xquery:eval($funcText, map{'value': $value})
+    return $func($value)
+};

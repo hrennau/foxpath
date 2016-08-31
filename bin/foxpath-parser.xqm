@@ -44,24 +44,34 @@ declare function f:parseFoxpath($text as xs:string?, $options as map(*)?)
         as element()+ {        
     let $DEBUG := f:trace($text, 'parse.text.foxpath', 'INTEXT_FOXPATH: ')
     let $context := f:getInitialParsingContext($options)
-    let $seqExprEtc := f:trace(f:parseSeqExpr($text, $context) , 'tree', 'PARSED: ')
-    let $textAfter := f:extractTextAfter($seqExprEtc)    
-    let $seqExpr := 
-        let $etree := $seqExprEtc[. instance of node()]
-        return
-            if ($etree//error or $textAfter) then
-                element {node-name($etree)} {
-                    $etree/@*,
-                    attribute error {'true'},
-                    $etree/node(),
-                    if (not($textAfter)) then ()
-                    else
-                        f:createFoxpathError('SYNTAX_ERROR', 
-                            concat('Unexpected text after expression end: ', $textAfter))                    
-                }
-            else $etree
+    let $prologEtc := f:parseProlog($text, $context)
+    let $prolog := $prologEtc[. instance of node()]
+    let $errors := f:finalizeFoxpathErrors($prolog/descendant-or-self::error)
     return
-        $seqExpr
+        if ($errors) then $errors else        
+    let $textAfter := f:extractTextAfter($prologEtc)
+    
+    let $seqExprEtc := f:trace(f:parseSeqExpr($textAfter, $context) , 'tree', 'PARSED: ')   
+    let $textAfter := f:extractTextAfter($seqExprEtc)    
+    let $seqExpr := $seqExprEtc[. instance of node()]
+    let $errors := f:finalizeFoxpathErrors($seqExpr/descendant-or-self::error)        
+    return
+        if ($errors) then $errors
+        else if ($textAfter) then
+            f:finalizeFoxpathErrors(
+                f:createFoxpathError('SYNTAX_ERROR', 
+                    concat('Unexpected text after expression end: ', $textAfter)))                    
+        else
+            let $nsDecls := $prolog/nsDecls
+            let $exprTree := f:finalizeParseTree($seqExpr, $prolog)
+            let $errors := f:finalizeFoxpathErrors($exprTree/descendant-or-self::error)            
+            return
+                if ($errors) then $errors 
+                else
+                    <foxpathTree>{
+                        $prolog,
+                        $exprTree
+                    }</foxpathTree>
 };
 
 (: 
@@ -104,6 +114,364 @@ declare function f:getInitialParsingContext($options as map(*)?)
             'IS_CONTEXT_URI': $isContextUri}
 };
 
+(: 
+ : ===============================================================================
+ :
+ :     f i n a l i z e    p a r s i n g    r e s u l t
+ :
+ : ===============================================================================
+ :)
+declare function f:finalizeParseTree($tree as element(), $prolog as element()?)
+        as element() {
+    (: add namespaces :)        
+    let $nsDecls := $prolog/nsDecls
+    let $tree :=
+        if (not($nsDecls)) then $tree
+        else f:finalizeParseTree_namespaces($tree, $prolog)
+    return
+        $tree
+};
+
+declare function f:finalizeParseTree_namespaces($tree as element(), $prolog as element()?)
+        as element() {
+    f:finalizeParseTree_namespacesRC($tree, $prolog)        
+};
+
+declare function f:finalizeParseTree_namespacesRC($n as node(), $prolog as element()?)
+        as node()? {
+    typeswitch($n)
+    case document-node() return
+        document {for $c in $n/node() return f:finalizeParseTree_namespacesRC($n, $prolog)}
+    case element(step) return
+        let $namespace :=
+            if ($n/@namespace) then ()
+            else if ($n/@prefix) then
+                let $prefix := $n/@prefix
+                let $uri := $prolog/nsDecls/namespace[@prefix eq $prefix]/@uri
+                return
+                    if (not($uri)) then
+                        f:createFoxpathError('SYNTAX_ERROR',
+                            concat('Prefix not bound to a namespace URI: ', $prefix))
+                    else
+                        attribute namespace {$uri}
+            else if ($n/@localName ne '*') then
+                $prolog/nsDecls/namespace[@prefix eq '']/@uri/attribute namespace {.}
+            else ()
+        return
+            if ($namespace/self::error) then $namespace
+            else
+                element {node-name($n)} {
+                    for $a in $n/@* return 
+                        f:finalizeParseTree_namespacesRC($a, $prolog),
+                    $namespace,
+                    for $c in $n/node() return 
+                        f:finalizeParseTree_namespacesRC($c, $prolog)
+                }                        
+    case element() return
+        element {node-name($n)} {
+            for $a in $n/@* return f:finalizeParseTree_namespacesRC($a, $prolog),
+            for $c in $n/node() return f:finalizeParseTree_namespacesRC($c, $prolog)
+        }
+    default return
+        $n
+};
+
+
+(: 
+ : ===============================================================================
+ :
+ :     p a r s e    p r o l o g
+ :
+ : ===============================================================================
+ :)
+(:~
+ : Parses the prolog of a foxpath expression.
+ :
+ : Syntax:
+ :     Prolog ::= VarDecl*
+ :     VarDecl ::= "declare" "variable" "$" VarName TypeDeclaration? 
+ :                           ((":=" VarValue) | ("external" (":=" VarDefaultValue)?))
+ :                           ";" 
+ :
+ : @param text a text consisting of the expression text, possibly
+ :    followed by further text
+ : @return expression tree representing the expression text,
+ :    followed by the remaining unparsed text as a string, if any
+ :)
+declare function f:parseProlog($text as xs:string, $context as map(*))
+        as item()+ {
+    let $DEBUG := f:trace($text, 'parse.prolog', 'INTEXT_PROLOG: ')
+    
+    (: parse namespace declarations :)
+    let $nsDeclsEtc := f:parseNsDecls($text, $context)
+    let $nsDecls := $nsDeclsEtc[. instance of node()]
+    let $errors := $nsDecls/self::error
+    return
+        if ($errors) then $errors else        
+    let $textAfterNsDecls := f:extractTextAfter($nsDeclsEtc)
+    
+    (: parse variable declarations :)
+    let $varDeclsEtc := f:parseVarDecls($textAfterNsDecls, $context)
+    let $varDecls := $varDeclsEtc[. instance of node()]
+    let $errors := $varDecls/self::error
+    return
+        if ($errors) then $errors else
+    let $textAfterVarDecls := f:extractTextAfter($varDeclsEtc)
+    
+    return (
+        if (not($nsDecls) and not($varDecls)) then ()
+        else 
+            <prolog>{
+                if (not($nsDecls)) then () else
+                    <nsDecls>{$nsDecls}</nsDecls>,
+                if (not($varDecls)) then () else
+                    <varDecls>{$varDecls}</varDecls>
+            }</prolog>,
+        $textAfterVarDecls
+    )        
+};
+
+(:~
+ : Parses the namespace declarations.
+ :)
+declare function f:parseNsDecls($text as xs:string, $context as map(*))
+        as item()+ {
+    let $DEBUG := f:trace($text, 'parse.ns_decls', 'INTEXT_NS_DECLS: ')
+    let $nsDeclEtc := f:parseNsDecl($text, $context)
+    let $nsDecl := $nsDeclEtc[. instance of node()]
+    let $textAfterNsDecl := f:extractTextAfter($nsDeclEtc)
+    return (
+        $nsDecl,
+        if (matches($textAfterNsDecl, 
+            '^(declare\s+default\s+element\s+namespace |
+               declare\s+namespace\s+)', 'sx')) then
+            f:parseNsDecls($textAfterNsDecl, $context)
+        else
+            $textAfterNsDecl
+    )            
+};
+
+(:~
+ : Parses a single namespace declaration.
+ :)
+declare function f:parseNsDecl($text as xs:string, $context as map(*))
+        as item()+ {
+    let $DEBUG := f:trace($text, 'parse.ns_decl', 'INTEXT_NS_DECL: ') return
+    
+    (: default namespace declaration :)
+    if (matches($text, '^declare\s+default\s+element\s+namespace\s+')) then
+        let $textNamespaceEtc :=
+            replace($text, '^declare\s+default\s+element\s+namespace\s+(.+)', '$1', 'sx')
+                [not(. eq $text)]
+        return
+            let $namespaceEtc := f:parseStringLiteral($textNamespaceEtc, $context)
+            let $namespace := $namespaceEtc[. instance of node()]
+            let $textAfterNamespace := f:extractTextAfter($namespaceEtc)
+            return
+                if (not($namespace)) then
+                    f:createFoxpathError('SYNTAX_ERROR',
+                        concat('Invalid default namespace declaration - ',
+                            'URIliteral expected; text: ', $text))
+                else if (not(starts-with($textAfterNamespace, ';'))) then                        
+                    f:createFoxpathError('SYNTAX_ERROR',
+                        concat('Syntax error - default namespace declaration must be followed ',
+                            'by semicolon; text: ', $text))
+                else
+                    let $textAfterNsDecl := f:skipOperator($textAfterNamespace, ';')
+                    return (
+                        <namespace prefix="" uri="{$namespace}"/>,
+                        $textAfterNsDecl                        
+                    )
+    (: namespace declaration :)                        
+    else 
+        let $prefixAndNamespaceText :=
+            replace($text,
+                '^declare\s+namespace\s+(\i[\c-[:]]*)\s*=\s*(.*)', '$1 $2', 'sx')[. ne $text]
+        return
+            if (not($prefixAndNamespaceText)) then $text
+            else
+                let $prefix := substring-before($prefixAndNamespaceText, ' ')
+                let $textNamespaceEtc := substring-after($prefixAndNamespaceText, ' ')
+                let $namespaceEtc := f:parseStringLiteral($textNamespaceEtc, $context)
+                let $namespace := $namespaceEtc[. instance of node()]
+                let $textAfterNamespace := f:extractTextAfter($namespaceEtc)
+                return
+                    if (not($namespace)) then
+                        f:createFoxpathError('SYNTAX_ERROR',
+                            concat('Invalid namespace declaration - pattern ',
+                                'prefix = URIliteral expected; text: ', $text))                        
+                    else if (not(starts-with($textAfterNamespace, ';'))) then                        
+                        f:createFoxpathError('SYNTAX_ERROR',
+                            concat('Syntax error - default namespace declaration must be followed ',
+                                'by semicolon; text: ', $text))
+                    else 
+                        let $textAfterNsDecl := f:skipOperator($textAfterNamespace, ';')
+                        return (
+                            <namespace prefix="{$prefix}" uri="{$namespace}"/>,
+                            $textAfterNsDecl
+                        )                            
+};
+
+(:~
+ : Parses the variable declarations.
+ :)
+declare function f:parseVarDecls($text as xs:string, $context as map(*))
+        as item()+ {
+    let $DEBUG := f:trace($text, 'parse.var_decls', 'INTEXT_VAR_DECLS: ')
+    let $varDeclEtc := f:parseVarDecl($text, $context)
+    let $varDecl := $varDeclEtc[. instance of node()]
+    let $textAfterVarDecl := f:extractTextAfter($varDeclEtc)
+    return (
+        $varDecl,
+        if (matches($textAfterVarDecl, '^declare\s+variable\s+\$', 's')) then
+            f:parseVarDecls($textAfterVarDecl, $context)
+        else
+            $textAfterVarDecl
+    )            
+};
+
+(:~
+ : Parses a single variable declaration.
+ :)
+declare function f:parseVarDecl($text as xs:string, $context as map(*))
+        as item()+ {
+    let $DEBUG := f:trace($text, 'parse.var_decl', 'INTEXT_VAR_DECL: ')
+    
+    let $eqnameEtcText := 
+        replace($text, '^declare\s+variable\s+(\$.+)$', '$1', 's')[. ne $text] 
+    return
+        if (not($eqnameEtcText)) then $text else
+       
+    let $eqnameEtc := f:parseVarName($eqnameEtcText, $context)
+    let $eqname := $eqnameEtc[. instance of node()]
+    let $textAfterEqname := f:extractTextAfter($eqnameEtc)
+    
+    (: normalization - if no sequence type specified, add 'item()*' :)
+    let $useTextAfterEqname :=
+        if (matches($textAfterEqname, '^as\s', 's')) then $textAfterEqname
+        else concat('as item()* ', $textAfterEqname)
+    let $seqTypeEtc := f:parseParamSequenceType($useTextAfterEqname, $context)
+    let $seqType := $seqTypeEtc[. instance of node()]
+    let $textAfterSeqType := f:extractTextAfter($seqTypeEtc)
+    return    
+        (: not external :)
+        if (starts-with($textAfterSeqType, ':=')) then
+            let $textAfterOperator := f:skipOperator($textAfterSeqType, ':=')
+            let $valueEtc := f:parseSeqExpr($textAfterOperator, $context)
+            let $value := $valueEtc[. instance of node()]
+            let $textAfterValue := f:extractTextAfter($valueEtc)
+            return
+                if (not($value)) then 
+                    f:createFoxpathError('SYNTAX_ERROR',
+                        concat('Syntax error - variable declaration contains ',
+                            'invalid value expression; var name: ', $eqname/@localName))                
+                else if (not(starts-with($textAfterValue, ';'))) then
+                    f:createFoxpathError('SYNTAX_ERROR',
+                        concat('Syntax error - variable declaration must be followed ',
+                            'by semicolon; var name: ', $eqname/@localName))
+                else
+                    let $textAfterVarDecl := f:skipOperator($textAfterValue, ';')
+                    return (
+                        <varDecl external="false">{
+                            $eqname/(@* except @text),
+                            $seqType,
+                            $value
+                        }</varDecl>,
+                        $textAfterVarDecl
+                    )
+                        
+        (: external :)                        
+        else if (starts-with($textAfterSeqType, 'external')) then
+            let $textAfterExternal := f:skipOperator($textAfterSeqType, 'external')
+            return
+                (: with default value :)            
+                if (starts-with($textAfterExternal, ':=')) then
+                    let $textAfterOperator := f:skipOperator($textAfterExternal, ':=')
+                    let $valueEtc := f:parseSeqExpr($textAfterOperator, $context)
+                    let $value := $valueEtc[. instance of node()]
+                    let $textAfterValue := f:extractTextAfter($valueEtc)
+                    return
+                        if (not($value)) then
+                            f:createFoxpathError('SYNTAX_ERROR',
+                                concat('Syntax error - external variable declaration ',
+                                    'contains invalid default value expression; ',
+                                    'var name: ', $eqname/@localName))               
+                        else if (not(starts-with($textAfterValue, ';'))) then
+                            f:createFoxpathError('SYNTAX_ERROR',                        
+                                concat('Syntax error - external variable declaration must ',
+                                    'be followed by semicolon; var name: ', $eqname/@localName))               
+                        else
+                            let $textAfterVarDecl := f:skipOperator($textAfterValue, ';')
+                            return (
+                                <varDecl external="true">{
+                                    $eqname/(@* except @text),
+                                    $seqType,
+                                    $value
+                                }</varDecl>,
+                                $textAfterVarDecl
+                            )
+                                
+                else if (not(starts-with($textAfterExternal, ';'))) then
+                    f:createFoxpathError('SYNTAX_ERROR',                
+                        concat('Syntax error - external variable declaration must be followed ',
+                            'by semicolon; var name: ', $eqname/@localName))
+                (: without default value :)                        
+                else
+                    let $textAfterVarDecl := f:skipOperator($textAfterExternal, ';')
+                    return (
+                        <varDecl external="true">{
+                            $eqname/(@* except @text),
+                            $seqType
+                        }</varDecl>,
+                        $textAfterVarDecl
+                    )
+        else
+            f:createFoxpathError('SYNTAX_ERROR',                
+                concat('Syntax error - in a variable declaration, name and optional ',
+                    'sequence type must be followed either by ":=" or by "external"; ',
+                    'var name: ', $eqname/@localName))
+        
+};
+
+(:
+declare function f:parseParamListRC($text as xs:string, $context as map(*))
+        as item()+ {
+    let $DEBUG := f:trace($text, 'parse.text.param_list_rc', 'INTEXT_PARAM_LIST_RC: ') return
+    
+    let $eqnameEtc := f:parseVarName($text, $context)
+    let $eqname := $eqnameEtc[. instance of node()]
+    let $textAfter := f:extractTextAfter($eqnameEtc) 
+
+    (: normalization - if no sequence type specified, add 'item()*' :)
+    let $useTextAfter :=
+        if (matches($textAfter, '^as\s')) then $textAfter
+        else concat('as item()* ', $textAfter)
+    let $paramSeqTypeEtc := f:parseParamSequenceType($useTextAfter, $context)
+    let $paramSeqType := $paramSeqTypeEtc[. instance of node()]
+    let $textAfter := f:extractTextAfter($paramSeqTypeEtc)
+    
+    let $paramTree :=
+        <param>{
+            $eqname/(@* except @text),
+            $paramSeqType
+        }</param>
+    
+    return (
+        $paramTree,
+        if (starts-with($textAfter, ',')) then
+            let $textAfterSep := f:skipOperator($textAfter, ',')
+            return 
+                f:parseParamListRC($textAfterSep, $context)
+        else if (starts-with($textAfter, ')')) then
+            let $textAfterParams := f:skipOperator($textAfter, ')')
+            return 
+                $textAfterParams
+        else
+            f:createFoxpathError('SYNTAX_ERROR', 
+                concat('Param list of function item with unbalanced parentheses: ', $text))
+        )                    
+};
+:)
 (: 
  : ===============================================================================
  :
@@ -2113,7 +2481,7 @@ declare function f:parseParamSequenceType($text as xs:string, $context as map(*)
  :)
 declare function f:parseStringLiteral($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_STRING_LITERAL: ') return 
+    let $DEBUG := f:trace($text, 'parse.text.string', 'INTEXT_STRING_LITERAL: ') return 
     let $char1 := substring($text, 1, 1)
     let $text2 := substring($text, 2)    
     let $literalString :=
