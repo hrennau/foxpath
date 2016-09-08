@@ -167,6 +167,29 @@ declare function f:finalizeParseTree_namespacesRC($n as node(), $prolog as eleme
                     for $c in $n/node() return 
                         f:finalizeParseTree_namespacesRC($c, $prolog)
                 }                        
+    case element(var) | element(param) return
+        let $namespace :=
+            if ($n/@namespace) then ()
+            else if ($n/@prefix) then
+                let $prefix := $n/@prefix
+                let $uri := $prolog/nsDecls/namespace[@prefix eq $prefix]/@uri
+                return
+                    if (not($uri)) then
+                        f:createFoxpathError('SYNTAX_ERROR',
+                            concat('Prefix not bound to a namespace URI: ', $prefix))
+                    else
+                        attribute namespace {$uri}
+            else ()
+        return
+            if ($namespace/self::error) then $namespace
+            else
+                element {node-name($n)} {
+                    for $a in $n/@* return 
+                        f:finalizeParseTree_namespacesRC($a, $prolog),
+                    $namespace,
+                    for $c in $n/node() return 
+                        f:finalizeParseTree_namespacesRC($c, $prolog)
+                }                        
     case element() return
         element {node-name($n)} {
             for $a in $n/@* return f:finalizeParseTree_namespacesRC($a, $prolog),
@@ -433,45 +456,6 @@ declare function f:parseVarDecl($text as xs:string, $context as map(*))
         
 };
 
-(:
-declare function f:parseParamListRC($text as xs:string, $context as map(*))
-        as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text.param_list_rc', 'INTEXT_PARAM_LIST_RC: ') return
-    
-    let $eqnameEtc := f:parseVarName($text, $context)
-    let $eqname := $eqnameEtc[. instance of node()]
-    let $textAfter := f:extractTextAfter($eqnameEtc) 
-
-    (: normalization - if no sequence type specified, add 'item()*' :)
-    let $useTextAfter :=
-        if (matches($textAfter, '^as\s')) then $textAfter
-        else concat('as item()* ', $textAfter)
-    let $paramSeqTypeEtc := f:parseParamSequenceType($useTextAfter, $context)
-    let $paramSeqType := $paramSeqTypeEtc[. instance of node()]
-    let $textAfter := f:extractTextAfter($paramSeqTypeEtc)
-    
-    let $paramTree :=
-        <param>{
-            $eqname/(@* except @text),
-            $paramSeqType
-        }</param>
-    
-    return (
-        $paramTree,
-        if (starts-with($textAfter, ',')) then
-            let $textAfterSep := f:skipOperator($textAfter, ',')
-            return 
-                f:parseParamListRC($textAfterSep, $context)
-        else if (starts-with($textAfter, ')')) then
-            let $textAfterParams := f:skipOperator($textAfter, ')')
-            return 
-                $textAfterParams
-        else
-            f:createFoxpathError('SYNTAX_ERROR', 
-                concat('Param list of function item with unbalanced parentheses: ', $text))
-        )                    
-};
-:)
 (: 
  : ===============================================================================
  :
@@ -589,13 +573,13 @@ declare function f:parseExprSingle($text as xs:string, $context as map(*))
  : a return clause. Note that whereas XPath allows only a single for or let
  : clause, foxpath allows multiple for and/or let clauses, as XQuery does.
  :
- : @param test the text to be parsed
+ : @param text the text to be parsed
  : @param context the parsing context
  : @return the parsed FLWOR expression followed by the remaining unparsed text
  :)
 declare function f:parseForLetExpr($text as xs:string, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_FOR_LET_EXPR: ') return
+    let $DEBUG := f:trace($text, 'parse.for_let_expr', 'INTEXT_FOR_LET_EXPR: ') return
     if (not(matches($text, '^(for|let)\s+\$'))) then () else
     
     let $clauseKind := replace($text, '^(for|let).*', '$1', 's')
@@ -635,48 +619,40 @@ declare function f:parseForLetExpr($text as xs:string, $context as map(*))
  :
  : @param text a text consisting of the variable bindings, followed by further text
  : @param clauseKind either "for" or "let"
- : @return expression tree representing the var in clauses,
+ : @return expression tree representing the variable binding clauses,
  :    followed by the remaining unparsed text
  :)
 declare function f:parseVarBindings($text as xs:string, $clauseKind as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.var.bindings.text', 'INTEXT_VAR_BINDINGS: ') return
+    let $DEBUG := f:trace($text, 'parse.var_bindings', 'INTEXT_VAR_BINDINGS: ') return
     let $op := if ($clauseKind eq 'for') then 'in' else ':='
     
     let $varNameEtc := f:parseVarName($text, $context)
     let $varName := $varNameEtc[. instance of node()]
-    let $textAfter := f:extractTextAfter($varNameEtc)    
-    let $exprEtcText := f:skipOperator($textAfter, $op)
+    let $textAfterVarName := f:extractTextAfter($varNameEtc)    
+    let $exprEtcText := f:skipOperator($textAfterVarName, $op)
     let $exprEtc := f:parseExprSingle($exprEtcText, $context)    
     let $expr := $exprEtc[. instance of node()]
-    let $textAfterClause := f:extractTextAfter($exprEtc)
+    let $textAfterExpr := f:extractTextAfter($exprEtc)
     let $clause :=
         element {$clauseKind}{
-            <var>{$varName/(@localName, @namespace)}</var>,
+            <var>{$varName/(@localName, @prefix, @namespace)}</var>,
             $expr
         }
     return (
         $clause,
-        if (starts-with($textAfterClause, ',')) then
-            let $textRemainingClauses := f:skipOperator($textAfterClause, ',')
+        if (starts-with($textAfterExpr, ',')) then
+            let $textRemainingClauses := f:skipOperator($textAfterExpr, ',')
             return
                 f:parseVarBindings($textRemainingClauses, $clauseKind, $context)
 
-        else if (matches($textAfterClause, '^(for|let)\s+\$')) then    
-            let $clauseKind := replace($textAfterClause, '^(for|let).*', '$1', 's')    
-            let $textVarBindingsEtc := replace($textAfterClause, concat('^', $clauseKind, '\s+'), '')
+        else if (matches($textAfterExpr, '^(for|let)\s+\$')) then    
+            let $clauseKind := replace($textAfterExpr, '^(for|let).*', '$1', 's')    
+            let $textVarBindingsEtc := replace($textAfterExpr, concat('^', $clauseKind, '\s+'), '')
             return
                 f:parseVarBindings($textVarBindingsEtc, $clauseKind, $context)
         else 
-            $textAfterClause
-
-(:
-        if (not(starts-with($textAfterClause, ','))) then $textAfterClause
-        else
-            let $textRemainingClauses := f:skipOperator($textAfterClause, ',')
-            return
-                f:parseVarBindings($textRemainingClauses, $clauseKind, $context)
-:)                
+            $textAfterExpr
     )
 };
 
@@ -1165,7 +1141,7 @@ declare function f:parseMultiplicativeExprRC($text as xs:string, $leftOperand as
  :)
 declare function f:parseUnionExpr($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_UNION: ')        
+    let $DEBUG := f:trace($text, 'parse.union', 'INTEXT_UNION: ')        
     let $unionOperandsEtc := f:parseUnionExprRC($text, $context)
     let $unionOperands := $unionOperandsEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($unionOperandsEtc)    
@@ -1185,7 +1161,7 @@ declare function f:parseUnionExpr($text as xs:string, $context as map(*))
  :)
 declare function f:parseUnionExprRC($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_UNION_RC: ')        
+    let $DEBUG := f:trace($text, 'parse.union_rc', 'INTEXT_UNION_RC: ')        
     let $intersectExceptExprEtc := f:parseIntersectExceptExpr($text, $context)
     let $intersectExceptExpr := $intersectExceptExprEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($intersectExceptExprEtc)    
@@ -1257,10 +1233,160 @@ declare function f:parseIntersectExceptExprRC($text as xs:string, $leftOperand a
 };
 
 (:~
+ : Parses an arrow expression.
+ :
+ : Syntax:
+ :     ArrowExpr ::= UnaryExpr ( "=>" ArrowFunctionSpecifier ArgumentList )*
+ :     ArrowFunctionSpecifier ::= EQName | VarRef | ParenthesizedExpr
+ :
+ : @param text the text to be parsed
+ : @return a structured representation of the arrow expression,
+ :    followed by the remaining unparsed text
+ :) 
+declare function f:parseArrowExpr($text as xs:string, $context as map(*))
+        as item()+ {
+    let $DEBUG := f:trace($text, 'parse.arrow', 'INTEXT_ARROW: ')
+    let $unaryExprEtc := f:parseUnaryExpr($text, $context)
+    let $unaryExpr := $unaryExprEtc[. instance of node()]
+    let $textAfterUnary := f:extractTextAfter($unaryExprEtc)   
+    return
+        if (not(starts-with($textAfterUnary, '=>'))) then
+            ($unaryExpr, $textAfterUnary)
+        else            
+            let $clausesEtc := f:parseArrowExprClauses($textAfterUnary, $context)
+            let $clauses := $clausesEtc[. instance of node()]
+            let $textAfterClauses := f:extractTextAfter($clauses)
+            let $exprTree := f:foldArrowExpr($unaryExpr, $clauses)
+            return (
+                $exprTree,
+                $textAfterClauses
+            )
+(:                
+                f:createFoxpathError('NOT_YET_IMPLEMENTED',
+                    'Not yet implemented: => operator')
+:)                    
+};
+
+(:~
+ : Folds an arrow expr into a function call with the first argument being provided
+ : by the left-hand side expression. The expression providing the function call is
+ : the first child of the clause, and further arguments are the children of the
+ : `argumentList` child of the clause.
+ : 
+ : Example:
+ :)
+declare function f:foldArrowExpr($lhsExpr as element(), $clauses as element()*)
+        as element() {
+    let $head := head($clauses)
+    let $tail := tail($clauses)
+    let $headFolded :=
+        if ($head/@kind eq 'EQName') then
+            <functionCall name="{$head/name/@localName}">{
+                $head/(@localName, @prefix, @uri),
+                $lhsExpr,
+                $head/argumentList/*
+            }</functionCall>
+        else
+            <dynFuncCall>{
+                $head/*[1],
+                $lhsExpr,
+                $head/argumentList/*
+            }</dynFuncCall>
+     return
+        if ($tail) then f:foldArrowExpr($headFolded, $tail)
+        else $headFolded            
+};        
+
+(:~
+ : Parses the righthand-side clauses of an arraw expression.
+ :
+ : Syntax:
+ :     ArrowClauses ::= ( "=>" ArrowFunctionSpecifier ArgumentList )*
+ :     ArrowFunctionSpecifier ::= EQName | VarRef | ParenthesizedExpr
+ :
+ : @param text the text to be parsed
+ : @return a structured representation of the arrow expression,
+ :    followed by the remaining unparsed text
+ :) 
+declare function f:parseArrowExprClauses($text as xs:string, $context as map(*))
+        as item()+ {
+    let $DEBUG := f:trace($text, 'parse.arrow_clauses', 'INTEXT_ARROW_CLAUSES: ')
+    return if (not(starts-with($text, '=>'))) then $text else
+        
+    let $textAfterArrow := f:skipOperator($text, '=>')
+    let $clause :=
+        let $nameEtc := f:parseEQName($textAfterArrow, $context)
+        let $name := $nameEtc[. instance of node()]
+        return
+            if (not($name)) then () else
+                let $textAfterName := f:extractTextAfter($nameEtc)
+                return
+                    if (not(starts-with($textAfterName, '('))) then () else
+                        let $argumentListEtc := f:parseArgumentList($textAfterName, $context)
+                        let $argumentList := $argumentListEtc[. instance of node()]
+                        let $textAfterArgumentList := f:extractTextAfter($argumentListEtc)
+                        return (
+                            <arrayClause kind="EQName">{
+                                $name,                                
+                                <argumentList>{$argumentList}</argumentList>
+                            }</arrayClause>,
+                            $textAfterArgumentList
+                        )
+    let $clause := if ($clause) then $clause else  
+        let $varRefEtc := f:parseVariableRef($textAfterArrow, $context)        
+        let $varRef := $varRefEtc[. instance of node()]
+        return
+            if (not($varRef)) then () else
+                let $textAfterVarRef := f:extractTextAfter($varRefEtc)
+                return
+                    if (not(starts-with($textAfterVarRef, '('))) then () else
+                        let $argumentListEtc := f:parseArgumentList($textAfterVarRef, $context)
+                        let $argumentList := $argumentListEtc[. instance of node()]
+                        let $textAfterArgumentList := f:extractTextAfter($argumentListEtc)
+                        return ( 
+                            <arrayClause kind="varRef">{
+                                $varRef,                                
+                                <argumentList>{$argumentList}</argumentList>
+                            }</arrayClause>,
+                            $textAfterArgumentList
+                            )
+    let $clause := if ($clause) then $clause else
+        let $parenthEtc := f:parseParenthesizedExpr($textAfterArrow, $context)        
+        let $parenth := $parenthEtc[. instance of node()]
+        return
+            if (not($parenth)) then () else
+                let $textAfterParenth := f:extractTextAfter($parenthEtc)
+                return
+                    if (not(starts-with($textAfterParenth, '('))) then () else
+                        let $argumentListEtc := f:parseArgumentList($textAfterParenth, $context)
+                        let $argumentList := $argumentListEtc[. instance of node()]
+                        let $textAfterArgumentList := f:extractTextAfter($argumentListEtc)
+                        return ( 
+                            <arrayClause kind="parenthesizedExpr">{
+                                $parenth,                                
+                                <argumentList>{$argumentList}</argumentList>
+                            }</arrayClause>,
+                            $textAfterArgumentList
+                        )                            
+    return
+        if (not($clause)) then $text
+        else (
+            $clause,
+            
+            let $textAfterClause := f:extractTextAfter($clause)
+            return
+                if (starts-with($textAfterClause, '=>')) then
+                    f:parseArrowExprClauses($textAfterClause, $context)
+                else
+                    ()
+        )                    
+};
+
+(:~
  : Parses a unary expression.
  :
  : Syntax:
- :     Unary ::= ("-" | "+") * PathExpr
+ :     Unary ::= ("-" | "+")* PathExpr
  :
  : @param text the text to be parsed
  : @return a structured representation of the unary expression,
@@ -1268,7 +1394,7 @@ declare function f:parseIntersectExceptExprRC($text as xs:string, $leftOperand a
  :) 
 declare function f:parseUnaryExpr($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_UNARY: ')    
+    let $DEBUG := f:trace($text, 'parse.unary', 'INTEXT_UNARY: ')    
     let $signChars := replace($text, '^([\-+\s]+).*', '$1', 's')[. ne $text]
     return
         if (not($signChars)) then f:parseMapExpr($text, $context)
@@ -1279,10 +1405,10 @@ declare function f:parseUnaryExpr($text as xs:string, $context as map(*))
             let $textMapExprEtc := substring($text, 1 + string-length($signChars))
             let $mapExprEtc := f:parseMapExpr($textMapExprEtc, $context)
             let $mapExpr := $mapExprEtc[. instance of node()]
-            let $textAfter := f:extractTextAfter($mapExprEtc)
+            let $textAfterMap := f:extractTextAfter($mapExprEtc)
             return (
                 <unary op="{$sign}">{$mapExpr}</unary>,
-                $textAfter
+                $textAfterMap
             )
 };
 
@@ -2119,7 +2245,7 @@ declare function f:parseVariableRef($text as xs:string, $context as map(*))
             f:createFoxpathError('SYNTAX_ERROR', 
                 concat('Invalid variable reference: ', $text))
         else (
-            <var>{$name/(@localName, @namespace)}</var>,
+            <var>{$name/(@localName, @prefix, @namespace)}</var>,
             $textAfter
         )
 };
@@ -2646,7 +2772,7 @@ declare function f:parseCastableExpr($text as xs:string, $context as map(*))
  : Parses a cast expression.
  :
  : Syntax:
- :     CastExpr ::= UnaryExpr ( "cast" "as" SequenceType)? 
+ :     CastExpr ::= ArrowExpr ( "cast" "as" SingleType)? 
  :
  : @param text a text consisting of the expression text, possibly
  :    followed by further text
@@ -2655,23 +2781,23 @@ declare function f:parseCastableExpr($text as xs:string, $context as map(*))
  :)
 declare function f:parseCastExpr($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_CAST: ')        
-    let $unaryExprEtc := f:parseUnaryExpr($text, $context)
-    let $unaryExpr := $unaryExprEtc[. instance of node()]
-    let $textAfter := f:extractTextAfter($unaryExprEtc)    
+    let $DEBUG := f:trace($text, 'parse.cast', 'INTEXT_CAST: ')        
+    let $arrowExprEtc := f:parseArrowExpr($text, $context)
+    let $arrowExpr := $arrowExprEtc[. instance of node()]
+    let $textAfterArrow := f:extractTextAfter($arrowExprEtc)    
     return 
-        if (matches($textAfter, '^cast\s+as\s+')) then
-            let $textAfterOperator := replace($textAfter, '^cast\s+as\s+(.*)', '$1')
+        if (matches($textAfterArrow, '^cast\s+as\s+')) then
+            let $textAfterOperator := replace($textAfterArrow, '^cast\s+as\s+(.*)', '$1')
             let $singleTypeEtc := f:parseSingleType($textAfterOperator, $context)
             let $singleType := $singleTypeEtc[. instance of node()]
-            let $textAfter := f:extractTextAfter($singleTypeEtc)
+            let $textAfterSingleType := f:extractTextAfter($singleTypeEtc)
             return (
-                <cast>{$unaryExpr, $singleType}</cast>,
-                $textAfter
+                <cast>{$arrowExpr, $singleType}</cast>,
+                $textAfterSingleType
             )
         else (
-            $unaryExpr, 
-            $textAfter
+            $arrowExpr, 
+            $textAfterArrow
         )
 };
 
@@ -3073,6 +3199,8 @@ declare function f:parseSchemaElementOrAttributeTest($text as xs:string, $contex
  :)
 declare function f:parseVarName($text as xs:string, $context as map(*))
         as item()* {
+    let $DEBUG := f:trace($text, 'parse.var_name', 'INTEXT_VAR_NAME: ') return
+    
     if (not(starts-with($text, '$'))) then 
         $text 
     else 
@@ -3166,9 +3294,15 @@ declare function f:parseNametest($text as xs:string, $context as map(*))
  : Parses an EQName. The structured representation is a "name" element with 
  : attributes providing the name components:
  : @localName - provides the local name
- : @uri - provides the namespace URI (optional)
+ : @namespace - provides the namespace URI (optional)
  : @prefix - provides the prefix (optional)
  : @text - provides the original name text
+ : 
+ : Note. The resolving of a prefix is postponed to a step finalizing
+ :    the parsing; in case of a prefixed name, here only the prefix is
+ :    recorded.
+ : Note. If the text does not begin with an EQName, the text is returned
+ : as-is.
  :
  : @param text a text consisting of the name text, possibly followed by 
  :     further text
@@ -3178,7 +3312,7 @@ declare function f:parseNametest($text as xs:string, $context as map(*))
  :)
 declare function f:parseEQName($text as xs:string, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.text.eqname', 'INTEXT_EQNAME: ') return
+    let $DEBUG := f:trace($text, 'parse.eqname', 'INTEXT_EQNAME: ') return
 
     let $nameRegex := '^(\i[\c-[:]]*(:\i[\c-[:]]*)?).*'
     let $s := $text || '###'

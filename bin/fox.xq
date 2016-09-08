@@ -2,6 +2,7 @@ import module namespace f="http://www.ttools.org/xquery-functions" at "foxpath.x
 declare namespace soap="http://schemas.xmlsoap.org/soap/envelope/";
 
 declare variable $foxpath external;
+declare variable $vars as xs:string? external := ();
 declare variable $isFile as xs:boolean? external := false;
 declare variable $mode as xs:string? external := 'eval';   (: eval | parse :)
 declare variable $sep as xs:string? external := '/';       (: / | \ :)
@@ -17,6 +18,17 @@ let $options := map:merge((
     )
 ))
 
+let $externalVariables :=
+    if (not($vars)) then ()
+    else
+        map:merge(
+            for $item in tokenize($vars, '#######')[string()]
+            let $name := replace($item, '^\s*(.*?)\s*=.*', '$1')
+            let $value := replace($item, '^.+?=\s*(.*?)\s*$', '$1')
+            let $value := xs:untypedAtomic($value)
+            return map:entry(QName((), $name), $value)
+        )
+        
 let $foxpathExpr :=
     if (not($isFile)) then $foxpath
     else 
@@ -47,4 +59,4 @@ return
     if ($foxpathExpr instance of element(error)) then string($foxpathExpr)
     else
         if ($mode eq 'parse') then f:parseFoxpath($foxpathExpr, $options)
-        else f:resolveFoxpath($foxpathExpr, $options)
+        else f:resolveFoxpath($foxpathExpr, $options, $externalVariables)

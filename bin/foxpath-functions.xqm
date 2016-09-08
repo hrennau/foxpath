@@ -1,6 +1,7 @@
 module namespace f="http://www.ttools.org/xquery-functions";
 import module namespace i="http://www.ttools.org/xquery-functions" at 
     "foxpath-processorDependent.xqm",
+    "foxpath-fox-functions.xqm",
     "foxpath-resourceTreeTypeDependent.xqm",
     "foxpath-util.xqm";
     
@@ -34,7 +35,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return
                     ($explicit, $context)[1]
             return
-                replace($arg, '/', '\\')
+                f:foxfunc_bslash($arg)
                 
         (: function `file-contains` 
            ======================= :)
@@ -104,17 +105,23 @@ declare function f:resolveStaticFunctionCall($call as element(),
        (: function `file-lines` 
           ===================== :)
         else if ($fname = 'file-lines') then
-            let $pattern := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $line1 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $line2 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)            
+            let $pattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            
             let $uri := 
-                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
                 return
                     ($explicit, $context)[1]
             let $regex :=
                 if (not($pattern)) then ()
                 else concat('^.*', replace(replace($pattern, '\*', '.*'), '\?', '.'), '.*$')
+                
+            let $lines := try{unparsed-text-lines($uri)} catch * {()}
             let $lines := 
-                try {unparsed-text-lines($uri)[empty($regex) or matches(., $regex, 'i')]}
-                catch * {()}
+                if (not($line1) and not($line2)) then $lines else
+                    $lines[(empty($line1) or position() ge $line1) and (not($line2) or position() le $line2)]                 
+            let $lines := if (empty($regex)) then $lines else $lines[matches(., $regex, 'i')]
             return
                 $lines 
 
@@ -336,8 +343,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `xwrap` 
            ==================== :)
         else if ($fname eq 'xwrap') then
-            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $val := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $val := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)        
+            let $name := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
             
             let $name := normalize-space($name)
             let $lname :=
@@ -619,6 +626,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (exists($arg3)) then replace($arg1, $arg2, $arg3)
                 else substring($arg1, $arg2)
 
+        (: function `reverse` 
+           ================== :)
+        else if ($fname eq 'reverse') then
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            return
+                reverse($arg)
+
         (: function `root` 
            ===================== :)
         else if ($fname eq 'root') then
@@ -715,6 +729,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (not($arg2)) then tokenize($arg1) 
                 else if (not($arg3)) then tokenize($arg1, $arg2)
                 else tokenize($arg1, $arg2, $arg3)
+
+        (: function `trace` 
+           ================ :)
+        else if ($fname eq 'trace') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
+            return
+                if (not($arg2)) then trace($arg1) 
+                else trace($arg1, $arg2)
 
         (: function `true` 
            =============== :)
@@ -828,3 +851,4 @@ declare function f:fileInfo($content as xs:string?, $uri as xs:string?)
     return
         $line
 };
+      
