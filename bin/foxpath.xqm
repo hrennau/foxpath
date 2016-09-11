@@ -614,7 +614,7 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                 let $ctxtFiles :=
                     if (not($axis eq 'ancestor-or-self')) then $ancestors
                     else (
-                        trace( $ctxt[not($regex) or matches(replace(., '.*/', ''), $regex, 'i')], 'CTXT: '),
+                        $ctxt[not($regex) or matches(replace(., '.*/', ''), $regex, 'i')],
                         $ancestors
                     )
                 return                    

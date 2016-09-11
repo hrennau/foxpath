@@ -88,8 +88,10 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
                 return
                     ($explicit, $context)[1]
+            let $fileName := replace($uri, '.*/', '')
+            let $ext := replace($fileName, '.*(\..*)', '$1')
             return
-                replace(replace($uri, '.*/', ''), '.*\.', '')
+                $ext
             
         (: function `file-info` 
            ==================== :)
@@ -604,6 +606,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 month-from-date($arg)
                 
+        (: function `node-name` 
+           ==================== :)
+        else if ($fname eq 'node-name') then
+            let $arg := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                return ($explicit, $context)[1]
+            return
+                node-name($arg)
+            
         (: function `not` 
            ============== :)
         else if ($fname eq 'not') then
@@ -616,6 +627,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname eq 'position') then
             $position
             
+        (: function `QName` 
+           ================ :)
+        else if ($fname eq 'QName') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)           
+            return
+                QName($arg1, $arg2)
+
         (: function `replace` 
            ==================== :)
         else if ($fname eq 'replace') then

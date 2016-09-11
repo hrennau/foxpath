@@ -3504,7 +3504,7 @@ declare function f:parseItem_abbreviatedFoxnameTest($text as xs:string, $FOXSTEP
 
     (: 
        The name test is terminated by any of the following characters (unless escaped): 
-       FOXSTEP_ESCAPE [] \/ <> () =!|,
+       FOXSTEP_ESCAPE [] \/ <> () =!|,;
        Any of these characters occurring within the name pattern must be escaped
        by a preceding escape character.
        
@@ -3529,10 +3529,10 @@ declare function f:parseItem_abbreviatedFoxnameTest($text as xs:string, $FOXSTEP
             replace($text,
                 concat(
                 '^(',
-                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \d . ] |',
-                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \d . ] )',
-                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \s ] |',
-                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \s ] )*', 
+                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|,; \d . ] |',
+                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|,; \d . ] )',
+                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|,; \s ] |',
+                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|,; \s ] )*', 
                 ' ).*'), '$1', 'sx')
                 
         return (
