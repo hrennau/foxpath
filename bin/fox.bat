@@ -15,6 +15,7 @@ set HERE=%XERE:\=/%
 set PARSE=
 set ISFILE=
 set SEP=/
+set VARS=
 
 :NEXTPAR
 set name=%~1
@@ -22,7 +23,6 @@ set char1=%name:~0,1%
 if "%char1%" neq "-" goto :ENDPAR
 shift
 set value=%~1
-
 if "%value%"=="" goto :ENDPAR
 
 if "%name%"=="-p" (
@@ -31,6 +31,9 @@ if "%name%"=="-p" (
    set ISFILE=Y
  ) else if "%name%"=="-b" (
    set SEP=\   
+ ) else if "%name%"=="-v" (
+   set VARS=!VARS!#######!VALUE!   
+   shift
 ) else (
    echo Unknown option: %name%
    echo Supported options: 
@@ -41,9 +44,10 @@ if "%name%"=="-p" (
 goto :NEXTPAR
 :ENDPAR 
 set FOXPATH=%~1
+rem echo VARS=%VARS%
 
 if "%FOXPATH%"=="?" (
-    echo Usage: fox [-f] [-p] [-b] foxpath
+    echo Usage: fox [-f] [-p] [-b] [-v name=value]* foxpath
     echo foxpath : a foxpath expression, or a file containing a foxpath expression
     echo.
     echo -f      : the foxpath parameter is not a foxpath expression, but the path or URI of 
@@ -70,10 +74,12 @@ if "%FOXPATH%"=="?" (
     echo -b      : within the foxpath expression path and foxpath operator are swapped;
     echo           using the option: path operator = / , foxpath operator = \
     echo           without option:   path operator = \ , foxpath operator = /
+    echo -v "name=value" 
+    echo         : name and value of an external variable
     exit /b
 )
 if "%PARSE%"=="Y" (set MODE=parse) else (set MODE=eval)
 if "%ISFILE%"=="Y" (set ISFILE=true) else (set ISFILE=false)
-set CMD=basex -b isFile=%ISFILE% -b mode=%MODE% -b sep=%SEP% -b "foxpath=%FOXPATH%" %HERE%/fox.xq
+set CMD=basex -b isFile=%ISFILE% -b mode=%MODE% -b sep=%SEP% -b "foxpath=%FOXPATH%" -b "vars=%VARS%" %HERE%/fox.xq
 rem echo %CMD%
 %CMD%
