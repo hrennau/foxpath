@@ -17,7 +17,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
                                        $context as item()?, 
                                        $position as xs:integer?, 
                                        $last as xs:integer?,
-                                       $vars as map(*)?)                                       
+                                       $vars as map(*)?,
+                                       $options as map(*)?)
         as item()* {
     let $fname := $call/@name
     return    
@@ -31,29 +32,45 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ================= :)
         if ($fname eq 'back-slash' or $fname eq 'bslash') then
             let $arg := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return
                     ($explicit, $context)[1]
             return
                 f:foxfunc_bslash($arg)
-                
+
+        (: function `dcat` 
+           =============== :)
+        else if ($fname eq 'dcat') then
+            let $items := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $onlyDocAvailable := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $refs :=
+                for $item in $items
+                return
+                    if ($onlyDocAvailable and not(i:fox-doc-available($item, $options))) then () 
+                    else <doc href="{$item}"/>
+            return
+                <dcat targetFormat="xml" 
+                      t="{current-dateTime()}" 
+                      count="{count($refs)}"
+                      onlyDocAvailable="{boolean($onlyDocAvailable)}">{$refs}</dcat>
+                            
         (: function `file-contains` 
            ======================= :)
         else if ($fname eq 'file-contains') then
             let $pattern :=
                 if ($call/*[2]) then
                     $call/*[2]
-                    /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                    /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 else if ($call/*) then
                     $call/*[1]
-                    /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                    /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 else 
                     error(QName((), 'INVALID_CALL'), 
                         'Function "file-contains" requires at least one parameter.')
             let $uri :=
                 if ($call/*[2]) then
                     $call/*[1]
-                    /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                    /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 else $context
             let $text :=
                 try {unparsed-text($uri)} catch * {()}
@@ -66,26 +83,35 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `file-content` 
            ======================= :)
         else if ($fname eq 'file-content') then
-            let $uri := ($call/*[99], $context)[1]
-            let $text := try {unparsed-text($uri)} catch * {()}
+            let $uri := ($call/*[1], $context)[1]
             return
-                $text
+                f:foxfunc_file-content($uri, $options)
             
         (: function `file-date` 
            ==================== :)
         else if ($fname eq 'file-date' or $fname eq 'fdate') then
             let $arg := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return
                     ($explicit, $context)[1]
             return
                 f:fileDate($arg)
             
+        (: function `file-sdate` 
+           ===================== :)
+        else if ($fname eq 'file-sdate' or $fname eq 'fsdate') then
+            let $arg := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return
+                    ($explicit, $context)[1]
+            return
+                f:fileSdate($arg)
+            
         (: function `file-ext` 
            ================== :)
         else if ($fname eq 'file-ext') then
             let $uri := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
                 return
                     ($explicit, $context)[1]
             let $fileName := replace($uri, '.*/', '')
@@ -96,23 +122,23 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `file-info` 
            ==================== :)
         else if ($fname eq 'file-info') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)        
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             let $arg2 := 
-                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return
                     ($explicit, $context)[1]                   
             return
-                f:fileInfo($arg1, $arg2)
+                f:fileInfo($arg1, $arg2, $options)
 
        (: function `file-lines` 
           ===================== :)
         else if ($fname = 'file-lines') then
-            let $line1 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $line2 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)            
-            let $pattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $line1 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $line2 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $pattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             
             let $uri := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
                 return
                     ($explicit, $context)[1]
             let $regex :=
@@ -130,7 +156,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `file-name` 
            ==================== :)
         else if ($fname eq 'file-name' or $fname eq 'fname') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $arg := if (empty($arg)) then $context else $arg
             return
                 replace($arg[1], '.*/', '')
@@ -139,7 +165,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
            =================== :)
         else if ($fname eq 'file-size' or $fname eq 'size') then
             let $uri := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return
                     ($explicit, $context)[1]
             return
@@ -148,17 +174,22 @@ declare function f:resolveStaticFunctionCall($call as element(),
        (: function `grep` 
           =============== :)
         else if ($fname eq 'grep') then
-            let $pattern := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $pattern := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $uri := 
-                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
+                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
                 return
                     ($explicit, $context)[1]
             let $regex :=
                 if (not($pattern)) then ()
                 else concat('^.*', replace(replace($pattern, '\*', '.*'), '\?', '.'), '.*$')
             let $lines := 
-                try {unparsed-text-lines($uri)[empty($regex) or matches(., $regex, 'i')]}
-                catch * {()}
+                try {
+                    let $redirectedRetrieval := f:redirectedRetrieval($uri, $options)
+                    return
+                        if ($redirectedRetrieval) then tokenize($redirectedRetrieval, '&#xA;')
+                        else unparsed-text($uri)
+                } catch * {()}
+            let $lines := $lines[empty($regex) or matches(., $regex, 'i')]
             return
                 if (empty($lines)) then () else 
                     string-join((concat('##### ', $uri, ' #####'), $lines, '----------'), '&#xA;')
@@ -167,7 +198,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ================= :)
         else if ($fname eq 'is-dir' or $fname eq 'isDir') then
             let $uri := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return
                     ($explicit, $context)[1]
             return
@@ -177,62 +208,110 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ================== :)
         else if ($fname eq 'is-file' or $fname eq 'isFile') then
             let $uri := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return
                     ($explicit, $context)[1]
             return
-                i:isFile($uri)
+                i:isFile($uri, $options)
             
         (: function `is-xml` 
            ================ :)
         else if ($fname eq 'is-xml' or $fname eq 'isXml') then
             let $uri := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
             return
-                doc-available($uri)
+                i:fox-doc-available($uri, $options)
             
+        (: function `jsoncat` 
+           ================== :)
+        else if ($fname eq 'jsoncat') then
+            let $items := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $onlyDocAvailable := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $refs :=
+                for $item in $items
+                return
+                    if ($onlyDocAvailable and not(try {json:parse(unparsed-text($item))} catch * {()})) 
+                    then () 
+                    else <json href="{$item}"/>
+            return
+                <jsoncat targetFormat="json" t="{current-dateTime()}" count="{count($refs)}">{$refs}</jsoncat>
+                            
        (: function `linefeed` 
            ================== :)
         else if ($fname eq 'linefeed') then
             if (not($call/*)) then '&#xA;'
             else
-                let $count := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                let $count := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return
                     string-join(for $i in 1 to $count return '&#xA;')
         
         (: function `lpad` 
            =============== :)
         else if ($fname eq 'lpad') then
-            let $string := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $width := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
-            let $fillChar := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $string := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $width := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
+            let $fillChar := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $fillChar := ($fillChar, ' ')[1]
             return
                 f:lpad($string, $width, $fillChar)
             
+        (: function `rcat` 
+           =============== :)
+        else if ($fname eq 'rcat') then
+            let $items := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $refs :=
+                for $item in $items
+                return
+                    <resource href="{$item}"/>
+            return
+                <rcat t="{current-dateTime()}" count="{count($refs)}">{$refs}</rcat>
+                            
         (: function `rpad` 
            =============== :)
         else if ($fname eq 'rpad') then
-            let $string := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $width := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
-            let $fillChar := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $string := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $width := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
+            let $fillChar := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $fillChar := ($fillChar, ' ')[1]
             return
                 f:rpad($string, $width, $fillChar)
 
+        (: function `win.delete` 
+           ===================== :)
+        else if ($fname eq 'win.delete') then
+            let $items := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $silent := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $useItems :=
+                for $item in $items return replace($item, '/', '\\')
+            let $deletes :=
+                if ($silent) then $useItems ! concat('del ', .)
+                else
+                    for $item in $useItems
+                    return
+                        concat('echo delete ', $item, '&#xA;del ', $item)
+            return
+                string-join((
+                    '@echo off',
+                    if ($silent) then () else
+                        concat('echo delete ', count($deletes), ' files ...'),
+                    $deletes
+                ), '&#xA;')
+                            
         (: function `xatt` 
            =============== :)
         else if ($fname eq 'has-xatt' or $fname eq 'xatt') then
             let $uri := 
-                let $explicit := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                let $explicit := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return
                     ($explicit, $context)[1]
-            return if (not(doc-available($uri))) then false() else
+            let $doc := i:fox-doc($uri, $options)
+            return
+                if (not($doc)) then () else
             
-            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $val := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $elemName := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)            
+            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $val := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $elemName := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             
             let $name := normalize-space($name)
             let $lname :=
@@ -269,18 +348,23 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     concat('[matches(., "', $val, '", "i")]')[$val]
                 )
                 return
-                    concat($elemSelector, $attSelector)        
-            let $doc := doc($context)                    
+                    concat($elemSelector, $attSelector)                  
             return
                 i:xquery($xpath, map{'':$doc})
 
         (: function `xelem` 
            ================ :)
         else if ($fname eq 'has-xelem' or $fname eq 'xelem') then
-            if (not(doc-available($context))) then false() else
+            let $uri := 
+                let $explicit := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return
+                    ($explicit, $context)[1]
+            let $doc := i:fox-doc($uri, $options)
+            return
+                if (not($doc)) then () else
             
-            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $val := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $val := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             
             let $name := normalize-space($name)
             let $lname :=
@@ -299,21 +383,21 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     concat('[not(*)][matches(., "', $val, '", "i")]')[$val]
                 )
                 return concat('//*', $itemSelector)                       
-            let $doc := doc($context)                    
             return
-                (: boolean(i:xquery($xpath, map{'':$doc})) :)
                 i:xquery($xpath, map{'':$doc})
                 
-        (: function `xroot` 
-           ================ :)
-        else if ($fname eq 'xroot') then
+        (: function `xroot-matches` 
+           ======================== :)
+        else if ($fname = ('xroot-matches', 'xroot')) then
             let $uri := 
-                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return
                     ($explicit, $context)[1]
-            return if (not(doc-available($uri))) then false() else
+            let $doc := i:fox-doc($uri, $options)
+            return
+                if (not($doc)) then false() else
             
-            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)           
+            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)           
             let $name := normalize-space($name)
             let $lname_regex :=
                 if (empty($name)) then () else
@@ -329,25 +413,26 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     concat('[matches(namespace-uri(.), "', $ns_regex, '", "i")]')[$ns_regex] 
                 )
                 return concat('/*', $itemSelector)                       
-            let $doc := doc($uri)                    
             return
                 boolean(i:xquery($xpath, map{'':$doc}))
 
         (: function `xroot-name` 
            ==================== :)
         else if ($fname eq 'xroot-name') then
-            if (not(doc-available($context))) then () else
-            
-            let $doc := try {doc($context)} catch * {()}
+            let $uri := 
+                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return
+                    ($explicit, $context)[1]
             return
-                $doc/*/local-name()
+                i:fox-doc($uri, $options)/*/local-name()
                 
         (: function `xwrap` 
            ==================== :)
         else if ($fname eq 'xwrap') then
-            let $val := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)        
-            let $name := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            
+            let $val := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $name := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $flags := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+
             let $name := normalize-space($name)
             let $lname :=
                 if (empty($name)) then () 
@@ -356,8 +441,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (empty($name) or not(contains($name, ' '))) then () 
                 else substring-after($name, ' ') 
             let $qname := QName($ns, $lname)
+
             return
-                element {$qname} {$val}
+                f:foxfunc_xwrap($val, $qname, $flags)
 
 (: the following two functions are at risk:
     eval-xpath
@@ -366,29 +452,27 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `eval-xpath` 
            ===================== :)
         else if ($fname = ('eval-xpath', 'xpath')) then
-            let $xpath := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)  
+            let $xpath := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)  
             let $xpathContext :=
-                let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($arg2, $context)
             let $xpathContextNode :=
                 if ($xpathContext instance of node()) then $xpathContext
-                else if (exists($xpathContext) and doc-available($xpathContext)) then doc($xpathContext)
+                else if (exists($xpathContext)) then i:fox-doc($xpathContext, $options)
                 else ()
             return
                 i:xquery($xpath, map{'':$xpathContextNode})
 
         (: function `matches-xpath` 
            ======================= :)
-        (: *TODO* Not yet quite sure how to deal with non-node context which cannot be resolved to a document :)
         else if ($fname eq 'matches-xpath') then
-            let $xpath := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $xpath := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $xpathContext :=
-                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
             let $xpathContextNode :=
                 if ($xpathContext instance of node()) then $xpathContext
-                else if (exists($xpathContext) and doc-available($xpathContext)) then 
-                    doc($xpathContext)
+                else if (exists($xpathContext)) then i:fox-doc($xpathContext, $options)
                 else ()
             return
                 boolean(i:xquery($xpath, map{'':$xpathContextNode})[1])
@@ -401,32 +485,32 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `abs` 
            ============== :)
         else if ($fname eq 'abs') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 abs($arg)
                 
         (: function `acos` 
            ============== :)
         else if ($fname eq 'acos') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 math:acos($arg)
                 
         (: function `adjust-dateTime-to-timezone` 
            ====================================== :)
         else if ($fname eq 'adjust-dateTime-to-timezone') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 if (not($call/*[2])) then adjust-dateTime-to-timezone($arg1)
                 else
-                    let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                    let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                     return
                         adjust-dateTime-to-timezone($arg1, $arg2)
                 
         (: function `avg` 
            ============== :)
         else if ($fname eq 'avg') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 avg($arg)
                 
@@ -435,33 +519,33 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname eq 'base-uri') then
             let $contextItem :=
                 if (empty($call/*)) then $context
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $argNode :=
                 if ($contextItem instance of node()) then $contextItem
-                else try {doc($contextItem)} catch * {()}
+                else i:fox-doc($contextItem, $options)
             return
-                base-uri($argNode)
+                $argNode/base-uri(.)
             
         (: function `concat` 
            ================= :)
         else if ($fname eq 'concat') then
             string-join(
                 for $arg in $call/* return 
-                    f:resolveFoxpathRC($arg, false(), $context, $position, $last, $vars)
+                    f:resolveFoxpathRC($arg, false(), $context, $position, $last, $vars, $options)
             , '')
             
         (: function `contains` 
            =================== :)
         else if ($fname eq 'contains') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
             return
                 contains($arg1, $arg2)
             
         (: function `count` 
            ================ :)
         else if ($fname eq 'count') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)        
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             return count($arg)
             
         (: function `current-dateTime` 
@@ -473,7 +557,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
            =============== :)
         else if ($fname eq 'date') then
             let $arg := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
             return
                 xs:date(substring(string(i:fileLastModified($arg)), 1, 10))
@@ -481,29 +565,29 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `dateTime` 
            =================== :)
         else if ($fname eq 'dateTime') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 xs:dateTime($arg)
 
         (: function `day-from-date` 
            ======================== :)
         else if ($fname eq 'day-from-date') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 day-from-date($arg)
                 
         (: function `day-time-duration` 
            ============================ :)
         else if ($fname eq 'dayTimeDuration') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 xs:dayTimeDuration($arg)
 
         (: function `dcat` 
            ============== :)
         else if ($fname eq 'dcat') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $docs := sort($arg [doc-available(.)], lower-case#1) 
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $docs := sort($arg [i:fox-doc-available(., $options)], lower-case#1) 
             return
                 <docs count="{count($docs)}" t="{current-dateTime()}">{
                     $docs ! <doc uri="{.}"/>
@@ -512,47 +596,52 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `distinct-values` 
            ========================== :)
         else if ($fname eq 'distinct-values') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)        
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             return
                 distinct-values($arg)
                 
         (: function `doc` 
            ============== :)
         else if ($fname eq 'doc') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)        
+            let $uri := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                doc($arg)
+                i:fox-doc($uri, $options)
                 
         (: function `document-uri` 
            ======================= :)
         else if ($fname eq 'document-uri') then
             let $arg := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-                return ($explicit, $context)[1] 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
             return
-                document-uri($arg)
+                if ($arg instance of node()) then $arg/root()/document-uri(.)
+                else i:fox-doc($arg, $options)/document-uri(.)
                 
         (: function `doc-available` 
            ======================== :)
         else if ($fname eq 'doc-available') then
-            let $arg := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-                return ($explicit, $context)[1]      
+            let $uri := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            let $redirectedRetrieval := f:redirectedRetrieval($uri, $options)
             return
-                try {doc-available($arg)} catch * {false()}
+                if ($redirectedRetrieval) then 
+                    let $doc := try {parse-xml($redirectedRetrieval)} catch * {()}
+                    return exists($doc)
+                else i:fox-doc-available($uri, $options)
                 
         (: function `empty` 
            ================ :)
         else if ($fname eq 'empty') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)         
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)         
             return
                 empty($arg1)
                 
         (: function `ends-with` 
            ==================== :)
         else if ($fname eq 'ends-with') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
             return
                 ends-with($arg1, $arg2)
                 
@@ -570,7 +659,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ===================== :)
         else if ($fname eq 'local-name') then
             let $arg := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
             return
                 local-name($arg)
@@ -578,9 +667,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `matches` 
            ================== :)
         else if ($fname eq 'matches') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)            
-            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)            
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
                 if (exists($arg3)) then matches($arg1, $arg2, $arg3)
                 else matches($arg1, $arg2)
@@ -588,21 +677,21 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `max` 
            ============== :)
         else if ($fname eq 'max') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 max($arg)
                 
         (: function `min` 
            ============== :)
         else if ($fname eq 'min') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 min($arg)
                 
         (: function `month-from-date` 
            ========================== :)
         else if ($fname eq 'month-from-date') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 month-from-date($arg)
                 
@@ -610,7 +699,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ==================== :)
         else if ($fname eq 'node-name') then
             let $arg := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
             return
                 node-name($arg)
@@ -618,7 +707,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `not` 
            ============== :)
         else if ($fname eq 'not') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 not($arg[1])
                 
@@ -630,17 +719,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `QName` 
            ================ :)
         else if ($fname eq 'QName') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)           
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)           
             return
                 QName($arg1, $arg2)
 
         (: function `replace` 
            ==================== :)
         else if ($fname eq 'replace') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)            
-            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)            
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
                 if (exists($arg3)) then replace($arg1, $arg2, $arg3)
                 else substring($arg1, $arg2)
@@ -648,7 +737,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `reverse` 
            ================== :)
         else if ($fname eq 'reverse') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 reverse($arg)
 
@@ -656,7 +745,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ===================== :)
         else if ($fname eq 'root') then
             let $arg := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
             return
                 root($arg)
@@ -664,8 +753,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `sort` 
            ==================== :)
         else if ($fname eq 'sort') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
             return
                 if (exists($arg2)) then sort($arg1, $arg2)
                 else sort($arg1)
@@ -673,8 +762,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `starts-with` 
            ====================== :)
         else if ($fname eq 'starts-with') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
             return
                 starts-with($arg1, $arg2)
                 
@@ -682,7 +771,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ================= :)
         else if ($fname eq 'string') then
             let $arg := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return
                     ($explicit, $context)[1]
             return
@@ -691,9 +780,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `string-join` 
            ====================== :)
         else if ($fname eq 'string-join') then
-            let $items := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $items := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $sep := 
-                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, '')[1]
             return
                 string-join($items, $sep)                
@@ -701,16 +790,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `string-length` 
            ======================== :)
         else if ($fname eq 'string-length') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 string-length(string($arg))
                 
         (: function `substring` 
            ==================== :)
         else if ($fname eq 'substring') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)            
-            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)            
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
                 if (exists($arg3)) then substring($arg1, $arg2, $arg3)
                 else substring($arg1, $arg2)
@@ -718,32 +807,32 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `substring-after` 
            =========================== :)
         else if ($fname eq 'substring-after') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)            
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
                 substring-after($arg1, $arg2)
                 
         (: function `substring-before` 
            =========================== :)
         else if ($fname eq 'substring-before') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)            
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
                 substring-before($arg1, $arg2)
                 
         (: function `sum` 
            ============== :)
         else if ($fname eq 'sum') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 sum($arg)
                 
         (: function `tokenize` 
            =================== :)
         else if ($fname eq 'tokenize') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)            
-            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)            
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
                 if (not($arg2)) then tokenize($arg1) 
                 else if (not($arg3)) then tokenize($arg1, $arg2)
@@ -752,8 +841,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `trace` 
            ================ :)
         else if ($fname eq 'trace') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
             return
                 if (not($arg2)) then trace($arg1) 
                 else trace($arg1, $arg2)
@@ -766,14 +855,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `year-from-date` 
            ========================= :)
         else if ($fname eq 'year-from-date') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 year-from-date($arg)
                 
         (: function `xs:integer` 
            ===================== :)
         else if ($fname eq 'xs:integer') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)          
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
             return
                 xs:integer($arg1)
                 
@@ -829,7 +918,7 @@ declare function f:fileName($uri as xs:string?)
 (:~
  : Returns a string describing a resource identified by a URI.
  :)
-declare function f:fileInfo($content as xs:string?, $uri as xs:string?)
+declare function f:fileInfo($content as xs:string?, $uri as xs:string?, $options as map(*)?)
         as xs:string? {
     let $co := ($content, 'p60. s-10_ d')[1]
     let $items := tokenize(normalize-space($co), ' ')
@@ -849,17 +938,28 @@ declare function f:fileInfo($content as xs:string?, $uri as xs:string?)
                 if (file:is-dir($uri)) then '/' else f:fileSize($uri)
             else if ($kind eq 'd') then f:fileDate($uri)
             else if ($kind eq 'r') then
-                if (not(doc-available($uri))) then '-'
-                else doc($uri)/*/local-name(.)
+                let $doc := i:fox-doc($uri, $options)
+                return
+                    if (not($doc)) then '-' 
+                    else $doc/*/local-name(.)
             else if ($kind eq 't') then
-                if (not(doc-available($uri))) then '-'
-                else doc($uri)/*/concat(local-name(.), ' / ', string-join(sort(distinct-values(*/local-name()), lower-case#1), ' '))
+                let $doc := i:fox-doc($uri, $options)
+                return
+                    if (not($doc)) then '-'
+                    else $doc/*/concat(local-name(.), ' / ', 
+                        string-join(sort(distinct-values(*/local-name()), lower-case#1), ' '))
             else if ($kind eq 'e') then
-                if (not(doc-available($uri))) then '-'
-                else doc($uri)/*/concat(local-name(.), ' / ', string-join(sort(distinct-values(.//*/local-name()), lower-case#1), ' '))
+                let $doc := i:fox-doc($uri, $options)
+                return
+                    if (not($doc)) then '-'
+                    else $doc/*/concat(local-name(.), ' / ', 
+                        string-join(sort(distinct-values(.//*/local-name()), lower-case#1), ' '))
             else if ($kind eq 'a') then
-                if (not(doc-available($uri))) then '-'
-                else doc($uri)/string-join(sort(distinct-values(.//@*/local-name()), lower-case#1), ' ')
+                let $doc := i:fox-doc($uri, $options)
+                return
+                    if (not($doc)) then '-'
+                    else $doc/string-join(sort(distinct-values(
+                        .//@*/local-name()), lower-case#1), ' ')
             else ()
         return            
             if (empty($padWidth)) then $value
@@ -870,4 +970,9 @@ declare function f:fileInfo($content as xs:string?, $uri as xs:string?)
     return
         $line
 };
-      
+
+declare function f:fileSdate($uri as xs:string?)
+        as xs:string? {
+    $uri ! i:fileLastModified(.) ! string()
+};
+                

@@ -77,7 +77,7 @@ declare function f:resolveFoxpath($foxpath as xs:string?,
                 for $path in $value return
                     if (not(i:isDirectory($path))) then $path
                     else
-                        f:childUriCollection($path, $defaultFileName)
+                        f:childUriCollection($path, $defaultFileName, $options)
                         ! concat($path, '/', .)
             ))                        
 };
@@ -104,10 +104,47 @@ declare function f:resolveFoxpath($foxpath as xs:string,
     return 
         if ($errors) then $errors
         else
+            let $useOptions := f:finalizeOptions($options)
             let $expr := $tree/*[not(self::prolog)]
-            let $vars := f:initVars($tree/prolog, $externalVariableBindings, $context)
+            let $vars := f:initVars($tree/prolog, $externalVariableBindings, $context, $useOptions)
             return
-                f:resolveFoxpathRC($expr, $ebvMode, $context, (), (), $vars)
+                f:resolveFoxpathRC($expr, $ebvMode, $context, (), (), $vars, $useOptions)
+};
+
+(: 
+ : ===============================================================================
+ :
+ :     p r e p a r e    r e s o l v i n g
+ :
+ : ===============================================================================
+ :)
+(:~
+ : Finalizes the options map, using input option values when supplied, and
+ : default values otherwise. Adds to the map also URI trees, if provided.
+ :
+ : @param options parsing options
+ : @return the initial parsing context
+ :)
+declare function f:finalizeOptions($options as map(*)?)
+        as map(*) {
+    let $uriTreesDir :=
+        let $raw := ($options ! map:get(., 'URI_TREES_DIR'), $f:URI_TREES_DIR)[1]
+        return
+            if (starts-with($raw, '/')) then $raw
+            else
+                let $path := replace(static-base-uri(), '[^/]+$', '')
+                return concat($path, $raw)
+        
+    let $uriTrees :=
+        try {
+            file:list($uriTreesDir, false(), 'uri-trees-*') ! concat($uriTreesDir, '/', .) ! doc(.)/*
+        } catch * {()}
+    (: let $DUMMY := trace(count($uriTrees), 'COUNT_URI_TREES: ') :)        
+    return
+        map{       
+            'URI_TREES_DIR': $uriTreesDir,
+            'URI_TREES': $uriTrees
+        }
 };
 
 (:~
@@ -116,7 +153,8 @@ declare function f:resolveFoxpath($foxpath as xs:string,
  :)
 declare function f:initVars($prolog as element(prolog)?, 
                             $externalVariableBindings as map(xs:QName, item()*)?,
-                            $context as xs:string?)
+                            $context as xs:string?,
+                            $options as map(*)?)
         as map(xs:QName, item()*)? {
     if (empty($prolog)) then () else
     
@@ -124,7 +162,7 @@ declare function f:initVars($prolog as element(prolog)?,
     return if (not($varDecls)) then () else
     
     let $vars := map{}    
-    let $vars := f:bindVars($vars, $varDecls, $externalVariableBindings, $context)
+    let $vars := f:bindVars($vars, $varDecls, $externalVariableBindings, $context, $options)
     return
         $vars
 };
@@ -140,7 +178,8 @@ declare function f:initVars($prolog as element(prolog)?,
 declare function f:bindVars($vars as map(xs:QName, item()*),
                             $varDecls as element(varDecl)*,
                             $externalVariableBindings as map(xs:QName, item()*)?,
-                            $context as xs:string?)
+                            $context as xs:string?,
+                            $options as map(*)?)
         as map(xs:QName, item()*) {
     let $varDecl := head($varDecls)
     let $tail := tail($varDecls)
@@ -171,7 +210,7 @@ declare function f:bindVars($vars as map(xs:QName, item()*),
                                 concat('No value supplied for external variables: ', 
                                 $varName))
                         else
-                            let $valueRaw := f:resolveFoxpathRC($valueExpr, false(), $context, (), (), $vars)                            
+                            let $valueRaw := f:resolveFoxpathRC($valueExpr, false(), $context, (), (), $vars, $options)                            
                             let $value := 
                                 let $seqType := $varDecl/sequenceType
                                 return f:applyFunctionConversionRules($valueRaw, $seqType)
@@ -179,7 +218,7 @@ declare function f:bindVars($vars as map(xs:QName, item()*),
                                 map:entry($varName, $value)
         else
             let $valueExpr := $varDecl/*[not(self::sequenceType)]
-            let $valueRaw := f:resolveFoxpathRC($valueExpr, false(), $context, (), (), $vars)            
+            let $valueRaw := f:resolveFoxpathRC($valueExpr, false(), $context, (), (), $vars, $options)            
             let $value := 
                 let $seqType := $varDecl/sequenceType
                 return f:applyFunctionConversionRules($valueRaw, $seqType)
@@ -189,7 +228,7 @@ declare function f:bindVars($vars as map(xs:QName, item()*),
     let $newVars := map:merge(($vars, $mapEntry))
     return 
         if ($tail) then 
-            f:bindVars($newVars, $tail, $externalVariableBindings, $context)
+            f:bindVars($newVars, $tail, $externalVariableBindings, $context, $options)
         else
             $newVars
 };        
@@ -206,13 +245,14 @@ declare function f:resolveFoxpathRC($n as node(),
                                     $context as item()?,
                                     $position as xs:integer?,
                                     $last as xs:integer?,
-                                    $vars as map(xs:QName, item()*)?)
+                                    $vars as map(xs:QName, item()*)?,
+                                    $options as map(*)?)
         as item()* {
     typeswitch($n)
     
     case element(additive) return
-        let $lhs := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars)
-        let $rhs := f:resolveFoxpathRC($n/*[2], false(), $context, $position, $last, $vars)
+        let $lhs := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars, $options)
+        let $rhs := f:resolveFoxpathRC($n/*[2], false(), $context, $position, $last, $vars, $options)
         let $op := $n/@op
         let $value := 
             if ($op eq '+') then $lhs + $rhs
@@ -224,22 +264,22 @@ declare function f:resolveFoxpathRC($n as node(),
             else $value
             
     case element(and) return
-        let $args := $n/*/f:resolveFoxpathRC(., true(), $context, $position, $last, $vars)
+        let $args := $n/*/f:resolveFoxpathRC(., true(), $context, $position, $last, $vars, $options)
         return
             every $arg in $args satisfies $arg
  
     case element(cast) return
-        f:resolveCastExpr($n, $ebvMode, $context, $position, $last, $vars)
+        f:resolveCastExpr($n, $ebvMode, $context, $position, $last, $vars, $options)
         
     case element(castable) return
-        f:resolveCastableExpr($n, $ebvMode, $context, $position, $last, $vars)
+        f:resolveCastableExpr($n, $ebvMode, $context, $position, $last, $vars, $options)
         
     case element(contextItem) return
         $context
         
     case element(cmpN) return
-        let $lhs := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars)
-        let $rhs := f:resolveFoxpathRC($n/*[2], false(), $context, $position, $last, $vars)
+        let $lhs := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars, $options)
+        let $rhs := f:resolveFoxpathRC($n/*[2], false(), $context, $position, $last, $vars, $options)
         let $op := $n/@op
         let $value := 
             if ($op eq 'is') then $lhs is $rhs
@@ -251,8 +291,8 @@ declare function f:resolveFoxpathRC($n as node(),
             $value
             
     case element(cmpG) return
-        let $lhs := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars)
-        let $rhs := f:resolveFoxpathRC($n/*[2], false(), $context, $position, $last, $vars)
+        let $lhs := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars, $options)
+        let $rhs := f:resolveFoxpathRC($n/*[2], false(), $context, $position, $last, $vars, $options)
         let $lhs := if ($lhs instance of xs:string) then xs:untypedAtomic($lhs) else $lhs
         let $rhs := if ($rhs instance of xs:string) then xs:untypedAtomic($rhs) else $rhs        
         let $op := $n/@op
@@ -270,8 +310,8 @@ declare function f:resolveFoxpathRC($n as node(),
             $value
             
     case element(cmpV) return
-        let $lhs := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars)
-        let $rhs := f:resolveFoxpathRC($n/*[2], false(), $context, $position, $last, $vars)
+        let $lhs := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars, $options)
+        let $rhs := f:resolveFoxpathRC($n/*[2], false(), $context, $position, $last, $vars, $options)
         let $lhs := if ($lhs instance of xs:string) then xs:untypedAtomic($lhs) else $lhs
         let $rhs := if ($rhs instance of xs:string) then xs:untypedAtomic($rhs) else $rhs        
         let $op := $n/@op
@@ -288,57 +328,57 @@ declare function f:resolveFoxpathRC($n as node(),
             $value
             
     case element(dynFuncCall) return
-        let $value := f:resolveDynFunctionCall($n, $context, $position, $last, $vars)       
+        let $value := f:resolveDynFunctionCall($n, $context, $position, $last, $vars, $options)       
         return
             if ($ebvMode) then f:getEbv($value) else $value
 
     case element(emptySequence) return ()       
 
      case element(filterExpr) return
-        let $unfiltered := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars)
+        let $unfiltered := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars, $options)
         let $predicates := tail($n/*)
-        let $value := f:testPredicates($unfiltered, $predicates, $vars)
+        let $value := f:testPredicates($unfiltered, $predicates, $vars, $options)
         return
             if ($ebvMode) then f:getEbv($value) else $value
             
     case element(flwor) return
-        f:resolveFlworExpr($n, $ebvMode, $context, $position, $last, $vars)
+        f:resolveFlworExpr($n, $ebvMode, $context, $position, $last, $vars, $options)
 
     case element(foxpath) return
-        f:resolveFoxpathExpr($n, $ebvMode, $context, $position, $last, $vars)
+        f:resolveFoxpathExpr($n, $ebvMode, $context, $position, $last, $vars, $options)
         
      case element(functionRef) return
-        let $funcItem := f:resolveNamedFunctionRef($n, $context, $position, $last, $vars)
+        let $funcItem := f:resolveNamedFunctionRef($n, $context, $position, $last, $vars, $options)
         return
             $funcItem
 
      case element(inlineFunctionExpr) return
-        let $funcItem := f:resolveInlineFunctionExpression($n, $context, $position, $last, $vars)
+        let $funcItem := f:resolveInlineFunctionExpression($n, $context, $position, $last, $vars, $options)
         return
             $funcItem
 
     case element(functionCall) return
-        let $value := f:resolveFunctionCall($n, $context, $position, $last, $vars)
+        let $value := f:resolveFunctionCall($n, $context, $position, $last, $vars, $options)
         return
             if ($ebvMode) then f:getEbv($value) else $value
 
     case element(if) return
-        let $value := f:resolveIfExpr($n, $ebvMode, $context, $position, $last, $vars)
+        let $value := f:resolveIfExpr($n, $ebvMode, $context, $position, $last, $vars, $options)
         return
             if ($ebvMode) then f:getEbv($value) else $value
         
     case element(instance) return
-        f:resolveInstanceOfExpr($n, $ebvMode, $context, $position, $last, $vars)
+        f:resolveInstanceOfExpr($n, $ebvMode, $context, $position, $last, $vars, $options)
             
     case element(intersectExcept) return
-        f:resolveIntersectExceptExpr($n, $ebvMode, $context, $position, $last, $vars)
+        f:resolveIntersectExceptExpr($n, $ebvMode, $context, $position, $last, $vars, $options)
             
     case element(map) return
-        f:resolveMapExpr($n, $ebvMode, $context, $position, $last, $vars)
+        f:resolveMapExpr($n, $ebvMode, $context, $position, $last, $vars, $options)
             
     case element(multiplicative) return
-        let $lhs := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars)
-        let $rhs := f:resolveFoxpathRC($n/*[2], false(), $context, $position, $last, $vars)
+        let $lhs := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars, $options)
+        let $rhs := f:resolveFoxpathRC($n/*[2], false(), $context, $position, $last, $vars, $options)
         let $op := $n/@op
         let $value := 
             if ($op eq '*') then $lhs * $rhs
@@ -364,28 +404,28 @@ declare function f:resolveFoxpathRC($n as node(),
             else $value
 
     case element(or) return
-        let $args := $n/*/f:resolveFoxpathRC(., true(), $context, $position, $last, $vars)
+        let $args := $n/*/f:resolveFoxpathRC(., true(), $context, $position, $last, $vars, $options)
         return
             some $arg in $args satisfies $arg 
 
      case element(postfixExpr) return
-        let $unfiltered := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars)
+        let $unfiltered := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars, $options)
         let $predicates := tail($n/*)
-        let $value := f:testPredicates($unfiltered, $predicates, $vars)
+        let $value := f:testPredicates($unfiltered, $predicates, $vars, $options)
         return
             if ($ebvMode) then f:getEbv($value) else $value
             
     case element(quantified) return
-        f:resolveQuantifiedExpr($n, $context, $position, $last, $vars)
+        f:resolveQuantifiedExpr($n, $context, $position, $last, $vars, $options)
 
     case element(range) return
-        let $lhs := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars)
-        let $rhs := f:resolveFoxpathRC($n/*[2], false(), $context, $position, $last, $vars)
+        let $lhs := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars, $options)
+        let $rhs := f:resolveFoxpathRC($n/*[2], false(), $context, $position, $last, $vars, $options)
         let $value := $lhs to $rhs
         return if ($ebvMode) then f:getEbv($value) else $value
             
     case element(seq) return
-        let $args := $n/*/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+        let $args := $n/*/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
         return if ($ebvMode) then f:getEbv($args) else $args
 
     case element(string) return
@@ -393,10 +433,10 @@ declare function f:resolveFoxpathRC($n as node(),
         return if ($ebvMode) then f:getEbv($value) else $value
             
     case element(treat) return
-        f:resolveTreatExpr($n, $ebvMode, $context, $position, $last, $vars)
+        f:resolveTreatExpr($n, $ebvMode, $context, $position, $last, $vars, $options)
         
     case element(unary) return
-        let $operand := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars)
+        let $operand := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars, $options)
         let $op := $n/@op
         let $value := 
             if ($op eq '-') then - $operand else + $operand
@@ -404,10 +444,10 @@ declare function f:resolveFoxpathRC($n as node(),
             if ($ebvMode) then f:getEbv($value) else $value
             
     case element(union) return
-        f:resolveUnionExpr($n, $ebvMode, $context, $position, $last, $vars)
+        f:resolveUnionExpr($n, $ebvMode, $context, $position, $last, $vars, $options)
             
     case element(var) return   
-        let $value := f:getVarValue($n, $vars)
+        let $value := f:getVarValue($n, $vars, $options)
         return
             if ($ebvMode) then f:getEbv($value) else $value
     default return
@@ -436,7 +476,8 @@ declare function f:resolveFoxpathExpr($foxpath as element(foxpath),
                                       $context as item()?,
                                       $position as xs:integer?,
                                       $last as xs:integer?,
-                                      $vars as map(xs:QName, item()*)?)                                      
+                                      $vars as map(xs:QName, item()*)?,
+                                      $options as map(*)?)                                      
         as item()* {
     let $initialRoot := $foxpath/*[1][self::foxRoot or self::root]   
     
@@ -449,8 +490,7 @@ declare function f:resolveFoxpathExpr($foxpath as element(foxpath),
         else if ($initialRoot/self::root) then 
             if ($context instance of node()) then root($context)
             else if (exists($context)) then 
-                if (doc-available($context)) then doc($context)
-                else ()
+                i:fox-doc($context, $options)
             else 
                 f:createFoxpathError('SYNTAX_ERROR', 
                     concat('Absolute node path encountered, but no context provided; ',
@@ -466,7 +506,7 @@ declare function f:resolveFoxpathExpr($foxpath as element(foxpath),
     let $value :=
         if (not($steps)) then $initialContext
         else
-            let $items := f:resolveFoxpathExprRC($steps, $initialContext, $vars)
+            let $items := f:resolveFoxpathExprRC($steps, $initialContext, $vars, $options)
             return
                 if ($foxpath/*[last()]/self::foxStep) then
                     for $item in $items order by lower-case(string($item)) return $item
@@ -481,15 +521,16 @@ declare function f:resolveFoxpathExpr($foxpath as element(foxpath),
  :)
 declare function f:resolveFoxpathExprRC($steps as element()+, 
                                         $context as item()*,
-                                        $vars as map(xs:QName, item()*)?)                                        
+                                        $vars as map(xs:QName, item()*)?,
+                                        $options as map(*)?)                                        
         as item()* {
     let $step1 := $steps[1]
     let $tail := tail($steps)
     let $items :=
         if ($step1/self::foxStep/@axis) then 
-            f:resolveFoxAxisStep($step1, $context, $vars)
+            f:resolveFoxAxisStep($step1, $context, $vars, $options)
         else if ($step1/self::step/@axis) then 
-            f:resolveNodeAxisStep($step1, $context, $vars)
+            f:resolveNodeAxisStep($step1, $context, $vars, $options)
         else
             (: bugfix 20160724 - expr either child or self of step1 :)
             let $expr :=
@@ -500,14 +541,15 @@ declare function f:resolveFoxpathExprRC($steps as element()+,
                 if ($step1/self::step) then
                     for $item in $context 
                     return 
-                        if ($item instance of node()) then $item else doc($item)
+                        if ($item instance of node()) then $item 
+                        else i:fox-doc($item, $options) 
                 else $context
                 
             let $last := count($useContext)
             let $value :=
                 for $c at $pos in $useContext 
                 (: let $EXPR := trace($expr, 'EXPR: ') :)
-                return f:resolveFoxpathRC($expr, false(), $c, $pos, $last, $vars)
+                return f:resolveFoxpathRC($expr, false(), $c, $pos, $last, $vars, $options)
             let $value :=
                 if ($step1/self::step and (every $item in $value satisfies ($item instance of node()))) then $value/.
                 else $value
@@ -515,7 +557,7 @@ declare function f:resolveFoxpathExprRC($steps as element()+,
                 $value
     return (
         if (not($tail)) then $items
-        else f:resolveFoxpathExprRC($tail, $items, $vars)
+        else f:resolveFoxpathExprRC($tail, $items, $vars, $options)
     )
 };
 
@@ -524,9 +566,9 @@ declare function f:resolveFoxpathExprRC($steps as element()+,
  :)
 declare function f:resolveFoxAxisStep($axisStep as element()+, 
                                       $context as xs:string*,
-                                      $vars as map(xs:QName, item()*)?)
+                                      $vars as map(xs:QName, item()*)?,
+                                      $options as map(*)?)
         as xs:string* {
-        
     let $axis := $axisStep/@axis/string()
     let $name := $axisStep/@name/string()
     let $regex := $axisStep/@regex/string()
@@ -536,20 +578,21 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
         if ($axis = ('child', 'descendant', 'descendant-or-self')) then
             let $deep := $axis = ('descendant', 'descendant-or-self')
             let $listFunction := 
-                if ($deep) then f:descendantUriCollection#2 
-                           else f:childUriCollection#2
+                if ($deep) then f:descendantUriCollection#3 
+                           else f:childUriCollection#3
             return
-                for $ctxt in $context[i:isDirectory(.)]
+                for $ctxt in $context[not(i:isFile(., $options))]
                 let $useCtxt := if (matches($ctxt, '^.:$')) then concat($ctxt, '/') else $ctxt 
                 (:     file:list('c:') delivers the current working directory files, not the root directory files :)
             
                 let $prefix := replace($useCtxt, '/$', '')
-                let $descendants := 
-                    $listFunction($ctxt, $name)
+                let $descendants :=
+                    $listFunction($ctxt, $name, $options)
                     ! replace(., '/$', '')
                     [not($regex) or matches(replace(., '.*/', ''), $regex, 'i')]            
                     ! concat($prefix, '/', .)
                     (: [not($tail) or file:is-dir(.)] :)  (: not any more true: following steps may be reverse steps :)
+                let $descendants := distinct-values($descendants)
                 let $ctxtFiles :=
                     if (not($axis eq 'descendant-or-self')) then $descendants
                     else (
@@ -558,7 +601,7 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                     )
                 return
                     if (not($predicates)) then $ctxtFiles
-                    else f:testPredicates(sort($ctxtFiles, lower-case#1), $predicates, $vars)
+                    else f:testPredicates(sort($ctxtFiles, lower-case#1), $predicates, $vars, $options)
         else if ($axis = 'self') then
                 for $ctxt in $context
                 let $ctxt := if (matches($ctxt, '^.:$')) then concat($ctxt, '/') else $ctxt 
@@ -568,18 +611,18 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                     [not($regex) or matches(replace(., '.*/', ''), $regex, 'i')]            
                 return
                     if (not($predicates)) then $ctxtFiles
-                    else f:testPredicates(sort($ctxtFiles, lower-case#1), $predicates, $vars)
+                    else f:testPredicates(sort($ctxtFiles, lower-case#1), $predicates, $vars, $options)
         else if ($axis = 'following-sibling') then
                 for $ctxt in $context
                 let $parent := (replace($ctxt, '/[^/]*$', '')[string()], '/')[1]
                 let $followingSiblings := 
-                    f:childUriCollection($parent, '*')
+                    f:childUriCollection($parent, '*', $options)
                     [lower-case(replace(., '.*/', '')) gt lower-case(replace($ctxt, '.*/', ''))]                    
                     [not($regex) or matches(replace(., '.*/', ''), $regex, 'i')]            
                     ! concat($parent, '/', .)                
                 return
                     if (not($predicates)) then $followingSiblings
-                    else f:testPredicates(sort($followingSiblings, lower-case#1), $predicates, $vars)
+                    else f:testPredicates(sort($followingSiblings, lower-case#1), $predicates, $vars, $options)
         
         (: reverse axis :)        
         else    
@@ -594,7 +637,7 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                     [not($regex) or matches(replace(., '.*/', ''), $regex)]
                 return
                     if (not($predicates)) then $parent
-                    else f:testPredicates($ctxt, $predicates, $vars)
+                    else f:testPredicates($ctxt, $predicates, $vars, $options)
             else if ($axis = ('ancestor', 'ancestor-or-self')) then
                 for $ctxt in $context
                 let $items := tokenize($ctxt, '/')
@@ -620,18 +663,18 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                 return                    
                     if (not($predicates)) then $ctxtFiles
                     else
-                        f:testPredicates(reverse(sort($ctxtFiles, lower-case#1)), $predicates, $vars)
+                        f:testPredicates(reverse(sort($ctxtFiles, lower-case#1)), $predicates, $vars, $options)
         else if ($axis = 'preceding-sibling') then
                 for $ctxt in $context
                 let $parent := (replace($ctxt, '/[^/]*$', '')[string()], '/')[1]
                 let $precedingSiblings := 
-                    f:childUriCollection($parent, '*')
+                    f:childUriCollection($parent, '*', $options)
                     [lower-case(replace(., '.*/', '')) lt lower-case(replace($ctxt, '.*/', ''))]                    
                     [not($regex) or matches(replace(., '.*/', ''), $regex, 'i')]            
                     ! concat($parent, '/', .)                
                 return
                     if (not($predicates)) then $precedingSiblings
-                    else f:testPredicates(reverse(sort($precedingSiblings, lower-case#1)), $predicates, $vars)
+                    else f:testPredicates(reverse(sort($precedingSiblings, lower-case#1)), $predicates, $vars, $options)
                         
         else
             f:createFoxpathError('NOT_YET_IMPLEMENTED', 
@@ -648,7 +691,8 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
  :)
 declare function f:resolveNodeAxisStep($axisStep as element()+, 
                                        $context as item()*,
-                                       $vars as map(xs:QName, item()*)?)
+                                       $vars as map(xs:QName, item()*)?,
+                                       $options as map(*)?)
         as item()* {
     (: *** ATTENTION - DEVIATION FROM THE XQUERY SPEC *********************
        Note that the XQuery spec prescribes a fatal error when a node
@@ -667,13 +711,7 @@ declare function f:resolveNodeAxisStep($axisStep as element()+,
     let $context := 
         for $c in $context return
             if ($c instance of node()) then $c
-            else              
-                try {
-                    doc(string($c))
-                } catch * {
-                    error(QName((), 'INVALID_EXPR'), 
-                        concat('Invalid expression - path step applied to non-node: ', $c))
-                }
+            else i:fox-doc($c, $options)              
     let $axis := $axisStep/@axis
     let $localName := $axisStep/@localName
     let $uri := $axisStep/@namespace    
@@ -708,16 +746,16 @@ declare function f:resolveNodeAxisStep($axisStep as element()+,
                 function($node as node()) as xs:boolean? {exists($node/self::document-node())}
             else if ($nodeKind eq 'element') then
                 if (not($nodeName) or $nodeName eq '*') then
-                    function($node as node()) as xs:boolean? {true()}
+                    function($node as node()) as xs:boolean? {exists($node/self::element())}
                 else    
-                    function($node as node()) as xs:boolean? {$node/name(.) eq $nodeName}
+                    function($node as node()) as xs:boolean? {$node/self::element()/(name(.) eq $nodeName)}
                     (: *TODO* compare node-name(), rather than name(), 
                         which presupposes in-scope namespace bindings :)
             else if ($nodeKind eq 'attribute') then
                 if (not($nodeName) or $nodeName eq '*') then
-                    function($node as node()) as xs:boolean? {true()}
+                    function($node as node()) as xs:boolean? {exists($node/self::attribute())}
                 else    
-                    function($node as node()) as xs:boolean? {$node/name(.) eq $nodeName}
+                    function($node as node()) as xs:boolean? {$node/self::attribute()/(name(.) eq $nodeName)}
                     (: *TODO* compare node-name(), rather than name(), 
                         which presupposes in-scope namespace bindings :)
             else ()
@@ -799,7 +837,7 @@ declare function f:resolveNodeAxisStep($axisStep as element()+,
                 if ($reverseAxis) then reverse($resultItemsUnfiltered)
                 else  $resultItemsUnfiltered
             return
-                f:testPredicates($predicatesInput, $predicates, $vars)
+                f:testPredicates($predicatesInput, $predicates, $vars, $options)
 
     return
         $resultItems
@@ -814,7 +852,8 @@ declare function f:resolveNodeAxisStep($axisStep as element()+,
  :)
 declare function f:testPredicates($items as item()*, 
                                   $predicates as element()*,
-                                  $vars as map(xs:QName, item()*)?)
+                                  $vars as map(xs:QName, item()*)?,
+                                  $options as map(*)?)                                  
         as item()* {
     if (empty($items)) then () 
     else if (empty($predicates)) then $items
@@ -826,14 +865,14 @@ declare function f:testPredicates($items as item()*,
     let $itemsFiltered :=
         let $last := count($items)
         for $item at $pos in $items        
-        let $predicateValue := f:resolveFoxpathRC($predicate, false(), $item, $pos, $last, $vars) 
+        let $predicateValue := f:resolveFoxpathRC($predicate, false(), $item, $pos, $last, $vars, $options) 
         return
             if ($predicateValue instance of xs:decimal) then $item[$predicateValue eq $pos]
             else if (count($predicateValue) gt 1) then $item   (: special rule, taking files lists into account :)
             else $item[$predicateValue]
     return
         if (empty($itemsFiltered)) then ()
-        else if ($tail) then f:testPredicates($itemsFiltered, $tail, $vars)
+        else if ($tail) then f:testPredicates($itemsFiltered, $tail, $vars, $options)
         else $itemsFiltered
 };        
 
@@ -857,14 +896,15 @@ declare function f:resolveIfExpr($if as element(if),
                                  $context as item()?,
                                  $position as xs:integer?,
                                  $last as xs:integer?,
-                                 $vars as map(xs:QName, item()*)?)
+                                 $vars as map(xs:QName, item()*)?,
+                                 $options as map(*)?)
         as item()* {
-    let $condValue := f:resolveFoxpathRC($if/*[1], true(), $context, $position, $last, $vars) 
+    let $condValue := f:resolveFoxpathRC($if/*[1], true(), $context, $position, $last, $vars, $options) 
     return
         if ($condValue) then
-            f:resolveFoxpathRC($if/*[2], $ebvMode, $context, $position, $last, $vars)
+            f:resolveFoxpathRC($if/*[2], $ebvMode, $context, $position, $last, $vars, $options)
         else
-            f:resolveFoxpathRC($if/*[3], $ebvMode, $context, $position, $last, $vars)
+            f:resolveFoxpathRC($if/*[3], $ebvMode, $context, $position, $last, $vars, $options)
 };
 
 (:~
@@ -879,7 +919,8 @@ declare function f:resolveFlworExpr($flwor as element(flwor),
                                     $context as item()?,
                                     $position as xs:integer?,
                                     $last as xs:integer?,
-                                    $vars as map(xs:QName, item()*)?)
+                                    $vars as map(xs:QName, item()*)?,
+                                    $options as map(*)?)                                    
         as item()* {
     let $firstClause := $flwor/*[1]       
     let $vars :=
@@ -888,9 +929,9 @@ declare function f:resolveFlworExpr($flwor as element(flwor),
     return
         typeswitch($firstClause)
         case element(for) return 
-            f:resolveFlworExpr_for($firstClause, $ebvMode, $context, $position, $last, $vars)
+            f:resolveFlworExpr_for($firstClause, $ebvMode, $context, $position, $last, $vars, $options)
         case element(let) return 
-            f:resolveFlworExpr_let($firstClause, $ebvMode, $context, $position, $last, $vars)
+            f:resolveFlworExpr_let($firstClause, $ebvMode, $context, $position, $last, $vars, $options)
         default return
             f:createFoxpathError('NOT_YET_IMPLEMENTED', 
                 concat('Flwor clause not yet implemented: ', local-name($firstClause)))
@@ -908,25 +949,26 @@ declare function f:resolveFlworExpr_for($for as element(for),
                                         $context as item()?,
                                         $position as xs:integer?,
                                         $last as xs:integer?,
-                                        $vars as map(xs:QName, item()*)?)
+                                        $vars as map(xs:QName, item()*)?,
+                                        $options as map(*)?)                                        
         as item()* {
     let $nextClause := $for/following-sibling::*[1]        
     let $varName := $for/var[1]/@localName   
     let $varNamespace := $for/var[1]/@namespace
     let $varQname := QName($varNamespace, $varName)
-    let $varValue := f:resolveFoxpathRC($for/*[2], false(), $context, $position, $last, $vars)                     
+    let $varValue := f:resolveFoxpathRC($for/*[2], false(), $context, $position, $last, $vars, $options)                     
     let $exprValue :=
         for $item in $varValue
         let $vars := map:put($vars, $varQname, $item)
         return
             if ($nextClause is $for/following-sibling::*[last()]) then
-                f:resolveFoxpathRC($nextClause, $ebvMode, $context, $position, $last, $vars)
+                f:resolveFoxpathRC($nextClause, $ebvMode, $context, $position, $last, $vars, $options)
             else            
                 typeswitch($nextClause)
                 case element(for) return 
-                    f:resolveFlworExpr_for($nextClause, $ebvMode, $context, $position, $last, $vars)
+                    f:resolveFlworExpr_for($nextClause, $ebvMode, $context, $position, $last, $vars, $options)
                 case element(let) return 
-                    f:resolveFlworExpr_let($nextClause, $ebvMode, $context, $position, $last, $vars)
+                    f:resolveFlworExpr_let($nextClause, $ebvMode, $context, $position, $last, $vars, $options)
                 default return
                     f:createFoxpathError('NOT_YET_IMPLEMENTED', 
                         concat('Flwor clause not yet implemented: ', local-name($nextClause)))
@@ -947,23 +989,24 @@ declare function f:resolveFlworExpr_let($let as element(let),
                                         $context as item()?,
                                         $position as xs:integer?,
                                         $last as xs:integer?,
-                                        $vars as map(xs:QName, item()*)?)
+                                        $vars as map(xs:QName, item()*),
+                                        $options as map(*)?)
         as item()* {
     let $nextClause := $let/following-sibling::*[1]        
     let $varName := $let/var[1]/@localName
     let $varNamespace := $let/var[1]/@namespace 
     let $varQname := QName($varNamespace, $varName)
-    let $varValue := f:resolveFoxpathRC($let/*[2], false(), $context, $position, $last, $vars)
+    let $varValue := f:resolveFoxpathRC($let/*[2], false(), $context, $position, $last, $vars, $options)
     let $vars := map:put($vars, $varQname, $varValue)
     let $exprValue :=
         if ($nextClause is $let/following-sibling::*[last()]) then       
-            f:resolveFoxpathRC($nextClause, $ebvMode, $context, $position, $last, $vars)
+            f:resolveFoxpathRC($nextClause, $ebvMode, $context, $position, $last, $vars, $options)
         else            
             typeswitch($nextClause)
             case element(for) return 
-                f:resolveFlworExpr_for($nextClause, $ebvMode, $context, $position, $last, $vars)
+                f:resolveFlworExpr_for($nextClause, $ebvMode, $context, $position, $last, $vars, $options)
             case element(let) return 
-                f:resolveFlworExpr_let($nextClause, $ebvMode, $context, $position, $last, $vars)
+                f:resolveFlworExpr_let($nextClause, $ebvMode, $context, $position, $last, $vars, $options)
             default return
                 f:createFoxpathError('NOT_YET_IMPLEMENTED', 
                     concat('Flwor clause not yet implemented: ', local-name($nextClause)))
@@ -983,7 +1026,8 @@ declare function f:resolveQuantifiedExpr($quant as element(quantified),
                                          $context as item()?,
                                          $position as xs:integer?,
                                          $last as xs:integer?,
-                                         $vars as map(xs:QName, item()*)?)
+                                         $vars as map(xs:QName, item()*)?,
+                                         $options as map(*)?)                                         
         as xs:boolean {
     let $kind := $quant/@kind        
     let $firstClause := $quant/*[1]       
@@ -995,11 +1039,11 @@ declare function f:resolveQuantifiedExpr($quant as element(quantified),
         case element(for) return 
             if ($kind eq 'every') then
                 every $result in
-                    f:resolveQuantifiedExpr_for($firstClause, $context, $position, $last, $vars)
+                    f:resolveQuantifiedExpr_for($firstClause, $context, $position, $last, $vars, $options)
                 satisfies $result eq true()
             else      
                 some $result in
-                    f:resolveQuantifiedExpr_for($firstClause, $context, $position, $last, $vars)
+                    f:resolveQuantifiedExpr_for($firstClause, $context, $position, $last, $vars, $options)
                 satisfies $result eq true()
         default return
             f:createFoxpathError('NOT_YET_IMPLEMENTED', 
@@ -1017,24 +1061,25 @@ declare function f:resolveQuantifiedExpr_for($for as element(for),
                                              $context as item()?,
                                              $position as xs:integer?,
                                              $last as xs:integer?,
-                                             $vars as map(xs:QName, item()*)?)
+                                             $vars as map(xs:QName, item()*)?,
+                                             $options as map(*)?)                                             
         as xs:boolean* {
     let $nextClause := $for/following-sibling::*[1]        
     let $varName := $for/var[1]/@localName        
     let $varNamespace := $for/var[1]/@namespace    
     let $varQname := QName($varNamespace, $varName)    
-    let $value := f:resolveFoxpathRC($for/*[2], false(), $context, $position, $last, $vars)
+    let $value := f:resolveFoxpathRC($for/*[2], false(), $context, $position, $last, $vars, $options)
                   (: note that ebvMode = false() :)
     for $item in $value
     let $vars := map:put($vars, $varQname, $item)
     return
         if ($nextClause is $for/following-sibling::*[last()]) then
-            f:resolveFoxpathRC($nextClause, true(), $context, $position, $last, $vars)
+            f:resolveFoxpathRC($nextClause, true(), $context, $position, $last, $vars, $options)
             (: note that ebvMode = true() :)
         else            
             typeswitch($nextClause)
             case element(for) return 
-                f:resolveQuantifiedExpr_for($nextClause, $context, $position, $last, $vars)
+                f:resolveQuantifiedExpr_for($nextClause, $context, $position, $last, $vars, $options)
             default return
                 f:createFoxpathError('NOT_YET_IMPLEMENTED', 
                     concat('Quantified clause not yet implemented: ', local-name($nextClause)))
@@ -1052,10 +1097,11 @@ declare function f:resolveMapExpr($map as element(map),
                                   $context as item()?,
                                   $position as xs:integer?,
                                   $last as xs:integer?,
-                                  $vars as map(xs:QName, item()*)?)
+                                  $vars as map(xs:QName, item()*)?,
+                                  $options as map(*)?)                                  
         as item()* {
     let $operands := $map/*
-    let $value := f:resolveMapExprRC($operands, $context, $position, $last, $vars)
+    let $value := f:resolveMapExprRC($operands, $context, $position, $last, $vars, $options)
     return
         if ($ebvMode) then f:getEbv($value) else $value
 };
@@ -1071,18 +1117,19 @@ declare function f:resolveMapExprRC($mapOperands as element()+,
                                     $context as item()?,
                                     $position as xs:integer?,
                                     $last as xs:integer?,
-                                    $vars as map(xs:QName, item()*)?)
+                                    $vars as map(xs:QName, item()*)?,
+                                    $options as map(*)?)                                    
         as item()* {
     let $op1 := $mapOperands[1]
     let $tail := tail($mapOperands)
-    let $value := f:resolveFoxpathRC($op1, false(), $context, $position, $last, $vars)
+    let $value := f:resolveFoxpathRC($op1, false(), $context, $position, $last, $vars, $options)
     return
         if (empty($tail)) then $value
         else
             let $newLast := count($tail)
             for $item at $newPosition in $value
             return
-                f:resolveMapExprRC($tail, $item, $newPosition, $newLast, $vars)
+                f:resolveMapExprRC($tail, $item, $newPosition, $newLast, $vars, $options)
 };
 
 (: 
@@ -1113,9 +1160,10 @@ declare function f:resolveUnionExpr($union as element(union),
                                     $context as item()?,
                                     $position as xs:integer?,
                                     $last as xs:integer?,
-                                    $vars as map(xs:QName, item()*)?)
+                                    $vars as map(xs:QName, item()*)?,
+                                    $options as map(*)?)                                    
         as item()* {
-    let $args := $union/*/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+    let $args := $union/*/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
     let $itemKinds :=
         if (every $arg in $args satisfies $arg instance of node()) then 'nodes'
         else if (every $arg in $args satisfies not($arg instance of node())) then 'atoms'
@@ -1146,11 +1194,12 @@ declare function f:resolveIntersectExceptExpr($intersectExcept as element(inters
                                               $context as item()?,
                                               $position as xs:integer?,
                                               $last as xs:integer?,
-                                              $vars as map(xs:QName, item()*)?)
+                                              $vars as map(xs:QName, item()*)?,
+                                              $options as map(*)?)                                              
         as item()* {
     let $op := $intersectExcept/@op
-    let $args1 := $intersectExcept/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)        
-    let $args2 := $intersectExcept/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+    let $args1 := $intersectExcept/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+    let $args2 := $intersectExcept/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
     let $args := ($args1, $args2)    
     let $itemKinds :=
         if (every $arg in $args satisfies $arg instance of node()) then 'nodes'
@@ -1192,9 +1241,10 @@ declare function f:resolveInstanceOfExpr($instance as element(instance),
                                          $context as item()?,
                                          $position as xs:integer?,
                                          $last as xs:integer?,
-                                         $vars as map(xs:QName, item()*)?)
+                                         $vars as map(xs:QName, item()*)?,
+                                         $options as map(*)?)                                         
         as item()* {
-    let $arg := $instance/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+    let $arg := $instance/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
     let $sequenceType := $instance/sequenceType/@text    
     let $expr := concat('declare variable $arg external; $arg instance of ', $sequenceType)
     let $value := i:xquery($expr, map{'arg':$arg})    
@@ -1214,9 +1264,10 @@ declare function f:resolveTreatExpr($treat as element(treat),
                                     $context as item()?,
                                     $position as xs:integer?,
                                     $last as xs:integer?,
-                                    $vars as map(xs:QName, item()*)?)
+                                    $vars as map(xs:QName, item()*)?,
+                                    $options as map(*)?)                                    
         as item()* {
-    let $arg := $treat/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+    let $arg := $treat/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
     let $sequenceType := $treat/sequenceType/@text    
     let $expr := concat('declare variable $arg external; $arg treat as ', $sequenceType)
     let $value := i:xquery($expr, map{'arg':$arg})    
@@ -1236,9 +1287,10 @@ declare function f:resolveCastableExpr($castable as element(castable),
                                        $context as item()?,
                                        $position as xs:integer?,
                                        $last as xs:integer?,
-                                       $vars as map(xs:QName, item()*)?)
+                                       $vars as map(xs:QName, item()*)?,
+                                       $options as map(*)?)                                       
         as item()* {
-    let $arg := $castable/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+    let $arg := $castable/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
     let $singleType := $castable/singleType/@text    
     let $expr := concat('declare variable $arg external; $arg castable as ', $singleType)
     let $value := i:xquery($expr, map{'arg':$arg})    
@@ -1258,9 +1310,10 @@ declare function f:resolveCastExpr($cast as element(cast),
                                    $context as item()?,
                                    $position as xs:integer?,
                                    $last as xs:integer?,
-                                   $vars as map(xs:QName, item()*)?)
+                                   $vars as map(xs:QName, item()*)?,
+                                   $options as map(*)?)
         as item()* {
-    let $arg := $cast/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+    let $arg := $cast/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
     let $singleType := $cast/singleType/@text    
     let $expr := concat('declare variable $arg external; $arg cast as ', $singleType)
     let $value := i:xquery($expr, map{'arg':$arg})    
@@ -1280,7 +1333,8 @@ declare function f:resolveNamedFunctionRef($funcRef as element(),
                                            $context as item()?, 
                                            $position as xs:integer?, 
                                            $last as xs:integer?,
-                                           $vars as map(xs:QName, item()*)?)                                       
+                                           $vars as map(xs:QName, item()*)?,
+                                           $options as map(*)?)
         as item()* {
     let $funcName := $funcRef/@name
     let $funcItem := $i:STD-FUNC-ITEMS($funcName)
@@ -1300,10 +1354,11 @@ declare function f:resolveInlineFunctionExpression(
                                            $context as item()?, 
                                            $position as xs:integer?, 
                                            $last as xs:integer?,
-                                           $vars as map(xs:QName, item()*)?)                                       
+                                           $vars as map(xs:QName, item()*)?,
+                                           $options as map(*)?)
         as item()* {
     if (1 eq 1) then
-        f:resolveInlineFunctionExpression_new($inlineFuncExpr, $context, $position, $last, $vars)
+        f:resolveInlineFunctionExpression_new($inlineFuncExpr, $context, $position, $last, $vars, $options)
     else
     
     let $inlineFuncBody := $inlineFuncExpr/body/*
@@ -1315,7 +1370,7 @@ declare function f:resolveInlineFunctionExpression(
          $last as xs:integer?, 
          $vars as map(xs:QName, item()*)?) {
       if ($mode eq "tree") then $inlineFuncExpr else         
-      $inlineFuncBody/f:resolveFoxpathRC#6(., false(), $context, $position, $last, $vars)
+      $inlineFuncBody/f:resolveFoxpathRC#7(., false(), $context, $position, $last, $vars, $options)
     }
     
     return $funcItem
@@ -1329,7 +1384,8 @@ declare function f:resolveInlineFunctionExpression_new(
                                            $context as item()?, 
                                            $position as xs:integer?, 
                                            $last as xs:integer?,
-                                           $vars as map(xs:QName, item()*)?)                                       
+                                           $vars as map(xs:QName, item()*)?,
+                                           $options as map(*)?)
         as item()* {
     let $inlineFuncBody := $inlineFuncExpr/body/*
     let $nsDecls := $inlineFuncExpr/root()//prolog/nsDecls/*
@@ -1365,7 +1421,7 @@ declare function f:resolveInlineFunctionExpression_new(
             '))',
             'let $body := ',
             $inlineFuncExpr/body/*/serialize(.) ,
-            'return $resolver($body, false(), (), 1, 1, $vars)'
+            'return $resolver($body, false(), (), 1, 1, $vars, $options)'
         ), '&#xA;')
     let $baseURI := static-base-uri()
     let $funcItemText :=
@@ -1380,6 +1436,7 @@ declare function f:resolveInlineFunctionExpression_new(
                     
             (: variable declarations :)
             'declare variable $varsIn as map(xs:QName, item()*)? external;',        
+            'declare variable $options as map(*)? external;',            
             'declare variable $resolver as function(*) external;',
             
             (: function item :)            
@@ -1387,7 +1444,7 @@ declare function f:resolveInlineFunctionExpression_new(
             ' {', $funcItemText_launch, '}')
             
         , '&#xA;')
-    let $funcItem := xquery:eval($funcItemText, map{'resolver': f:resolveFoxpathRC#6, 'varsIn':$vars})
+    let $funcItem := xquery:eval($funcItemText, map{'resolver': f:resolveFoxpathRC#7, 'varsIn':$vars, 'options':$options})
     return
         $funcItem
 };    
@@ -1397,7 +1454,8 @@ declare function f:resolveInlineFunctionExpression_new_20160903(
                                            $context as item()?, 
                                            $position as xs:integer?, 
                                            $last as xs:integer?,
-                                           $vars as map(xs:QName, item()*)?)                                       
+                                           $vars as map(xs:QName, item()*)?,
+                                           $options as map(*)?)
         as item()* {
     let $inlineFuncBody := $inlineFuncExpr/body/*
     let $funcItemText_params := trace(
@@ -1435,12 +1493,9 @@ declare function f:resolveInlineFunctionExpression_new_20160903(
             concat('function(', $funcItemText_params, ')', $funcItemText_result), 
             ' {', $funcItemText_launch, '}')
         , '&#xA;') , 'FUNCT_ITEM_TEXT: ')
-    let $DUMMY := trace($vars, 'VARS: ') 
-    let $DUMMY := trace($vars instance of map(*), 'VARS_IS_MAP: ')
 
     let $funcItem := xquery:eval($funcItemText, map{})
     (: let $funcItem := xquery:eval($funcItemText, map{'resolver': f:resolveFoxpathRC#6, 'vars':$vars}) :)
-    let $DUMMY := trace($vars, 'VARS2: ') 
     return
         $funcItem
 };    
@@ -1464,11 +1519,12 @@ declare function f:resolveDynFunctionCall($callExpr as element(),
                                           $context as item()?, 
                                           $position as xs:integer?, 
                                           $last as xs:integer?,
-                                          $vars as map(xs:QName, item()*)?)                                       
+                                          $vars as map(xs:QName, item()*)?,
+                                          $options as map(*)?)
         as item()* {
     let $funcExpr := $callExpr/*[1]
     let $argExprs := $callExpr/*[position() gt 1]    
-    let $funcItem := $funcExpr/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+    let $funcItem := $funcExpr/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
     
     (: @TODO@ assignment `isInlineFunction`:
               Find a better way to recognize the use of an inline function expression :)
@@ -1484,22 +1540,22 @@ declare function f:resolveDynFunctionCall($callExpr as element(),
         :)
         
         if ($argExprs/self::argPlaceholder) then
-            f:resolvePartialFunctionCall($funcItem, $argExprs, $context, $position, $last, $vars)            
+            f:resolvePartialFunctionCall($funcItem, $argExprs, $context, $position, $last, $vars, $options)            
         else if (count($argExprs) eq 0) then 
             $funcItem()
         else if (count($argExprs) eq 1) then
-            let $arg1 := $argExprs[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg1 := $argExprs[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 $funcItem($arg1)
         else if (count($argExprs) eq 2) then
-            let $arg1 := $argExprs[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg2 := $argExprs[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $arg1 := $argExprs[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $argExprs[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 $funcItem($arg1, $arg2)
         else if (count($argExprs) eq 3) then
-            let $arg1 := $argExprs[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg2 := $argExprs[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
-            let $arg3 := $argExprs[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)            
+            let $arg1 := $argExprs[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $argExprs[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg3 := $argExprs[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
                 $funcItem($arg1, $arg2, $arg3)
         else
@@ -1554,10 +1610,11 @@ declare function f:resolveInlinePartialFunctionCall($funcItem as function(*),
                                                     $context as item()?, 
                                                     $position as xs:integer?, 
                                                     $last as xs:integer?,
-                                                    $vars as map(xs:QName, item()*)?)                                       
+                                                    $vars as map(xs:QName, item()*)?,
+                                                    $options as map(*)?)
         as item()* {
         
-    let $exprTree := $funcItem('tree', $context, $position, $last, $vars)
+    let $exprTree := $funcItem('tree', $context, $position, $last, $vars, $options)
     let $params := $exprTree/params/param  
     let $return := $exprTree/return
     let $funcBody := $exprTree/body/*
@@ -1567,18 +1624,19 @@ declare function f:resolveInlinePartialFunctionCall($funcItem as function(*),
        as well as all arguments which are not placeholders :)
     let $dynCallContext := map:merge((
         $vars, 
-        map:entry('resolve', f:resolveFoxpathRC#6),        
+        map:entry('resolve', f:resolveFoxpathRC#7),        
         map:entry('inlineFuncBody', $funcBody),        
         map:entry('context', $context),
         map:entry('position', $position),
         map:entry('last', $last),
         map:entry('vars', $vars),
+        map:entry('options', $options),
         
         for $argExpr at $pos in $argExprs
         let $argName := $params[$pos]/@localName
         where not($argExpr/self::argPlaceholder)
         return
-            let $argValue := $argExpr/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $argValue := $argExpr/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return map:entry($argName, $argValue)
     ))
 
@@ -1660,6 +1718,7 @@ declare variable $context external;
 declare variable $position external;
 declare variable $last external;
 declare variable $vars external;
+declare variable $options external;
 `{$variableDeclarations}`
 
 let $funcItem :=
@@ -1669,16 +1728,17 @@ let $funcItem :=
            $position as xs:integer?,
            $last as xs:integer?,
            $vars as map(xs:QName, item()*)?,
+           $options as map(*)?,
            `{$paramDeclarations}`
  `{$returnDeclaration}`              
   {
     let $useVars := if (exists($vars)) then $vars else map{}
     `{$paramTransfer}`
     return
-      $resolve($inlineFuncBody, false(), $context, $position, $last, $useVars)
+      $resolve($inlineFuncBody, false(), $context, $position, $last, $useVars, $options)
 }
 return
-  $funcItem($resolve, $inlineFuncBody, $context, $position, $last, $vars, `{$args}`)
+  $funcItem($resolve, $inlineFuncBody, $context, $position, $last, $vars, $options, `{$args}`)
 ]`` ! replace(., '&#xD;', '')    
     return
         xquery:eval($dynCallText, $dynCallContext)
@@ -1692,12 +1752,13 @@ declare function f:resolveStaticPartialFunctionCall($call as element(),
                                                     $context as item()?, 
                                                     $position as xs:integer?, 
                                                     $last as xs:integer?,
-                                                    $vars as map(xs:QName, item()*)?)                                       
+                                                    $vars as map(xs:QName, item()*)?,
+                                                    $options as map(*)?)
         as item()* {      
     let $funcName := $call/@name
     let $args := $call/*
     return
-        f:resolvePartialFunctionCall($funcName, $args, $context, $position, $last, $vars)
+        f:resolvePartialFunctionCall($funcName, $args, $context, $position, $last, $vars, $options)
 };
 
 (:~ 
@@ -1709,7 +1770,8 @@ declare function f:resolvePartialFunctionCall($funcNameOrItem as item(),
                                               $context as item()?, 
                                               $position as xs:integer?, 
                                               $last as xs:integer?,
-                                              $vars as map(xs:QName, item()*)?)                                       
+                                              $vars as map(xs:QName, item()*)?,
+                                              $options as map(*)?)
         as item()* {   
     (: *TODO* Currently, the expression text used to resolve the partial
      : function call uses hard-coded variable names for the arguments
@@ -1734,7 +1796,7 @@ declare function f:resolvePartialFunctionCall($funcNameOrItem as item(),
         where not($arg/self::argPlaceholder)
         return
             let $name := 'arg' || $pos
-            let $value := $arg/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars)
+            let $value := $arg/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return map:entry($name, $value)
     )
     (: create the required variable declarations :)
@@ -1786,12 +1848,13 @@ declare function f:resolveFunctionCall($call as element(),
                                        $context as item()?, 
                                        $position as xs:integer?, 
                                        $last as xs:integer?,
-                                       $vars as map(xs:QName, item()*)?)                                       
+                                       $vars as map(xs:QName, item()*)?,
+                                       $options as map(*)?)                                       
         as item()* {
     if ($call/argPlaceholder) then 
-        f:resolveStaticPartialFunctionCall($call, $context, $position, $last, $vars)
+        f:resolveStaticPartialFunctionCall($call, $context, $position, $last, $vars, $options)
     else
-        i:resolveStaticFunctionCall($call, $context, $position, $last, $vars)
+        i:resolveStaticFunctionCall($call, $context, $position, $last, $vars, $options)
 };      
 
 (: 
@@ -1808,7 +1871,9 @@ declare function f:resolveFunctionCall($call as element(),
  : @param varSpec structured representation of the variable reference
  : @vars a map providing the the names and values of the currently bound variables
  :)
-declare function f:getVarValue($varSpec as element(var), $vars as map(xs:QName, item()*)?)
+declare function f:getVarValue($varSpec as element(var), 
+                               $vars as map(xs:QName, item()*)?, 
+                               $options as map(*)?)
         as item()* {       
     let $varName := $varSpec/@localName
     let $varNamespace := $varSpec/@namespace    

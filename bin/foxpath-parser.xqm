@@ -7,6 +7,7 @@ declare variable $f:FOXSTEP_SEPERATOR := '/';
 declare variable $f:NODESTEP_SEPERATOR := '\';
 declare variable $f:FOXSTEP_ESCAPE := '~';
 declare variable $f:FOXSTEP_NAME_DELIM := '`';
+declare variable $f:URI_TREES_DIR := 'uri-trees';
 
 (:~
  : Parses a foxpath expression, creating an expression tree.
@@ -100,10 +101,16 @@ declare function f:getInitialParsingContext($options as map(*)?)
         ($options ! map:get(., 'FOXSTEP_ESCAPE'), $f:FOXSTEP_ESCAPE)[1]
     let $foxstepNameDelim :=
         ($options ! map:get(., 'FOXSTEP_NAME_DELIM'), $f:FOXSTEP_NAME_DELIM)[1]
+    let $uriTreesDir :=
+        ($options ! map:get(., 'URI_TREES_DIR'), $f:URI_TREES_DIR)[1]
         
     let $foxstepSeperatorRegex := replace($foxstepSeperator, '(\\)', '\\$1')
     let $nodestepSeperatorRegex := replace($nodestepSeperator, '(\\)', '\\$1')
     
+    let $uriTrees :=
+        try {
+            file:list($uriTreesDir, false(), 'uri-trees-*') ! concat($uriTreesDir, '/', .) ! doc(.)/*
+        } catch * {()}
     return
         map{'FOXSTEP_SEPERATOR': $foxstepSeperator,
             'FOXSTEP_SEPERATOR_REGEX': $foxstepSeperatorRegex,
@@ -111,7 +118,9 @@ declare function f:getInitialParsingContext($options as map(*)?)
             'NODESTEP_SEPERATOR_REGEX': $nodestepSeperatorRegex,
             'FOXSTEP_ESCAPE': $foxstepEscape,
             'FOXSTEP_NAME_DELIM': $foxstepNameDelim,
-            'IS_CONTEXT_URI': $isContextUri}
+            'IS_CONTEXT_URI': $isContextUri,           
+            'URI_TREES_DIR': $uriTreesDir,
+            'URI_TREES': $uriTrees}
 };
 
 (: 
@@ -1501,7 +1510,7 @@ declare function f:parseMapExprRC($text as xs:string, $context as map(*))
  :)     
 declare function f:parsePathExpr($text as xs:string, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_PATH: ')   
+    let $DEBUG := f:trace($text, 'parse.path', 'INTEXT_PATH: ')   
     let $FOXSTEP_SEPERATOR_REGEX := map:get($context, 'FOXSTEP_SEPERATOR_REGEX')
     let $NODESTEP_SEPERATOR_REGEX := map:get($context, 'NODESTEP_SEPERATOR_REGEX')    
     let $FOXSTEP_SEPERATOR := map:get($context, 'FOXSTEP_SEPERATOR')
@@ -1510,7 +1519,9 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
     (: parse initial root step (/ or \) 
        ================================ :) 
     let $root :=
-        if (matches($text, concat('^[a-zA-Z]:', $FOXSTEP_SEPERATOR_REGEX))) then 
+        if (starts-with($text, 'http://')) then <foxRoot path="http://"/>        
+        else if (starts-with($text, 'https://')) then <foxRoot path="https://"/>        
+        else if (matches($text, concat('^[a-zA-Z]:', $FOXSTEP_SEPERATOR_REGEX))) then 
             let $path := replace(substring($text, 1, 3), '\\', '/')
             return <foxRoot path="{$path}"/>
         else if (starts-with($text, $FOXSTEP_SEPERATOR)) then <foxRoot path="/"/>
@@ -1635,7 +1646,7 @@ declare function f:parseSteps($text as xs:string?,
                               $precedingOperator as xs:string?,
                               $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_STEPS: ')
+    let $DEBUG := f:trace($text, 'parse.steps', 'INTEXT_STEPS: ')
     let $FOXSTEP_SEPERATOR := map:get($context, 'FOXSTEP_SEPERATOR')
     let $NODESTEP_SEPERATOR := map:get($context, 'NODESTEP_SEPERATOR')
     
@@ -1706,7 +1717,7 @@ declare function f:parseStep($text as xs:string?,
                              $precedingOperator as xs:string?,
                              $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text.step', 'INTEXT_STEP: ')  
+    let $DEBUG := f:trace($text, 'parse.step', 'INTEXT_STEP: ')  
     let $postfixExprEtc := f:parsePostfixExpr($text, $context)
     let $postfixExpr := $postfixExprEtc[. instance of node()]
     return
@@ -1758,7 +1769,7 @@ declare function f:parseStep($text as xs:string?,
  :)
 declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.text.step.fox_axis', 'INTEXT_FOX_AXIS_STEP: ')
+    let $DEBUG := f:trace($text, 'parse.fox_axis_step', 'INTEXT_FOX_AXIS_STEP: ')
     let $acceptAbbrevSyntax := map:get($context, 'IS_CONTEXT_URI') eq true()
     let $FOXSTEP_SEPERATOR := map:get($context, 'FOXSTEP_SEPERATOR')
     let $FOXSTEP_NAME_DELIM := map:get($context, 'FOXSTEP_NAME_DELIM')
@@ -1868,7 +1879,7 @@ declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
  :)
 declare function f:parseNodeAxisStep($text as xs:string?, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.text.step.node_axis', 'NODE_AXIS_STEP_EXPR: ') return            
+    let $DEBUG := f:trace($text, 'parse.node_axis_step', 'NODE_AXIS_STEP_EXPR: ') return            
     let $DEBUG := map:get($context, 'IS_CONTEXT_URI')
     
     let $NODESTEP_SEPERATOR := map:get($context, 'NODESTEP_SEPERATOR')
