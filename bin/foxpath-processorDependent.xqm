@@ -50,7 +50,9 @@ declare function f:isFile($path as xs:string, $options as map(*)?) as xs:boolean
             else map:get($options, 'URI_TREES')
         return
             $path = (
-                for $rtree in $rtrees/tree
+                for $rtree in $rtrees
+                    [starts-with($path, @uriPrefix)]
+                    /tree[starts-with($path, @baseURI)]
                 let $baseUri := $rtree/@baseURI
                 for $file in $rtree//file
                 return concat($baseUri, $file/@path)

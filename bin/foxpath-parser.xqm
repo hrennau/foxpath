@@ -7,7 +7,9 @@ declare variable $f:FOXSTEP_SEPERATOR := '/';
 declare variable $f:NODESTEP_SEPERATOR := '\';
 declare variable $f:FOXSTEP_ESCAPE := '~';
 declare variable $f:FOXSTEP_NAME_DELIM := '`';
-declare variable $f:URI_TREES_DIR := 'uri-trees';
+declare variable $f:URI_TREES_DIR external := 'basex://uri-trees2';
+
+(: declare variable $f:URI_TREES_DIR := 'uri-trees'; :)
 
 (:~
  : Parses a foxpath expression, creating an expression tree.
@@ -20,6 +22,18 @@ declare variable $f:URI_TREES_DIR := 'uri-trees';
 declare function f:parseFoxpath($text as xs:string?)
         as element()+ {
     f:parseFoxpath($text, ())
+};
+
+(:~
+ : Parses a foxpath expression, creating an expression tree.
+ : This variant of the parsing function switches optimization off.
+ :
+ : @param text the expression text
+ : @return expression tree representing the expression text
+ :)
+declare function f:parseFoxpath_noOptimization($text as xs:string?)
+        as element()+ {        
+    f:parseFoxpath($text, map{'SKIP_OPTIMIZATION': true()})
 };
 
 (:~
@@ -64,7 +78,14 @@ declare function f:parseFoxpath($text as xs:string?, $options as map(*)?)
                     concat('Unexpected text after expression end: ', $textAfter)))                    
         else
             let $nsDecls := $prolog/nsDecls
-            let $exprTree := f:finalizeParseTree($seqExpr, $prolog)
+            let $exprTree := 
+                let $finalized := f:finalizeParseTree($seqExpr, $prolog)
+                return
+                    if (exists($options) and map:get($options, 'SKIP_OPTIMIZATION')) then 
+                        $finalized
+                    else
+                        f:finalizeParseTree_annotateSteps($finalized)
+
             let $errors := f:finalizeFoxpathErrors($exprTree/descendant-or-self::error)            
             return
                 if ($errors) then $errors 
@@ -107,10 +128,17 @@ declare function f:getInitialParsingContext($options as map(*)?)
     let $foxstepSeperatorRegex := replace($foxstepSeperator, '(\\)', '\\$1')
     let $nodestepSeperatorRegex := replace($nodestepSeperator, '(\\)', '\\$1')
     
+(:    
     let $uriTrees :=
-        try {
-            file:list($uriTreesDir, false(), 'uri-trees-*') ! concat($uriTreesDir, '/', .) ! doc(.)/*
-        } catch * {()}
+        if (starts-with($uriTreesDir, 'basex://')) then
+            let $db := trace(substring($uriTreesDir, 9) , 'DB: ')
+            return db:open($db)
+        else
+            try {
+                file:list($uriTreesDir, false(), 'uri-trees-*') ! concat($uriTreesDir, '/', .) ! doc(.)/*
+            } catch * {()}
+    let $DUMMY := trace(count($uriTrees), 'COUNT_URI_TREES: ')
+:)    
     return
         map{'FOXSTEP_SEPERATOR': $foxstepSeperator,
             'FOXSTEP_SEPERATOR_REGEX': $foxstepSeperatorRegex,
@@ -119,10 +147,10 @@ declare function f:getInitialParsingContext($options as map(*)?)
             'FOXSTEP_ESCAPE': $foxstepEscape,
             'FOXSTEP_NAME_DELIM': $foxstepNameDelim,
             'IS_CONTEXT_URI': $isContextUri,           
-            'URI_TREES_DIR': $uriTreesDir,
-            'URI_TREES': $uriTrees}
+            'URI_TREES_DIR': $uriTreesDir
+        }
 };
-
+            (: 'URI_TREES': $uriTrees}:) 
 (: 
  : ===============================================================================
  :
@@ -207,6 +235,92 @@ declare function f:finalizeParseTree_namespacesRC($n as node(), $prolog as eleme
     default return
         $n
 };
+
+declare function f:finalizeParseTree_annotateSteps($tree as element())
+        as element() {
+    f:finalizeParseTree_annotateStepsRC($tree)        
+};
+
+(:~
+ : Annotatation of steps: a foxstep with a predicate 'is-file' or 'is-dir' is annotated
+ : with a @nodeKind attribute.
+ :)
+declare function f:finalizeParseTree_annotateStepsRC($n as node())
+        as node()? {
+    typeswitch($n)
+    case document-node() return
+        document {for $c in $n/node() return 
+            f:finalizeParseTree_annotateStepsRC($n)}
+    case element(foxStep) return
+        (: if a predicate prescrites 'is-file' or 'is-dir', 
+           @kindFilter is set to 'file' or 'dir' :)
+        let $kindFilterAtt :=
+            let $fcall := $n/functionCall[@name = ('is-file', 'is-dir')]
+            let $arg := $fcall/*            
+            return
+                if (not($arg) or $arg/self::contextItem) then 
+                    attribute kindFilter {$fcall/@name/substring(., 4)}
+                else ()
+        let $wasChildAtt :=
+            if (f:finalizeParseTree_isShortcut_doubleSlashChild($n/preceding-sibling::*[1], $n)) then
+                attribute __anno {'was-child'}
+            else ()
+        let $ignoreAtt :=
+            if (f:finalizeParseTree_isShortcut_doubleSlashChild($n, $n/following-sibling::*[1])) then
+                attribute __ignore {'true'}
+            else ()
+        return
+            if (not($wasChildAtt)) then
+                element {node-name($n)} {
+                    for $a in $n/@* return f:finalizeParseTree_annotateStepsRC($a),
+                    $ignoreAtt,
+                    (: the predicate because of BaseX bug ...:)
+                    $kindFilterAtt[string()],
+                    for $c in $n/node() return f:finalizeParseTree_annotateStepsRC($c)
+                }
+            else                
+                element {node-name($n)} {
+                    attribute axis {'descendant'},
+                    $wasChildAtt,                
+                    for $a in $n/(@* except @axis) return f:finalizeParseTree_annotateStepsRC($a),
+                    (: the predicate because of BaseX bug ...:)
+                    $kindFilterAtt[string()],
+                    for $c in $n/node() return f:finalizeParseTree_annotateStepsRC($c)
+                }
+    case element(functionCall) return
+        let $ignAtt :=
+            if ($n/@name = ('is-file', 'is-dir') and $n/parent::foxStep and (not($n/*) or $n/contextItem)) then
+                attribute __ignore {'true'}
+            else ()
+        return
+            element {node-name($n)} {
+                for $a in $n/@* return f:finalizeParseTree_annotateStepsRC($a),
+                $ignAtt[string()],
+                for $c in $n/node() return f:finalizeParseTree_annotateStepsRC($c)
+            }
+        
+    case element() return
+        element {node-name($n)} {
+            for $a in $n/@* return f:finalizeParseTree_annotateStepsRC($a),
+            for $c in $n/node() return f:finalizeParseTree_annotateStepsRC($c)            
+        }
+    default return $n            
+};
+
+(:~
+ : Returns true if the two foxsteps stem from //foo and foo has no predicate referring 
+ :    to it position.
+ :)
+declare function f:finalizeParseTree_isShortcut_doubleSlashChild($foxStep1 as element()?, $foxStep2 as element()?)
+        as xs:boolean {
+    $foxStep1/self::foxStep[@axis eq 'descendant-or-self'][@name eq '*'][not(*)]
+       and 
+    $foxStep2/self::foxStep/@axis eq 'child'
+       and (
+    not($foxStep2/*) or 
+       count($foxStep2/*) eq 1 and $foxStep2/functionCall[@name = ('is-file', 'is-dir')]
+    )
+} ;       
 
 
 (: 

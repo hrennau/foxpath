@@ -2,7 +2,7 @@ module namespace f="http://www.ttools.org/xquery-functions";
 import module namespace i="http://www.ttools.org/xquery-functions" at 
     "foxpath-processorDependent.xqm",
     "foxpath-fox-functions.xqm",
-    "foxpath-resourceTreeTypeDependent.xqm",
+    "foxpath-uri-operations.xqm",
     "foxpath-util.xqm";
     
 (: 
@@ -51,7 +51,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 <dcat targetFormat="xml" 
                       t="{current-dateTime()}" 
-                      count="{count($refs)}"
                       onlyDocAvailable="{boolean($onlyDocAvailable)}">{$refs}</dcat>
                             
         (: function `file-contains` 
@@ -73,7 +72,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 else $context
             let $text :=
-                try {unparsed-text($uri)} catch * {()}
+                try {i:fox-unparsed-text($uri, $options)} catch * {()}
             return
                 if (not($text)) then () else
                 let $regex := replace($pattern, '\*', '.*')
@@ -83,29 +82,32 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `file-content` 
            ======================= :)
         else if ($fname eq 'file-content') then
-            let $uri := ($call/*[1], $context)[1]
+            let $uri := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return
+                    ($explicit, $context)[1]
             return
-                f:foxfunc_file-content($uri, $options)
+                f:fox-unparsed-text($uri, $options)
             
         (: function `file-date` 
            ==================== :)
         else if ($fname eq 'file-date' or $fname eq 'fdate') then
-            let $arg := 
+            let $uri := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return
                     ($explicit, $context)[1]
             return
-                f:fileDate($arg)
+                i:fox-file-date($uri, $options)
             
         (: function `file-sdate` 
            ===================== :)
         else if ($fname eq 'file-sdate' or $fname eq 'fsdate') then
-            let $arg := 
+            let $uri := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return
                     ($explicit, $context)[1]
             return
-                f:fileSdate($arg)
+                f:fox-file-sdate($uri, $options)
             
         (: function `file-ext` 
            ================== :)
@@ -145,7 +147,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (not($pattern)) then ()
                 else concat('^.*', replace(replace($pattern, '\*', '.*'), '\?', '.'), '.*$')
                 
-            let $lines := try{unparsed-text-lines($uri)} catch * {()}
+            let $lines := i:fox-file-lines($uri, $options)
             let $lines := 
                 if (not($line1) and not($line2)) then $lines else
                     $lines[(empty($line1) or position() ge $line1) and (not($line2) or position() le $line2)]                 
@@ -156,10 +158,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `file-name` 
            ==================== :)
         else if ($fname eq 'file-name' or $fname eq 'fname') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $arg := if (empty($arg)) then $context else $arg
+            let $uri := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return
+                    ($explicit, $context)[1]
             return
-                replace($arg[1], '.*/', '')
+                replace($uri[1], '.*/', '')
             
        (: function `file-size` 
            =================== :)
@@ -169,7 +173,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return
                     ($explicit, $context)[1]
             return
-                f:fileSize($uri)
+                i:fox-file-size($uri, $options)
 
        (: function `grep` 
           =============== :)
@@ -182,13 +186,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $regex :=
                 if (not($pattern)) then ()
                 else concat('^.*', replace(replace($pattern, '\*', '.*'), '\?', '.'), '.*$')
-            let $lines := 
-                try {
-                    let $redirectedRetrieval := f:redirectedRetrieval($uri, $options)
-                    return
-                        if ($redirectedRetrieval) then tokenize($redirectedRetrieval, '&#xA;')
-                        else unparsed-text($uri)
-                } catch * {()}
+            let $lines := i:fox-unparsed-text-lines($uri, $options)
             let $lines := $lines[empty($regex) or matches(., $regex, 'i')]
             return
                 if (empty($lines)) then () else 
@@ -202,7 +200,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return
                     ($explicit, $context)[1]
             return
-                i:isDirectory($uri)
+                i:fox-is-dir($uri, $options)
             
         (: function `is-file` 
            ================== :)
@@ -212,7 +210,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return
                     ($explicit, $context)[1]
             return
-                i:isFile($uri, $options)
+                i:fox-is-file($uri, $options)
             
         (: function `is-xml` 
            ================ :)
@@ -231,14 +229,22 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $refs :=
                 for $item in $items
                 return
-                    if ($onlyDocAvailable and not(try {json:parse(unparsed-text($item))} catch * {()})) 
-                    then () 
+                    if ($onlyDocAvailable and i:fox-json-doc-available($item, $options)) then () 
                     else <json href="{$item}"/>
             return
                 <jsoncat targetFormat="json" t="{current-dateTime()}" count="{count($refs)}">{$refs}</jsoncat>
                             
-       (: function `linefeed` 
+        (: function `jsondoc` 
            ================== :)
+        else if ($fname eq 'json-doc') then
+            let $uri := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                i:fox-json-doc($uri, $options)
+                            
+       (: function `linefeed` 
+          ================== :)
         else if ($fname eq 'linefeed') then
             if (not($call/*)) then '&#xA;'
             else
@@ -277,6 +283,28 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 f:rpad($string, $width, $fillChar)
 
+        (: function `win.copy` 
+           ===================== :)
+        else if ($fname eq 'win.copy') then
+            let $items := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $targetDir := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $silent := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $useItems :=
+                for $item in $items return replace($item, '/', '\\')
+            let $copies :=
+                if ($silent) then $useItems ! concat('copy ', ., ' ', $targetDir)
+                else
+                    for $item in $useItems
+                    return
+                        concat('echo copy ', $item, ' ', $targetDir, '&#xA;copy ', $item, ' ', $targetDir)
+            return
+                string-join((
+                    '@echo off',
+                    if ($silent) then () else
+                        concat('echo copy ', count($copies), ' files ...'),
+                    $copies
+                ), '&#xA;')
+                            
         (: function `win.delete` 
            ===================== :)
         else if ($fname eq 'win.delete') then
@@ -443,7 +471,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $qname := QName($ns, $lname)
 
             return
-                f:foxfunc_xwrap($val, $qname, $flags)
+                f:foxfunc_xwrap($val, $qname, $flags, $options)
 
 (: the following two functions are at risk:
     eval-xpath

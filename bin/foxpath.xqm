@@ -3,7 +3,7 @@ import module namespace i="http://www.ttools.org/xquery-functions" at
     "foxpath-functions.xqm",
     "foxpath-parser.xqm",
     "foxpath-processorDependent.xqm",
-    "foxpath-resourceTreeTypeDependent.xqm",
+    "foxpath-uri-operations.xqm",
     "foxpath-util.xqm";
 
 (:~
@@ -77,7 +77,7 @@ declare function f:resolveFoxpath($foxpath as xs:string?,
                 for $path in $value return
                     if (not(i:isDirectory($path))) then $path
                     else
-                        f:childUriCollection($path, $defaultFileName, $options)
+                        f:childUriCollection($path, $defaultFileName, (), $options)
                         ! concat($path, '/', .)
             ))                        
 };
@@ -127,24 +127,44 @@ declare function f:resolveFoxpath($foxpath as xs:string,
  :)
 declare function f:finalizeOptions($options as map(*)?)
         as map(*) {
-    let $uriTreesDir :=
-        let $raw := ($options ! map:get(., 'URI_TREES_DIR'), $f:URI_TREES_DIR)[1]
-        return
-            if (starts-with($raw, '/')) then $raw
-            else
-                let $path := replace(static-base-uri(), '[^/]+$', '')
-                return concat($path, $raw)
+    let $uriTreesDir := ($options ! map:get(., 'URI_TREES_DIR'), $f:URI_TREES_DIR)[1]        
+    let $uriTreesDir := 
+        if (starts-with($uriTreesDir, 'basex://')) then $uriTreesDir
+        else if (starts-with($uriTreesDir, '/')) then $uriTreesDir
+        else
+            let $baseURI := replace(static-base-uri(), '[^/]+$', '')
+            return
+                concat($baseURI, $uriTreesDir)
         
     let $uriTrees :=
-        try {
-            file:list($uriTreesDir, false(), 'uri-trees-*') ! concat($uriTreesDir, '/', .) ! doc(.)/*
-        } catch * {()}
-    (: let $DUMMY := trace(count($uriTrees), 'COUNT_URI_TREES: ') :)        
-    return
+        if (starts-with($uriTreesDir, 'basex://')) then
+            let $db := substring($uriTreesDir, 9)
+            let $docs := try {db:open($db)/*} catch * {()}
+            return $docs
+        else
+            try {
+                file:list($uriTreesDir, false(), 'uri-trees-*') 
+                ! concat($uriTreesDir, '/', .) ! doc(.)/*
+            } catch * {()}
+    let $uriPrefixMap :=
+        map:merge(
+            for $doc in $uriTrees
+            return map:entry($doc/@uriPrefix, $doc/tree/@baseURI)
+        )
+    let $uriPrefixes := $uriTrees/@uriPrefix
+    
+    (: let $DUMMY := trace(count($uriTrees), 'COUNT_URI_TREES #2: ') :)        
+    let $map :=
         map{       
             'URI_TREES_DIR': $uriTreesDir,
-            'URI_TREES': $uriTrees
+            'URI_TREES': $uriTrees,
+            'URI_TREES_BASE_URIS': $uriTrees/tree/@baseURI,
+            'URI_TREES_PREFIXES': $uriPrefixes,
+            'URI_TREES_PREFIX_TO_BASE_URIS': $uriPrefixMap
         }
+    (: let $DUMMY := trace(count(map:get($map, 'URI_TREES')), 'COUNT_URI_TREES_IN_MAP: ') :)
+    return    
+        $map
 };
 
 (:~
@@ -502,7 +522,7 @@ declare function f:resolveFoxpathExpr($foxpath as element(foxpath),
     return
         if (empty($initialContext)) then () else
         
-    let $steps := $foxpath/(* except $initialRoot)
+    let $steps := $foxpath/(* except $initialRoot)[not(@__ignore eq 'true')]
     let $value :=
         if (not($steps)) then $initialContext
         else
@@ -572,22 +592,22 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
     let $axis := $axisStep/@axis/string()
     let $name := $axisStep/@name/string()
     let $regex := $axisStep/@regex/string()
-    let $predicates := $axisStep/*    
+    let $predicates := $axisStep/*[not(@__ignore eq 'true')]    
     let $files :=
         (: forward axis :)
         if ($axis = ('child', 'descendant', 'descendant-or-self')) then
             let $deep := $axis = ('descendant', 'descendant-or-self')
             let $listFunction := 
-                if ($deep) then f:descendantUriCollection#3 
-                           else f:childUriCollection#3
+                if ($deep) then f:descendantUriCollection#4 
+                           else f:childUriCollection#4
             return
-                for $ctxt in $context[not(i:isFile(., $options))]
+                for $ctxt in $context[not(i:fox-is-file(., $options))]
                 let $useCtxt := if (matches($ctxt, '^.:$')) then concat($ctxt, '/') else $ctxt 
                 (:     file:list('c:') delivers the current working directory files, not the root directory files :)
             
                 let $prefix := replace($useCtxt, '/$', '')
                 let $descendants :=
-                    $listFunction($ctxt, $name, $options)
+                    $listFunction($ctxt, $name, $axisStep, $options)
                     ! replace(., '/$', '')
                     [not($regex) or matches(replace(., '.*/', ''), $regex, 'i')]            
                     ! concat($prefix, '/', .)
@@ -616,7 +636,7 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                 for $ctxt in $context
                 let $parent := (replace($ctxt, '/[^/]*$', '')[string()], '/')[1]
                 let $followingSiblings := 
-                    f:childUriCollection($parent, '*', $options)
+                    f:childUriCollection($parent, '*', $axisStep, $options)
                     [lower-case(replace(., '.*/', '')) gt lower-case(replace($ctxt, '.*/', ''))]                    
                     [not($regex) or matches(replace(., '.*/', ''), $regex, 'i')]            
                     ! concat($parent, '/', .)                
@@ -668,7 +688,7 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                 for $ctxt in $context
                 let $parent := (replace($ctxt, '/[^/]*$', '')[string()], '/')[1]
                 let $precedingSiblings := 
-                    f:childUriCollection($parent, '*', $options)
+                    f:childUriCollection($parent, '*', $axisStep, $options)
                     [lower-case(replace(., '.*/', '')) lt lower-case(replace($ctxt, '.*/', ''))]                    
                     [not($regex) or matches(replace(., '.*/', ''), $regex, 'i')]            
                     ! concat($parent, '/', .)                

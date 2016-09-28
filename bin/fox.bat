@@ -16,13 +16,20 @@ set PARSE=
 set ISFILE=
 set SEP=/
 set VARS=
+set UTREEDIR=
 
 :NEXTPAR
-set name=%~1
-set char1=%name:~0,1%
+set name="%~1"
+set char1=%name:~1,1%
 if "%char1%" neq "-" goto :ENDPAR
+
+rem if this is a paraemeter name, remove quote (by re-assigning to %~1)
+rem the quote was needed for argument expressions containing <
+set name=%~1
+
 shift
 set value=%~1
+
 if "%value%"=="" goto :ENDPAR
 
 if "%name%"=="-p" (
@@ -31,6 +38,9 @@ if "%name%"=="-p" (
    set ISFILE=Y
  ) else if "%name%"=="-b" (
    set SEP=\   
+ ) else if "%name%"=="-u" (
+   set UTREEDIR=!VALUE!
+   shift   
  ) else if "%name%"=="-v" (
    set VARS=!VARS!#######!VALUE!   
    shift
@@ -43,11 +53,11 @@ if "%name%"=="-p" (
 )
 goto :NEXTPAR
 :ENDPAR 
-set FOXPATH=%~1
-rem echo VARS=%VARS%
+set foxpath=%name%
+if %foxpath%=="?" echo NO else (echo YES)
 
-if "%FOXPATH%"=="?" (
-    echo Usage: fox [-f] [-p] [-b] [-v name=value]* foxpath
+if %FOXPATH%=="?" (
+    echo Usage: fox [-f] [-p] [-b] [-u uri-trees-dir] [-v name=value]* foxpath
     echo foxpath : a foxpath expression, or a file containing a foxpath expression
     echo.
     echo -f      : the foxpath parameter is not a foxpath expression, but the path or URI of 
@@ -80,6 +90,6 @@ if "%FOXPATH%"=="?" (
 )
 if "%PARSE%"=="Y" (set MODE=parse) else (set MODE=eval)
 if "%ISFILE%"=="Y" (set ISFILE=true) else (set ISFILE=false)
-set CMD=basex -b isFile=%ISFILE% -b mode=%MODE% -b sep=%SEP% -b "foxpath=%FOXPATH%" -b "vars=%VARS%" %HERE%/fox.xq
-rem echo %CMD%
-%CMD%
+set OPT_UTREEDIR=
+if not "%UTREEDIR%"=="" (set OPT_UTREEDIR=-b utreeDir=%UTREEDIR%)
+basex -b isFile=%ISFILE% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREEDIR% -b "vars=%VARS%" %HERE%/fox.xq

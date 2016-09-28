@@ -1,7 +1,7 @@
 module namespace f="http://www.ttools.org/xquery-functions";
 import module namespace i="http://www.ttools.org/xquery-functions" at 
     "foxpath-processorDependent.xqm",
-    "foxpath-resourceTreeTypeDependent.xqm",
+    "foxpath-uri-operations.xqm",
     "foxpath-util.xqm";
 
 (:~
@@ -28,7 +28,7 @@ declare function f:foxfunc_file-content($uri as xs:string?, $options as map(*)?)
     let $redirectedRetrieval := f:redirectedRetrieval($uri, $options)
     return
         if ($redirectedRetrieval) then $redirectedRetrieval
-        else unparsed-text($uri)
+        else i:fox-unparsed-text($uri, $options)
 };      
 
 (:~
@@ -52,7 +52,7 @@ declare function f:foxfunc_file-content($uri as xs:string?, $options as map(*)?)
  : @param name the name of the root element of the result document
  : @return the result document
  :)
-declare function f:foxfunc_xwrap($items as item()*, $name as xs:QName, $flags as xs:string?) 
+declare function f:foxfunc_xwrap($items as item()*, $name as xs:QName, $flags as xs:string?, $options as map(*)?) 
         as element()? {
     let $val :=
         for $item in $items return
@@ -73,7 +73,7 @@ declare function f:foxfunc_xwrap($items as item()*, $name as xs:QName, $flags as
                 
         (: item a URI, flag 'd' => parse document at that URI :)                
         else if (contains($flags, 'd')) then
-            let $doc := try {doc($item)/*} catch * {()}
+            let $doc := try {i:fox-doc($item, $options)/*} catch * {()}
             return
                 if ($doc) then 
                     if (contains($flags, 'b')) then
@@ -91,14 +91,14 @@ declare function f:foxfunc_xwrap($items as item()*, $name as xs:QName, $flags as
                     
         (: item a URI, flag 'w' => read text at that URI, write it intoa wrapper element :)                    
         else if (contains($flags, 'w')) then
-            let $text := try {unparsed-text($item)} catch * {()}
+            let $text := try {i:fox-unparsed-text($item, $options)} catch * {()}
             return
                 if ($text) then <_text_ xml:base="{$item}">{$text}</_text_>
                 else <READ-ERROR>{$item}</READ-ERROR>
                 
         (: item a URI, flag 't' => read text at that URI, copy it into result :)                
         else if (contains($flags, 't')) then
-            let $text := try {unparsed-text($item)} catch * {()}
+            let $text := try {i:fox-unparsed-text($item, $options)} catch * {()}
             return
                 if ($text) then $text
                 else <READ-ERROR>{$item}</READ-ERROR>
