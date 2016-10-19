@@ -22,6 +22,7 @@ declare function f:currentDirectory() as xs:string? {
     replace(replace(file:current-dir(), '\\', '/'), '/$', '')
 };
 
+(:
 (:~
  : Tests if $path points to a directory.
  :
@@ -59,7 +60,9 @@ declare function f:isFile($path as xs:string, $options as map(*)?) as xs:boolean
                 )
     else file:is-file($path)
 };
+:)
 
+(:
 (:~
  : Returns the last modification time of a file or directory.
  :
@@ -68,7 +71,9 @@ declare function f:isFile($path as xs:string, $options as map(*)?) as xs:boolean
 declare function f:fileLastModified($path as xs:string) as xs:dateTime? {
     $path ! file:last-modified($path)
 };
+:)
 
+(:
 (:~
  : Returns the byte size of a file, or the value 0 for a directory.
  :
@@ -77,3 +82,4 @@ declare function f:fileLastModified($path as xs:string) as xs:dateTime? {
 declare function f:fileSize($path as xs:string?) as xs:integer? {
     $path ! file:size($path)
 };
+:)

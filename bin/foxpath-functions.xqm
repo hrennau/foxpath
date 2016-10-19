@@ -77,17 +77,30 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (not($text)) then () else
                 let $regex := replace($pattern, '\*', '.*')
                 return
-                    matches($text, $regex, 's')
+                    matches($text, $regex, 'si')
             
         (: function `file-content` 
            ======================= :)
         else if ($fname eq 'file-content') then
-            let $uri := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return
-                    ($explicit, $context)[1]
+            let $pattern :=
+                if ($call/*[2]) then
+                    $call/*[2]
+                    /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else if ($call/*) then
+                    $call/*[1]
+                    /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else () 
+            let $uri :=
+                if ($call/*[2]) then
+                    $call/*[1]
+                    /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $context
             return
-                f:fox-unparsed-text($uri, $options)
+                if (not($pattern)) then f:fox-unparsed-text($uri, $options)
+                else
+                    let $regex := replace($pattern, '\*', '.*')
+                    return
+                        f:fox-unparsed-text-lines($uri, $options)[matches(., $regex, 'i')]
             
         (: function `file-date` 
            ==================== :)
@@ -195,7 +208,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `is-dir` 
            ================= :)
         else if ($fname eq 'is-dir' or $fname eq 'isDir') then
-            let $uri := 
+            let $uri :=
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return
                     ($explicit, $context)[1]
@@ -234,14 +247,23 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 <jsoncat targetFormat="json" t="{current-dateTime()}" count="{count($refs)}">{$refs}</jsoncat>
                             
-        (: function `jsondoc` 
-           ================== :)
+        (: function `json-doc` 
+           =================== :)
         else if ($fname eq 'json-doc') then
             let $uri := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
             return
                 i:fox-json-doc($uri, $options)
+                            
+        (: function `json-doc-available` 
+           ============================= :)
+        else if ($fname eq 'json-doc-available') then
+            let $uri := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                try {i:fox-json-doc($uri, $options)/true()} catch * {false()}
                             
        (: function `linefeed` 
           ================== :)
@@ -457,9 +479,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `xwrap` 
            ==================== :)
         else if ($fname eq 'xwrap') then
-            let $val := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
-            let $name := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $flags := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $val := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $name := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $flags := $call/*[3] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
 
             let $name := normalize-space($name)
             let $lname :=
@@ -505,6 +527,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 boolean(i:xquery($xpath, map{'':$xpathContextNode})[1])
                    
+        (: function `echo` 
+           ==================== :)
+        else if ($fname eq 'echo') then
+            let $val := trace($call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) , 'VAL: ')        
+            return
+                $val
 
         (: ################################################################
          : p a r t  2:    s t a n d a r d    f u n c t i o n s
@@ -588,7 +616,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
             return
-                xs:date(substring(string(i:fileLastModified($arg)), 1, 10))
+                xs:date(substring(string(i:fox-file-date($arg, $options)), 1, 10))
 
         (: function `dateTime` 
            =================== :)
@@ -687,10 +715,20 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ===================== :)
         else if ($fname eq 'local-name') then
             let $arg := 
+                let $explicit := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                if (not(count($arg) eq 1 and $arg[1] instance of node())) then ()
+                else local-name($arg)
+
+        (: function `lower-case` 
+           ===================== :)
+        else if ($fname eq 'lower-case') then
+            let $arg := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
             return
-                local-name($arg)
+                lower-case($arg)
 
         (: function `matches` 
            ================== :)
@@ -783,8 +821,10 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname eq 'sort') then
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
+            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
-                if (exists($arg2)) then sort($arg1, $arg2)
+                if (exists($arg3)) then sort($arg1, $arg2, $arg3)
+                else if (exists($arg2)) then sort($arg1, $arg2)                
                 else sort($arg1)
 
         (: function `starts-with` 
@@ -932,12 +972,14 @@ declare function f:rpad($s as xs:anyAtomicType?, $width as xs:integer, $char as 
             return
                 concat($s, $pad)
 };
-                
+
+(:
 declare function f:fileDate($uri as xs:string?)
         as xs:dateTime? {
     $uri ! i:fileLastModified(.)
 };
-                
+:)
+
 declare function f:fileName($uri as xs:string?)
         as xs:string? {
     $uri ! replace(., '.*/', '')
@@ -958,13 +1000,13 @@ declare function f:fileInfo($content as xs:string?, $uri as xs:string?, $options
         let $padSide := if (starts-with($format, '-')) then 'l' else 'r'
         let $fillChar := 
             if (empty($format)) then () else (replace($format, '^-?\d+', '')[string()], ' ')[1]
-        let $isDir := file:is-dir($uri)            
+        let $isDir := i:fox-is-dir($uri, $options)            
         let $value :=
             if ($kind eq 'p') then $uri
             else if ($kind eq 'n') then f:fileName($uri)
             else if ($kind eq 's') then 
-                if (file:is-dir($uri)) then '/' else f:fileSize($uri)
-            else if ($kind eq 'd') then f:fileDate($uri)
+                if (i:fox-is-dir($uri, $options)) then '/' else i:fox-file-size($uri, $options)
+            else if ($kind eq 'd') then i:fox-file-date($uri, $options)
             else if ($kind eq 'r') then
                 let $doc := i:fox-doc($uri, $options)
                 return
@@ -999,8 +1041,9 @@ declare function f:fileInfo($content as xs:string?, $uri as xs:string?, $options
         $line
 };
 
+(:
 declare function f:fileSdate($uri as xs:string?)
         as xs:string? {
     $uri ! i:fileLastModified(.) ! string()
 };
-                
+:)                

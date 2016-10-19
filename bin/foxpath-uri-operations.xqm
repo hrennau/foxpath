@@ -69,7 +69,7 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
         as xs:boolean? {    
     let $mode := 1 return  (: 1 is better ! :)
     
-    if (f:uriDomain($uri, $options) eq 'FILE_SYSTEM') then file:is-file($uri)
+    if (f:uriDomain($uri, $options) eq 'FILE_SYSTEM') then file:is-dir($uri)
     else if (empty($options)) then ()
 
     else if ($mode eq 1) then exists(

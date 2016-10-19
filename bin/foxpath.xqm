@@ -75,7 +75,7 @@ declare function f:resolveFoxpath($foxpath as xs:string?,
                file name pattern :)
             sort(distinct-values(
                 for $path in $value return
-                    if (not(i:isDirectory($path))) then $path
+                    if (not(i:fox-is-dir($path, $options))) then $path
                     else
                         f:childUriCollection($path, $defaultFileName, (), $options)
                         ! concat($path, '/', .)
@@ -527,10 +527,14 @@ declare function f:resolveFoxpathExpr($foxpath as element(foxpath),
         if (not($steps)) then $initialContext
         else
             let $items := f:resolveFoxpathExprRC($steps, $initialContext, $vars, $options)
+            (: 20161001, hjr: removed the sorting; 
+                         sorting is handled within fox axis step resolver 
             return
                 if ($foxpath/*[last()]/self::foxStep) then
                     for $item in $items order by lower-case(string($item)) return $item
                 else $items
+            :)
+            return $items
     return
         if (not($ebvMode)) then $value
         else f:getEbv($value)
@@ -620,8 +624,9 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                         $descendants
                     )
                 return
+                    (: let $DUMMY := trace(sort($ctxtFiles), 'CTXT_FILES: ') return :)
                     if (not($predicates)) then $ctxtFiles
-                    else f:testPredicates(sort($ctxtFiles, lower-case#1), $predicates, $vars, $options)
+                    else f:testPredicates(sort($ctxtFiles, (), lower-case#1), $predicates, $vars, $options)
         else if ($axis = 'self') then
                 for $ctxt in $context
                 let $ctxt := if (matches($ctxt, '^.:$')) then concat($ctxt, '/') else $ctxt 
@@ -683,7 +688,7 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                 return                    
                     if (not($predicates)) then $ctxtFiles
                     else
-                        f:testPredicates(reverse(sort($ctxtFiles, lower-case#1)), $predicates, $vars, $options)
+                        f:testPredicates(reverse(sort($ctxtFiles, (), lower-case#1)), $predicates, $vars, $options)
         else if ($axis = 'preceding-sibling') then
                 for $ctxt in $context
                 let $parent := (replace($ctxt, '/[^/]*$', '')[string()], '/')[1]

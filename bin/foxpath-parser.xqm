@@ -1378,16 +1378,12 @@ declare function f:parseArrowExpr($text as xs:string, $context as map(*))
         else            
             let $clausesEtc := f:parseArrowExprClauses($textAfterUnary, $context)
             let $clauses := $clausesEtc[. instance of node()]
-            let $textAfterClauses := f:extractTextAfter($clauses)
+            let $textAfterClauses := f:extractTextAfter($clausesEtc)
             let $exprTree := f:foldArrowExpr($unaryExpr, $clauses)
             return (
                 $exprTree,
                 $textAfterClauses
             )
-(:                
-                f:createFoxpathError('NOT_YET_IMPLEMENTED',
-                    'Not yet implemented: => operator')
-:)                    
 };
 
 (:~
@@ -1399,7 +1395,7 @@ declare function f:parseArrowExpr($text as xs:string, $context as map(*))
  : Example:
  :)
 declare function f:foldArrowExpr($lhsExpr as element(), $clauses as element()*)
-        as element() {
+        as element() {      
     let $head := head($clauses)
     let $tail := tail($clauses)
     let $headFolded :=
@@ -1421,7 +1417,7 @@ declare function f:foldArrowExpr($lhsExpr as element(), $clauses as element()*)
 };        
 
 (:~
- : Parses the righthand-side clauses of an arraw expression.
+ : Parses the righthand-side clauses of an arrow expression.
  :
  : Syntax:
  :     ArrowClauses ::= ( "=>" ArrowFunctionSpecifier ArgumentList )*
@@ -1437,7 +1433,7 @@ declare function f:parseArrowExprClauses($text as xs:string, $context as map(*))
     return if (not(starts-with($text, '=>'))) then $text else
         
     let $textAfterArrow := f:skipOperator($text, '=>')
-    let $clause :=
+    let $clauseEtc :=
         let $nameEtc := f:parseEQName($textAfterArrow, $context)
         let $name := $nameEtc[. instance of node()]
         return
@@ -1455,7 +1451,7 @@ declare function f:parseArrowExprClauses($text as xs:string, $context as map(*))
                             }</arrayClause>,
                             $textAfterArgumentList
                         )
-    let $clause := if ($clause) then $clause else  
+    let $clauseEtc := if ($clauseEtc) then $clauseEtc else  
         let $varRefEtc := f:parseVariableRef($textAfterArrow, $context)        
         let $varRef := $varRefEtc[. instance of node()]
         return
@@ -1473,7 +1469,7 @@ declare function f:parseArrowExprClauses($text as xs:string, $context as map(*))
                             }</arrayClause>,
                             $textAfterArgumentList
                             )
-    let $clause := if ($clause) then $clause else
+    let $clauseEtc := if ($clauseEtc) then $clauseEtc else
         let $parenthEtc := f:parseParenthesizedExpr($textAfterArrow, $context)        
         let $parenth := $parenthEtc[. instance of node()]
         return
@@ -1490,18 +1486,17 @@ declare function f:parseArrowExprClauses($text as xs:string, $context as map(*))
                                 <argumentList>{$argumentList}</argumentList>
                             }</arrayClause>,
                             $textAfterArgumentList
-                        )                            
+                        )
+    let $clause := $clauseEtc[. instance of node()]
+    let $textAfterClause := f:extractTextAfter($clauseEtc)    
     return
         if (not($clause)) then $text
         else (
-            $clause,
-            
-            let $textAfterClause := f:extractTextAfter($clause)
-            return
-                if (starts-with($textAfterClause, '=>')) then
-                    f:parseArrowExprClauses($textAfterClause, $context)
-                else
-                    ()
+            $clause[. instance of node()],
+            if (starts-with($textAfterClause, '=>')) then
+                f:parseArrowExprClauses($textAfterClause, $context)
+            else
+               $textAfterClause
         )                    
 };
 
@@ -3624,12 +3619,13 @@ declare function f:parseItem_canonicalFoxnameTest($text as xs:string, $FOXSTEP_N
  :        the empty sequence if the text does not begin with an
  :        abbreviated name test
  :) 
-declare function f:parseItem_abbreviatedFoxnameTest($text as xs:string, $FOXSTEP_ESCAPE as xs:string)
+declare function f:parseItem_abbreviatedFoxnameTest($text as xs:string, 
+                                                    $FOXSTEP_ESCAPE as xs:string)
         as xs:string* {
 
     (: 
        The name test is terminated by any of the following characters (unless escaped): 
-       FOXSTEP_ESCAPE [] \/ <> () =!|,;
+       FOXSTEP_ESCAPE []} \/ <> () =!|,;
        Any of these characters occurring within the name pattern must be escaped
        by a preceding escape character.
        
@@ -3642,22 +3638,24 @@ declare function f:parseItem_abbreviatedFoxnameTest($text as xs:string, $FOXSTEP
        (2) or an escape character followed by one of the characters which are escaped       
     :)
 
+    (: if the text does not start with an unescaped or escaped fox name character ... :)
     if (not(matches($text,
             concat(
-            '^(',            '[^ ', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \d . ] |',
-            $FOXSTEP_ESCAPE, '[  ', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|, \d . ] )'
+            '^(',            '[^ ', $FOXSTEP_ESCAPE, '\[\]} \\/ <>()=!|,; \d . ] |',
+            $FOXSTEP_ESCAPE, '[  ', $FOXSTEP_ESCAPE, '\[\]} \\/ <>()=!|,; \d . ] )'
             ), 'sx'))) 
     then ()
             
+    (: extract the leading fox name test :)            
     else
         let $namePattern :=
             replace($text,
                 concat(
                 '^(',
-                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|,; \d . ] |',
-                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|,; \d . ] )',
-                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|,; \s ] |',
-                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\] \\/ <>()=!|,; \s ] )*', 
+                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\]} \\/ <>()=!|,; \d . ] |',
+                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\]} \\/ <>()=!|,; \d . ] )',
+                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\]} \\/ <>()=!|,; \s ] |',
+                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\]} \\/ <>()=!|,; \s ] )*', 
                 ' ).*'), '$1', 'sx')
                 
         return (

@@ -55,7 +55,8 @@ declare function f:foxfunc_file-content($uri as xs:string?, $options as map(*)?)
 declare function f:foxfunc_xwrap($items as item()*, $name as xs:QName, $flags as xs:string?, $options as map(*)?) 
         as element()? {
     let $val :=
-        for $item in $items return
+        for $item in $items 
+        return
 
         (: item a node => copy item :)
         if ($item instance of node()) then
