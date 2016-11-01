@@ -1,3 +1,21 @@
+(:
+foxpath-uri-operation.xqm - library of functions operating on URIs
+
+Overview:
+
+Group: resource properties
+  uriDomain
+  fox-is-file
+  fox-is-dir
+  fox-file-size
+  fox-file-date
+  fox-file-sdate
+
+Group: resource retrieval
+  fox-unparsed-text
+  fox-unparsed-text-lines
+  
+:)
 module namespace f="http://www.ttools.org/xquery-functions";
 import module namespace i="http://www.ttools.org/xquery-functions" at 
     "foxpath-processorDependent.xqm",
@@ -18,7 +36,8 @@ declare variable $f:TOKEN external := try {unparsed-text('/git/token')} catch * 
  : Returns the domain of an URI. This is one of these:
  :    SIMPLE_URI_TREE
  :    REDIRECTING_URI_TREE
- :    FILE_SYSTEM.
+ :    FILE_SYSTEM
+ :    SVN_REPO
  :
  : @param uri the URI
  : @param options options controlling the evaluation
@@ -33,57 +52,59 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
 (:~
  : Returns true if a resource is a file, rather than a directory.
  :
- : @param uri the URI or file path
+ : @param uri the URI or file path of the resource
  : @param options options controlling the evaluation
- : @return true if the resource is a file
+ : @return true if the resource exists and is a file
  :)
  declare function f:fox-is-file($uri as xs:string, $options as map(*)?)
         as xs:boolean? {    
-    let $mode := 1 return  (: 1 is better ! :)
+    let $mode := 1  (: 1 is better ! :) 
+    let $uriDomain := f:uriDomain($uri, $options)
+    return
     
-    if (f:uriDomain($uri, $options) eq 'FILE_SYSTEM') then file:is-file($uri)
+    if ($uriDomain eq 'FILE_SYSTEM') then file:is-file($uri)
     else if (empty($options)) then ()
-
-    else if ($mode eq 1) then exists(
-        for $buri in map:get($options, 'URI_TREES_BASE_URIS')[starts-with($uri, .)]
-        let $path := substring($uri, string-length($buri) + 1)
-        return
-            $buri/..//file[$path eq @path]
-         )
-         
-    else exists(
+    else if ($mode ne 1) then exists(
         for $uriPrefix in map:get($options, 'URI_TREES_PREFIXES')[starts-with($uri, .)] return
         for $buri in map:get(map:get($options, 'URI_TREES_PREFIX_TO_BASE_URIS'), $uriPrefix) return
         $buri/..//file[$uri eq concat($buri, @path)]/@size/xs:integer(.)
-         )      
+        )      
+    else 
+        exists(
+            for $buri in map:get($options, 'URI_TREES_BASE_URIS')[starts-with($uri, .)]
+            let $path := substring($uri, string-length($buri) + 1)
+            return
+                $buri/..//file[$path eq @path]
+         )         
 };
 
 (:~
  : Returns true if a resource is a directory, rather than a file.
  :
- : @param uri the URI or file path
+ : @param uri the URI or file path of the resource
  : @param options options controlling the evaluation
- : @return true if the resource is a directory
+ : @return true if the resource exists and is a directory
  :)
  declare function f:fox-is-dir($uri as xs:string, $options as map(*)?)
         as xs:boolean? {    
-    let $mode := 1 return  (: 1 is better ! :)
+    let $mode := 1  (: 1 is better ! :) 
+    let $uriDomain := f:uriDomain($uri, $options)
+    return
     
-    if (f:uriDomain($uri, $options) eq 'FILE_SYSTEM') then file:is-dir($uri)
+    if ($uriDomain eq 'FILE_SYSTEM') then file:is-dir($uri)
     else if (empty($options)) then ()
-
-    else if ($mode eq 1) then exists(
-        for $buri in map:get($options, 'URI_TREES_BASE_URIS')[starts-with($uri, .)]
-        let $path := substring($uri, string-length($buri) + 1)
-        return
-            $buri/..//dir[$path eq @path]
-         )
-         
-    else exists(
+    else if ($mode ne 1) then exists(
         for $uriPrefix in map:get($options, 'URI_TREES_PREFIXES')[starts-with($uri, .)] return
         for $buri in map:get(map:get($options, 'URI_TREES_PREFIX_TO_BASE_URIS'), $uriPrefix) return
         $buri/..//dir[$uri eq concat($buri, @path)]/@size/xs:integer(.)
-         )      
+        )      
+    else 
+        exists(
+            for $buri in map:get($options, 'URI_TREES_BASE_URIS')[starts-with($uri, .)]
+            let $path := substring($uri, string-length($buri) + 1)
+            return
+                $buri/..//dir[$path eq @path]
+         )         
 };
 
 (:~
@@ -95,9 +116,11 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
  :)
  declare function f:fox-file-size($uri as xs:string, $options as map(*)?)
         as xs:integer? {    
-    let $mode := 1 return  (: 1 is better ! :)
+    let $mode := 1  (: 1 is better ! :) 
+    let $uriDomain := f:uriDomain($uri, $options)
+    return
     
-    if (f:uriDomain($uri, $options) eq 'FILE_SYSTEM') then file:size($uri)
+    if ($uriDomain eq 'FILE_SYSTEM') then file:size($uri)
     else if (empty($options)) then ()
 (:    
     else (
@@ -105,57 +128,54 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
             $tree//file[$uri eq concat($tree/@baseURI, @path)]
          )[1]
 :)         
-
-    else if ($mode eq 1) then (
-        for $buri in map:get($options, 'URI_TREES_BASE_URIS')[starts-with($uri, .)]
-        let $path := substring($uri, string-length($buri) + 1)
-        return
-            $buri/..//file[$path eq @path]/@size/xs:integer(.)
-         )[1]
-         
-    else (
+    else if ($mode ne 1) then (
         for $uriPrefix in map:get($options, 'URI_TREES_PREFIXES')[starts-with($uri, .)] return
         for $buri in map:get(map:get($options, 'URI_TREES_PREFIX_TO_BASE_URIS'), $uriPrefix) return
         $buri/..//file[$uri eq concat($buri, @path)]/@size/xs:integer(.)
          )[1]        
+    else (
+        for $buri in map:get($options, 'URI_TREES_BASE_URIS')[starts-with($uri, .)]
+        let $path := substring($uri, string-length($buri) + 1)
+        return
+            $buri/..//file[$path eq @path]/@size/xs:integer(.)
+    )[1]
+         
 };
 
 (:~
  : Returns the last modification date of a resource.
  :
- : @param uri the URI or file path
+ : @param uri the URI or file path of the resource
  : @param options options controlling the evaluation
  : @return the last update date of the resource
  :)
  declare function f:fox-file-date($uri as xs:string?, $options as map(*)?)
         as xs:dateTime? {       
-    if (not($uri)) then ()
-    else if (f:uriDomain($uri, $options) eq 'FILE_SYSTEM') then file:last-modified($uri)
-    else if (empty($options)) then ()
-    else (
+    if (not($uri)) then () else
+    
+    let $uriDomain := f:uriDomain($uri, $options)
+    return
+    
+    if ($uriDomain eq 'FILE_SYSTEM') then file:last-modified($uri)
+    else if ($uriDomain eq 'REDIRECTING_URI_TREE') then (
         for $buri in map:get($options, 'URI_TREES_BASE_URIS')[starts-with($uri, .)]
         where $buri/..//file[$uri eq concat($buri, @path)]
         return $buri/../@lastModified/xs:dateTime(.)
-        )[1]
+    )[1]
+    else if (empty($options)) then ()
+    else ()    
 };
 
 (:~
  : Returns the last modification date of a resource as a string.
  :
- : @param uri the URI or file path
+ : @param uri the URI or file path of the resource
  : @param options options controlling the evaluation
  : @return the last update date of the resource
  :)
  declare function f:fox-file-sdate($uri as xs:string?, $options as map(*)?)
         as xs:string? {  
-    if (not($uri)) then ()        
-    else if (f:uriDomain($uri, $options) eq 'FILE_SYSTEM') then string(file:last-modified($uri))
-    else if (empty($options)) then ()
-    else (
-        for $buri in map:get($options, 'URI_TREES_BASE_URIS')[starts-with($uri, .)]
-        where $buri/..//file[$uri eq concat($buri, @path)]
-        return $buri/../@lastModified
-        )[1]
+    f:fox-file-date($uri, $options) ! string(.)
 };
 
 (: 
@@ -167,109 +187,131 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
  :)
 
 (:~
- : Returns the text of a resource identified by URI or file path.
+ : Returns the string representation of a resource.
  :
- : @param uri the URI or file path
+ : @param uri the URI or file path of the resource
  : @param options options controlling the evaluation
  : @return the text of the resource, or the empty sequence if retrieval fails
  :)
 declare function f:fox-unparsed-text($uri as xs:string, $options as map(*)?)
         as xs:string? {
-    let $text := f:redirectedRetrieval($uri, $options)
+    let $uriDomain := f:uriDomain($uri, $options)
     return
-        try {if ($text) then $text else unparsed-text($uri)} 
-        catch * {()}
+    
+    if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
+        f:fox-unparsed-text_github($uri, $options)    
+    else 
+        try {unparsed-text($uri)} catch * {()}
 };
 
 (:~
- : Returns the lines of the text of a resource identified by URI or file path.
+ : Returns the lines of the string representation of a resource.
  :
- : @param uri the URI or file path
+ : @param uri the URI or file path of the resource
  : @param options options controlling the evaluation
  : @return the text lines, or the empty sequence if retrieval fails
  :)
 declare function f:fox-unparsed-text-lines($uri as xs:string, $options as map(*)?)
         as xs:string* {
-    let $text := f:redirectedRetrieval($uri, $options)
+    let $uriDomain := f:uriDomain($uri, $options)
     return
-        try {if ($text) then tokenize($text, '&#xA;&#xD;?') else unparsed-text-lines($uri)} 
-        catch * {()}
+    
+    if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
+        f:fox-unparsed-text_github($uri, $options) ! tokenize(., '&#xA;&#xD;?')
+    else
+        try {unparsed-text-lines($uri)} catch * {()}
+};
+
+(:~
+ : Returns the lines of the string representation of a resource.
+ :
+ : @param uri the URI or file path of the resource
+ : @param options options controlling the evaluation
+ : @return the text lines, or the empty sequence if retrieval fails
+ :)
+declare function f:fox-file-lines($uri as xs:string, $options as map(*)?)
+        as xs:string* {
+    f:fox-unparsed-text-lines($uri, $options)
 };
 
 (:~
  : Returns an XML document identified by URI or file path.
  :
- : @param uri the URI or file path
+ : @param uri the URI or file path of the resource
  : @param options options controlling the evaluation
  : @return the document, or the empty sequence if retrieval or parsing fails
  :)
 declare function f:fox-doc($uri as xs:string, $options as map(*)?)
         as document-node()? {
-    let $text := f:redirectedRetrieval($uri, $options)
+    let $uriDomain := f:uriDomain($uri, $options)
     return
-        try {if ($text) then parse-xml($text) else doc($uri)} 
-        catch * {()}
+
+    if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
+        let $text := f:fox-unparsed-text_github($uri, $options)
+        return
+            try {parse-xml($text)} catch * {()}        
+    else if (doc-available($uri)) then doc($uri)
+    else ()
 };
 
 (:~
  : Returns true if a given URI or file path points to a well-formed XML document.
  :
- : @param uri the URI or file path
+ : @param uri the URI or file path of the resource
  : @param options options controlling the evaluation
- : @return true if an XML document can be retrieved
+ : @return true if the URI points to a well-formed XML document
  :)
 declare function f:fox-doc-available($uri as xs:string, $options as map(*)?)
         as xs:boolean {
-    let $text := f:redirectedRetrieval($uri, $options)
+    let $uriDomain := f:uriDomain($uri, $options)
     return
-        try {if ($text) then exists(parse-xml($text)) else doc-available($uri)} 
-        catch * {false()}
+
+    if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
+        let $text := f:fox-unparsed-text_github($uri, $options)
+        return
+            exists(try {parse-xml($text)} catch * {()})        
+    else doc-available($uri)
 };
 
 (:~
  : Returns an XML representation of the JSON record identified by URI or file path.
  :
- : @param uri the URI or file path
+ : @param uri the URI or file path of the resource
  : @param options options controlling the evaluation
  : @return an XML document representing JSON data, or the empty sequence if 
  :     retrieval or parsing fails
  :)
 declare function f:fox-json-doc($uri as xs:string, $options as map(*)?)
         as document-node()? {
-    let $text := f:redirectedRetrieval(trace($uri, 'URI: '), $options)
+    let $uriDomain := f:uriDomain($uri, $options)
     return
-        try {if ($text) then json:parse($text) else json:parse(unparsed-text($uri))} 
-        catch * {()}
+
+    if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
+        let $text := f:fox-unparsed-text_github($uri, $options)
+        return
+            try {$text ! json:parse(.)} catch * {()}        
+    else 
+        try {unparsed-text($uri) ! json:parse(.)} catch * {()}
 };
 
 (:~
  : Returns true if a given URI or file path points to a valid JSON record.
  :
- : @param uri the URI or file path
+ : @param uri the URI or file path of the resource
  : @param options options controlling the evaluation
  : @return true if a JSON record can be retrieved
  :)
 declare function f:fox-json-doc-available($uri as xs:string, $options as map(*)?)
         as document-node()? {
-    let $text := f:redirectedRetrieval($uri, $options)
+    let $uriDomain := f:uriDomain($uri, $options)
     return
-        try {if ($text) then json:parse($text) else json:parse(unparsed-text($uri))} 
-        catch * {()}
-};
 
-(:~
- : Returns the lines of the text of a resource identified by URI or file path.
- :
- : @param uri the URI or file path
- : @param options options controlling the evaluation
- : @return the text lines, or the empty sequence if retrieval fails
- :)
-declare function f:fox-file-lines($uri as xs:string, $options as map(*)?)
-        as xs:string* {
-    let $text := f:redirectedRetrieval($uri, $options)
-    return
-        try {if ($text) then tokenize($text, '&#xA;&#xD;?') else unparsed-text-lines($uri)} 
-        catch * {()}
+    if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
+        let $text := f:fox-unparsed-text_github($uri, $options)
+        return
+            try {exists($text ! json:parse(.))} catch * {()}        
+    else 
+        try {exists(unparsed-text($uri) ! json:parse(.))} catch * {()}
 };
 
 (:~
@@ -279,37 +321,33 @@ declare function f:fox-file-lines($uri as xs:string, $options as map(*)?)
  : @param options options controlling the evaluation
  : @return the domain
  :)
-declare function f:redirectedRetrieval($uri as xs:string, $options as map(*)?)
+declare function f:fox-unparsed-text_github($uri as xs:string, $options as map(*)?)
         as xs:string? {
     let $redirect :=
         if (not(f:uriDomain($uri, $options) eq 'REDIRECTING_URI_TREE')) then ()
         else if (empty($options)) then ()
         else
-(:        
-            map:get($options, 'URI_TREES')
-            //file[$uri eq concat(ancestor::tree/@baseURI, @path)]/@uri
-  :)          
             for $buri in map:get($options, 'URI_TREES_BASE_URIS')[starts-with($uri, .)] return
             $buri/..//file[$uri eq concat($buri, @path)]/@uri
             
     return
         try {
             if ($redirect) then
-                let $response := f:sendGetRequest($redirect, $f:TOKEN)
+                let $response := f:get-request_github($redirect, $f:TOKEN)
                 return $response//content/convert:binary-to-string(xs:base64Binary(.))  
             else ()
         } catch * {()}            
 };
 
 (:~
- : Sends a GET request and returns the response. Returns the response body,
+ : Sends a github API - GET request and returns the response. Returns the response body,
  : if there is one, otherwise the response header.
  
  : @param uri the URI
  : @param token if specified, used for authorization
  : @return the response
  :)
-declare function f:sendGetRequest($uri as xs:string, $token as xs:string)
+declare function f:get-request_github($uri as xs:string, $token as xs:string)
         as node()+ {
     let $rq :=
         <http:request method="get" href="{$uri}">{

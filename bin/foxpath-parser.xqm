@@ -3358,7 +3358,7 @@ declare function f:parseNametest($text as xs:string, $context as map(*))
     let $s := $text || '###'
 
     (: case *:lname :)
-    let $match := replace($s, '(^\*:\i[\c-[:]]*).*', '$1')[not(. eq $s)]
+    let $match := replace($s, '(^\*:\i[\c-[:]]*).*', '$1', 's')[not(. eq $s)]
     return
         if ($match) then
             let $lname := substring-after($match, ':')
@@ -3370,7 +3370,7 @@ declare function f:parseNametest($text as xs:string, $context as map(*))
         else
 
     (: case prefix:* :)
-    let $match := replace($s, '(^\i[\c-[:]]*:\*).*', '$1')[not(. eq $s)]
+    let $match := replace($s, '(^\i[\c-[:]]*:\*).*', '$1', 's')[not(. eq $s)]
     return
         if ($match) then
             let $prefix := substring-before($match, ':')
@@ -3382,10 +3382,10 @@ declare function f:parseNametest($text as xs:string, $context as map(*))
         else
 
     (: case Q{...}* :)
-    let $match := replace($s, '^(Q\{.*?\}\*).*', '$1')[not(. eq $s)]
+    let $match := replace($s, '^(Q\{.*?\}\*).*', '$1', 's')[not(. eq $s)]
     return
         if ($match) then
-            let $uri := replace($match, '^Q\{(.*?)\}.*', '$1')
+            let $uri := replace($match, '^Q\{(.*?)\}.*', '$1', 's')
             let $textAfter := substring($text, 1 + string-length($match))
             return (
                 <nameTest namespace="{$uri}" localName="*" text="{$match}"/>,

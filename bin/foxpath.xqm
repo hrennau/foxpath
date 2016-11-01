@@ -1878,6 +1878,25 @@ declare function f:resolveFunctionCall($call as element(),
         as item()* {
     if ($call/argPlaceholder) then 
         f:resolveStaticPartialFunctionCall($call, $context, $position, $last, $vars, $options)
+        
+    (: special case - as function `resolveFoxpath` must not be called from
+       an imported module, it is called from here
+    :)
+    else if ($call/@name = ('resolve-foxpath', 'fox')) then
+        let $expression := 
+        let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+        return
+            ($explicit, $context)[1]
+        return
+(:
+declare function f:resolveFoxpath($foxpath as xs:string, 
+                                  $ebvMode as xs:boolean?, 
+                                  $context as xs:string?,
+                                  $options as map(*)?,
+                                  $externalVariableBindings as map(xs:QName, item()*)?)
+:)
+            i:resolveFoxpath($expression, false(), $context, $options, ())
+        
     else
         i:resolveStaticFunctionCall($call, $context, $position, $last, $vars, $options)
 };      

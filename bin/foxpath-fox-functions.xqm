@@ -25,19 +25,32 @@ declare function f:foxfunc_bslash($arg as xs:string?)
  :)
 declare function f:foxfunc_file-content($uri as xs:string?, $options as map(*)?)
         as xs:string? {
-    let $redirectedRetrieval := f:redirectedRetrieval($uri, $options)
+    let $redirectedRetrieval := f:fox-unparsed-text_github($uri, $options)
     return
         if ($redirectedRetrieval) then $redirectedRetrieval
         else i:fox-unparsed-text($uri, $options)
 };      
 
 (:~
- : Foxpath function `xwrap#3'. Collects the items of $items into an XML document
+ : Foxpath function `repeat#2'. Creates a string which is the concatenation of
+ : a given number of instances of a given string.
+ :
+ : @param string the string to be repeated
+ : @param count the number of repeats
+ : @return the result of repeating the string
+ :)
+declare function f:foxfunc_repeat($string as xs:string?, $count as xs:integer?)
+        as xs:string {
+    string-join(for $i in 1 to $count return $string, '')
+};      
+
+(:~
+ : Foxpath function `xwrap#3`. Collects the items of $items into an XML document
  : Before copying into the result document, every item from $items is processed as follows:
- : - if an item is a node: 
+ : (A) if an item is a node: 
  :   (1) if flag 'b' is not set, the item is not modified
  :   (2) otherwise a copy enhanced by an @xml:base attribute is created
- : - if an item is atomic: 
+ : (B) if an item is atomic: 
  :   (1) if flag 'd' is set, the item is interpreted as URI and it is attempted to be
  :       parsed into a document, with an @xml:base attribute added to the root element,
  :       if flag 'b' is set, and without @xml:base otherwise; if parsing fails, a 

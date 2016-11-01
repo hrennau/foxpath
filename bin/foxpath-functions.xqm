@@ -50,6 +50,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     else <doc href="{$item}"/>
             return
                 <dcat targetFormat="xml" 
+                      count="{count($items)}"
                       t="{current-dateTime()}" 
                       onlyDocAvailable="{boolean($onlyDocAvailable)}">{$refs}</dcat>
                             
@@ -86,10 +87,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if ($call/*[2]) then
                     $call/*[2]
                     /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                else if ($call/*) then
-                    $call/*[1]
-                    /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                else () 
+                else ()
             let $uri :=
                 if ($call/*[2]) then
                     $call/*[1]
@@ -130,9 +128,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return
                     ($explicit, $context)[1]
             let $fileName := replace($uri, '.*/', '')
-            let $ext := replace($fileName, '.*(\..*)', '$1')
             return
-                $ext
+                if (not(contains($fileName, '.'))) then ""
+                else replace($fileName, '.*(\..*)', '$1')
             
         (: function `file-info` 
            ==================== :)
@@ -295,6 +293,24 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 <rcat t="{current-dateTime()}" count="{count($refs)}">{$refs}</rcat>
                             
+        (: function `repeat` 
+           ================= :)
+        else if ($fname eq 'repeat') then
+            let $string := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $count := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
+            return
+                f:foxfunc_repeat($string, $count)
+(:
+        (: function `resolve-foxpath` 
+           ========================= :)
+        else if ($fname eq 'resolve-foxpath') then
+            let $expression := 
+                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return
+                    ($explicit, $context)[1]
+            return
+                i:fox-resolve-foxpath($expression)
+:)                
         (: function `rpad` 
            =============== :)
         else if ($fname eq 'rpad') then
@@ -679,7 +695,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $uri := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
-            let $redirectedRetrieval := f:redirectedRetrieval($uri, $options)
+            let $redirectedRetrieval := f:fox-unparsed-text_github($uri, $options)
             return
                 if ($redirectedRetrieval) then 
                     let $doc := try {parse-xml($redirectedRetrieval)} catch * {()}
@@ -769,6 +785,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return ($explicit, $context)[1]
             return
                 node-name($arg)
+            
+        (: function `normalize-space` 
+           ========================= :)
+        else if ($fname eq 'normalize-space') then
+            let $arg := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                normalize-space($arg)
             
         (: function `not` 
            ============== :)
