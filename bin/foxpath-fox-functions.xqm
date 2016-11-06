@@ -23,12 +23,14 @@ declare function f:foxfunc_bslash($arg as xs:string?)
  : @param arg text to be edited
  : @return edited text
  :)
-declare function f:foxfunc_file-content($uri as xs:string?, $options as map(*)?)
+declare function f:foxfunc_file-content($uri as xs:string?, 
+                                        $encoding as xs:string?,
+                                        $options as map(*)?)
         as xs:string? {
-    let $redirectedRetrieval := f:fox-unparsed-text_github($uri, $options)
+    let $redirectedRetrieval := f:fox-unparsed-text_github($uri, $encoding, $options)
     return
         if ($redirectedRetrieval) then $redirectedRetrieval
-        else i:fox-unparsed-text($uri, $options)
+        else i:fox-unparsed-text($uri, $encoding, $options)
 };      
 
 (:~
@@ -105,14 +107,14 @@ declare function f:foxfunc_xwrap($items as item()*, $name as xs:QName, $flags as
                     
         (: item a URI, flag 'w' => read text at that URI, write it intoa wrapper element :)                    
         else if (contains($flags, 'w')) then
-            let $text := try {i:fox-unparsed-text($item, $options)} catch * {()}
+            let $text := try {i:fox-unparsed-text($item, (), $options)} catch * {()}
             return
                 if ($text) then <_text_ xml:base="{$item}">{$text}</_text_>
                 else <READ-ERROR>{$item}</READ-ERROR>
                 
         (: item a URI, flag 't' => read text at that URI, copy it into result :)                
         else if (contains($flags, 't')) then
-            let $text := try {i:fox-unparsed-text($item, $options)} catch * {()}
+            let $text := try {i:fox-unparsed-text($item, (), $options)} catch * {()}
             return
                 if ($text) then $text
                 else <READ-ERROR>{$item}</READ-ERROR>

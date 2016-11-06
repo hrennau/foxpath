@@ -1630,6 +1630,16 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
     let $root :=
         if (starts-with($text, 'http://')) then <foxRoot path="http://"/>        
         else if (starts-with($text, 'https://')) then <foxRoot path="https://"/>        
+        else if (starts-with($text, 'basex://')) then 
+            let $db := replace($text, '^(basex://.*?/).*', '$1')
+            let $db := replace($db, '[^/]$', '$0/')
+            return
+                <foxRoot path="{$db}"/>        
+        else if (matches($text, 'svn-(file|https?):/+')) then
+            let $repoPath := f:getSvnRootUri(substring($text, 5))
+            return
+                if (not($repoPath)) then error(QName((), 'INVALID_SVN_PATH'), concat('Path does not address SVN repo: ', $text))
+                else <foxRoot path="{concat('svn-', $repoPath, '/')}"/>        
         else if (matches($text, concat('^[a-zA-Z]:', $FOXSTEP_SEPERATOR_REGEX))) then 
             let $path := replace(substring($text, 1, 3), '\\', '/')
             return <foxRoot path="{$path}"/>
@@ -1655,7 +1665,7 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
                 else if ($root/self::root) then substring($text, 2)
                 else if ($startHerePrefix) then substring($text, 1 + string-length($startHerePrefix))
                 else $text
-            , '^\s+', '')
+            , '^\s+', '')[string()]
     
         (: 
            update context component IS_CONTEXT_URI:
@@ -1754,7 +1764,9 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
 declare function f:parseSteps($text as xs:string?, 
                               $precedingOperator as xs:string?,
                               $context as map(*))
-        as item()+ {
+        as item()* {
+    if (not($text)) then () else
+    
     let $DEBUG := f:trace($text, 'parse.steps', 'INTEXT_STEPS: ')
     let $FOXSTEP_SEPERATOR := map:get($context, 'FOXSTEP_SEPERATOR')
     let $NODESTEP_SEPERATOR := map:get($context, 'NODESTEP_SEPERATOR')

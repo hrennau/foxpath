@@ -502,7 +502,7 @@ declare function f:resolveFoxpathExpr($foxpath as element(foxpath),
     let $initialRoot := $foxpath/*[1][self::foxRoot or self::root]   
     
     (: the context wherein to evaluate the first step :)
-    let $initialContext := 
+    let $initialContext :=
         (: leading step to the root resource :)
         if ($initialRoot/self::foxRoot) then 
             $initialRoot/@path
@@ -524,7 +524,7 @@ declare function f:resolveFoxpathExpr($foxpath as element(foxpath),
         
     let $steps := $foxpath/(* except $initialRoot)[not(@__ignore eq 'true')]
     let $value :=
-        if (not($steps)) then $initialContext
+        if (not($steps)) then $initialContext/string()
         else
             let $items := f:resolveFoxpathExprRC($steps, $initialContext, $vars, $options)
             (: 20161001, hjr: removed the sorting; 
@@ -605,7 +605,7 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                 if ($deep) then f:descendantUriCollection#4 
                            else f:childUriCollection#4
             return
-                for $ctxt in $context[not(i:fox-is-file(., $options))]
+                for $ctxt in $context (: [not(i:fox-is-file(., $options))] :)
                 let $useCtxt := if (matches($ctxt, '^.:$')) then concat($ctxt, '/') else $ctxt 
                 (:     file:list('c:') delivers the current working directory files, not the root directory files :)
             
@@ -616,6 +616,10 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                     [not($regex) or matches(replace(., '.*/', ''), $regex, 'i')]            
                     ! concat($prefix, '/', .)
                     (: [not($tail) or file:is-dir(.)] :)  (: not any more true: following steps may be reverse steps :)
+(:                   
+                let $DUMMY := trace((), concat('AFTER_LIST_DESCENDANTS ',
+                                        $axis, '~::', $name, ' (', count($descendants), '): '))
+:)                                        
                 let $descendants := distinct-values($descendants)
                 let $ctxtFiles :=
                     if (not($axis eq 'descendant-or-self')) then $descendants
@@ -627,6 +631,7 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                     (: let $DUMMY := trace(sort($ctxtFiles), 'CTXT_FILES: ') return :)
                     if (not($predicates)) then $ctxtFiles
                     else f:testPredicates(sort($ctxtFiles, (), lower-case#1), $predicates, $vars, $options)
+                    
         else if ($axis = 'self') then
                 for $ctxt in $context
                 let $ctxt := if (matches($ctxt, '^.:$')) then concat($ctxt, '/') else $ctxt 
@@ -705,7 +710,7 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
             f:createFoxpathError('NOT_YET_IMPLEMENTED', 
                 concat('Axis not yet implemented: ', $axis))
                 
-    let $files := distinct-values(for $f in $files order by lower-case($f) return $f)            
+    let $files := distinct-values(for $f in $files order by lower-case($f) return $f)  
     return (
         $files
     )

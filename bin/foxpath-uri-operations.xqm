@@ -19,6 +19,7 @@ Group: resource retrieval
 module namespace f="http://www.ttools.org/xquery-functions";
 import module namespace i="http://www.ttools.org/xquery-functions" at 
     "foxpath-processorDependent.xqm",
+    "foxpath-uri-operations-basex.xqm",
     "foxpath-util.xqm";
     
 declare variable $f:UNAME external := 'hrennau';    
@@ -44,8 +45,10 @@ declare variable $f:TOKEN external := try {unparsed-text('/git/token')} catch * 
  : @return the domain
  :)
 declare function f:uriDomain($uri as xs:string, $options as map(*)?)
-        as xs:string {               
+        as xs:string {              
     if (matches($uri, '^https?://')) then 'REDIRECTING_URI_TREE'
+    else if (starts-with($uri, 'basex://')) then 'BASEX'    
+    else if (starts-with($uri, 'svn-')) then 'SVN'    
     else 'FILE_SYSTEM'
 };
 
@@ -62,8 +65,20 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
     let $uriDomain := f:uriDomain($uri, $options)
     return
     
-    if ($uriDomain eq 'FILE_SYSTEM') then file:is-file($uri)
+    if ($uriDomain eq 'FILE_SYSTEM') then 
+        file:is-file($uri)        
+    else if ($uriDomain eq 'BASEX') then
+        f:fox-is-file_basex($uri, $options)  
+    else if ($uriDomain eq 'SVN') then 
+        let $useUri := substring($uri, 5)
+        let $listUri := 
+            proc:system('svn', ('list', $useUri))
+            ! replace(., '\s+$', '')
+        return
+            $listUri and not(ends-with($listUri, '/'))
+            
     else if (empty($options)) then ()
+    
     else if ($mode ne 1) then exists(
         for $uriPrefix in map:get($options, 'URI_TREES_PREFIXES')[starts-with($uri, .)] return
         for $buri in map:get(map:get($options, 'URI_TREES_PREFIX_TO_BASE_URIS'), $uriPrefix) return
@@ -91,8 +106,20 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
     let $uriDomain := f:uriDomain($uri, $options)
     return
     
-    if ($uriDomain eq 'FILE_SYSTEM') then file:is-dir($uri)
+    if ($uriDomain eq 'FILE_SYSTEM') then 
+        file:is-dir($uri)
+    else if ($uriDomain eq 'BASEX') then 
+        f:fox-is-dir_basex($uri, $options)   
+    else if ($uriDomain eq 'SVN') then 
+        let $useUri := substring($uri, 5)
+        let $listUri := 
+            proc:system('svn', ('list', $useUri))
+            ! replace(., '\s+$', '')
+        return
+            $listUri and ends-with($listUri, '/')
+    
     else if (empty($options)) then ()
+    
     else if ($mode ne 1) then exists(
         for $uriPrefix in map:get($options, 'URI_TREES_PREFIXES')[starts-with($uri, .)] return
         for $buri in map:get(map:get($options, 'URI_TREES_PREFIX_TO_BASE_URIS'), $uriPrefix) return
@@ -120,7 +147,10 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
     let $uriDomain := f:uriDomain($uri, $options)
     return
     
-    if ($uriDomain eq 'FILE_SYSTEM') then file:size($uri)
+    if ($uriDomain eq 'FILE_SYSTEM') then 
+        file:size($uri)
+    else if ($uriDomain eq 'BASEX') then
+        f:fox-file-size_basex($uri, $options)
     else if (empty($options)) then ()
 (:    
     else (
@@ -156,7 +186,10 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
     let $uriDomain := f:uriDomain($uri, $options)
     return
     
-    if ($uriDomain eq 'FILE_SYSTEM') then file:last-modified($uri)
+    if ($uriDomain eq 'FILE_SYSTEM') then 
+        file:last-modified($uri)
+    else if ($uriDomain eq 'BASEX') then 
+        f:fox-file-date_basex($uri, $options)
     else if ($uriDomain eq 'REDIRECTING_URI_TREE') then (
         for $buri in map:get($options, 'URI_TREES_BASE_URIS')[starts-with($uri, .)]
         where $buri/..//file[$uri eq concat($buri, @path)]
@@ -187,54 +220,6 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
  :)
 
 (:~
- : Returns the string representation of a resource.
- :
- : @param uri the URI or file path of the resource
- : @param options options controlling the evaluation
- : @return the text of the resource, or the empty sequence if retrieval fails
- :)
-declare function f:fox-unparsed-text($uri as xs:string, $options as map(*)?)
-        as xs:string? {
-    let $uriDomain := f:uriDomain($uri, $options)
-    return
-    
-    if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
-        f:fox-unparsed-text_github($uri, $options)    
-    else 
-        try {unparsed-text($uri)} catch * {()}
-};
-
-(:~
- : Returns the lines of the string representation of a resource.
- :
- : @param uri the URI or file path of the resource
- : @param options options controlling the evaluation
- : @return the text lines, or the empty sequence if retrieval fails
- :)
-declare function f:fox-unparsed-text-lines($uri as xs:string, $options as map(*)?)
-        as xs:string* {
-    let $uriDomain := f:uriDomain($uri, $options)
-    return
-    
-    if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
-        f:fox-unparsed-text_github($uri, $options) ! tokenize(., '&#xA;&#xD;?')
-    else
-        try {unparsed-text-lines($uri)} catch * {()}
-};
-
-(:~
- : Returns the lines of the string representation of a resource.
- :
- : @param uri the URI or file path of the resource
- : @param options options controlling the evaluation
- : @return the text lines, or the empty sequence if retrieval fails
- :)
-declare function f:fox-file-lines($uri as xs:string, $options as map(*)?)
-        as xs:string* {
-    f:fox-unparsed-text-lines($uri, $options)
-};
-
-(:~
  : Returns an XML document identified by URI or file path.
  :
  : @param uri the URI or file path of the resource
@@ -246,8 +231,10 @@ declare function f:fox-doc($uri as xs:string, $options as map(*)?)
     let $uriDomain := f:uriDomain($uri, $options)
     return
 
-    if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
-        let $text := f:fox-unparsed-text_github($uri, $options)
+    if ($uriDomain eq 'BASEX') then 
+        f:fox-doc_basex($uri, $options)
+    else if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
+        let $text := f:fox-unparsed-text_github($uri, (), $options)
         return
             try {parse-xml($text)} catch * {()}        
     else if (doc-available($uri)) then doc($uri)
@@ -266,11 +253,74 @@ declare function f:fox-doc-available($uri as xs:string, $options as map(*)?)
     let $uriDomain := f:uriDomain($uri, $options)
     return
 
-    if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
-        let $text := f:fox-unparsed-text_github($uri, $options)
+    if ($uriDomain eq 'BASEX') then 
+        f:fox-doc-available_basex($uri, $options)
+    else if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
+        let $text := f:fox-unparsed-text_github($uri, (), $options)
         return
             exists(try {parse-xml($text)} catch * {()})        
     else doc-available($uri)
+};
+
+(:~
+ : Returns the string representation of a resource.
+ :
+ : @param uri the URI or file path of the resource
+ : @param options options controlling the evaluation
+ : @return the text of the resource, or the empty sequence if retrieval fails
+ :)
+declare function f:fox-unparsed-text($uri as xs:string, 
+                                     $encoding as xs:string?, 
+                                     $options as map(*)?)
+        as xs:string? {
+    let $uriDomain := f:uriDomain($uri, $options)
+    return
+    
+    if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
+        f:fox-unparsed-text_github($uri, $encoding, $options)    
+    else if ($uriDomain eq 'BASEX') then
+        f:fox-unparsed-text_basex($uri, $encoding, $options)
+    else 
+        try {
+            if ($encoding) then unparsed-text($uri, $encoding)
+            else unparsed-text($uri)
+        } catch * {()}
+};
+
+(:~
+ : Returns the lines of the string representation of a resource.
+ :
+ : @param uri the URI or file path of the resource
+ : @param options options controlling the evaluation
+ : @return the text lines, or the empty sequence if retrieval fails
+ :)
+declare function f:fox-unparsed-text-lines($uri as xs:string, 
+                                           $encoding as xs:string?, 
+                                           $options as map(*)?)
+        as xs:string* {
+    let $uriDomain := f:uriDomain($uri, $options)
+    return
+    
+    if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
+        f:fox-unparsed-text_github($uri, $encoding, $options) ! tokenize(., '&#xA;&#xD;?')
+    else if ($uriDomain eq 'BASEX') then
+        f:fox-unparsed-text-lines_basex($uri, $encoding, $options)
+    else
+        try {unparsed-text-lines($uri, $encoding)} catch * {()}
+};
+
+(:~
+ : Returns the lines of the string representation of a resource.
+ :
+ : @param uri the URI or file path of the resource
+ : @param options options controlling the evaluation
+ : @return the text lines, or the empty sequence if retrieval fails
+ :)
+declare function f:fox-file-lines($uri as xs:string,
+                                  $encoding as xs:string?,
+                                  $options as map(*)?)
+        as xs:string* {
+    f:fox-unparsed-text-lines($uri, $encoding, $options)
 };
 
 (:~
@@ -281,13 +331,14 @@ declare function f:fox-doc-available($uri as xs:string, $options as map(*)?)
  : @return an XML document representing JSON data, or the empty sequence if 
  :     retrieval or parsing fails
  :)
-declare function f:fox-json-doc($uri as xs:string, $options as map(*)?)
+declare function f:fox-json-doc($uri as xs:string,
+                                $options as map(*)?)
         as document-node()? {
     let $uriDomain := f:uriDomain($uri, $options)
     return
 
     if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
-        let $text := f:fox-unparsed-text_github($uri, $options)
+        let $text := f:fox-unparsed-text_github($uri, (), $options)
         return
             try {$text ! json:parse(.)} catch * {()}        
     else 
@@ -301,13 +352,14 @@ declare function f:fox-json-doc($uri as xs:string, $options as map(*)?)
  : @param options options controlling the evaluation
  : @return true if a JSON record can be retrieved
  :)
-declare function f:fox-json-doc-available($uri as xs:string, $options as map(*)?)
+declare function f:fox-json-doc-available($uri as xs:string, 
+                                          $options as map(*)?)
         as document-node()? {
     let $uriDomain := f:uriDomain($uri, $options)
     return
 
     if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
-        let $text := f:fox-unparsed-text_github($uri, $options)
+        let $text := f:fox-unparsed-text_github($uri, (), $options)
         return
             try {exists($text ! json:parse(.))} catch * {()}        
     else 
@@ -321,7 +373,9 @@ declare function f:fox-json-doc-available($uri as xs:string, $options as map(*)?
  : @param options options controlling the evaluation
  : @return the domain
  :)
-declare function f:fox-unparsed-text_github($uri as xs:string, $options as map(*)?)
+declare function f:fox-unparsed-text_github($uri as xs:string,
+                                            $encoding as xs:string?,
+                                            $options as map(*)?)
         as xs:string? {
     let $redirect :=
         if (not(f:uriDomain($uri, $options) eq 'REDIRECTING_URI_TREE')) then ()
@@ -368,13 +422,27 @@ declare function f:get-request_github($uri as xs:string, $token as xs:string)
  : ===============================================================================
  :)
 
+(:~
+ : Returns the child URIs of a given URI, matching an optional name pattern
+ : and matching an optional kind test (file or folder).
+ :
+ : Note. The kind test is currently received via a `stepDescriptor` element.
+ : This approach is meant to be extensible, allowing the future addition of 
+ : other filters 
+ :)
 declare function f:childUriCollection($uri as xs:string, 
                                       $name as xs:string?,
                                       $stepDescriptor as element()?,
                                       $options as map(*)?) {
-    (: let $DUMMY := trace($uri, 'CHILD_URI_COLLECTION; URI: ') return :) 
-    if (matches($uri, '^https://')) then
-        f:childUriCollection_uriTree($uri, $name, $stepDescriptor, $options) else
+    let $uriDomain := f:uriDomain($uri, $options)
+    return    
+        if ($uriDomain eq 'REDIRECTING_URI_TREE') then
+            f:childUriCollection_uriTree($uri, $name, $stepDescriptor, $options) 
+        else if ($uriDomain eq 'BASEX') then
+            f:childUriCollection_basex($uri, $name, $stepDescriptor, $options) 
+        else if ($uriDomain eq 'SVN') then
+            f:childUriCollection_svn($uri, $name, $stepDescriptor, $options) 
+        else
         
     let $kindFilter := $stepDescriptor/@kindFilter
     let $ignKindTest :=        
@@ -385,7 +453,7 @@ declare function f:childUriCollection($uri as xs:string,
     return
         if (not($kindFilter)) then $ignKindTest
         else 
-            let $useUri := replace($uri, '/$', '')
+            let $useUri := replace($uri, '/$', '')   (: normalization :)
             return
                 if ($kindFilter eq 'file') then
                     $ignKindTest[file:is-file(concat($useUri, '/', .))]
@@ -396,16 +464,26 @@ declare function f:childUriCollection($uri as xs:string,
 };
 
 (:~
- : Returns the descendants of an input URI. If the $stopDescriptor specifies
- : a kind test (is-dir or is-file), this test is evaluted.
+ : Returns the descendant URIs of a given URI, matching an optional name pattern
+ : and matching an optional kind test (file or folder).
+ :
+ : Note. The kind test is currently received via a `stepDescriptor` element.
+ : This approach is meant to be extensible, allowing the future addition of 
+ : other filters 
  :)
 declare function f:descendantUriCollection($uri as xs:string, 
                                            $name as xs:string?, 
                                            $stepDescriptor as element()?,
                                            $options as map(*)?) {   
-    (: let $DUMMY := trace($uri, 'URI_DESCENDANT_OF: ') return :)                                           
-    if (matches($uri, '^https://')) then
-        f:descendantUriCollection_uriTree($uri, $name, $stepDescriptor, $options) else
+    let $uriDomain := f:uriDomain($uri, $options)
+    return    
+        if ($uriDomain eq 'REDIRECTING_URI_TREE') then
+            f:descendantUriCollection_uriTree($uri, $name, $stepDescriptor, $options) 
+        else if ($uriDomain eq 'BASEX') then
+            f:descendantUriCollection_basex($uri, $name, $stepDescriptor, $options) 
+        else if ($uriDomain eq 'SVN') then
+            f:descendantUriCollection_svn($uri, $name, $stepDescriptor, $options) 
+        else
         
     let $kindFilter := $stepDescriptor/@kindFilter
     let $ignKindTest :=
@@ -426,6 +504,14 @@ declare function f:descendantUriCollection($uri as xs:string,
                 else
                     error(QName((), 'PROGRAM_ERROR'), concat('Unexpected kind filter: ', $kindFilter))
 };
+
+(: 
+ : ===============================================================================
+ :
+ :     r e s o u r c e    t r e e    n a v i g a t i o n    /    u r i T r e e 
+ :
+ : ===============================================================================
+ :)
 
 declare function f:childUriCollection_uriTree($uri as xs:string, 
                                               $name as xs:string?,
@@ -564,3 +650,99 @@ declare function f:descendantUriCollection_uriTree($uri as xs:string,
                 else
                     $ignNameTest[matches(replace(., '^.*/', ''), $regex, 'is')]
 };
+
+(: 
+ : ===============================================================================
+ :
+ :     r e s o u r c e    t r e e    n a v i g a t i o n    /    s v n 
+ :
+ : ===============================================================================
+ :)
+
+(:~
+ : Returns the child URIs of a given svn URI, matching an optional name pattern
+ : and matching an optional kind test (file or folder).
+ :
+ : Note. The kind test is currently received via a `stepDescriptor` element.
+ : This approach is meant to be extensible, allowing the future addition of 
+ : other filters 
+ :)
+declare function f:childUriCollection_svn($uri as xs:string, 
+                                          $name as xs:string?,
+                                          $stepDescriptor as element()?,
+                                          $options as map(*)?) {                                        
+    let $pattern :=
+        if (not($name)) then () else 
+            concat('^', replace($name, '\*', '.*'), '$')
+
+    let $uri := substring($uri, 5) ! replace(., '/$', '')
+    let $kindFilter := $stepDescriptor/@kindFilter
+    let $raw := f:_getChildUris_svn($uri, $pattern, $kindFilter)
+    return
+        $raw ! replace(., '/\s*$', '')
+};
+
+declare function f:descendantUriCollection_svn($uri as xs:string, 
+                                               $name as xs:string?,
+                                               $stepDescriptor as element()?,
+                                               $options as map(*)?) {
+    let $pattern :=
+        if (not($name)) then () else concat('^', replace($name, '\*', '.*'), '$')
+
+    let $uri := substring($uri, 5) ! replace(., '/$', '')
+    let $kindFilter := $stepDescriptor/@kindFilter
+    let $raw := f:_getDescendantUris_svn($uri, $pattern, $kindFilter)
+    return
+        $raw ! replace(., '/\s*$', '')
+};
+
+(:~
+ : Returns the child URIs of a given svn URI, matching an optional name pattern
+ : and matching an optional kind test (file or folder).
+ :
+ : Note. Private function, called by public function f:childUriCollection.
+ :)
+declare function f:_getChildUris_svn($uri as xs:string,
+                                     $pattern as xs:string?,
+                                     $kindFilter as xs:string?)
+        as xs:string* {
+    (: all child URIs :)
+    let $all := tokenize(proc:system('svn', ('list', $uri)), '\s*&#xA;\s*')[string()]
+    (: name matching URIs :)
+    let $matchName :=
+        if ($pattern) then $all[matches(replace(., '/$', ''), $pattern, 'i')]
+        else $all
+    (: kind matching URIs :)
+    let $matchKind :=
+        if (not($kindFilter)) then $matchName
+        else if ($kindFilter eq 'file') then $matchName[not(ends-with(., '/'))]
+        else if ($kindFilter eq 'dir') then $matchName[ends-with(., '/')] ! replace(., '/\s*$', '')
+        else
+            error(QName((), 'PROGRAM_ERROR'), concat('Unexpected kind filter: ', $kindFilter))
+    return
+        $matchKind
+};
+
+declare function f:_getDescendantUris_svn($uri as xs:string,
+                                          $pattern as xs:string?,
+                                          $kindFilter as xs:string?)
+        as xs:string* {
+    (: all child URIs :)        
+    let $all := tokenize(proc:system('svn', ('list', '--recursive', $uri)), '\s*&#xA;\s*')[string()]
+    (: name matching URIs :)
+    let $matchName :=
+        if ($pattern) then 
+            $all[matches(replace(replace(., '/$', ''), '.*/', ''), $pattern, 'i')]
+        else $all
+    (: kind matching URIs :)        
+    let $matchKind :=
+        if (not($kindFilter)) then $matchName
+        else if ($kindFilter eq 'file') then $matchName[not(ends-with(., '/'))]
+        else if ($kindFilter eq 'dir') then $matchName[ends-with(., '/')] ! replace(., '/\s*$', '')
+        else
+            error(QName((), 'PROGRAM_ERROR'), concat('Unexpected kind filter: ', $kindFilter))
+    return 
+        $matchKind
+};
+
+

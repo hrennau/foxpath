@@ -123,3 +123,35 @@ declare function f:applyFunctionConversionRules(
     let $func := xquery:eval($funcText, map{'value': $value})
     return $func($value)
 };
+
+(:~
+ : Returns the prefix of a URI identifying the root of an SVN repository.
+ :
+ : Example: Assume that URI "file:///c:/foo/bar" identifies the root of an
+ : SVN repository; various values of $path produce a return value
+ : as follows:
+ : file:///c:                  -> () 
+ : file:///c:/foo              -> ()
+ : file:///c:/foo/bar          -> file:///c:/foo/bar
+ : file:///c:/foo/bar/foobar   -> file:///c:/foo/bar 
+ :
+ : @param uri an URI supposed to address an SVN repository or some resource within it
+ : @return a report describing ...
+ :) 
+declare function f:getSvnRootUri($uri as xs:string)
+        as xs:string? {
+    let $prefix := replace($uri, '(^(file|https?):/+).*', '$1')
+    let $steps := substring($uri, 1 + string-length($prefix))
+    return
+        f:getSvnRootUriRC($prefix, $steps)           
+};        
+
+declare function f:getSvnRootUriRC($prefix as xs:string, $steps as xs:string)
+        as xs:string? {
+    if (not($steps)) then () else
+    let $step1 := replace($steps, '^(.*?)/.*', '$1')
+    let $tryPath := $prefix || $step1
+    return
+        if (proc:execute('svn', ('list', $tryPath))/code = '0') then $tryPath
+        else f:getSvnRootUriRC($tryPath || '/', substring($steps, 2 + string-length($step1)))
+};        

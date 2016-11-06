@@ -42,6 +42,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
            =============== :)
         else if ($fname eq 'dcat') then
             let $items := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            (: remove prefix from basex URIs (should there be such URIs) :)
+            let $items := $items ! replace(., '^basex://', '')            
             let $onlyDocAvailable := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $refs :=
                 for $item in $items
@@ -73,7 +75,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 else $context
             let $text :=
-                try {i:fox-unparsed-text($uri, $options)} catch * {()}
+                try {i:fox-unparsed-text($uri, (), $options)} catch * {()}
             return
                 if (not($text)) then () else
                 let $regex := replace($pattern, '\*', '.*')
@@ -94,11 +96,11 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 else $context
             return
-                if (not($pattern)) then f:fox-unparsed-text($uri, $options)
+                if (not($pattern)) then f:fox-unparsed-text($uri, (), $options)
                 else
                     let $regex := replace($pattern, '\*', '.*')
                     return
-                        f:fox-unparsed-text-lines($uri, $options)[matches(., $regex, 'i')]
+                        f:fox-unparsed-text-lines($uri, (), $options)[matches(., $regex, 'i')]
             
         (: function `file-date` 
            ==================== :)
@@ -158,7 +160,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (not($pattern)) then ()
                 else concat('^.*', replace(replace($pattern, '\*', '.*'), '\?', '.'), '.*$')
                 
-            let $lines := i:fox-file-lines($uri, $options)
+            let $lines := i:fox-file-lines($uri, (), $options)
             let $lines := 
                 if (not($line1) and not($line2)) then $lines else
                     $lines[(empty($line1) or position() ge $line1) and (not($line2) or position() le $line2)]                 
@@ -197,7 +199,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $regex :=
                 if (not($pattern)) then ()
                 else concat('^.*', replace(replace($pattern, '\*', '.*'), '\?', '.'), '.*$')
-            let $lines := i:fox-unparsed-text-lines($uri, $options)
+            let $lines := i:fox-unparsed-text-lines($uri, (), $options)
             let $lines := $lines[empty($regex) or matches(., $regex, 'i')]
             return
                 if (empty($lines)) then () else 
@@ -321,6 +323,36 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 f:rpad($string, $width, $fillChar)
 
+        (: function `unparsed-text` 
+           ======================= :)
+        else if ($fname eq 'unparsed-text') then
+            let $encoding :=
+                $call/*[3]
+                /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $uri := 
+                let $expr := $call/*[1]
+                return
+                    if ($expr) then
+                        f:resolveFoxpathRC($expr, false(), $context, $position, $last, $vars, $options)
+                    else $context
+            return
+                f:fox-unparsed-text($uri, $encoding, $options)
+                        
+        (: function `unparsed-text` 
+           ======================= :)
+        else if ($fname eq 'unparsed-text-lines') then
+            let $encoding :=
+                $call/*[3]
+                /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $uri := 
+                let $expr := $call/*[1]
+                return
+                    if ($expr) then
+                        f:resolveFoxpathRC($expr, false(), $context, $position, $last, $vars, $options)
+                    else $context
+            return
+                f:fox-unparsed-text-lines($uri, $encoding, $options)
+                        
         (: function `win.copy` 
            ===================== :)
         else if ($fname eq 'win.copy') then
@@ -677,7 +709,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname eq 'doc') then
             let $uri := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                i:fox-doc($uri, $options)
+                i:fox-doc(trace($uri, 'FUNCTION_DOC_URI: '), $options)
                 
         (: function `document-uri` 
            ======================= :)
@@ -695,7 +727,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $uri := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
-            let $redirectedRetrieval := f:fox-unparsed-text_github($uri, $options)
+            let $redirectedRetrieval := f:fox-unparsed-text_github($uri, (), $options)
             return
                 if ($redirectedRetrieval) then 
                     let $doc := try {parse-xml($redirectedRetrieval)} catch * {()}
