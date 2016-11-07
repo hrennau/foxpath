@@ -194,30 +194,33 @@ declare function f:fox-unparsed-text-lines_basex($uri as xs:string,
 declare function f:childUriCollection_basex($uri as xs:string, 
                                             $name as xs:string?,
                                             $stepDescriptor as element()?,
-                                            $options as map(*)?) {     
+                                            $options as map(*)?) { 
     let $kindFilter := $stepDescriptor/@kindFilter                                            
     let $pattern :=
         if (not($name)) then () else 
-            concat('^', replace($name, '\*', '.*'), '$')
-    let $dbPath := f:basex_uri_2_db_path($uri, $options)            
-    let $completePaths := db:list($dbPath[1], $dbPath[2])
-    (: $relPaths - paths relative to the input URI :)
-    let $relPaths := 
-        if (not($dbPath[2])) then $completePaths else 
-            $completePaths ! substring(., 2 + string-length($dbPath[2]))   
-            
-    let $fileChildren := $relPaths[not(contains(., '/'))]
-    let $children := (
-        if ($kindFilter eq 'file') then $fileChildren
-        else 
-            let $folderChildren := $relPaths[contains(., '/')] ! replace(., '/.*', '') 
-            return
-                if ($kindFilter eq 'dir') then $folderChildren
-                else ($fileChildren, $folderChildren)
-        ) [string()]
+            concat('^', replace(replace($name, '\*', '.*'), '\?', '.'), '$')
+    let $dbPath := f:basex_uri_2_db_path($uri, $options)  
+    let $children :=
+        if (not($dbPath[1])) then db:list()[not($kindFilter eq 'file')]
+        else        
+            (: $completePaths start with the database, followed by folders/files :)
+            let $completePaths := db:list($dbPath[1], $dbPath[2])
+            (: $relPaths - paths relative to the input URI :)
+            let $relPaths := 
+                if (not($dbPath[2])) then $completePaths else 
+                    $completePaths ! substring(., 2 + string-length($dbPath[2]))   
+            let $fileChildren := $relPaths[not(contains(., '/'))]
+            return (
+                if ($kindFilter eq 'file') then $fileChildren
+                else 
+                    let $folderChildren := $relPaths[contains(., '/')] ! replace(., '/.*', '') 
+                    return
+                        if ($kindFilter eq 'dir') then $folderChildren
+                        else ($fileChildren, $folderChildren)
+            ) [string()]
     let $matchName :=
-        if ($pattern) then $children[matches(replace(replace(., '/$', ''), '.*/', ''), $pattern, 'i')]
-        else $children
+        if (not($pattern)) then $children else
+            $children[matches(replace(replace(., '/$', ''), '.*/', ''), $pattern, 'i')]
     return
         $matchName
 };
@@ -237,7 +240,7 @@ declare function f:descendantUriCollection_basex($uri as xs:string,
     let $kindFilter := $stepDescriptor/@kindFilter                                                 
     let $pattern :=
         if (not($name)) then () else 
-            concat('^', replace($name, '\*', '.*'), '$')
+            concat('^', replace(replace($name, '\*', '.*'), '\?', '.'), '$')
     let $dbPath := f:basex_uri_2_db_path($uri, $options)            
     let $completePaths := db:list($dbPath[1], $dbPath[2])
     let $relPaths := if (not($dbPath[2])) then $completePaths else 
@@ -279,11 +282,12 @@ declare function f:descendantUriCollection_basex($uri as xs:string,
  declare function f:basex_uri_2_db_path($uri as xs:string, $options as map(*)?)
         as xs:string+ {    
     let $useUri := substring($uri, 9)
-    let $dbPrefix := replace($uri, '^(basex://.*?)/.*', '$1')
-    let $db := substring($dbPrefix, 9)
-    let $dbPath := substring($uri, 2 + string-length($dbPrefix))
-    return (
-        $db,
-        $dbPath
-    )
+    let $db := 
+        if (not($useUri)) then ''
+        else replace($useUri, '^(.*?)/.*', '$1')
+    let $path := 
+        if (not(contains($useUri, '/'))) then ''
+        else replace($useUri, '^.*?/(.*)', '$1')
+    return
+        ($db, $path)
 };

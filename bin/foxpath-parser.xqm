@@ -1630,11 +1630,14 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
     let $root :=
         if (starts-with($text, 'http://')) then <foxRoot path="http://"/>        
         else if (starts-with($text, 'https://')) then <foxRoot path="https://"/>        
-        else if (starts-with($text, 'basex://')) then 
+        else if (starts-with($text, 'basex:/')) then
+            let $rootUri := replace($text, '^(basex:/+).*', '$1')
+(:            
             let $db := replace($text, '^(basex://.*?/).*', '$1')
             let $db := replace($db, '[^/]$', '$0/')
+:)            
             return
-                <foxRoot path="{$db}"/>        
+                <foxRoot path="basex://"/>        
         else if (matches($text, 'svn-(file|https?):/+')) then
             let $repoPath := f:getSvnRootUri(substring($text, 5))
             return
@@ -1661,7 +1664,8 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
             replace(
                 let $rootPath := $root/self::foxRoot/@path
                 return
-                    if ($rootPath) then substring($text, 1 + string-length($rootPath))
+                    if ($rootPath eq 'basex://') then replace($text, '^basex:/+(.*)', '$1')
+                    else if ($rootPath) then substring($text, 1 + string-length($rootPath))
                 else if ($root/self::root) then substring($text, 2)
                 else if ($startHerePrefix) then substring($text, 1 + string-length($startHerePrefix))
                 else $text

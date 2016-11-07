@@ -306,7 +306,10 @@ declare function f:fox-unparsed-text-lines($uri as xs:string,
     else if ($uriDomain eq 'BASEX') then
         f:fox-unparsed-text-lines_basex($uri, $encoding, $options)
     else
-        try {unparsed-text-lines($uri, $encoding)} catch * {()}
+        try {
+            if ($encoding) then unparsed-text-lines($uri, $encoding)
+            else unparsed-text-lines($uri)
+        } catch * {()}
 };
 
 (:~
