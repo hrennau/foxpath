@@ -4,9 +4,9 @@ Reference implementation of FOXpath 3.0, an extended version of XPath 3.0 suppor
 returns the file paths of all XSD documents found at any depth under any folder niem* under folder /xsdbase, excluding all XSDs with a size greater than 900 bytes.
 
 The XQuery modules are accompanied by the shell script fox. The script is used with a single parameter, which is a foxpath expression, or a file containing a foxpath expression. The script returns the value of the expression. Unless option -b is used, the path operator (standard: /) and the foxpath operator (standard: \\) are swapped, so that the following two calls would be equivalent: 
-<pre>fox "/xsdbase/niem*//*.xsd[file-size() le 900]"</pre>
+<pre>fox "/xsdbase/niem*//*.xsd[\*\@targetNamespace\matches(., 'gml')]"</pre>
 and this: 
-<pre>fox -b "\xsdbase\niem*\\*.xsd[file-size() le 900]"</pre>
+<pre>fox -b "\xsdbase\niem*\\*.xsd[/*/@targetNamespace/matches(., 'gml')]"</pre>
 The swapping of operators is thought to enable more convenient use of foxpath when used in command-line parameters.
 
 Take a look at bin/foxpath-intro.pdf for a general introduction to FOXpath. It also provides many examples of increasing complexity. Complete documentation will be added by December 15, 2016.
