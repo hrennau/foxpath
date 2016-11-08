@@ -9,6 +9,6 @@ and this:
 <pre>fox -b "\xsdbase\niem*\\*.xsd[file-size() le 900]"</pre>
 The swapping of operators is thought to enable more convenient use of foxpath when used in command-line parameters.
 
-Take a look at foxpath-intro.pdf (in the bin folder) for an introduction to FOXpath. Complete documentation will be added by December 15, 2016.
+Take a look at bin/foxpath-intro.pdf for a general introduction to FOXpath. It also provides many examples of increasing complexity. Complete documentation will be added by December 15, 2016.
 
 The implementation is written in the XQuery language, version 3.1. The current version of the language requires the use of the BaseX processor ( http://basex.org/products/download/all-downloads/ ), version 8.5 or higher. Please contact me if support for other XQuery processors is desired.
