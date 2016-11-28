@@ -338,8 +338,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 f:fox-unparsed-text($uri, $encoding, $options)
                         
-        (: function `unparsed-text` 
-           ======================= :)
+        (: function `unparsed-text-lines` 
+           ============================= :)
         else if ($fname eq 'unparsed-text-lines') then
             let $encoding :=
                 $call/*[3]

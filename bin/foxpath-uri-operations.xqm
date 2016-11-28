@@ -20,6 +20,8 @@ module namespace f="http://www.ttools.org/xquery-functions";
 import module namespace i="http://www.ttools.org/xquery-functions" at 
     "foxpath-processorDependent.xqm",
     "foxpath-uri-operations-basex.xqm",
+    "foxpath-uri-operations-svn.xqm",    
+    "foxpath-uri-operations-rdf.xqm",    
     "foxpath-util.xqm";
     
 declare variable $f:UNAME external := 'hrennau';    
@@ -45,11 +47,36 @@ declare variable $f:TOKEN external := try {unparsed-text('/git/token')} catch * 
  : @return the domain
  :)
 declare function f:uriDomain($uri as xs:string, $options as map(*)?)
-        as xs:string {              
+        as xs:string {          
     if (matches($uri, '^https?://')) then 'REDIRECTING_URI_TREE'
     else if (starts-with($uri, 'basex://')) then 'BASEX'    
     else if (starts-with($uri, 'svn-')) then 'SVN'    
+    else if (starts-with($uri, 'rdf-')) then 'RDF'    
     else 'FILE_SYSTEM'
+};
+
+(:~
+ : Returns true if a resource exists.
+ :
+ : @param uri the URI or file path of the resource
+ : @param options options controlling the evaluation
+ : @return true if the resource exists
+ :)
+ declare function f:fox-file-exists($uri as xs:string, $options as map(*)?)
+        as xs:boolean? {
+    let $uriDomain := f:uriDomain($uri, $options)
+    return
+    
+    if ($uriDomain eq 'FILE_SYSTEM') then 
+        file:exists($uri)
+    else if ($uriDomain eq 'BASEX') then 
+        f:fox-file-exists_basex($uri, $options)   
+    else if ($uriDomain eq 'SVN') then 
+        f:fox-file-exists_svn($uri, $options)
+    else if ($uriDomain eq 'RDF') then 
+        f:fox-file-exists_rdf($uri, $options)
+    else 
+        true()
 };
 
 (:~
@@ -68,15 +95,11 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
     if ($uriDomain eq 'FILE_SYSTEM') then 
         file:is-file($uri)        
     else if ($uriDomain eq 'BASEX') then
-        f:fox-is-file_basex($uri, $options)  
-    else if ($uriDomain eq 'SVN') then 
-        let $useUri := substring($uri, 5)
-        let $listUri := 
-            proc:system('svn', ('list', $useUri))
-            ! replace(., '\s+$', '')
-        return
-            $listUri and not(ends-with($listUri, '/'))
-            
+        f:fox-is-file_basex($uri, $options)
+    else if ($uriDomain eq 'SVN') then        
+        f:fox-is-file_svn($uri, $options)
+    else if ($uriDomain eq 'RDF') then        
+        f:fox-is-file_rdf($uri, $options)
     else if (empty($options)) then ()
     
     else if ($mode ne 1) then exists(
@@ -111,13 +134,9 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
     else if ($uriDomain eq 'BASEX') then 
         f:fox-is-dir_basex($uri, $options)   
     else if ($uriDomain eq 'SVN') then 
-        let $useUri := substring($uri, 5)
-        let $listUri := 
-            proc:system('svn', ('list', $useUri))
-            ! replace(., '\s+$', '')
-        return
-            $listUri and ends-with($listUri, '/')
-    
+        f:fox-is-dir_svn($uri, $options)
+    else if ($uriDomain eq 'RDF') then 
+        f:fox-is-dir_rdf($uri, $options)
     else if (empty($options)) then ()
     
     else if ($mode ne 1) then exists(
@@ -151,6 +170,10 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
         file:size($uri)
     else if ($uriDomain eq 'BASEX') then
         f:fox-file-size_basex($uri, $options)
+    else if ($uriDomain eq 'SVN') then
+        f:fox-file-size_svn($uri, $options)
+    else if ($uriDomain eq 'RDF') then
+        f:fox-file-size_rdf($uri, $options)
     else if (empty($options)) then ()
 (:    
     else (
@@ -190,6 +213,10 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
         file:last-modified($uri)
     else if ($uriDomain eq 'BASEX') then 
         f:fox-file-date_basex($uri, $options)
+    else if ($uriDomain eq 'SVN') then 
+        f:fox-file-date_svn($uri, $options)
+    else if ($uriDomain eq 'RDF') then 
+        f:fox-file-date_rdf($uri, $options)
     else if ($uriDomain eq 'REDIRECTING_URI_TREE') then (
         for $buri in map:get($options, 'URI_TREES_BASE_URIS')[starts-with($uri, .)]
         where $buri/..//file[$uri eq concat($buri, @path)]
@@ -233,6 +260,8 @@ declare function f:fox-doc($uri as xs:string, $options as map(*)?)
 
     if ($uriDomain eq 'BASEX') then 
         f:fox-doc_basex($uri, $options)
+    else if ($uriDomain eq 'SVN') then 
+        f:fox-doc_svn($uri, $options)
     else if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
         let $text := f:fox-unparsed-text_github($uri, (), $options)
         return
@@ -255,6 +284,8 @@ declare function f:fox-doc-available($uri as xs:string, $options as map(*)?)
 
     if ($uriDomain eq 'BASEX') then 
         f:fox-doc-available_basex($uri, $options)
+    else if ($uriDomain eq 'SVN') then 
+        f:fox-doc-available_svn($uri, $options)
     else if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
         let $text := f:fox-unparsed-text_github($uri, (), $options)
         return
@@ -280,6 +311,8 @@ declare function f:fox-unparsed-text($uri as xs:string,
         f:fox-unparsed-text_github($uri, $encoding, $options)    
     else if ($uriDomain eq 'BASEX') then
         f:fox-unparsed-text_basex($uri, $encoding, $options)
+    else if ($uriDomain eq 'SVN') then
+        f:fox-unparsed-text_svn($uri, $encoding, $options)
     else 
         try {
             if ($encoding) then unparsed-text($uri, $encoding)
@@ -305,6 +338,8 @@ declare function f:fox-unparsed-text-lines($uri as xs:string,
         f:fox-unparsed-text_github($uri, $encoding, $options) ! tokenize(., '&#xA;&#xD;?')
     else if ($uriDomain eq 'BASEX') then
         f:fox-unparsed-text-lines_basex($uri, $encoding, $options)
+    else if ($uriDomain eq 'SVN') then
+        f:fox-unparsed-text-lines_svn($uri, $encoding, $options)
     else
         try {
             if ($encoding) then unparsed-text-lines($uri, $encoding)
@@ -445,6 +480,8 @@ declare function f:childUriCollection($uri as xs:string,
             f:childUriCollection_basex($uri, $name, $stepDescriptor, $options) 
         else if ($uriDomain eq 'SVN') then
             f:childUriCollection_svn($uri, $name, $stepDescriptor, $options) 
+        else if ($uriDomain eq 'RDF') then
+            f:childUriCollection_rdf($uri, $name, $stepDescriptor, $options) 
         else
         
     let $kindFilter := $stepDescriptor/@kindFilter
@@ -486,6 +523,8 @@ declare function f:descendantUriCollection($uri as xs:string,
             f:descendantUriCollection_basex($uri, $name, $stepDescriptor, $options) 
         else if ($uriDomain eq 'SVN') then
             f:descendantUriCollection_svn($uri, $name, $stepDescriptor, $options) 
+        else if ($uriDomain eq 'RDF') then
+            f:descendantUriCollection_rdf($uri, $name, $stepDescriptor, $options) 
         else
         
     let $kindFilter := $stepDescriptor/@kindFilter
@@ -653,99 +692,4 @@ declare function f:descendantUriCollection_uriTree($uri as xs:string,
                 else
                     $ignNameTest[matches(replace(., '^.*/', ''), $regex, 'is')]
 };
-
-(: 
- : ===============================================================================
- :
- :     r e s o u r c e    t r e e    n a v i g a t i o n    /    s v n 
- :
- : ===============================================================================
- :)
-
-(:~
- : Returns the child URIs of a given svn URI, matching an optional name pattern
- : and matching an optional kind test (file or folder).
- :
- : Note. The kind test is currently received via a `stepDescriptor` element.
- : This approach is meant to be extensible, allowing the future addition of 
- : other filters 
- :)
-declare function f:childUriCollection_svn($uri as xs:string, 
-                                          $name as xs:string?,
-                                          $stepDescriptor as element()?,
-                                          $options as map(*)?) {                                        
-    let $pattern :=
-        if (not($name)) then () else 
-            concat('^', replace($name, '\*', '.*'), '$')
-
-    let $uri := substring($uri, 5) ! replace(., '/$', '')
-    let $kindFilter := $stepDescriptor/@kindFilter
-    let $raw := f:_getChildUris_svn($uri, $pattern, $kindFilter)
-    return
-        $raw ! replace(., '/\s*$', '')
-};
-
-declare function f:descendantUriCollection_svn($uri as xs:string, 
-                                               $name as xs:string?,
-                                               $stepDescriptor as element()?,
-                                               $options as map(*)?) {
-    let $pattern :=
-        if (not($name)) then () else concat('^', replace($name, '\*', '.*'), '$')
-
-    let $uri := substring($uri, 5) ! replace(., '/$', '')
-    let $kindFilter := $stepDescriptor/@kindFilter
-    let $raw := f:_getDescendantUris_svn($uri, $pattern, $kindFilter)
-    return
-        $raw ! replace(., '/\s*$', '')
-};
-
-(:~
- : Returns the child URIs of a given svn URI, matching an optional name pattern
- : and matching an optional kind test (file or folder).
- :
- : Note. Private function, called by public function f:childUriCollection.
- :)
-declare function f:_getChildUris_svn($uri as xs:string,
-                                     $pattern as xs:string?,
-                                     $kindFilter as xs:string?)
-        as xs:string* {
-    (: all child URIs :)
-    let $all := tokenize(proc:system('svn', ('list', $uri)), '\s*&#xA;\s*')[string()]
-    (: name matching URIs :)
-    let $matchName :=
-        if ($pattern) then $all[matches(replace(., '/$', ''), $pattern, 'i')]
-        else $all
-    (: kind matching URIs :)
-    let $matchKind :=
-        if (not($kindFilter)) then $matchName
-        else if ($kindFilter eq 'file') then $matchName[not(ends-with(., '/'))]
-        else if ($kindFilter eq 'dir') then $matchName[ends-with(., '/')] ! replace(., '/\s*$', '')
-        else
-            error(QName((), 'PROGRAM_ERROR'), concat('Unexpected kind filter: ', $kindFilter))
-    return
-        $matchKind
-};
-
-declare function f:_getDescendantUris_svn($uri as xs:string,
-                                          $pattern as xs:string?,
-                                          $kindFilter as xs:string?)
-        as xs:string* {
-    (: all child URIs :)        
-    let $all := tokenize(proc:system('svn', ('list', '--recursive', $uri)), '\s*&#xA;\s*')[string()]
-    (: name matching URIs :)
-    let $matchName :=
-        if ($pattern) then 
-            $all[matches(replace(replace(., '/$', ''), '.*/', ''), $pattern, 'i')]
-        else $all
-    (: kind matching URIs :)        
-    let $matchKind :=
-        if (not($kindFilter)) then $matchName
-        else if ($kindFilter eq 'file') then $matchName[not(ends-with(., '/'))]
-        else if ($kindFilter eq 'dir') then $matchName[ends-with(., '/')] ! replace(., '/\s*$', '')
-        else
-            error(QName((), 'PROGRAM_ERROR'), concat('Unexpected kind filter: ', $kindFilter))
-    return 
-        $matchKind
-};
-
 

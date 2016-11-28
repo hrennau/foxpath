@@ -84,7 +84,8 @@ declare function f:parseFoxpath($text as xs:string?, $options as map(*)?)
                     if (exists($options) and map:get($options, 'SKIP_OPTIMIZATION')) then 
                         $finalized
                     else
-                        f:finalizeParseTree_annotateSteps($finalized)
+                        f:finalizeParseTree_annotateSteps($finalized) !
+                        f:finalizeParseTree_extendFoxRoots(.)
 
             let $errors := f:finalizeFoxpathErrors($exprTree/descendant-or-self::error)            
             return
@@ -321,6 +322,34 @@ declare function f:finalizeParseTree_isShortcut_doubleSlashChild($foxStep1 as el
        count($foxStep2/*) eq 1 and $foxStep2/functionCall[@name = ('is-file', 'is-dir')]
     )
 } ;       
+
+(:~
+ : Finalizes parse tree - replaces child steps by an extension of the path root.
+ :)
+declare function f:finalizeParseTree_extendFoxRoots($tree as element())
+        as element() {
+    if (not($tree//foxRoot[starts-with(@path, 'svn-')])) then $tree else
+
+    copy $treec := $tree
+    modify
+        let $roots := $treec//foxRoot
+        let $roots_svn := $roots[starts-with(@path, 'svn-')]
+        for $root_svn in $roots_svn
+        let $childSteps :=
+            let $after := 
+                $root_svn/following-sibling::*[not(self::foxStep) 
+                                               or not(@axis eq 'child') 
+                                               or matches(@name, '[*?]')
+                                               or *][1]
+            return
+                $root_svn/following-sibling::*[not($after) or . << $after]            
+        let $newPath := string-join((replace($root_svn/@path, '/$', ''), $childSteps/@name), '/')
+        return (
+            replace value of node $root_svn/@path with $newPath,
+            delete nodes $childSteps
+        )                
+    return $treec
+};
 
 
 (: 
@@ -1628,8 +1657,12 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
     (: parse initial root step (/ or \) 
        ================================ :) 
     let $root :=
-        if (starts-with($text, 'http://')) then <foxRoot path="http://"/>        
-        else if (starts-with($text, 'https://')) then <foxRoot path="https://"/>        
+        if (starts-with($text, 'http://')) then 
+            <foxRoot path="http://"/>        
+        else if (starts-with($text, 'https://')) then 
+            <foxRoot path="https://"/>        
+        else if (matches($text, '^rdf-file://.:/')) then 
+            <foxRoot path="{replace($text, '^(rdf-file://.:/).*', '$1')}"/>        
         else if (starts-with($text, 'basex:/')) then
             let $rootUri := replace($text, '^(basex:/+).*', '$1')
 (:            
@@ -1639,7 +1672,11 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
             return
                 <foxRoot path="basex://"/>        
         else if (matches($text, 'svn-(file|https?):/+')) then
-            let $repoPath := f:getSvnRootUri(substring($text, 5))
+            (: let $DUMMY := trace((), concat('GOING TO FIND REPO ROOT; TEXT: ', $text)) :)
+(:            
+            let $repoPath := trace(f:getSvnRootUri(substring($text, 5)) , 'REPO_PATH: ')
+:)
+            let $repoPath := replace($text, 'svn-(.*?:/+[^/]*).*', '$1')
             return
                 if (not($repoPath)) then error(QName((), 'INVALID_SVN_PATH'), concat('Path does not address SVN repo: ', $text))
                 else <foxRoot path="{concat('svn-', $repoPath, '/')}"/>        

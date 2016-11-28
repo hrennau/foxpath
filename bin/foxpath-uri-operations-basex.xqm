@@ -30,6 +30,22 @@ import module namespace i="http://www.ttools.org/xquery-functions" at
  :)
 
 (:~
+ : Returns true if a resource exists.
+ :
+ : @param uri the URI or file path of the resource
+ : @param options options controlling the evaluation
+ : @return true if the resource exists and is a file
+ :)
+ declare function f:fox-file-exists_basex($uri as xs:string, $options as map(*)?)
+        as xs:boolean? {    
+    let $useUri := substring($uri, 9)
+    let $dbPath := f:basex_uri_2_db_path($uri, $options)
+    let $crit := db:list($dbPath[1], $dbPath[2])
+    return
+        count($crit) ge 1
+};
+
+(:~
  : Returns true if a resource is a file, rather than a directory.
  :
  : @param uri the URI or file path of the resource

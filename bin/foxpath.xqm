@@ -524,7 +524,8 @@ declare function f:resolveFoxpathExpr($foxpath as element(foxpath),
         
     let $steps := $foxpath/(* except $initialRoot)[not(@__ignore eq 'true')]
     let $value :=
-        if (not($steps)) then $initialContext/string()
+        if (not($steps)) then 
+            $initialContext/string() [f:fox-file-exists($initialContext, $options)]
         else
             let $items := f:resolveFoxpathExprRC($steps, $initialContext, $vars, $options)
             (: 20161001, hjr: removed the sorting; 
