@@ -4,6 +4,7 @@ declare namespace soap="http://schemas.xmlsoap.org/soap/envelope/";
 declare variable $foxpath external;
 declare variable $vars as xs:string? external := ();
 declare variable $utreeDir as xs:string? external := ();
+declare variable $ugraphEndpoint as xs:string? external := ();
 declare variable $isFile as xs:boolean? external := false;
 declare variable $mode as xs:string? external := 'eval';   (: eval | parse :)
 declare variable $sep as xs:string? external := '/';       (: / | \ :)
@@ -18,7 +19,9 @@ let $options := map:merge((
         map:entry('NODESTEP_SEPERATOR', '\')
     ),
     if (not($utreeDir)) then () else
-        map:entry('URI_TREES_DIR', $utreeDir)
+        map:entry('UTREE_DIR', $utreeDir),
+    if (not($ugraphEndpoint)) then () else
+        map:entry('UGRAPH_ENDPOINT', $ugraphEndpoint)
 ))
 
 let $externalVariables :=

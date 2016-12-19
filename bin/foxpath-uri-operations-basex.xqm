@@ -217,9 +217,12 @@ declare function f:childUriCollection_basex($uri as xs:string,
             concat('^', replace(replace($name, '\*', '.*'), '\?', '.'), '$')
     let $dbPath := f:basex_uri_2_db_path($uri, $options)  
     let $children :=
+        (: no db => list data bases :)
         if (not($dbPath[1])) then db:list()[not($kindFilter eq 'file')]
         else        
-            (: $completePaths start with the database, followed by folders/files :)
+        
+            (: $completePaths - paths within the database 
+                                (a name, optionally preceded by steps) :)
             let $completePaths := db:list($dbPath[1], $dbPath[2])
             (: $relPaths - paths relative to the input URI :)
             let $relPaths := 
@@ -257,14 +260,20 @@ declare function f:descendantUriCollection_basex($uri as xs:string,
     let $pattern :=
         if (not($name)) then () else 
             concat('^', replace(replace($name, '\*', '.*'), '\?', '.'), '$')
-    let $dbPath := f:basex_uri_2_db_path($uri, $options)            
+    let $dbPath := f:basex_uri_2_db_path($uri, $options) 
+    
+    (: $completePaths - paths within the database 
+                        (a name, optionally preceded by steps) :)
     let $completePaths := db:list($dbPath[1], $dbPath[2])
+    (: $relPaths - paths relative to the input URI :)    
     let $relPaths := if (not($dbPath[2])) then $completePaths else 
         $completePaths ! substring(., 2 + string-length($dbPath[2]))
-    let $files := distinct-values($relPaths)
+        
+    let $files := distinct-values($relPaths) (: db:list yields only files ! :)
     let $matchKind :=
         if ($kindFilter eq 'file') then $files
         else
+            (: folders - all path prefixes of all files :)
             let $folders := distinct-values(
                 for $resource in $files
                 return
@@ -300,10 +309,10 @@ declare function f:descendantUriCollection_basex($uri as xs:string,
     let $useUri := substring($uri, 9)
     let $db := 
         if (not($useUri)) then ''
-        else replace($useUri, '^(.*?)/.*', '$1')
+        else replace($useUri, '^(.*?)/.*', '$1')   (: substring preceding first slash :)
     let $path := 
         if (not(contains($useUri, '/'))) then ''
-        else replace($useUri, '^.*?/(.*)', '$1')
+        else replace($useUri, '^.*?/(.*)', '$1')   (: substring following first slash :)
     return
         ($db, $path)
 };

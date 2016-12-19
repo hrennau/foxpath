@@ -4,7 +4,7 @@ foxpath-uri-operation.xqm - library of functions operating on URIs
 Overview:
 
 Group: resource properties
-  uriDomain
+  uriDomain 
   fox-is-file
   fox-is-dir
   fox-file-size
@@ -12,6 +12,9 @@ Group: resource properties
   fox-file-sdate
 
 Group: resource retrieval
+  fox-file-exists
+  fox-doc
+  fox-doc-available  
   fox-unparsed-text
   fox-unparsed-text-lines
   
@@ -20,12 +23,16 @@ module namespace f="http://www.ttools.org/xquery-functions";
 import module namespace i="http://www.ttools.org/xquery-functions" at 
     "foxpath-processorDependent.xqm",
     "foxpath-uri-operations-basex.xqm",
+    "foxpath-uri-operations-github.xqm",    
     "foxpath-uri-operations-svn.xqm",    
     "foxpath-uri-operations-rdf.xqm",    
+    "foxpath-uri-operations-utree.xqm",    
+    "foxpath-uri-operations-archive.xqm",    
     "foxpath-util.xqm";
     
-declare variable $f:UNAME external := 'hrennau';    
-declare variable $f:TOKEN external := try {unparsed-text('/git/token')} catch * {()};
+declare variable $f:UNAME external := 'hrennau';
+declare variable $f:githubToken external := '/git/token';   (: text file containing the github token :)
+declare variable $f:TOKEN external := try {unparsed-text($f:githubToken)} catch * {()};
 
 (: 
  : ===============================================================================
@@ -47,36 +54,43 @@ declare variable $f:TOKEN external := try {unparsed-text('/git/token')} catch * 
  : @return the domain
  :)
 declare function f:uriDomain($uri as xs:string, $options as map(*)?)
-        as xs:string {          
-    if (matches($uri, '^https?://')) then 'REDIRECTING_URI_TREE'
-    else if (starts-with($uri, 'basex://')) then 'BASEX'    
-    else if (starts-with($uri, 'svn-')) then 'SVN'    
-    else if (starts-with($uri, 'rdf-')) then 'RDF'    
-    else 'FILE_SYSTEM'
-};
-
-(:~
- : Returns true if a resource exists.
- :
- : @param uri the URI or file path of the resource
- : @param options options controlling the evaluation
- : @return true if the resource exists
- :)
- declare function f:fox-file-exists($uri as xs:string, $options as map(*)?)
-        as xs:boolean? {
-    let $uriDomain := f:uriDomain($uri, $options)
-    return
+        as xs:string {
+    let $uri_ := $uri || '/' return
     
-    if ($uriDomain eq 'FILE_SYSTEM') then 
-        file:exists($uri)
-    else if ($uriDomain eq 'BASEX') then 
-        f:fox-file-exists_basex($uri, $options)   
-    else if ($uriDomain eq 'SVN') then 
-        f:fox-file-exists_svn($uri, $options)
-    else if ($uriDomain eq 'RDF') then 
-        f:fox-file-exists_rdf($uri, $options)
-    else 
-        true()
+(:    
+    if (matches($uri, '^https://github.com/(hrennau|marklogic)/?')) then 'UTREE'
+:)    
+(:    
+    else if (starts-with($uri,
+    'https://svn.alfresco.com/repos/' ||
+    'alfresco-open-mirror/alfresco/COMMUNITYTAGS/5.1.a/root/projects/3rd-party/greenmail/source/java/com/'))
+    then 'RDF'
+:)    
+    if (tokenize(replace($uri, '^(//[^/]+:/+).*', ''), '/') = $f:ARCHIVE_TOKEN) 
+        then 'ARCHIVE'
+    else if (starts-with($uri, 'https://svn.alfresco.com/repos/')) 
+        then 'RDF'
+   
+(:    
+    else if (starts-with($uri, 'https://svn.alfresco.com/repos/alfresco-open-mirror')) then 'UTREE'
+:)    
+    else if ($options ! 
+            ($options?URI_TREES_PREFIXES, $options?URI_TREES_BASE_URIS)
+            [starts-with($uri_, .)])
+        then 'UTREE'
+        
+    else if ($options ! 
+            $options?UGRAPH_URI_PREFIXES
+            [starts-with($uri_, .)])
+        then 'RDF'
+(:        
+    else if (matches($uri, '^https?://')) then 'REDIRECTING_URI_TREE'
+:)    
+    else if (starts-with($uri, 'basex://')) then 'BASEX'    
+    else if (starts-with($uri, 'svn-')) then 'SVN'
+    else if (starts-with($uri, 'rdf-')) then 'RDF'    
+    else if (starts-with($uri, 'https://api.github.com/repos/')) then 'GITHUB'    
+    else 'FILE_SYSTEM'
 };
 
 (:~
@@ -100,6 +114,8 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
         f:fox-is-file_svn($uri, $options)
     else if ($uriDomain eq 'RDF') then        
         f:fox-is-file_rdf($uri, $options)
+    else if ($uriDomain eq 'UTREE') then        
+        f:fox-is-file_utree($uri, $options)
     else if (empty($options)) then ()
     
     else if ($mode ne 1) then exists(
@@ -137,6 +153,8 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
         f:fox-is-dir_svn($uri, $options)
     else if ($uriDomain eq 'RDF') then 
         f:fox-is-dir_rdf($uri, $options)
+    else if ($uriDomain eq 'UTREE') then 
+        f:fox-is-dir_utree($uri, $options)
     else if (empty($options)) then ()
     
     else if ($mode ne 1) then exists(
@@ -174,6 +192,10 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
         f:fox-file-size_svn($uri, $options)
     else if ($uriDomain eq 'RDF') then
         f:fox-file-size_rdf($uri, $options)
+    else if ($uriDomain eq 'UTREE') then
+        f:fox-file-size_utree($uri, $options)
+    else if ($uriDomain eq 'ARCHIVE') then
+        f:fox-file-size_archive($uri, $options)
     else if (empty($options)) then ()
 (:    
     else (
@@ -217,6 +239,10 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
         f:fox-file-date_svn($uri, $options)
     else if ($uriDomain eq 'RDF') then 
         f:fox-file-date_rdf($uri, $options)
+    else if ($uriDomain eq 'UTREE') then 
+        f:fox-file-date_utree($uri, $options)
+    else if ($uriDomain eq 'ARCHIVE') then
+        f:fox-file-date_archive($uri, $options)
     else if ($uriDomain eq 'REDIRECTING_URI_TREE') then (
         for $buri in map:get($options, 'URI_TREES_BASE_URIS')[starts-with($uri, .)]
         where $buri/..//file[$uri eq concat($buri, @path)]
@@ -247,6 +273,30 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
  :)
 
 (:~
+ : Returns true if a resource exists.
+ :
+ : @param uri the URI or file path of the resource
+ : @param options options controlling the evaluation
+ : @return true if the resource exists
+ :)
+ declare function f:fox-file-exists($uri as xs:string, $options as map(*)?)
+        as xs:boolean? {
+    let $uriDomain := f:uriDomain($uri, $options)
+    return
+    
+    if ($uriDomain eq 'FILE_SYSTEM') then 
+        file:exists($uri)
+    else if ($uriDomain eq 'BASEX') then 
+        f:fox-file-exists_basex($uri, $options)   
+    else if ($uriDomain eq 'SVN') then 
+        f:fox-file-exists_svn($uri, $options)
+    else if ($uriDomain eq 'RDF') then 
+        f:fox-file-exists_rdf($uri, $options)
+    else 
+        true()
+};
+
+(:~
  : Returns an XML document identified by URI or file path.
  :
  : @param uri the URI or file path of the resource
@@ -262,10 +312,29 @@ declare function f:fox-doc($uri as xs:string, $options as map(*)?)
         f:fox-doc_basex($uri, $options)
     else if ($uriDomain eq 'SVN') then 
         f:fox-doc_svn($uri, $options)
-    else if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
-        let $text := f:fox-unparsed-text_github($uri, (), $options)
+    else if ($uriDomain eq 'RDF') then
+        let $accessURI := f:fox-get-access-uri_rdf($uri, $options)
+        return $accessURI ! f:fox-doc(., $options)
+    else if ($uriDomain eq 'UTREE') then
+        let $accessURI := f:fox-get-access-uri_utree($uri, $options)
+        return $accessURI ! f:fox-doc(., $options)
+    else if ($uriDomain eq 'GITHUB') then
+        f:fox-doc_github($uri, $options)
+    else if ($uriDomain eq 'ARCHIVE') then
+        let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+        let $archiveURI := $archiveURIAndPath[1]
+        let $archivePath := $archiveURIAndPath[2]
+        let $archive := f:fox-binary($archiveURI, $options)
         return
-            try {parse-xml($text)} catch * {()}        
+            if (empty($archive)) then ()
+            else
+                f:fox-doc_archive($archive, $archivePath, $options)
+(:                
+    else if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
+        let $text := f:fox-navURI-to-text_github($uri, (), $options)
+        return
+            try {parse-xml($text)} catch * {()}
+:)            
     else if (doc-available($uri)) then doc($uri)
     else ()
 };
@@ -286,15 +355,34 @@ declare function f:fox-doc-available($uri as xs:string, $options as map(*)?)
         f:fox-doc-available_basex($uri, $options)
     else if ($uriDomain eq 'SVN') then 
         f:fox-doc-available_svn($uri, $options)
-    else if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
-        let $text := f:fox-unparsed-text_github($uri, (), $options)
+    else if ($uriDomain eq 'RDF') then        
+        let $accessURI := f:fox-get-access-uri_rdf($uri, $options)
+        return $accessURI ! f:fox-doc-available(., $options)
+    else if ($uriDomain eq 'UTREE') then
+        let $accessURI := f:fox-get-access-uri_utree($uri, $options)
+        return $accessURI ! f:fox-doc-available(., $options)
+    else if ($uriDomain eq 'GITHUB') then
+        f:fox-doc-available_github($uri, $options)
+    else if ($uriDomain eq 'ARCHIVE') then
+        let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+        let $archiveURI := $archiveURIAndPath[1]
+        let $archivePath := $archiveURIAndPath[2]
+        let $archive := f:fox-binary($archiveURI, $options)
         return
-            exists(try {parse-xml($text)} catch * {()})        
+            if (empty($archive)) then false()
+            else
+                f:fox-doc-available_archive($archive, $archivePath, $options)
+(:                
+    else if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
+        let $text := f:fox-navURI-to-text_github($uri, (), $options)
+        return
+            exists(try {parse-xml($text)} catch * {()})
+:)            
     else doc-available($uri)
 };
 
 (:~
- : Returns the string representation of a resource.
+ : Returns a string representation of a resource.
  :
  : @param uri the URI or file path of the resource
  : @param options options controlling the evaluation
@@ -308,11 +396,28 @@ declare function f:fox-unparsed-text($uri as xs:string,
     return
     
     if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
-        f:fox-unparsed-text_github($uri, $encoding, $options)    
+        f:fox-navURI-to-text_github($uri, $encoding, $options)    
     else if ($uriDomain eq 'BASEX') then
         f:fox-unparsed-text_basex($uri, $encoding, $options)
     else if ($uriDomain eq 'SVN') then
         f:fox-unparsed-text_svn($uri, $encoding, $options)
+    else if ($uriDomain eq 'RDF') then        
+        let $accessURI := f:fox-get-access-uri_rdf($uri, $options)
+        return $accessURI ! f:fox-unparsed-text(., $encoding, $options)        
+    else if ($uriDomain eq 'UTREE') then
+        let $accessURI := f:fox-get-access-uri_utree($uri, $options)
+        return $accessURI ! f:fox-unparsed-text(., $encoding, $options)
+    else if ($uriDomain eq 'GITHUB') then
+        f:fox-unparsed-text_github($uri, $encoding, $options)        
+    else if ($uriDomain eq 'ARCHIVE') then
+            let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+            let $archiveURI := $archiveURIAndPath[1]
+            let $archivePath := $archiveURIAndPath[2]
+            let $archive := f:fox-binary($archiveURI, $options)
+            return
+                if (empty($archive)) then ()
+                else
+                    f:fox-unparsed-text_archive($archive, $archivePath, $encoding, $options)
     else 
         try {
             if ($encoding) then unparsed-text($uri, $encoding)
@@ -335,11 +440,28 @@ declare function f:fox-unparsed-text-lines($uri as xs:string,
     return
     
     if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
-        f:fox-unparsed-text_github($uri, $encoding, $options) ! tokenize(., '&#xA;&#xD;?')
+        f:fox-navURI-to-text_github($uri, $encoding, $options) ! tokenize(., '&#xA;&#xD;?')
     else if ($uriDomain eq 'BASEX') then
         f:fox-unparsed-text-lines_basex($uri, $encoding, $options)
     else if ($uriDomain eq 'SVN') then
         f:fox-unparsed-text-lines_svn($uri, $encoding, $options)
+    else if ($uriDomain eq 'RDF') then        
+        let $accessURI := f:fox-get-access-uri_rdf($uri, $options)
+        return $accessURI ! f:fox-unparsed-text-lines(., $encoding, $options) 
+    else if ($uriDomain eq 'UTREE') then
+        let $accessURI := f:fox-get-access-uri_utree($uri, $options)
+        return $accessURI ! f:fox-unparsed-text-lines(., $encoding, $options)
+    else if ($uriDomain eq 'GITHUB') then
+        f:fox-unparsed-text-lines_github($uri, $encoding, $options)    
+    else if ($uriDomain eq 'ARCHIVE') then
+            let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+            let $archiveURI := $archiveURIAndPath[1]
+            let $archivePath := $archiveURIAndPath[2]
+            let $archive := f:fox-binary($archiveURI, $options)
+            return
+                if (empty($archive)) then ()
+                else
+                    f:fox-unparsed-text-lines_archive($archive, $archivePath, $encoding, $options)
     else
         try {
             if ($encoding) then unparsed-text-lines($uri, $encoding)
@@ -376,9 +498,17 @@ declare function f:fox-json-doc($uri as xs:string,
     return
 
     if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
-        let $text := f:fox-unparsed-text_github($uri, (), $options)
+        let $text := f:fox-navURI-to-text_github($uri, (), $options)
         return
-            try {$text ! json:parse(.)} catch * {()}        
+            try {$text ! json:parse(.)} catch * {()}  
+    else if ($uriDomain eq 'RDF') then        
+        let $accessURI := f:fox-get-access-uri_rdf($uri, $options)
+        return $accessURI ! f:fox-json-doc(., $options)       
+    else if ($uriDomain eq 'UTREE') then
+        let $accessURI := f:fox-get-access-uri_utree($uri, $options)
+        return $accessURI ! f:fox-json-doc(., $options)
+    else if ($uriDomain eq 'GITHUB') then
+        f:fox-json-doc_github($uri, $options)
     else 
         try {unparsed-text($uri) ! json:parse(.)} catch * {()}
 };
@@ -392,65 +522,41 @@ declare function f:fox-json-doc($uri as xs:string,
  :)
 declare function f:fox-json-doc-available($uri as xs:string, 
                                           $options as map(*)?)
-        as document-node()? {
+        as xs:boolean {
     let $uriDomain := f:uriDomain($uri, $options)
     return
 
     if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
-        let $text := f:fox-unparsed-text_github($uri, (), $options)
+        let $text := f:fox-navURI-to-text_github($uri, (), $options)
         return
             try {exists($text ! json:parse(.))} catch * {()}        
+    else if ($uriDomain eq 'RDF') then        
+        let $accessURI := f:fox-get-access-uri_rdf($uri, $options)
+        return $accessURI ! f:fox-json-doc-available(., $options)  
+    else if ($uriDomain eq 'UTREE') then
+        let $accessURI := f:fox-get-access-uri_utree($uri, $options)
+        return $accessURI ! f:fox-json-doc-available(., $options)
+    else if ($uriDomain eq 'GITHUB') then
+        f:fox-json-doc-available_github($uri, $options)
     else 
-        try {exists(unparsed-text($uri) ! json:parse(.))} catch * {()}
+        try {exists(unparsed-text($uri) ! json:parse(.))} catch * {false()}
 };
 
 (:~
- : Retrieves the text of a resource whose URI is found in a redirecting URI tree.
+ : Returns the content of a file as the Base64 representation of its bytes.
  :
- : @param uri the URI
+ : @param uri the navigation URI of the file
  : @param options options controlling the evaluation
- : @return the domain
+ : @return the Base64 representation, if available, the empty sequence otherwise
  :)
-declare function f:fox-unparsed-text_github($uri as xs:string,
-                                            $encoding as xs:string?,
-                                            $options as map(*)?)
-        as xs:string? {
-    let $redirect :=
-        if (not(f:uriDomain($uri, $options) eq 'REDIRECTING_URI_TREE')) then ()
-        else if (empty($options)) then ()
-        else
-            for $buri in map:get($options, 'URI_TREES_BASE_URIS')[starts-with($uri, .)] return
-            $buri/..//file[$uri eq concat($buri, @path)]/@uri
-            
+declare function f:fox-binary($uri as xs:string, 
+                              $options as map(*)?)
+        as xs:base64Binary? {
+    let $uriDomain := f:uriDomain($uri, $options)
     return
-        try {
-            if ($redirect) then
-                let $response := f:get-request_github($redirect, $f:TOKEN)
-                return $response//content/convert:binary-to-string(xs:base64Binary(.))  
-            else ()
-        } catch * {()}            
+    (: @TO-DO@ - call URI domain specific implementations :)
+        try {file:read-binary($uri)} catch * {()}
 };
-
-(:~
- : Sends a github API - GET request and returns the response. Returns the response body,
- : if there is one, otherwise the response header.
- 
- : @param uri the URI
- : @param token if specified, used for authorization
- : @return the response
- :)
-declare function f:get-request_github($uri as xs:string, $token as xs:string)
-        as node()+ {
-    let $rq :=
-        <http:request method="get" href="{$uri}">{
-            <http:header name="Authorization" value="{concat('Token ', $token)}"/>[$token]
-        }</http:request>
-    let $rs := try {http:send-request($rq)} catch * {trace((), 'EXCEPTION_IN_SEND_REQUEST: ')} 
-    let $rsHeader := $rs[1]
-    let $body := $rs[position() gt 1]
-    return
-        ($body, $rsHeader)[1]
-};        
 
 (: 
  : ===============================================================================
@@ -472,9 +578,11 @@ declare function f:childUriCollection($uri as xs:string,
                                       $name as xs:string?,
                                       $stepDescriptor as element()?,
                                       $options as map(*)?) {
-    let $uriDomain := f:uriDomain($uri, $options)
+    let $uriDomain := f:uriDomain($uri, $options) 
     return    
-        if ($uriDomain eq 'REDIRECTING_URI_TREE') then
+        if ($uriDomain eq 'UTREE') then
+            f:childUriCollection_utree($uri, $name, $stepDescriptor, $options) 
+        else if ($uriDomain eq 'REDIRECTING_URI_TREE') then
             f:childUriCollection_uriTree($uri, $name, $stepDescriptor, $options) 
         else if ($uriDomain eq 'BASEX') then
             f:childUriCollection_basex($uri, $name, $stepDescriptor, $options) 
@@ -482,6 +590,16 @@ declare function f:childUriCollection($uri as xs:string,
             f:childUriCollection_svn($uri, $name, $stepDescriptor, $options) 
         else if ($uriDomain eq 'RDF') then
             f:childUriCollection_rdf($uri, $name, $stepDescriptor, $options) 
+        else if ($uriDomain eq 'ARCHIVE') then
+            let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+            let $archiveURI := $archiveURIAndPath[1]
+            let $archivePath := $archiveURIAndPath[2]
+            let $archive := f:fox-binary($archiveURI, $options)
+            return
+                if (empty($archive)) then ()
+                else
+                    f:childUriCollection_archive(
+                        $archive, $archivePath, $name, $stepDescriptor, $options) 
         else
         
     let $kindFilter := $stepDescriptor/@kindFilter
@@ -517,7 +635,9 @@ declare function f:descendantUriCollection($uri as xs:string,
                                            $options as map(*)?) {   
     let $uriDomain := f:uriDomain($uri, $options)
     return    
-        if ($uriDomain eq 'REDIRECTING_URI_TREE') then
+        if ($uriDomain eq 'UTREE') then
+            f:descendantUriCollection_utree($uri, $name, $stepDescriptor, $options) 
+        else if ($uriDomain eq 'REDIRECTING_URI_TREE') then
             f:descendantUriCollection_uriTree($uri, $name, $stepDescriptor, $options) 
         else if ($uriDomain eq 'BASEX') then
             f:descendantUriCollection_basex($uri, $name, $stepDescriptor, $options) 
@@ -525,6 +645,16 @@ declare function f:descendantUriCollection($uri as xs:string,
             f:descendantUriCollection_svn($uri, $name, $stepDescriptor, $options) 
         else if ($uriDomain eq 'RDF') then
             f:descendantUriCollection_rdf($uri, $name, $stepDescriptor, $options) 
+        else if ($uriDomain eq 'ARCHIVE') then
+            let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+            let $archiveURI := $archiveURIAndPath[1]
+            let $archivePath := $archiveURIAndPath[2]
+            let $archive := f:fox-binary($archiveURI, $options)
+            return
+                if (empty($archive)) then ()
+                else
+                    f:descendantUriCollection_archive(
+                        $archive, $archivePath, $name, $stepDescriptor, $options) 
         else
         
     let $kindFilter := $stepDescriptor/@kindFilter

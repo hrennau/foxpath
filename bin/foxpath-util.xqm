@@ -4,6 +4,7 @@ declare variable $f:DEBUG := '';
 declare variable $f:DG :=
     for $item in tokenize(normalize-space($f:DEBUG), ' ') 
     return concat('^', replace($item, '\*', '.*'), '$');
+declare variable $f:ARCHIVE_TOKEN external := '#archive#';
 
 (:
 declare variable $f:STDLIB := map{

@@ -328,26 +328,30 @@ declare function f:finalizeParseTree_isShortcut_doubleSlashChild($foxStep1 as el
  :)
 declare function f:finalizeParseTree_extendFoxRoots($tree as element())
         as element() {
-    if (not($tree//foxRoot[starts-with(@path, 'svn-')])) then $tree else
+    (: if (not($tree//foxRoot[starts-with(@path, 'svn-')])) then $tree else :)
 
     copy $treec := $tree
     modify
         let $roots := $treec//foxRoot
-        let $roots_svn := $roots[starts-with(@path, 'svn-')]
-        for $root_svn in $roots_svn
+        (: let $roots_svn := $roots[starts-with(@path, 'svn-')] :)       
+        for $root in $roots
         let $childSteps :=
             let $after := 
-                $root_svn/following-sibling::*[not(self::foxStep) 
-                                               or not(@axis eq 'child') 
-                                               or matches(@name, '[*?]')
-                                               or *][1]
+                $root/following-sibling::*[not(self::foxStep) 
+                                           or not(@axis eq 'child') 
+                                           or matches(@name, '[*?]')
+                                           or *][1]
             return
-                $root_svn/following-sibling::*[not($after) or . << $after]            
-        let $newPath := string-join((replace($root_svn/@path, '/$', ''), $childSteps/@name), '/')
-        return (
-            replace value of node $root_svn/@path with $newPath,
-            delete nodes $childSteps
-        )                
+                $root/following-sibling::*[not($after) or . << $after]
+        return 
+            if (not($childSteps)) then ()
+            else
+                let $newPath := 
+                    string-join((replace($root/@path, '/$', ''), $childSteps/@name), '/')
+                return (
+                    replace value of node $root/@path with $newPath,
+                    delete nodes $childSteps
+                )                
     return $treec
 };
 
@@ -1902,6 +1906,12 @@ declare function f:parseStep($text as xs:string?,
             return 
                 ($parsed, $textAfter)
                 (: ($postfixExpr, $textAfter) :)
+                
+        (: archive entry step :)        
+        else if (matches($text, '^#archive#(\s*(/.*)?)?$')) then (
+            <foxStep><archiveEntry/></foxStep>,
+            replace($text, '^#archive#\s*', '')
+        )    
         else
             (: then, try to parse as fox axis step :)
             let $foxAxisStepEtc := f:parseFoxAxisStep($text, $context)
@@ -2056,7 +2066,7 @@ declare function f:parseNodeAxisStep($text as xs:string?, $context as map(*))
                 '^(\.\.|@|',
                 '(child|descendant|descendant-or-self|self|attribute|following-sibling|following',
                 '|parent|ancestor|ancestor-or-self|preceding-sibling|preceding)::).*'), '$1', 'sx')
-            [not(. eq $text)]
+            [not(. eq $text) or $text eq '..']
 
     let $axisName :=
         if (not($explicitAxis)) then 'child'

@@ -125,13 +125,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `file-ext` 
            ================== :)
         else if ($fname eq 'file-ext') then
-            let $uri := 
+            let $uri :=
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
                 return
                     ($explicit, $context)[1]
             let $fileName := replace($uri, '.*/', '')
             return
-                if (not(contains($fileName, '.'))) then ""
+                if (not(contains($fileName, '.'))) then ()
                 else replace($fileName, '.*(\..*)', '$1')
             
         (: function `file-info` 
@@ -191,8 +191,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
        (: function `grep` 
           =============== :)
         else if ($fname eq 'grep') then
-            let $pattern := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $uri := 
+            let $pattern :=  
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $uri :=
                 let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
                 return
                     ($explicit, $context)[1]
@@ -200,9 +201,10 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (not($pattern)) then ()
                 else concat('^.*', replace(replace($pattern, '\*', '.*'), '\?', '.'), '.*$')
             let $lines := i:fox-unparsed-text-lines($uri, (), $options)
+            (: let $DUMMY := trace(count($lines), 'COUNT_LINES: ') :)
             let $lines := $lines[empty($regex) or matches(., $regex, 'i')]
             return
-                if (empty($lines)) then () else 
+                if (empty($lines)) then () else
                     string-join((concat('##### ', $uri, ' #####'), $lines, '----------'), '&#xA;')
 
         (: function `is-dir` 
@@ -263,7 +265,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
             return
-                try {i:fox-json-doc($uri, $options)/true()} catch * {false()}
+                try {i:fox-json-doc-available($uri, $options)} catch * {false()}
                             
        (: function `linefeed` 
           ================== :)
@@ -727,12 +729,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $uri := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
-            let $redirectedRetrieval := f:fox-unparsed-text_github($uri, (), $options)
             return
-                if ($redirectedRetrieval) then 
-                    let $doc := try {parse-xml($redirectedRetrieval)} catch * {()}
-                    return exists($doc)
-                else i:fox-doc-available($uri, $options)
+                i:fox-doc-available($uri, $options)
                 
         (: function `empty` 
            ================ :)
@@ -740,6 +738,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)         
             return
                 empty($arg1)
+                
+        (: function `exists` 
+           ================ :)
+        else if ($fname eq 'exists') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)         
+            return
+                exists($arg1)
                 
         (: function `ends-with` 
            ==================== :)

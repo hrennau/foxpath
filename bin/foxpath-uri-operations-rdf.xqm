@@ -38,8 +38,9 @@ import module namespace i="http://www.ttools.org/xquery-functions" at
  :)
 declare function f:fox-file-exists_rdf($uri as xs:string?, $options as map(*)?)
         as xs:boolean? {
+    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINT')        
     let $query := ``[
-PREFIX fs: <http://www.foxpath.org/ns/ref/filesystem#>
+PREFIX fs: <http://www.foxpath.org/ns/rdf/filesystem/>
 
 SELECT ?exists
 WHERE
@@ -47,7 +48,7 @@ WHERE
     OPTIONAL {?res fs:navURI "`{$uri}`"}
     BIND( IF(BOUND(?res), true, false ) as ?exists)
 }]``
-    let $response := f:sparql2strings($query, (), ())
+    let $response := f:sparql2strings($query, $endpoint, ())
     return
         $response ! xs:boolean(.)
 };
@@ -61,9 +62,10 @@ WHERE
  :)
 declare function f:fox-is-file_rdf($uri as xs:string?, $options as map(*)?)
         as xs:boolean? {
+    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINT')        
     let $uriString := concat('"', $uri, '"')
     let $query := ``[
-PREFIX fs: <http://www.foxpath.org/ns/ref/filesystem#>
+PREFIX fs: <http://www.foxpath.org/ns/rdf/filesystem/>
 
 SELECT ?isFile
 WHERE
@@ -72,7 +74,7 @@ WHERE
     OPTIONAL {?res a fs:file . BIND(true as ?isFile)}
     OPTIONAL {?res a fs:dir . BIND(false as ?isFile)}
 }]``
-    let $response := f:sparql2strings($query, (), ())
+    let $response := f:sparql2strings($query, $endpoint, ())
     return
         $response ! xs:boolean(.)
 };
@@ -86,9 +88,10 @@ WHERE
  :)
 declare function f:fox-is-dir_rdf($uri as xs:string?, $options as map(*)?)
         as xs:boolean? {
+    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINT')        
     let $uriString := concat('"', $uri, '"')
     let $query := ``[
-PREFIX fs: <http://www.foxpath.org/ns/ref/filesystem#>
+PREFIX fs: <http://www.foxpath.org/ns/rdf/filesystem/>
 
 SELECT ?isDir
 WHERE
@@ -97,7 +100,7 @@ WHERE
     OPTIONAL {?res a fs:dir . BIND(true as ?isDir)}
     OPTIONAL {?res a fs:file . BIND(false as ?isDir)}
 }]``
-    let $response := f:sparql2strings($query, (), ())
+    let $response := f:sparql2strings($query, $endpoint, ())
     return
         $response ! xs:boolean(.)
 };
@@ -111,9 +114,10 @@ WHERE
  :)
  declare function f:fox-file-date_rdf($uri as xs:string?, $options as map(*)?)
         as xs:dateTime? {
+    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINT')        
     let $uriString := concat('"', $uri, '"')
     let $query := ``[
-PREFIX fs: <http://www.foxpath.org/ns/ref/filesystem#>
+PREFIX fs: <http://www.foxpath.org/ns/rdf/filesystem/>
 
 SELECT DISTINCT ?date
 WHERE
@@ -121,16 +125,17 @@ WHERE
     ?res fs:navURI `{$uriString}` .
     ?res fs:lastModified ?date .
 }]``
-    let $response := f:sparql2strings($query, (), ())
+    let $response := f:sparql2strings($query, $endpoint, ())
     return
         $response ! xs:dateTime(.)
 };
 
 declare function f:fox-file-size_rdf($uri as xs:string?, $options as map(*)?)
         as xs:integer? {
+    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINT')        
     let $uriString := concat('"', $uri, '"')
     let $query := ``[
-PREFIX fs: <http://www.foxpath.org/ns/ref/filesystem#>
+PREFIX fs: <http://www.foxpath.org/ns/rdf/filesystem/>
 
 SELECT DISTINCT ?size
 WHERE
@@ -138,7 +143,7 @@ WHERE
     ?res fs:navURI `{$uriString}` .
     ?res fs:fileSize ?size .
 }]``
-    let $response := f:sparql2strings($query, (), ())
+    let $response := f:sparql2strings($query, $endpoint, ())
     return
         $response ! xs:integer(.)
 };
@@ -150,7 +155,26 @@ WHERE
  :
  : ===============================================================================
  :)
+ 
+ (:~
+  : Returns the access URI associated with a given navigation URI.
+  :)
+declare function f:fox-get-access-uri_rdf($uri as xs:string?, $options as map(*)?)
+        as xs:string? {
+    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINT')        
+    let $query := ``[
+PREFIX fs: <http://www.foxpath.org/ns/rdf/filesystem/>
 
+SELECT ?accessURI
+WHERE
+{
+    ?file fs:navURI "`{$uri}`" .
+    ?file fs:accessURI ?accessURI
+}]``
+    let $response := f:sparql2strings($query, $endpoint, ())
+    return
+        $response ! xs:string(.)
+};
 (: 
  : ===============================================================================
  :
@@ -185,7 +209,8 @@ declare function f:childOrDescendantUriCollection_rdf($axis as xs:string,
                                                       $name as xs:string?,
                                                       $stepDescriptor as element()?,
                                                       $options as map(*)?) {
-    (: let $DUMMY := trace($uri, concat('axis=', $axis, ' ; URI: ')) :)                                                      
+    (: let $DUMMY := trace($uri, concat('axis=', $axis, ' ; URI: ')) :)
+    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINT')    
     let $pattern :=
         if (not($name)) then () 
         else concat('^', replace($name, '\*', '.*'), '$')
@@ -202,7 +227,7 @@ declare function f:childOrDescendantUriCollection_rdf($axis as xs:string,
         else if ($kindFilter eq 'dir') then '?res a fs:dir .'
         else ()
     let $query := ``[
-PREFIX fs: <http://www.foxpath.org/ns/ref/filesystem#>
+PREFIX fs: <http://www.foxpath.org/ns/rdf/filesystem/>
 
 SELECT DISTINCT ?navURI
 WHERE
@@ -212,8 +237,9 @@ WHERE
 `{$sparql_filter_kind}`
 `{$sparql_filter_name}`
 ?res fs:navURI ?navURI
-}]``
-    let $response := f:sparql2strings($query, (), ())   
+}]`` ! replace(., '&#xD;', '')
+    let $DUMMY := file:write('/projects/foxbug/foxbug.txt', $query, map{'method':'text'})
+    let $response := f:sparql2strings($query, $endpoint, ())   
     let $uriWithTrailingSlash := replace($uri, '([^/])$', '$1/')
     return
         $response ! substring-after(., $uriWithTrailingSlash)
@@ -248,5 +274,25 @@ declare function f:sparql2strings($query as xs:string,
     let $rs := http:send-request($request)[2]
     return
         convert:binary-to-string($rs) ! json:parse(.)//value/string()
+};
+
+ (:~
+  : Returns the URI prefixes covered by a UGRAPH endpoint.
+  :)
+declare function f:get-ugraph-uri-prefixes($endpoint as xs:string, $options as map(*)?)
+        as xs:string? {
+    let $query := ``[
+PREFIX fs: <http://www.foxpath.org/ns/rdf/filesystem/> 
+
+SELECT ?navURI
+WHERE
+{
+    ?dir a fs:dir .
+    FILTER NOT EXISTS {?dir fs:parentDir ?pdir}
+    ?dir fs:navURI ?navURI .    
+}]``
+    let $response := f:sparql2strings($query, $endpoint, ())
+    return
+        $response ! xs:string(.)
 };
 

@@ -127,41 +127,52 @@ declare function f:resolveFoxpath($foxpath as xs:string,
  :)
 declare function f:finalizeOptions($options as map(*)?)
         as map(*) {
-    let $uriTreesDir := ($options ! map:get(., 'URI_TREES_DIR'), $f:URI_TREES_DIR)[1]        
-    let $uriTreesDir := 
-        if (starts-with($uriTreesDir, 'basex://')) then $uriTreesDir
-        else if (starts-with($uriTreesDir, '/')) then $uriTreesDir
+    let $utreeDir := $options ! map:get(., 'UTREE_DIR')        
+    let $ugraphEndpoint := $options ! map:get(., 'UGRAPH_ENDPOINT')    
+    
+    let $utreeDir := 
+        if (starts-with($utreeDir, 'basex://')) then $utreeDir
+        else if (starts-with($utreeDir, '/')) then $utreeDir
         else
             let $baseURI := replace(static-base-uri(), '[^/]+$', '')
             return
-                concat($baseURI, $uriTreesDir)
+                concat($baseURI, $utreeDir)
         
     let $uriTrees :=
-        if (starts-with($uriTreesDir, 'basex://')) then
-            let $db := substring($uriTreesDir, 9)
+        if (starts-with($utreeDir, 'basex://')) then
+            let $db := substring($utreeDir, 9)
             let $docs := try {db:open($db)/*} catch * {()}
             return $docs
         else
             try {
-                file:list($uriTreesDir, false(), 'uri-trees-*') 
-                ! concat($uriTreesDir, '/', .) ! doc(.)/*
+                file:list($utreeDir, false(), 'utree-*') 
+                ! concat($utreeDir, '/', .) ! doc(.)/*
             } catch * {()}
+(:            
     let $uriPrefixMap :=
         map:merge(
             for $doc in $uriTrees
             return map:entry($doc/@uriPrefix, $doc/tree/@baseURI)
         )
+:)        
     let $uriPrefixes := $uriTrees/@uriPrefix
+    
+    (: let $ugraphUriPrefixes := 'https://github.com/marklogic/' :)
+    let $ugraphUriPrefixes := 
+        if (empty($ugraphEndpoint)) then () else
+            f:get-ugraph-uri-prefixes($ugraphEndpoint, $options)
     
     (: let $DUMMY := trace(count($uriTrees), 'COUNT_URI_TREES #2: ') :)        
     let $map :=
         map{       
-            'URI_TREES_DIR': $uriTreesDir,
+            'URI_TREES_DIR': $utreeDir,
             'URI_TREES': $uriTrees,
             'URI_TREES_BASE_URIS': $uriTrees/tree/@baseURI,
             'URI_TREES_PREFIXES': $uriPrefixes,
-            'URI_TREES_PREFIX_TO_BASE_URIS': $uriPrefixMap
+            'UGRAPH_ENDPOINT': $ugraphEndpoint,
+            'UGRAPH_URI_PREFIXES': $ugraphUriPrefixes
         }
+(:  'URI_TREES_PREFIX_TO_BASE_URIS': $uriPrefixMap :)
     (: let $DUMMY := trace(count(map:get($map, 'URI_TREES')), 'COUNT_URI_TREES_IN_MAP: ') :)
     return    
         $map
@@ -269,7 +280,7 @@ declare function f:resolveFoxpathRC($n as node(),
                                     $options as map(*)?)
         as item()* {
     typeswitch($n)
-    
+  
     case element(additive) return
         let $lhs := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars, $options)
         let $rhs := f:resolveFoxpathRC($n/*[2], false(), $context, $position, $last, $vars, $options)
@@ -284,10 +295,16 @@ declare function f:resolveFoxpathRC($n as node(),
             else $value
             
     case element(and) return
-        let $args := $n/*/f:resolveFoxpathRC(., true(), $context, $position, $last, $vars, $options)
+        let $args := $n/*/(
+                     f:resolveFoxpathRC(., true(), $context, $position, $last, $vars, $options), 
+                     false()
+                     )[1]
         return
             every $arg in $args satisfies $arg
  
+    case element(archiveEntry) return
+        $context ! concat(., '/', $f:ARCHIVE_TOKEN)
+        
     case element(cast) return
         f:resolveCastExpr($n, $ebvMode, $context, $position, $last, $vars, $options)
         
@@ -424,7 +441,10 @@ declare function f:resolveFoxpathRC($n as node(),
             else $value
 
     case element(or) return
-        let $args := $n/*/f:resolveFoxpathRC(., true(), $context, $position, $last, $vars, $options)
+        let $args := $n/*/(
+                     f:resolveFoxpathRC(., true(), $context, $position, $last, $vars, $options), 
+                     false()
+                     )[1]
         return
             some $arg in $args satisfies $arg 
 
@@ -505,7 +525,7 @@ declare function f:resolveFoxpathExpr($foxpath as element(foxpath),
     let $initialContext :=
         (: leading step to the root resource :)
         if ($initialRoot/self::foxRoot) then 
-            $initialRoot/@path
+            $initialRoot/@path/string()
         (: leading step to the root node :)
         else if ($initialRoot/self::root) then 
             if ($context instance of node()) then root($context)
@@ -518,14 +538,16 @@ declare function f:resolveFoxpathExpr($foxpath as element(foxpath),
         (: no initial step to the root resource or root node;
            the context item defaults to the current directory! :) 
         else 
-            ($context, $foxpath/@context)[1]
+            ($context, $foxpath/@context/string())[1]
     return
         if (empty($initialContext)) then () else
         
     let $steps := $foxpath/(* except $initialRoot)[not(@__ignore eq 'true')]
     let $value :=
         if (not($steps)) then 
-            $initialContext/string() [f:fox-file-exists($initialContext, $options)]
+            $initialContext [f:fox-file-exists($initialContext, $options)]
+            (: 20161202, hjr - removed .../string() :)
+            (: $initialContext/string() [f:fox-file-exists($initialContext, $options)] :)
         else
             let $items := f:resolveFoxpathExprRC($steps, $initialContext, $vars, $options)
             (: 20161001, hjr: removed the sorting; 
@@ -739,7 +761,7 @@ declare function f:resolveNodeAxisStep($axisStep as element()+,
     
     (: edit context, transforming atomic values into document nodes :)
     (: let $DUMMY := trace($context, 'CONTEXT: ') :)
-    let $context := 
+    let $context :=
         for $c in $context return
             if ($c instance of node()) then $c
             else i:fox-doc($c, $options)              
