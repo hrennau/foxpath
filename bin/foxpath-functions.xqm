@@ -112,16 +112,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 i:fox-file-date($uri, $options)
             
-        (: function `file-sdate` 
-           ===================== :)
-        else if ($fname eq 'file-sdate' or $fname eq 'fsdate') then
-            let $uri := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return
-                    ($explicit, $context)[1]
-            return
-                f:fox-file-sdate($uri, $options)
-            
         (: function `file-ext` 
            ================== :)
         else if ($fname eq 'file-ext') then
@@ -134,6 +124,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (not(contains($fileName, '.'))) then ()
                 else replace($fileName, '.*(\..*)', '$1')
             
+       (: function `file-exists` 
+          ===================== :)
+        else if ($fname eq 'file-exists') then
+            let $uri := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return
+                    ($explicit, $context)[1]
+            return
+                i:fox-file-exists($uri, $options)
+                
         (: function `file-info` 
            ==================== :)
         else if ($fname eq 'file-info') then
@@ -188,6 +188,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 i:fox-file-size($uri, $options)
 
+        (: function `file-sdate` 
+           ===================== :)
+        else if ($fname eq 'file-sdate' or $fname eq 'fsdate') then
+            let $uri := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return
+                    ($explicit, $context)[1]
+            return
+                f:fox-file-sdate($uri, $options)
+            
        (: function `grep` 
           =============== :)
         else if ($fname eq 'grep') then

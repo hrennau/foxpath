@@ -31,48 +31,35 @@ import module namespace i="http://www.ttools.org/xquery-functions" at
  (:~
  : Returns the size in bytes of a resource contained by an archive.
  :
- : @param uri the resource URI
+ : @param archive an archive file
+ : @param archivePath a within-archive data path (e.g. a/b/c)
  : @param options options controlling the evaluation
- : @return true if the resource exists and is a file
+ : @return the size of the resource as number of bytes
  :)
- declare function f:fox-file-size_archive($uri as xs:string, $options as map(*)?)
-        as xs:dateTime? {    
-    let $archPath := f:parseArchiveURI($uri, $options)
-    let $archURI := $archPath[1]
-    let $path := $archPath[2] ! replace(., '^/', '')
-
-    let $arch := file:read-binary($archURI)
+ declare function f:fox-file-size_archive($archive as xs:base64Binary, 
+                                          $archivePath as xs:string?,
+                                          $options as map(*)?)
+        as xs:integer? {    
+    let $entry := archive:entries($archive)[. eq $archivePath]
     return
-        if (empty($arch)) then ()
-        else
-            let $entry := archive:entries($arch)[. eq $path]
-            return
-                if (not($entry)) then ()
-                else $entry/@size/xs:integer(.)
+        if (not($entry)) then () else $entry/@size/xs:integer(.)
 };
 
 
 (:~
- : Returns the last modification date of a resource contained by an archive.
+ : Returns the last modification time of a resource contained by an archive.
  :
  : @param uri the resource URI
  : @param options options controlling the evaluation
  : @return true if the resource exists and is a file
  :)
- declare function f:fox-file-date_archive($uri as xs:string, $options as map(*)?)
+ declare function f:fox-file-date_archive($archive as xs:base64Binary, 
+                                          $archivePath as xs:string?,
+                                          $options as map(*)?)
         as xs:dateTime? {    
-    let $archPath := f:parseArchiveURI($uri, $options)
-    let $archURI := $archPath[1]
-    let $path := $archPath[2] ! replace(., '^/', '')
-
-    let $arch := file:read-binary($archURI)
+    let $entry := archive:entries($archive)[. eq $archivePath]
     return
-        if (empty($arch)) then ()
-        else
-            let $entry := archive:entries($arch)[. eq $path]
-            return
-                if (not($entry)) then ()
-                else $entry/@last-modified/xs:dateTime(.)
+        if (not($entry)) then () else $entry/@last-modified/xs:dateTime(.)
 };
 
 (: 
@@ -83,6 +70,28 @@ import module namespace i="http://www.ttools.org/xquery-functions" at
  : ===============================================================================
  :)
  
+ (:~
+ : Returns true if an archive contains a resource matching a given 
+ : within-archive data path.
+ :
+ : @param archive an archive file
+ : @param archivePath a within-archive data path (e.g. a/b/c)
+ : @param options options controlling the evaluation
+ : @return true if the resource exists and is a file
+ :)
+  declare function f:fox-file-exists_archive($archive as xs:base64Binary, 
+                                             $archivePath as xs:string?, 
+                                             $options as map(*)?)
+        as xs:boolean { 
+    let $entries := archive:entries($archive)
+    return
+        if ($entries = $archivePath) then true()
+        else 
+            let $prefix := concat($archivePath, '/')
+            return
+                some $entry in $entries satisfies starts-with($entry, $prefix) 
+};
+
  (:~
  : Returns the XML document obtained by parsing a resource contained by an archive.
  :

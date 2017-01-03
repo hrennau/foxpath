@@ -58,9 +58,6 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
     let $uri_ := $uri || '/' return
     
 (:    
-    if (matches($uri, '^https://github.com/(hrennau|marklogic)/?')) then 'UTREE'
-:)    
-(:    
     else if (starts-with($uri,
     'https://svn.alfresco.com/repos/' ||
     'alfresco-open-mirror/alfresco/COMMUNITYTAGS/5.1.a/root/projects/3rd-party/greenmail/source/java/com/'))
@@ -70,22 +67,14 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
         then 'ARCHIVE'
     else if (starts-with($uri, 'https://svn.alfresco.com/repos/')) 
         then 'RDF'
-   
-(:    
-    else if (starts-with($uri, 'https://svn.alfresco.com/repos/alfresco-open-mirror')) then 'UTREE'
-:)    
     else if ($options ! 
             ($options?URI_TREES_PREFIXES, $options?URI_TREES_BASE_URIS)
             [starts-with($uri_, .)])
-        then 'UTREE'
-        
+        then 'UTREE'        
     else if ($options ! 
             $options?UGRAPH_URI_PREFIXES
             [starts-with($uri_, .)])
         then 'RDF'
-(:        
-    else if (matches($uri, '^https?://')) then 'REDIRECTING_URI_TREE'
-:)    
     else if (starts-with($uri, 'basex://')) then 'BASEX'    
     else if (starts-with($uri, 'svn-')) then 'SVN'
     else if (starts-with($uri, 'rdf-')) then 'RDF'    
@@ -172,7 +161,7 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
 };
 
 (:~
- : Returns the size of a resource.
+ : Returns the size in bytes of a resource.
  :
  : @param uri the URI or file path
  : @param options options controlling the evaluation
@@ -195,14 +184,15 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
     else if ($uriDomain eq 'UTREE') then
         f:fox-file-size_utree($uri, $options)
     else if ($uriDomain eq 'ARCHIVE') then
-        f:fox-file-size_archive($uri, $options)
+        let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+        let $archiveURI := $archiveURIAndPath[1]
+        let $archivePath := $archiveURIAndPath[2]
+        let $archive := f:fox-binary($archiveURI, $options)
+        return
+            if (empty($archive)) then ()
+            else
+                f:fox-file-size_archive($archive, $archivePath, $options)
     else if (empty($options)) then ()
-(:    
-    else (
-        for $tree in map:get($options, 'URI_TREES')[starts-with($uri, @baseURI)] return
-            $tree//file[$uri eq concat($tree/@baseURI, @path)]
-         )[1]
-:)         
     else if ($mode ne 1) then (
         for $uriPrefix in map:get($options, 'URI_TREES_PREFIXES')[starts-with($uri, .)] return
         for $buri in map:get(map:get($options, 'URI_TREES_PREFIX_TO_BASE_URIS'), $uriPrefix) return
@@ -218,7 +208,7 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
 };
 
 (:~
- : Returns the last modification date of a resource.
+ : Returns the last modification time of a resource.
  :
  : @param uri the URI or file path of the resource
  : @param options options controlling the evaluation
@@ -242,7 +232,14 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
     else if ($uriDomain eq 'UTREE') then 
         f:fox-file-date_utree($uri, $options)
     else if ($uriDomain eq 'ARCHIVE') then
-        f:fox-file-date_archive($uri, $options)
+        let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+        let $archiveURI := $archiveURIAndPath[1]
+        let $archivePath := $archiveURIAndPath[2]
+        let $archive := f:fox-binary($archiveURI, $options)
+        return
+            if (empty($archive)) then ()
+            else
+                f:fox-file-date_archive($archive, $archivePath, $options)
     else if ($uriDomain eq 'REDIRECTING_URI_TREE') then (
         for $buri in map:get($options, 'URI_TREES_BASE_URIS')[starts-with($uri, .)]
         where $buri/..//file[$uri eq concat($buri, @path)]
@@ -279,8 +276,10 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
  : @param options options controlling the evaluation
  : @return true if the resource exists
  :)
- declare function f:fox-file-exists($uri as xs:string, $options as map(*)?)
+ declare function f:fox-file-exists($uri as xs:string?, $options as map(*)?)
         as xs:boolean? {
+    if (not($uri)) then false() else
+    
     let $uriDomain := f:uriDomain($uri, $options)
     return
     
@@ -292,6 +291,15 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
         f:fox-file-exists_svn($uri, $options)
     else if ($uriDomain eq 'RDF') then 
         f:fox-file-exists_rdf($uri, $options)
+    else if ($uriDomain eq 'ARCHIVE') then
+        let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+        let $archiveURI := $archiveURIAndPath[1]
+        let $archivePath := $archiveURIAndPath[2]
+        let $archive := f:fox-binary($archiveURI, $options)
+        return
+            if (empty($archive)) then false()
+            else
+                f:fox-file-exists_archive($archive, $archivePath, $options)       
     else 
         true()
 };
