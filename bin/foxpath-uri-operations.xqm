@@ -105,6 +105,16 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
         f:fox-is-file_rdf($uri, $options)
     else if ($uriDomain eq 'UTREE') then        
         f:fox-is-file_utree($uri, $options)
+    else if ($uriDomain eq 'ARCHIVE') then
+        let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+        let $archiveURI := $archiveURIAndPath[1]
+        let $archivePath := $archiveURIAndPath[2]
+        let $archive := f:fox-binary($archiveURI, $options)
+        return
+            if (empty($archive)) then false()
+            else
+                f:fox-is-file_archive($archive, $archivePath, $options)
+        
     else if (empty($options)) then ()
     
     else if ($mode ne 1) then exists(
@@ -144,6 +154,15 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
         f:fox-is-dir_rdf($uri, $options)
     else if ($uriDomain eq 'UTREE') then 
         f:fox-is-dir_utree($uri, $options)
+    else if ($uriDomain eq 'ARCHIVE') then
+        let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+        let $archiveURI := $archiveURIAndPath[1]
+        let $archivePath := $archiveURIAndPath[2]
+        let $archive := f:fox-binary($archiveURI, $options)
+        return
+            if (empty($archive)) then false()
+            else
+                f:fox-is-dir_archive($archive, $archivePath, $options)
     else if (empty($options)) then ()
     
     else if ($mode ne 1) then exists(

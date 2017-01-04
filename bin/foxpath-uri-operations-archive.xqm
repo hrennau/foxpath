@@ -28,6 +28,48 @@ import module namespace i="http://www.ttools.org/xquery-functions" at
  :
  : ===============================================================================
  :)
+ 
+ (:~
+ : Returns true if a given URI pointing into an archive references a file,
+ : rather than a directory.
+ :
+ : @param archive an archive file
+ : @param archivePath a within-archive data path (e.g. a/b/c)
+ : @param options options controlling the evaluation
+ : @return true if the resource exists and is a file
+ :)
+  declare function f:fox-is-file_archive($archive as xs:base64Binary, 
+                                         $archivePath as xs:string?, 
+                                         $options as map(*)?)
+        as xs:boolean { 
+    let $entries := archive:entries($archive)
+    return
+        if ($entries = $archivePath) then true()
+        else false()
+};
+
+ (:~
+ : Returns true if a given URI pointing into an archive references a directory,
+ : rather than a file.
+ :
+ : @param archive an archive file
+ : @param archivePath a within-archive data path (e.g. a/b/c)
+ : @param options options controlling the evaluation
+ : @return true if the resource exists and is a directory
+ :)
+  declare function f:fox-is-dir_archive($archive as xs:base64Binary, 
+                                        $archivePath as xs:string?, 
+                                        $options as map(*)?)
+        as xs:boolean { 
+    let $entries := archive:entries($archive)
+    return
+        if ($entries = $archivePath) then false()
+        else 
+            let $prefix := concat($archivePath, '/')
+            return
+                some $entry in $entries satisfies starts-with($entry, $prefix) 
+};
+
  (:~
  : Returns the size in bytes of a resource contained by an archive.
  :
