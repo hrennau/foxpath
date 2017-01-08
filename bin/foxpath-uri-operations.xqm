@@ -581,8 +581,23 @@ declare function f:fox-binary($uri as xs:string,
         as xs:base64Binary? {
     let $uriDomain := f:uriDomain($uri, $options)
     return
-    (: @TO-DO@ - call URI domain specific implementations :)
-        try {file:read-binary($uri)} catch * {()}
+    
+    let $uriDomain := f:uriDomain($uri, $options)
+    return
+    
+        if ($uriDomain eq 'BASEX') then
+            error((), concat('Invalid call, as a BaseX database cannot contain binary files; URI=', $uri))
+        else if ($uriDomain eq 'ARCHIVE') then
+            let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+            let $archiveURI := $archiveURIAndPath[1]
+            let $archivePath := $archiveURIAndPath[2]
+            let $archive := f:fox-binary($archiveURI, $options)
+            return
+                if (empty($archive)) then ()
+                else
+                    f:fox-binary_archive($archive, $archivePath, $options)
+        else
+            try {file:read-binary($uri)} catch * {()}
 };
 
 (: 

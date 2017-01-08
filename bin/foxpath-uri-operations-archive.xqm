@@ -215,6 +215,25 @@ declare function f:fox-unparsed-text-lines_archive($archive as xs:base64Binary,
         $text ! tokenize(., '&#xD;?&#xA;')
 };
 
+(:~
+ : Returns the content of a file contained by an archive as the 
+ : Base64 representation of its bytes.
+ :
+ : @param archive an archive file
+ : @param archivePath a within-archive data path (e.g. a/b/c)
+ : @param options options controlling the evaluation
+ : @return the Base64 representation, if available, the empty sequence otherwise
+ :)
+declare function f:fox-binary_archive($archive as xs:base64Binary, 
+                                      $archivePath as xs:string?,
+                                      $options as map(*)?)
+        as xs:base64Binary? {
+    let $entry := archive:entries($archive)[. eq $archivePath]
+    return
+        if (not($entry)) then ()
+        else archive:extract-binary($archive, $entry)        
+};
+
 (: 
  : ===============================================================================
  :
