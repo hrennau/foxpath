@@ -85,23 +85,22 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `file-content` 
            ======================= :)
         else if ($fname eq 'file-content') then
-            let $pattern :=
-                if ($call/*[2]) then
-                    $call/*[2]
-                    /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                else ()
+            let $start := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $end := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $uri :=
-                if ($call/*[2]) then
-                    $call/*[1]
-                    /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                else $context
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+
+            let $text := f:fox-unparsed-text($uri, (), $options)
+            let $start := if ($start < 0) then string-length($text) + $start else $start
+            let $end := if ($end < 0) then string-length($text) + $end else $end
+            let $text := if (not($start) and not($end)) then $text
+                         else if (not($end)) then substring($text, $start)
+                         else if (not($start)) then substring($text, 1, $end - 1)
+                         else substring(substring($text, 1, $end - 1), $start)
             return
-                if (not($pattern)) then f:fox-unparsed-text($uri, (), $options)
-                else
-                    let $regex := replace($pattern, '\*', '.*')
-                    return
-                        f:fox-unparsed-text-lines($uri, (), $options)[matches(., $regex, 'i')]
-            
+                $text
+                
         (: function `file-date` 
            ==================== :)
         else if ($fname eq 'file-date' or $fname eq 'fdate') then
@@ -197,7 +196,23 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     ($explicit, $context)[1]
             return
                 f:fox-file-sdate($uri, $options)
+
+        (: function `frequencies` 
+           ====================== :)
+        else if ($fname eq 'frequencies') then
+            let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $width := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             
+            let $rep :=
+                if (empty($width)) then function ($s, $c, $w) {concat($s, ' (', $c, ')')}
+                else function ($s, $c, $w) {concat($s, string-join(for $i in 1 to $w - string-length($s) return ' ', ''), ' (', $c, ')')}
+
+            for $value in $values
+            group by $s := string($value)
+            let $c := count($value)
+            order by lower-case($s)
+            return $rep[1]($s, $c, $width[1])
+
        (: function `grep` 
           =============== :)
         else if ($fname eq 'grep') then
@@ -824,6 +839,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 month-from-date($arg)
                 
+        (: function `namespace-uri` 
+           ======================= :)
+        else if ($fname eq 'namespace-uri') then
+            let $arg := 
+                let $explicit := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                if (not(count($arg) eq 1 and $arg[1] instance of node())) then ()
+                else namespace-uri($arg)
+
         (: function `node-name` 
            ==================== :)
         else if ($fname eq 'node-name') then
@@ -991,6 +1016,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
            =============== :)
         else if ($fname eq 'true') then
             true()
+
+        (: function `upper-case` 
+           ===================== :)
+        else if ($fname eq 'upper-case') then
+            let $arg := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                upper-case($arg)
 
         (: function `year-from-date` 
            ========================= :)

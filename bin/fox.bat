@@ -18,7 +18,7 @@ set SEP=/
 set VARS=
 set UTREE_DIR=
 set UGRAPH_ENDPOINT=
-set GITHUB_TOKEN=/token/github
+set GITHUB_TOKEN=/git/token
 
 :NEXTPAR
 set name="%~1"

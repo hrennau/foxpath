@@ -384,6 +384,7 @@ declare function f:parseProlog($text as xs:string, $context as map(*))
     (: parse namespace declarations :)
     let $nsDeclsEtc := f:parseNsDecls($text, $context)
     let $nsDecls := $nsDeclsEtc[. instance of node()]
+    let $nsDecls := f:completeNsDecls($nsDecls)
     let $errors := $nsDecls/self::error
     return
         if ($errors) then $errors else        
@@ -408,6 +409,23 @@ declare function f:parseProlog($text as xs:string, $context as map(*))
             }</prolog>,
         $textAfterVarDecls
     )        
+};
+
+(:~
+ : Extends the parsed namespace bindings by built-in namespace bindings.
+ :)
+declare function f:completeNsDecls($nsDecls as element(namespace)*)
+        as element(namespace)* {
+    $nsDecls,        
+    (: add namespace: rdfs :)
+    if ($nsDecls/@prefix = 'rdfs') then () else
+        <namespace prefix="rdfs" uri="http://www.w3.org/2000/01/rdf-schema#"/>,
+    (: add namespace: rdf :)        
+    if ($nsDecls/@prefix = 'rdf') then () else
+        <namespace prefix="rdf" uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>,
+    (: add namespace: owl :)
+    if ($nsDecls/@prefix = 'owl') then () else
+        <namespace prefix="owl" uri="http://www.w3.org/2002/07/owl#"/>
 };
 
 (:~
@@ -3724,6 +3742,6 @@ declare function f:parseItem_abbreviatedFoxnameTest($text as xs:string,
         return (
             (: name, after removing escapes :)
             replace($namePattern, concat($FOXSTEP_ESCAPE, '(.)'), '$1'),
-            substring($text, string-length($namePattern) + 1)
+            substring($text, string-length($namePattern) + 1) ! replace(., '^\s+', '')
         )
 };        

@@ -32,8 +32,10 @@ import module namespace i="http://www.ttools.org/xquery-functions" at
     
 declare variable $f:UNAME external := 'hrennau';
 declare variable $f:githubToken external := '/git/token';   (: text file containing the github token :)
-declare variable $f:TOKEN external := try {unparsed-text($f:githubToken)} catch * {()};
-
+declare variable $f:TOKEN external := try {unparsed-text($f:githubToken)} 
+                                      catch * {if (not($f:githubToken)) then () else
+                                        error(QName((), 'INVALID_TOKEN_LOCATION'), concat(
+                                            'Cannot retrieve token from here: ', $f:githubToken))};
 (: 
  : ===============================================================================
  :
