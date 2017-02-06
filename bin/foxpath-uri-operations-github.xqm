@@ -149,6 +149,23 @@ declare function f:fox-json-doc-available_github($uri as xs:string,
         } catch * {false()}        
 };
 
+(:~
+ : Returns the content of a file as the Base64 representation of its bytes.
+ :
+ : @param uri the URI or file path of the resource
+ : @return the Base64 representation, if available, the empty sequence otherwise
+ :)
+declare function f:fox-binary_github($uri as xs:string, 
+                                     $options as map(*)?)
+        as xs:base64Binary? {
+    let $useUri := replace($uri, '^github-', '')
+    let $restResponse := f:get-request_github($useUri, $f:TOKEN)
+    let $binary := $restResponse//content/xs:base64Binary(.)
+    return
+        $binary       
+};
+
+
 (: 
  : ===============================================================================
  :
@@ -166,11 +183,12 @@ declare function f:fox-json-doc-available_github($uri as xs:string,
  :)
 declare function f:get-request_github($uri as xs:string, $token as xs:string)
         as node()+ {
+    let $DUMMY := trace(substring($uri, 1, 80), 'GITHUB RETRIEVAL, URI: ')
     let $rq :=
         <http:request method="get" href="{$uri}">{
             <http:header name="Authorization" value="{concat('Token ', $token)}"/>[$token]
         }</http:request>
-    let $rs := try {http:send-request($rq)} catch * {trace((), 'EXCEPTION_IN_SEND_REQUEST: ')} 
+    let $rs := try {http:send-request($rq)} catch * {trace((), 'EXCEPTION_IN_SEND_REQUEST: ')}
     let $rsHeader := $rs[1]
     let $body := $rs[position() gt 1]
     return

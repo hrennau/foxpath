@@ -16,8 +16,8 @@ set PARSE=
 set ISFILE=
 set SEP=/
 set VARS=
-set UTREE_DIR=
-set UGRAPH_ENDPOINT=
+set UTREE_DIRS=
+set UGRAPH_ENDPOINTS=
 set GITHUB_TOKEN=/git/token
 
 :NEXTPAR
@@ -41,10 +41,10 @@ if "%name%"=="-p" (
  ) else if "%name%"=="-b" (
    set SEP=\   
  ) else if "%name%"=="-t" (
-   set UTREE_DIR=!VALUE!
+   set UTREE_DIRS=!VALUE!
    shift   
  ) else if "%name%"=="-g" (
-   set UGRAPH_ENDPOINT=!VALUE!
+   set UGRAPH_ENDPOINTS=!VALUE!
    shift   
  ) else if "%name%"=="-h" (
    set GITHUB_TOKEN=!VALUE!
@@ -65,7 +65,7 @@ set foxpath=%name%
 if %foxpath%=="?" echo NO else (echo YES)
 
 if %FOXPATH%=="?" (
-    echo Usage: fox [-f] [-p] [-b] [-t utree-dir] [-g ugraph-endpoint] [-h github-token] [-v name=value]* foxpath
+    echo Usage: fox [-f] [-p] [-b] [-t utree-dirs] [-g ugraph-endpoints] [-h github-token] [-v name=value]* foxpath
     echo foxpath : a foxpath expression, or a file containing a foxpath expression
     echo.
     echo -f      : the foxpath parameter is not a foxpath expression, but the path or URI of 
@@ -96,23 +96,25 @@ if %FOXPATH%=="?" (
     echo           a text file containing the github API token obtained from here:
     echo             https://github.com/settings/tokens    
     echo           default: /git/token
-    echo -t directory : 
-    echo           directory containing UTREE documents defining literal file systems;
-    echo             if the value starts with basex://, the value is interpreted as the
+    echo -t directories : 
+    echo           directories containing UTREE documents defining literal file systems;
+    echo             directory paths are whitespace-separated; if a directory path
+    echo             starts with basex://, the value is interpreted as the
     echo             name of a BaseX data base containing UTREE documents with paths
     echo             dbname/utree-*
-    echo -g endpoint : 
-    echo           SPARQL endpoint exposing UGRAPH graphs defining literal file systems
+    echo -g endpoints : 
+    echo           SPARQL endpoints exposing UGRAPH graphs defining literal file systems;
+    echo             endpoints are whitespace-separated
     echo -v "name=value" 
     echo         : name and value of an external variable
     exit /b
 )
 if "%PARSE%"=="Y" (set MODE=parse) else (set MODE=eval)
 if "%ISFILE%"=="Y" (set ISFILE=true) else (set ISFILE=false)
-set OPT_UTREE_DIR=
-set OPT_UGRAPH_ENDPOINT=
-if not "%UTREE_DIR%"=="" (set OPT_UTREE_DIR=-b utreeDir=%UTREE_DIR%)
-if not "%UGRAPH_ENDPOINT%"=="" (set OPT_UGRAPH_ENDPOINT=-b ugraphEndpoint=%UGRAPH_ENDPOINT%)
+set OPT_UTREE_DIRS=
+set OPT_UGRAPH_ENDPOINTS=
+if not "%UTREE_DIRS%"=="" (set OPT_UTREE_DIRS=-b "utreeDirs=%UTREE_DIRS%")
+if not "%UGRAPH_ENDPOINTS%"=="" (set OPT_UGRAPH_ENDPOINTS=-b "ugraphEndpoints=%UGRAPH_ENDPOINTS%")
 set OPT_GITHUB_TOKEN=-b "{http://www.ttools.org/xquery-functions}githubToken=%GITHUB_TOKEN%"
 
-basex -b isFile=%ISFILE% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIR% %OPT_UGRAPH_ENDPOINT% %OPT_GITHUB_TOKEN% -b "vars=%VARS%" %HERE%/fox.xq
+basex -b isFile=%ISFILE% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% -b "vars=%VARS%" %HERE%/fox.xq

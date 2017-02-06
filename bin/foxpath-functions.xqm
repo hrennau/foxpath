@@ -310,7 +310,35 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $fillChar := ($fillChar, ' ')[1]
             return
                 f:lpad($string, $width, $fillChar)
-            
+
+        (: function `pads` 
+           =============== :)
+        else if ($fname eq 'pads') then
+            let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $widths := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $widths := string($widths)
+            let $widthItems := tokenize(normalize-space(lower-case($widths)), ' ')            
+            return
+                string-join(
+                    for $value at $pos in $values
+                    let $value := string($value)
+                    let $widthItem := trace($widthItems[$pos] , 'WIDTH_ITEM: ')
+                    let $width := trace(replace($widthItem, '\D', '') ! xs:integer(.) , 'WIDTH: ')
+                    return
+                        if (not($width) or string-length($value) ge $width) then concat($value, ' ') 
+                        else
+                            let $flags := trace(replace($widthItem, '\d', '') , 'FLAGS: ')
+                            let $func := trace(if (substring($flags, 1, 1) eq 'l') then f:lpad#3 else f:rpad#3 , 'FUNC: ')
+                            let $side := if (substring($flags, 1, 1) eq 'l') then 'l' else 'r'                            
+                            let $fill := substring($flags, 2, 1)
+                            return 
+                            (:
+                                $func($value, $width, $fill)
+                                :)
+                                if ($side eq 'l') then f:lpad($value, $width, $fill)
+                                else f:rpad($value, $width, $fill)
+                , '')
+
         (: function `rcat` 
            =============== :)
         else if ($fname eq 'rcat') then

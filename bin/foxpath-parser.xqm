@@ -7,9 +7,9 @@ declare variable $f:FOXSTEP_SEPERATOR := '/';
 declare variable $f:NODESTEP_SEPERATOR := '\';
 declare variable $f:FOXSTEP_ESCAPE := '~';
 declare variable $f:FOXSTEP_NAME_DELIM := '`';
-declare variable $f:URI_TREES_DIR external := 'basex://uri-trees2';
+declare variable $f:URI_TREES_DIRS external := 'basex://uri-trees2';
 
-(: declare variable $f:URI_TREES_DIR := 'uri-trees'; :)
+(: declare variable $f:URI_TREES_DIRS := 'uri-trees'; :)
 
 (:~
  : Parses a foxpath expression, creating an expression tree.
@@ -123,8 +123,8 @@ declare function f:getInitialParsingContext($options as map(*)?)
         ($options ! map:get(., 'FOXSTEP_ESCAPE'), $f:FOXSTEP_ESCAPE)[1]
     let $foxstepNameDelim :=
         ($options ! map:get(., 'FOXSTEP_NAME_DELIM'), $f:FOXSTEP_NAME_DELIM)[1]
-    let $uriTreesDir :=
-        ($options ! map:get(., 'URI_TREES_DIR'), $f:URI_TREES_DIR)[1]
+    let $uriTreesDirs :=
+        ($options ! map:get(., 'URI_TREES_DIRS'), $f:URI_TREES_DIRS)[1]
         
     let $foxstepSeperatorRegex := replace($foxstepSeperator, '(\\)', '\\$1')
     let $nodestepSeperatorRegex := replace($nodestepSeperator, '(\\)', '\\$1')
@@ -148,7 +148,7 @@ declare function f:getInitialParsingContext($options as map(*)?)
             'FOXSTEP_ESCAPE': $foxstepEscape,
             'FOXSTEP_NAME_DELIM': $foxstepNameDelim,
             'IS_CONTEXT_URI': $isContextUri,           
-            'URI_TREES_DIR': $uriTreesDir
+            'URI_TREES_DIRS': $uriTreesDirs
         }
 };
             (: 'URI_TREES': $uriTrees}:) 
@@ -186,6 +186,9 @@ declare function f:finalizeParseTree_namespacesRC($n as node(), $prolog as eleme
             else if ($n/@prefix) then
                 let $prefix := $n/@prefix
                 let $uri := $prolog/nsDecls/namespace[@prefix eq $prefix]/@uri
+                let $uri :=
+                    if ($uri) then $uri
+                    else $f:PREDECLARED_NAMESPACES[@prefix eq $prefix]/@uri
                 return
                     if (not($uri)) then
                         f:createFoxpathError('SYNTAX_ERROR',
@@ -384,7 +387,7 @@ declare function f:parseProlog($text as xs:string, $context as map(*))
     (: parse namespace declarations :)
     let $nsDeclsEtc := f:parseNsDecls($text, $context)
     let $nsDecls := $nsDeclsEtc[. instance of node()]
-    let $nsDecls := f:completeNsDecls($nsDecls)
+    (: let $nsDecls := f:completeNsDecls($nsDecls) :)
     let $errors := $nsDecls/self::error
     return
         if ($errors) then $errors else        
@@ -414,6 +417,7 @@ declare function f:parseProlog($text as xs:string, $context as map(*))
 (:~
  : Extends the parsed namespace bindings by built-in namespace bindings.
  :)
+(:
 declare function f:completeNsDecls($nsDecls as element(namespace)*)
         as element(namespace)* {
     $nsDecls,        
@@ -427,6 +431,7 @@ declare function f:completeNsDecls($nsDecls as element(namespace)*)
     if ($nsDecls/@prefix = 'owl') then () else
         <namespace prefix="owl" uri="http://www.w3.org/2002/07/owl#"/>
 };
+:)
 
 (:~
  : Parses the namespace declarations.

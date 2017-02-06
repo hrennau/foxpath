@@ -5,6 +5,13 @@ declare variable $f:DG :=
     for $item in tokenize(normalize-space($f:DEBUG), ' ') 
     return concat('^', replace($item, '\*', '.*'), '$');
 declare variable $f:ARCHIVE_TOKEN external := '#archive#';
+declare variable $f:PREDECLARED_NAMESPACES := (
+    <namespace prefix="xs" uri="http://www.w3.org/2001/XMLSchema"/>,
+    <namespace prefix="xsi" uri="http://www.w3.org/2001/XMLSchema-instance"/>,    
+    <namespace prefix="rdfs" uri="http://www.w3.org/2000/01/rdf-schema#"/>,
+    <namespace prefix="rdf" uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>,
+    <namespace prefix="owl" uri="http://www.w3.org/2002/07/owl#"/>
+);
 
 (:
 declare variable $f:STDLIB := map{

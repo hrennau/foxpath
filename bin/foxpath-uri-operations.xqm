@@ -583,12 +583,13 @@ declare function f:fox-binary($uri as xs:string,
         as xs:base64Binary? {
     let $uriDomain := f:uriDomain($uri, $options)
     return
-    
-    let $uriDomain := f:uriDomain($uri, $options)
-    return
-    
         if ($uriDomain eq 'BASEX') then
             error((), concat('Invalid call, as a BaseX database cannot contain binary files; URI=', $uri))
+        else if ($uriDomain eq 'GITHUB') then
+            f:fox-binary_github($uri, $options)
+        else if ($uriDomain eq 'UTREE') then
+            let $accessURI := f:fox-get-access-uri_utree($uri, $options)
+            return $accessURI ! f:fox-binary(., $options)            
         else if ($uriDomain eq 'ARCHIVE') then
             let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
             let $archiveURI := $archiveURIAndPath[1]

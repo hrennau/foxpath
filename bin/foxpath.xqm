@@ -127,27 +127,31 @@ declare function f:resolveFoxpath($foxpath as xs:string,
  :)
 declare function f:finalizeOptions($options as map(*)?)
         as map(*) {
-    let $utreeDir := $options ! map:get(., 'UTREE_DIR')        
-    let $ugraphEndpoint := $options ! map:get(., 'UGRAPH_ENDPOINT')    
+    let $utreeDirs := $options ! map:get(., 'UTREE_DIRS') ! tokenize(normalize-space(.), ' ')        
+    let $ugraphEndpoints := $options ! map:get(., 'UGRAPH_ENDPOINTS') ! tokenize(normalize-space(.), ' ')    
     
-    let $utreeDir := 
-        if (starts-with($utreeDir, 'basex://')) then $utreeDir
-        else if (starts-with($utreeDir, '/')) then $utreeDir
-        else
-            let $baseURI := replace(static-base-uri(), '[^/]+$', '')
-            return
-                concat($baseURI, $utreeDir)
-        
+    let $utreeDirs := trace(
+        for $utreeDir in $utreeDirs
+        return
+            if (starts-with($utreeDir, 'basex://')) then $utreeDir
+            else if (starts-with($utreeDir, '/')) then $utreeDir
+            else
+                let $baseURI := replace(static-base-uri(), '[^/]+$', '')
+                return
+                    concat($baseURI, $utreeDir)
+        , 'UTREE_DIR: ')
     let $uriTrees :=
-        if (starts-with($utreeDir, 'basex://')) then
-            let $db := substring($utreeDir, 9)
-            let $docs := try {db:open($db)/*} catch * {()}
-            return $docs
-        else
-            try {
-                file:list($utreeDir, false(), 'utree-*') 
-                ! concat($utreeDir, '/', .) ! doc(.)/*
-            } catch * {()}
+        for $utreeDir in $utreeDirs
+        return
+            if (starts-with($utreeDir, 'basex://')) then
+                let $db := substring($utreeDir, 9)
+                let $docs := try {db:open($db)/*} catch * {()}
+                return $docs
+            else
+                try {
+                    file:list($utreeDir, false(), 'utree-*') 
+                    ! concat($utreeDir, '/', .) ! doc(.)/*
+                } catch * {()}
 (:            
     let $uriPrefixMap :=
         map:merge(
@@ -159,17 +163,17 @@ declare function f:finalizeOptions($options as map(*)?)
     
     (: let $ugraphUriPrefixes := 'https://github.com/marklogic/' :)
     let $ugraphUriPrefixes := 
-        if (empty($ugraphEndpoint)) then () else
-            f:get-ugraph-uri-prefixes($ugraphEndpoint, $options)
+        if (empty($ugraphEndpoints)) then () else
+            f:get-ugraph-uri-prefixes($ugraphEndpoints[1], $options)
     
     (: let $DUMMY := trace(count($uriTrees), 'COUNT_URI_TREES #2: ') :)        
     let $map :=
         map{       
-            'URI_TREES_DIR': $utreeDir,
+            'URI_TREES_DIRS': $utreeDirs,
             'URI_TREES': $uriTrees,
             'URI_TREES_BASE_URIS': $uriTrees/tree/@baseURI,
             'URI_TREES_PREFIXES': $uriPrefixes,
-            'UGRAPH_ENDPOINT': $ugraphEndpoint,
+            'UGRAPH_ENDPOINTS': $ugraphEndpoints,
             'UGRAPH_URI_PREFIXES': $ugraphUriPrefixes
         }
 (:  'URI_TREES_PREFIX_TO_BASE_URIS': $uriPrefixMap :)
