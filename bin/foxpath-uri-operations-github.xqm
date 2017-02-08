@@ -181,8 +181,10 @@ declare function f:fox-binary_github($uri as xs:string,
  : @param token if specified, used for authorization
  : @return the response
  :)
-declare function f:get-request_github($uri as xs:string, $token as xs:string)
-        as node()+ {
+declare function f:get-request_github($uri as xs:string, $token as xs:string?)
+        as node()* {
+    if (not($token)) then () else
+    
     let $DUMMY := trace(substring($uri, 1, 80), 'GITHUB RETRIEVAL, URI: ')
     let $rq :=
         <http:request method="get" href="{$uri}">{

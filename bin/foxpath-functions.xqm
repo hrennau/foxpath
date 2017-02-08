@@ -1061,6 +1061,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 year-from-date($arg)
                 
+        (: function `xs:decimal` 
+           ===================== :)
+        else if ($fname eq 'xs:decimal') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
+            return
+                xs:decimal($arg1)
+                
         (: function `xs:integer` 
            ===================== :)
         else if ($fname eq 'xs:integer') then
