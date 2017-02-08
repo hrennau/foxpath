@@ -1,0 +1,5 @@
+# Fully qualified name of a file containing the github token.
+# Unless the default value "/github/token" is appropriate,
+# you must edit the following line (or you won't have access 
+# to github resources). 
+/github/token
