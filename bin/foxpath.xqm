@@ -130,7 +130,7 @@ declare function f:finalizeOptions($options as map(*)?)
     let $utreeDirs := $options ! map:get(., 'UTREE_DIRS') ! tokenize(normalize-space(.), ' ')        
     let $ugraphEndpoints := $options ! map:get(., 'UGRAPH_ENDPOINTS') ! tokenize(normalize-space(.), ' ')    
     
-    let $utreeDirs := trace(
+    let $utreeDirs :=
         for $utreeDir in $utreeDirs
         return
             if (starts-with($utreeDir, 'basex://')) then $utreeDir
@@ -139,7 +139,6 @@ declare function f:finalizeOptions($options as map(*)?)
                 let $baseURI := replace(static-base-uri(), '[^/]+$', '')
                 return
                     concat($baseURI, $utreeDir)
-        , 'UTREE_DIR: ')
     let $uriTrees :=
         for $utreeDir in $utreeDirs
         return

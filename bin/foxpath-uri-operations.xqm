@@ -31,7 +31,7 @@ import module namespace i="http://www.ttools.org/xquery-functions" at
     "foxpath-util.xqm";
     
 declare variable $f:UNAME external := 'hrennau';
-declare variable $f:githubTokenLocation external := 'github-token-location.txt';   
+declare variable $f:githubTokenLocation external := 'github-token-location';   
    (: text file containing the location of a file containing the github token :)
 declare variable $f:TOKEN external := 
     try {

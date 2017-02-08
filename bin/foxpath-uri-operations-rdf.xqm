@@ -38,7 +38,7 @@ import module namespace i="http://www.ttools.org/xquery-functions" at
  :)
 declare function f:fox-file-exists_rdf($uri as xs:string?, $options as map(*)?)
         as xs:boolean? {
-    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINT')        
+    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINTS')        
     let $query := ``[
 PREFIX fs: <http://www.foxpath.org/ns/rdf/filesystem/>
 
@@ -62,7 +62,7 @@ WHERE
  :)
 declare function f:fox-is-file_rdf($uri as xs:string?, $options as map(*)?)
         as xs:boolean? {
-    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINT')        
+    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINTS')        
     let $uriString := concat('"', $uri, '"')
     let $query := ``[
 PREFIX fs: <http://www.foxpath.org/ns/rdf/filesystem/>
@@ -88,7 +88,7 @@ WHERE
  :)
 declare function f:fox-is-dir_rdf($uri as xs:string?, $options as map(*)?)
         as xs:boolean? {
-    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINT')        
+    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINTS')        
     let $uriString := concat('"', $uri, '"')
     let $query := ``[
 PREFIX fs: <http://www.foxpath.org/ns/rdf/filesystem/>
@@ -114,7 +114,7 @@ WHERE
  :)
  declare function f:fox-file-date_rdf($uri as xs:string?, $options as map(*)?)
         as xs:dateTime? {
-    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINT')        
+    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINTS')        
     let $uriString := concat('"', $uri, '"')
     let $query := ``[
 PREFIX fs: <http://www.foxpath.org/ns/rdf/filesystem/>
@@ -132,7 +132,7 @@ WHERE
 
 declare function f:fox-file-size_rdf($uri as xs:string?, $options as map(*)?)
         as xs:integer? {
-    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINT')        
+    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINTS')        
     let $uriString := concat('"', $uri, '"')
     let $query := ``[
 PREFIX fs: <http://www.foxpath.org/ns/rdf/filesystem/>
@@ -161,7 +161,7 @@ WHERE
   :)
 declare function f:fox-get-access-uri_rdf($uri as xs:string?, $options as map(*)?)
         as xs:string? {
-    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINT')        
+    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINTS')        
     let $query := ``[
 PREFIX fs: <http://www.foxpath.org/ns/rdf/filesystem/>
 
@@ -210,7 +210,7 @@ declare function f:childOrDescendantUriCollection_rdf($axis as xs:string,
                                                       $stepDescriptor as element()?,
                                                       $options as map(*)?) {
     (: let $DUMMY := trace($uri, concat('axis=', $axis, ' ; URI: ')) :)
-    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINT')    
+    let $endpoint := $options ! map:get(., 'UGRAPH_ENDPOINTS')    
     let $pattern :=
         if (not($name)) then () 
         else concat('^', replace($name, '\*', '.*'), '$')
@@ -270,7 +270,7 @@ declare function f:sparql2strings($query as xs:string,
             <http:body media-type='application/sparql-query' 
                        method='text' 
                        encoding="{$encoding}">{$sparql}</http:body>
-        </http:request>  (: , 'REQUEST: ') :)
+        </http:request>  (:  , 'REQUEST: ') :)
     let $rs := http:send-request($request)[2]
     return
         convert:binary-to-string($rs) ! json:parse(.)//value/string()
