@@ -353,7 +353,7 @@ declare function f:resolveFoxpathRC($n as node(),
         let $lhs := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars, $options)
         let $rhs := f:resolveFoxpathRC($n/*[2], false(), $context, $position, $last, $vars, $options)
         let $lhs := if ($lhs instance of xs:string) then xs:untypedAtomic($lhs) else $lhs
-        let $rhs := if ($rhs instance of xs:string) then xs:untypedAtomic($rhs) else $rhs        
+        let $rhs := if ($rhs instance of xs:string) then xs:untypedAtomic($rhs) else $rhs       
         let $op := $n/@op
         let $value := 
             if ($op eq 'eq') then $lhs eq $rhs
@@ -770,25 +770,32 @@ declare function f:resolveNodeAxisStep($axisStep as element()+,
             else i:fox-doc($c, $options)              
     let $axis := $axisStep/@axis
     let $localName := $axisStep/@localName
-    let $uri := $axisStep/@namespace    
+    let $uri := string($axisStep/@namespace)    
     let $nodeKind := $axisStep/@nodeKind
     let $nodeName := $axisStep/@nodeName
     let $predicates := $axisStep/*
     
     let $nodeTest :=
         if ($localName) then
+            (: localName wildcard :)
             if ($localName eq '*') then 
+            
                 if ($uri ne '*') then
                     function($node as node()) as xs:boolean? 
                         {namespace-uri($node) eq $uri}                
                 else
-                    function($node as node()) as xs:boolean? {true()}
+                    function($node as node()) as xs:boolean? 
+                        {true()}
+                        
+            (: localName not wildcard, namespace not wildcard :)            
             else if ($uri ne '*') then
                 function($node as node()) as xs:boolean? 
                     {local-name($node) eq $localName and namespace-uri($node) eq $uri}
+            (: localName not wildcard, namespace wildcard :)
             else
                 function($node as node()) as xs:boolean?            
                     {local-name($node) eq $localName}
+                    
         else if ($nodeKind) then
             if ($nodeKind eq 'node') then
                 function($node as node()) as xs:boolean? {true()}

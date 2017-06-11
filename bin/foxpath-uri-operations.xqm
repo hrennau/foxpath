@@ -90,7 +90,10 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
     else if (starts-with($uri, 'basex://')) then 'BASEX'    
     else if (starts-with($uri, 'svn-')) then 'SVN'
     else if (starts-with($uri, 'rdf-')) then 'RDF'    
-    else if (starts-with($uri, 'https://api.github.com/repos/')) then 'GITHUB'    
+    else if (starts-with($uri, 'https://api.github.com/repos/')) then 'GITHUB'
+    else if (starts-with($uri, 'https')) then 'HTTPS'    
+    else if (starts-with($uri, 'http')) then 'HTTP'    
+    else if (starts-with($uri, 'literal-')) then 'RAW'
     else 'FILE_SYSTEM'
 };
 
@@ -458,10 +461,12 @@ declare function f:fox-unparsed-text($uri as xs:string,
                 else
                     f:fox-unparsed-text_archive($archive, $archivePath, $encoding, $options)
     else 
-        try {
-            if ($encoding) then unparsed-text($uri, $encoding)
-            else unparsed-text($uri)
-        } catch * {()}
+        let $uri := if (starts-with($uri, 'literal-')) then substring($uri, 9) else $uri 
+        return
+            try {
+                if ($encoding) then unparsed-text($uri, $encoding)
+                else unparsed-text($uri)
+            } catch * {()}
 };
 
 (:~
@@ -610,7 +615,7 @@ declare function f:fox-binary($uri as xs:string,
                 else
                     f:fox-binary_archive($archive, $archivePath, $options)
         else
-            try {file:read-binary($uri)} catch * {()}
+            try {fetch:binary($uri)} catch * {()}
 };
 
 (: 

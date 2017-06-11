@@ -163,9 +163,8 @@ declare function f:finalizeParseTree($tree as element(), $prolog as element()?)
         as element() {
     (: add namespaces :)        
     let $nsDecls := $prolog/nsDecls
-    let $tree :=
-        if (not($nsDecls)) then $tree
-        else f:finalizeParseTree_namespaces($tree, $prolog)
+    let $tree := (: if (not($nsDecls)) then $tree else :) 
+        f:finalizeParseTree_namespaces($tree, $prolog)
     return
         $tree
 };
@@ -184,7 +183,7 @@ declare function f:finalizeParseTree_namespacesRC($n as node(), $prolog as eleme
         let $namespace :=
             if ($n/@namespace) then ()
             else if ($n/@prefix) then
-                let $prefix := $n/@prefix
+                let $prefix := trace( $n/@prefix , 'PREFIX: ')
                 let $uri := $prolog/nsDecls/namespace[@prefix eq $prefix]/@uri
                 let $uri :=
                     if ($uri) then $uri

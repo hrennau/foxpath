@@ -232,6 +232,29 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (empty($lines)) then () else
                     string-join((concat('##### ', $uri, ' #####'), $lines, '----------'), '&#xA;')
 
+        (: function `html-doc` 
+           =================== :)
+        else if ($fname eq 'html-doc') then
+            let $uri :=
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            let $doc-text := f:fox-unparsed-text($uri, (), $options)
+            let $doc := $doc-text ! html:parse(.)
+            return (
+                if ($doc) then trace((), concat('HTML:   ', $uri, ': '))
+                    else trace((), concat('NO_HTML: ', $uri, ': ')),
+                $doc
+            )
+                            
+        (: function `html-doc-available` 
+           ============================= :)
+        else if ($fname eq 'html-doc-available') then
+            let $uri :=
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                exists(f:fox-unparsed-text($uri, (), $options))
+                            
         (: function `is-dir` 
            ================= :)
         else if ($fname eq 'is-dir' or $fname eq 'isDir') then
@@ -867,6 +890,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 month-from-date($arg)
                 
+        (: function `name` 
+           =============== :)
+        else if ($fname eq 'name') then
+            let $arg := 
+                let $explicit := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                if (not(count($arg) eq 1 and $arg[1] instance of node())) then ()
+                else name($arg)
+                
         (: function `namespace-uri` 
            ======================= :)
         else if ($fname eq 'namespace-uri') then
@@ -941,6 +974,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 root($arg)
 
+        (: function `round` 
+           ================ :)
+        else if ($fname eq 'matches') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            return
+                round($arg1, $arg2)
+                
         (: function `sort` 
            ==================== :)
         else if ($fname eq 'sort') then
