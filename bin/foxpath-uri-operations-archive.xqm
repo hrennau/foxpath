@@ -262,7 +262,7 @@ declare function f:childUriCollection_archive($archive as xs:base64Binary,
                                               $stepDescriptor as element()?,
                                               $options as map(*)?) {
 
-    (: let $DUMMY := trace($uri, 'CHILD_URIS_ARCHIVE; URI: ') :)                                              
+    (: let $DUMMY := trace($archivePath, 'CHILD_URIS_ARCHIVE; ARCHIVE_PATH: ') :)                                              
     let $kindFilter := $stepDescriptor/@kindFilter                                            
     let $pattern :=
         if (not($name)) then () else 
@@ -310,6 +310,7 @@ declare function f:descendantUriCollection_archive(
                                               $name as xs:string?,
                                               $stepDescriptor as element()?,
                                               $options as map(*)?) {
+    (: let $DUMMY := trace($archivePath, 'DESCENDANT_URIS_ARCHIVE; URI: ') :)                                              
     let $kindFilter := $stepDescriptor/@kindFilter                                                 
     let $pattern :=
         if (not($name)) then () else 
@@ -320,16 +321,18 @@ declare function f:descendantUriCollection_archive(
         if (not($archivePath)) then $entries else 
             $entries ! substring(., 2 + string-length($archivePath))   
         
-    let $files := distinct-values($relPaths) (: entries contain only files ! :)
+    let $files := distinct-values($relPaths)
     let $matchKind :=
         if ($kindFilter eq 'file') then $files
         else
             (: folders - all path prefixes of all files :)
             let $folders := distinct-values(
                 for $resource in $files
+                let $steps := tokenize($resource, '/')[position() lt last()]
+                for $length in 1 to count($steps)
                 return
-                    tokenize($resource, '/')[position() lt last()] 
-                    => string-join('/')
+                    $steps[position() le $length] => string-join('/')
+(:              hjr, 20180102: bugfix, deliver *all* paths (consisting of 1, 2, ... steps) :)       
             )
             return
                 if ($kindFilter eq 'dir') then $folders

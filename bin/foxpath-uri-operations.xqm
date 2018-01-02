@@ -650,16 +650,17 @@ declare function f:childUriCollection($uri as xs:string,
             f:childUriCollection_svn($uri, $name, $stepDescriptor, $options) 
         else if ($uriDomain eq 'RDF') then
             f:childUriCollection_rdf($uri, $name, $stepDescriptor, $options) 
-        else if ($uriDomain eq 'ARCHIVE') then
+        else if ($uriDomain eq 'ARCHIVE') then 
             let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
             let $archiveURI := $archiveURIAndPath[1]
             let $archivePath := $archiveURIAndPath[2]
             let $archive := f:fox-binary($archiveURI, $options)
             return
                 if (empty($archive)) then ()
-                else
+                else (: trace( :)
                     f:childUriCollection_archive(
-                        $archive, $archivePath, $name, $stepDescriptor, $options) 
+                        $archive, $archivePath, $name, $stepDescriptor, $options) (: , concat('CHILDREN(', $uri, '): ')) :)
+                        
         else
         
     let $kindFilter := $stepDescriptor/@kindFilter

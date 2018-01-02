@@ -642,10 +642,12 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                     [not($regex) or matches(replace(., '.*/', ''), $regex, 'i')]            
                     ! concat($prefix, '/', .)
                     (: [not($tail) or file:is-dir(.)] :)  (: not any more true: following steps may be reverse steps :)
-(:                   
-                let $DUMMY := trace((), concat('AFTER_LIST_DESCENDANTS ',
+(:
+                let $DUMMY := trace((), concat('AFTER_LIST_DESCENDANTS_COUNT ',
                                         $axis, '~::', $name, ' (', count($descendants), '): '))
-:)                                        
+                let $DUMMY := trace($descendants, concat('AFTER_LIST_DESCENDANTS ',
+                                        $axis, '~::', $name, ': '))
+:)
                 let $descendants := distinct-values($descendants)
                 let $ctxtFiles :=
                     if (not($axis eq 'descendant-or-self')) then $descendants
@@ -927,7 +929,7 @@ declare function f:testPredicates($items as item()*,
     let $last := count($items)
     let $itemsFiltered :=
         let $last := count($items)
-        for $item at $pos in $items        
+        for $item at $pos in $items   
         let $predicateValue := f:resolveFoxpathRC($predicate, false(), $item, $pos, $last, $vars, $options) 
         return
             if ($predicateValue instance of xs:decimal) then $item[$predicateValue eq $pos]
