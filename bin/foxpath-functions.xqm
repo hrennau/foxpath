@@ -473,7 +473,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
                         concat('echo delete ', count($deletes), ' files ...'),
                     $deletes
                 ), '&#xA;')
-                            
+
+        (: function `write-files` 
+           ====================== :)
+        else if ($fname eq 'write-files') then
+            let $files := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $folder := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $encoding := $call/*[3] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                f:foxfunc_write-files($files, $folder, $encoding)
+
         (: function `xatt` 
            =============== :)
         else if ($fname eq 'has-xatt' or $fname eq 'xatt') then

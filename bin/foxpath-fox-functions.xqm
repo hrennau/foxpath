@@ -47,6 +47,30 @@ declare function f:foxfunc_repeat($string as xs:string?, $count as xs:integer?)
 };      
 
 (:~
+ : Writes a collection of files into a folder.
+ :
+ : @param files the file URIs
+ : @param dir the folder into which to write
+ : @return 0 if no errors were observed, 1 otherwise
+ :)
+declare function f:foxfunc_write-files($files as xs:string*, 
+                                       $dir as xs:string?,
+                                       $encoding as xs:string?)
+        as xs:integer {
+    let $errors :=
+        for $file in $files
+        let $fname := replace($file, '^.+/', '')
+        let $fname_ := trace(string-join(($dir, $fname), '/') , 'FNAME: ')
+        let $fileContent := f:fox-unparsed-text($file, $encoding, ())        
+        return
+            try {
+                file:write-text($fname_, $fileContent)
+            } catch * {1}
+    return
+        ($errors[1], 0)[1]
+};
+
+(:~
  : Foxpath function `xwrap#3`. Collects the items of $items into an XML document
  : Before copying into the result document, every item from $items is processed as follows:
  : (A) if an item is a node: 
