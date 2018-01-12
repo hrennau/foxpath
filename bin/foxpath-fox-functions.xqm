@@ -53,15 +53,41 @@ declare function f:foxfunc_repeat($string as xs:string?, $count as xs:integer?)
  : @param dir the folder into which to write
  : @return 0 if no errors were observed, 1 otherwise
  :)
-declare function f:foxfunc_write-files($files as xs:string*, 
+declare function f:foxfunc_write-files($files as item()*, 
                                        $dir as xs:string?,
                                        $encoding as xs:string?)
         as xs:integer {
+    let $tocItems :=        
+        for $file in $files
+        let $path :=
+            if ($file instance of node()) then $file/root()/document-uri(.)
+            else $file        
+        let $fname := replace($path, '^.+/', '')
+        group by $fname
+        return
+            if (count($file) eq 1) then 
+                <file name="{$fname}" path="{$file}"/>
+            else
+                <files name="{$fname}" count="{count($file)}">{
+                    let $prePostfix := replace($fname, '(.+)(\.[^.]*$)', '$1~~~$2')
+                    let $pre := substring-before($prePostfix, '~~~')
+                    let $post := substring-after($prePostfix, '~~~')
+                    for $f at $pos in $file
+                    let $hereName := if ($pos eq 1) then $fname else concat($pre, '___', $pos, '___', $post)
+                    return
+                        <file name="{$fname}" hereName="{$hereName}" path="{$f}"/>
+                }</files> 
+    let $toc := <toc countFnames="{count($tocItems)}" countFiles="{count($files)}">{$tocItems}</toc>
+    let $tocFname := concat($dir, '/', '___toc.write-files.xml')
+    let $_ := file:write($tocFname, $toc)
+    
     let $errors :=
         for $file in $files
-        let $fname := replace($file, '^.+/', '')
-        let $fname_ := trace(string-join(($dir, $fname), '/') , 'FNAME: ')
-        let $fileContent := f:fox-unparsed-text($file, $encoding, ())        
+        let $fname := $toc//file[@path eq $file]/(@hereName, @name)[1]/string()
+        let $fname_ := string-join(($dir, $fname), '/')        
+        let $fileContent := 
+            if ($file instance of node()) then trace(serialize($file, 'SER: '))
+            else f:fox-unparsed-text($file, $encoding, ())        
         return
             try {
                 file:write-text($fname_, $fileContent)
@@ -69,6 +95,33 @@ declare function f:foxfunc_write-files($files as xs:string*,
     return
         ($errors[1], 0)[1]
 };
+
+(:~
+ : Writes a collection of json documents as json docs into a folder.
+ :
+ : @param files the file URIs
+ : @param dir the folder into which to write
+ : @return 0 if no errors were observed, 1 otherwise
+ :)
+declare function f:foxfunc_write-json-docs($files as xs:string*, 
+                                           $dir as xs:string?,
+                                           $encoding as xs:string?)
+        as xs:integer {
+    let $errors :=
+        for $file in $files
+        let $path := $file
+        let $fname := replace($path, '^.+/', '')
+        let $fname_ := trace(concat(string-join(($dir, $fname), '/'), '.xml') , 'PATH#: ')
+        let $fileContent := f:fox-unparsed-text($file, $encoding, ())
+        let $fileContentXml := json:parse($fileContent) ! serialize(.)
+        return
+            try {
+                file:write-text($fname_, $fileContentXml)
+            } catch * {1}
+    return
+        ($errors[1], 0)[1]
+};
+
 
 (:~
  : Foxpath function `xwrap#3`. Collects the items of $items into an XML document

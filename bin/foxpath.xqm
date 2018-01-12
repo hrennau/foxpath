@@ -94,7 +94,7 @@ declare function f:resolveFoxpath($foxpath as xs:string?,
  :)
 declare function f:resolveFoxpath($foxpath as xs:string, 
                                   $ebvMode as xs:boolean?, 
-                                  $context as xs:string?,
+                                  $context as item()?,
                                   $options as map(*)?,
                                   $externalVariableBindings as map(xs:QName, item()*)?)
         as item()* {
@@ -1923,20 +1923,18 @@ declare function f:resolveFunctionCall($call as element(),
        an imported module, it is called from here
     :)
     else if ($call/@name = ('resolve-foxpath', 'fox')) then
-        let $expression := 
-        let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+        (: hjr, 20180112: the initial context must be set to URI, unless the context says otherwise :)
+        let $expression :=
+            let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                ($explicit, $context)[1]
+        let $useOptions :=
+            if ($context and $context instance of node()) then $options
+            else if ($context?IS_CONTEXT_URI) then $options
+            else
+                map:put($options, 'IS_CONTEXT_URI', true())
         return
-            ($explicit, $context)[1]
-        return
-(:
-declare function f:resolveFoxpath($foxpath as xs:string, 
-                                  $ebvMode as xs:boolean?, 
-                                  $context as xs:string?,
-                                  $options as map(*)?,
-                                  $externalVariableBindings as map(xs:QName, item()*)?)
-:)
-            i:resolveFoxpath($expression, false(), $context, $options, ())
-        
+            i:resolveFoxpath($expression, false(), $context, $useOptions, ())
     else
         i:resolveStaticFunctionCall($call, $context, $position, $last, $vars, $options)
 };      

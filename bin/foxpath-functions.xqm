@@ -483,6 +483,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 f:foxfunc_write-files($files, $folder, $encoding)
 
+        (: function `write-json-docs` 
+           ========================= :)
+        else if ($fname eq 'write-json-docs') then
+            let $files := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $folder := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $encoding := $call/*[3] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                f:foxfunc_write-json-docs($files, $folder, $encoding)
+
         (: function `xatt` 
            =============== :)
         else if ($fname eq 'has-xatt' or $fname eq 'xatt') then
@@ -796,7 +805,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname eq 'doc') then
             let $uri := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                i:fox-doc(trace($uri, 'FUNCTION_DOC_URI: '), $options)
+                i:fox-doc($uri, $options)
                 
         (: function `document-uri` 
            ======================= :)
