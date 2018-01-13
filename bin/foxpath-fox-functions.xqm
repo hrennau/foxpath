@@ -118,6 +118,70 @@ declare function f:foxfunc_write-json-docs($files as xs:string*,
                                            $dir as xs:string?,
                                            $encoding as xs:string?)
         as xs:integer {
+    let $tocItems :=        
+        for $file at $pos in $files
+        let $file := 
+            if ($file instance of attribute()) then string($file) else $file
+        let $path :=
+            if ($file instance of node()) then 
+                let $raw := $file/root()/document-uri(.)
+                return if ($raw) then $raw else concat('__file__', $pos)
+            else $file        
+        let $fnameOrig := replace($path, '^.+/', '')
+        let $fname := 
+            if ($file instance of node()) then $fnameOrig 
+            else concat($fnameOrig, '.xml')
+        group by $fnameOrig
+        return
+            if (count($file) eq 1) then 
+                <file name="{$fname}" originalName="{$fnameOrig}" path="{$path}"/>
+            else
+                <files originalName="{$fnameOrig}" count="{count($file)}">{
+                    let $prePostfix := replace($fnameOrig, '(.+)(\.[^.]*$)', '$1~~~$2')
+                    let $pre := substring-before($prePostfix, '~~~')
+                    let $post := substring-after($prePostfix, '~~~')
+                    for $f at $pos in $file
+                    let $name := 
+                        let $raw :=
+                            if ($pos eq 1) then $fnameOrig else 
+                                concat($pre, '___', $pos, '___', $post)
+                        return
+                             if ($f instance of node()) then $raw else concat($raw, '.xml')
+                    return
+                        <file name="{$name}" originalName="{$fnameOrig[1]}" path="{$f}"/>
+                }</files> 
+    let $toc := <toc countFnames="{count($tocItems)}" countFiles="{count($files)}">{$tocItems}</toc>
+    let $tocFname := concat($dir, '/', '___toc.write-json-docs.xml')
+    let $_ := file:write($tocFname, $toc)
+    
+    let $errors :=
+        for $file at $pos in $files
+        let $file := 
+            if ($file instance of attribute()) then string($file) else $file
+        let $path :=
+            if ($file instance of node()) then 
+                let $raw := $file/root()/document-uri(.)
+                return if ($raw) then $raw else concat('__file__', $pos)
+            else $file   
+        let $fname := $toc//file[@path eq $path]/@name/string()
+        let $fname_ := string-join(($dir, $fname), '/')        
+        let $fileContent := 
+            if ($file instance of node()) then serialize($file)
+            else 
+                try {
+                    let $fileContent := f:fox-unparsed-text($file, $encoding, ())
+                    return
+                        json:parse($fileContent) ! serialize(.)
+                } catch * {trace((), 
+                    concat('ERR:CODE: ', $err:code, ', ERR:DESCRIPTION: ', $err:description, ' - '))}
+        where $fileContent                    
+        return
+            try {
+                trace(file:write-text($fname_, $fileContent) , concat('Write file: ', $fname_, ' '))
+            } catch * {trace(1, concat('ERR:CODE: ', $err:code, ', ERR:DESCRIPTION: ', $err:description, ' - '))}
+    return
+        ($errors[1], 0)[1]
+(:        
     let $errors :=
         for $file in $files
         let $path := $file
@@ -131,6 +195,7 @@ declare function f:foxfunc_write-json-docs($files as xs:string*,
             } catch * {1}
     return
         ($errors[1], 0)[1]
+:)        
 };
 
 
