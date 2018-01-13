@@ -58,40 +58,51 @@ declare function f:foxfunc_write-files($files as item()*,
                                        $encoding as xs:string?)
         as xs:integer {
     let $tocItems :=        
-        for $file in $files
+        for $file at $pos in $files
+        let $file := 
+            if ($file instance of attribute()) then string($file) else $file
         let $path :=
-            if ($file instance of node()) then $file/root()/document-uri(.)
+            if ($file instance of node()) then 
+                let $raw := $file/root()/document-uri(.)
+                return if ($raw) then $raw else concat('__file__', $pos)
             else $file        
         let $fname := replace($path, '^.+/', '')
         group by $fname
         return
             if (count($file) eq 1) then 
-                <file name="{$fname}" path="{$file}"/>
+                <file name="{$fname}" path="{$path}"/>
             else
-                <files name="{$fname}" count="{count($file)}">{
+                <files originalName="{$fname}" count="{count($file)}">{
                     let $prePostfix := replace($fname, '(.+)(\.[^.]*$)', '$1~~~$2')
                     let $pre := substring-before($prePostfix, '~~~')
                     let $post := substring-after($prePostfix, '~~~')
                     for $f at $pos in $file
                     let $hereName := if ($pos eq 1) then $fname else concat($pre, '___', $pos, '___', $post)
                     return
-                        <file name="{$fname}" hereName="{$hereName}" path="{$f}"/>
+                        <file originalName="{$fname}" name="{$hereName}" path="{$f}"/>
                 }</files> 
     let $toc := <toc countFnames="{count($tocItems)}" countFiles="{count($files)}">{$tocItems}</toc>
     let $tocFname := concat($dir, '/', '___toc.write-files.xml')
     let $_ := file:write($tocFname, $toc)
     
     let $errors :=
-        for $file in $files
-        let $fname := $toc//file[@path eq $file]/(@hereName, @name)[1]/string()
+        for $file at $pos in $files
+        let $file := 
+            if ($file instance of attribute()) then string($file) else $file
+        let $path :=
+            if ($file instance of node()) then 
+                let $raw := $file/root()/document-uri(.)
+                return if ($raw) then $raw else concat('__file__', $pos)
+            else $file   
+        let $fname := $toc//file[@path eq $path]/@name/string()
         let $fname_ := string-join(($dir, $fname), '/')        
         let $fileContent := 
-            if ($file instance of node()) then trace(serialize($file, 'SER: '))
+            if ($file instance of node()) then serialize($file)
             else f:fox-unparsed-text($file, $encoding, ())        
         return
             try {
-                file:write-text($fname_, $fileContent)
-            } catch * {1}
+                trace(file:write-text($fname_, $fileContent) , concat('Write file: ', $fname_, ' '))
+            } catch * {trace(1, concat('ERR:CODE: ', $err:code, ', ERR:DESCRIPTION: ', $err:description, ' - '))}
     return
         ($errors[1], 0)[1]
 };
