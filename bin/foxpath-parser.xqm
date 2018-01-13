@@ -1967,7 +1967,7 @@ declare function f:parseStep($text as xs:string?,
 declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
         as item()* {
     let $DEBUG := f:trace($text, 'parse.fox_axis_step', 'INTEXT_FOX_AXIS_STEP: ')
-    let $isContextUri := trace($context?IS_CONTEXT_URI, 'parse_foxStep: IS_CONTEXT_URI: ')    
+    let $isContextUri := $context?IS_CONTEXT_URI    
     let $acceptAbbrevSyntax := $isContextUri
     let $FOXSTEP_SEPERATOR := map:get($context, 'FOXSTEP_SEPERATOR')
     let $FOXSTEP_NAME_DELIM := map:get($context, 'FOXSTEP_NAME_DELIM')
@@ -1983,7 +1983,7 @@ declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
             if ($isContextUri) then concat('parent~::*', substring($text, 3))
             else ()
         else $text
-    return if (not($text)) then trace($text, 'NO_FOX_STEP: ') else
+    return if (not($text)) then $text else
             
     let $reverseAxis :=
         (: .. or ... :)
