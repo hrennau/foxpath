@@ -1674,6 +1674,9 @@ declare function f:parseMapExprRC($text as xs:string, $context as map(*))
  :)     
 declare function f:parsePathExpr($text as xs:string, $context as map(*))
         as item()* {
+    (: hjr, 20180112 - exclude confusion with FLWOR expression :)
+    if (matches($text, '^(let|for)\s+\$')) then $text else
+    
     let $DEBUG := f:trace($text, 'parse.path', 'INTEXT_PATH: ')   
     let $FOXSTEP_SEPERATOR_REGEX := map:get($context, 'FOXSTEP_SEPERATOR_REGEX')
     let $NODESTEP_SEPERATOR_REGEX := map:get($context, 'NODESTEP_SEPERATOR_REGEX')    
@@ -1973,6 +1976,14 @@ declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
         if (not(starts-with($text, $FOXSTEP_SEPERATOR))) then $text
         else
             concat('descendant-or-self~::*', $FOXSTEP_SEPERATOR, substring($text, 2))
+            
+    (: hjr, 20180112: take care of this scenario: let $x := .. return ...
+       the best way to do this is replace .. with parent~::* :)
+    let $text :=
+        if (matches($text, '\.\.\s*[^.]')) then 
+            concat('parent~::*', substring($text, 3))
+        else $text
+            
     let $reverseAxis :=
         (: .. or ... :)
         if ($acceptAbbrevSyntax and matches($text, '(^\.\.(\.)?)')) then
