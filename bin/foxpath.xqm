@@ -468,7 +468,8 @@ declare function f:resolveFoxpathRC($n as node(),
         return if ($ebvMode) then f:getEbv($value) else $value
             
     case element(seq) return
-        let $args := $n/*/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+        let $args := 
+            for $c in $n/* return f:resolveFoxpathRC($c, false(), $context, $position, $last, $vars, $options)
         return if ($ebvMode) then f:getEbv($args) else $args
 
     case element(string) return
@@ -1930,7 +1931,7 @@ declare function f:resolveFunctionCall($call as element(),
                 ($explicit, $context)[1]
         let $useOptions :=
             if ($context and $context instance of node()) then $options
-            else if ($context?IS_CONTEXT_URI) then $options
+            else if ($options?IS_CONTEXT_URI) then $options
             else
                 map:put($options, 'IS_CONTEXT_URI', true())
         return
