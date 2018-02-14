@@ -56,7 +56,7 @@ declare function f:parseFoxpath_noOptimization($text as xs:string?)
  : @return expression tree representing the expression text
  :)
 declare function f:parseFoxpath($text as xs:string?, $options as map(*)?)
-        as element()+ {        
+        as element()+ {    
     let $DEBUG := f:trace($text, 'parse.text.foxpath', 'INTEXT_FOXPATH: ')
     let $context := f:getInitialParsingContext($options)
     let $prologEtc := f:parseProlog($text, $context)
@@ -2036,7 +2036,7 @@ declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
         return 
             if (exists($canonicalNameEtc)) then $canonicalNameEtc
             else if ($acceptAbbrevSyntax) then 
-                f:parseItem_abbreviatedFoxnameTest($afterAxis, $FOXSTEP_ESCAPE)
+                f:parseItem_abbreviatedFoxnameTest($afterAxis, $FOXSTEP_ESCAPE, $context)
             else ()
 
     (: canonical name test expected and not found => return :)
@@ -3717,9 +3717,14 @@ declare function f:parseItem_canonicalFoxnameTest($text as xs:string, $FOXSTEP_N
  :        abbreviated name test
  :) 
 declare function f:parseItem_abbreviatedFoxnameTest($text as xs:string, 
-                                                    $FOXSTEP_ESCAPE as xs:string)
+                                                    $FOXSTEP_ESCAPE as xs:string,
+                                                    $context as map(*))
         as xs:string* {
-
+    let $NODESTEP_SEPERATOR_REGEX := map:get($context, 'NODESTEP_SEPERATOR_REGEX')    
+    let $NODESTEP_SEPERATOR := map:get($context, 'NODESTEP_SEPERATOR')
+    let $FOXSTEP_SEPERATOR_REGEX := map:get($context, 'FOXSTEP_SEPERATOR_REGEX')
+    let $FOXSTEP_SEPERATOR := map:get($context, 'FOXSTEP_SEPERATOR')
+    return
     (: 
        The name test is terminated by any of the following characters (unless escaped): 
        FOXSTEP_ESCAPE []} \/ <> () =!|,;
@@ -3736,15 +3741,24 @@ declare function f:parseItem_abbreviatedFoxnameTest($text as xs:string,
     :)
 
     (: if the text does not start with an unescaped or escaped fox name character ... :)
+(:    
     if (not(matches($text,
             concat(
             '^(',            '[^ ', $FOXSTEP_ESCAPE, '\[\]} \\/ <>()=!|,; \d . ] |',
             $FOXSTEP_ESCAPE, '[  ', $FOXSTEP_ESCAPE, '\[\]} \\/ <>()=!|,; \d . ] )'
             ), 'sx'))) 
     then ()
-            
+:)            
+    if (not(matches($text,
+            concat(
+            '^(',            '[^ ', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' <>()=!|,; \d . ] |',
+            $FOXSTEP_ESCAPE, '[  ', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' <>()=!|,; \d . ] )'
+            ), 'sx'))) 
+    then ()
+    
     (: extract the leading fox name test :)            
     else
+(:    
         let $namePattern :=
             replace($text,
                 concat(
@@ -3754,7 +3768,16 @@ declare function f:parseItem_abbreviatedFoxnameTest($text as xs:string,
                 ' (',               '[^', $FOXSTEP_ESCAPE, '\[\]} \\/ <>()=!|,; \s ] |',
                    $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\]} \\/ <>()=!|,; \s ] )*', 
                 ' ).*'), '$1', 'sx')
-                
+:)                
+        let $namePattern :=
+            replace($text,
+                concat(
+                '^(',
+                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' <>()=!|,; \d . ] |',
+                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' <>()=!|,; \d . ] )',
+                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' <>()=!|,; \s ] |',
+                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' <>()=!|,; \s ] )*', 
+                ' ).*'), '$1', 'sx')
         return (
             (: name, after removing escapes :)
             replace($namePattern, concat($FOXSTEP_ESCAPE, '(.)'), '$1'),

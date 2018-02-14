@@ -40,6 +40,8 @@ if "%name%"=="-p" (
    set ISFILE=Y
  ) else if "%name%"=="-b" (
    set SEP=\   
+ ) else if "%name%"=="-c" (
+   set SEP="%%"   
  ) else if "%name%"=="-t" (
    set UTREE_DIRS=!VALUE!
    shift   
@@ -55,7 +57,7 @@ if "%name%"=="-p" (
 ) else (
    echo Unknown option: %name%
    echo Supported options: 
-   echo    -b -f -g -t -v   
+   echo    -b -c -f -g -t -v   
    echo Aborted.
    exit /b
 )
@@ -65,7 +67,7 @@ set foxpath=%name%
 if %foxpath%=="?" echo NO else (echo YES)
 
 if %FOXPATH%=="?" (
-    echo Usage: fox [-f] [-p] [-b] [-t utree-dirs] [-g ugraph-endpoints] [-h github-token] [-v name=value]* foxpath
+    echo Usage: fox [-f] [-p] [-b] [-c] [-t utree-dirs] [-g ugraph-endpoints] [-h github-token] [-v name=value]* foxpath
     echo foxpath : a foxpath expression, or a file containing a foxpath expression
     echo.
     echo -f      : the foxpath parameter is not a foxpath expression, but the path or URI of 
@@ -92,6 +94,7 @@ if %FOXPATH%=="?" (
     echo -b      : within the foxpath expression path and foxpath operator are swapped;
     echo           using the option: path operator = / , foxpath operator = \
     echo           without option:   path operator = \ , foxpath operator = /
+    echo -c      : foxpath operator = / , path operator = %%
     echo -h github-token : 
     echo           a text file containing the github API token obtained from here:
     echo             https://github.com/settings/tokens    

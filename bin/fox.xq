@@ -14,6 +14,9 @@ let $options := map:merge((
     if ($sep eq '\') then (
         map:entry('FOXSTEP_SEPERATOR', '\'),
         map:entry('NODESTEP_SEPERATOR', '/')
+    ) else if ($sep eq '%') then (
+        map:entry('FOXSTEP_SEPERATOR', '/'),
+        map:entry('NODESTEP_SEPERATOR', '%')
     ) else (
         map:entry('FOXSTEP_SEPERATOR', '/'),
         map:entry('NODESTEP_SEPERATOR', '\')
