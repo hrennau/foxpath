@@ -19,13 +19,16 @@ while getopts "?pb" opt; do
         ;;
     b)  SEP=\\
         ;;
+    c)  SEP=%
+        ;;
     \?) 
-        echo Usage: foxpath [-p] [-b] foxpath
+        echo Usage: foxpath [-p] [-b] [-c] foxpath
         echo foxpath : a foxpath expression
         echo -p      : show the parse tree, rather than evaluate the expression
         echo -b      : within the foxpath expression path and foxpath operator are swapped;
         echo           using the option: path operator = / , foxpath operator = \
         echo           without option:   path operator = \ , foxpath operator = /
+        echo -c      : foxpath operator = / , path operator = %        
         exit 0
         ;;
     esac
