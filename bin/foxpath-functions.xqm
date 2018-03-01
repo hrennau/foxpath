@@ -474,6 +474,18 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     $deletes
                 ), '&#xA;')
 
+        (: function `write-file` 
+           ====================== :)
+        else if ($fname eq 'write-file') then
+            let $items := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fname := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $encoding := $call/*[3] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+
+            let $text := string-join($items, '&#xA;')
+            let $encoding := ($encoding, 'UTF8')[1]
+            return
+                file:write($fname, $text, map{'encoding': $encoding})
+                
         (: function `write-files` 
            ====================== :)
         else if ($fname eq 'write-files') then
