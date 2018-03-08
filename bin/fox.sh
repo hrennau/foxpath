@@ -12,7 +12,7 @@ SEP=/
 
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-while getopts "?pb" opt; do
+while getopts "?pbc" opt; do
     case "$opt" in
     p)
         MODE="parse"
