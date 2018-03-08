@@ -47,6 +47,4 @@ FOXPATH="${!OPTIND}"
 #     launch query
 #
 # ====================================================================================
-CMD="basex -b mode=$MODE -b sep=$SEP -b foxpath=$FOXPATH $SCRIPT_PATH/fox.xq"
-$CMD
-echo 
+exec basex -b mode="$MODE" -b sep="$SEP" -b foxpath="$FOXPATH" "$SCRIPT_PATH/fox.xq" -q "'&#xa;'"
