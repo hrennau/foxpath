@@ -5,7 +5,7 @@ declare variable $foxpath external;
 declare variable $vars as xs:string? external := ();
 declare variable $utreeDirs as xs:string? external := ();
 declare variable $ugraphEndpoints as xs:string? external := ();
-declare variable $isFile as xs:boolean? external := false;
+declare variable $isFile as xs:boolean? external := false();
 declare variable $mode as xs:string? external := 'eval';   (: eval | parse :)
 declare variable $sep as xs:string? external := '/';       (: / | \ :)
 
