@@ -999,8 +999,11 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ===================== :)
         else if ($fname eq 'root') then
             let $arg := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]
+                let $arg1 := $call/*[1]
+                return
+                    if ($arg1) then 
+                        $arg1/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                    else $context
             return
                 root($arg)
 
@@ -1035,9 +1038,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ================= :)
         else if ($fname eq 'string') then
             let $arg := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return
-                    ($explicit, $context)[1]
+                if ($call/*[1]) then 
+                    $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $context                    
             return
                 string($arg)
                 
