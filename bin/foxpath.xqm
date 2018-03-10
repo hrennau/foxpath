@@ -641,7 +641,7 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                     ! replace(., '/$', '')
                     [not($regex) or matches(replace(., '.*/', ''), $regex, 'i')]            
                     ! concat($prefix, '/', .)
-                    (: [not($tail) or file:is-dir(.)] :)  (: not any more true: following steps may be reverse steps :)
+
 (:
                 let $DUMMY := trace((), concat('AFTER_LIST_DESCENDANTS_COUNT ',
                                         $axis, '~::', $name, ' (', count($descendants), '): '))
@@ -656,7 +656,6 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                         $descendants
                     )
                 return
-                    (: let $DUMMY := trace(sort($ctxtFiles), 'CTXT_FILES: ') return :)
                     if (not($predicates)) then $ctxtFiles
                     else f:testPredicates(sort($ctxtFiles, (), lower-case#1), $predicates, $vars, $options)
                     
@@ -765,7 +764,6 @@ declare function f:resolveNodeAxisStep($axisStep as element()+,
     :)
     
     (: edit context, transforming atomic values into document nodes :)
-    (: let $DUMMY := trace($context, 'CONTEXT: ') :)
     let $context :=
         for $c in $context return
             if ($c instance of node()) then $c
@@ -776,6 +774,24 @@ declare function f:resolveNodeAxisStep($axisStep as element()+,
     let $nodeKind := $axisStep/@nodeKind
     let $nodeName := $axisStep/@nodeName
     let $predicates := $axisStep/*
+
+    (: 20180310, hjr - $fn_applyPredicates
+          introduced this function item in order to apply predicates elegantly
+          to the partial result obtained for a single item returned by the
+          preceding step :)
+    let $fn_applyPredicates := 
+    function($nodes) {
+        let $nodes := $nodes/. return
+        
+        if (not($predicates)) then $nodes
+        else 
+            let $predicatesInput :=
+                if ($axis = 
+                    ('parent', 'ancestor', 'ancestor-or-self', 'preceding-sibling', 'preceding'))
+                then reverse($nodes)
+                else $nodes
+            return f:testPredicates($predicatesInput, $predicates, $vars, $options)
+    }
     
     let $nodeTest :=
         if ($localName) then
@@ -831,69 +847,102 @@ declare function f:resolveNodeAxisStep($axisStep as element()+,
     let $resultItemsUnfiltered :=
         if ($axis eq 'child') then
             if ($localName or $nodeKind eq 'element') then
-                for $c in $context return $c/*[$nodeTest(.)]
+                for $c in $context return $c/*[$nodeTest(.)] 
+                => $fn_applyPredicates()
             else                
-                for $c in $context return $c/node()[$nodeTest(.)]
+                for $c in $context return $c/node()[$nodeTest(.)] 
+                => $fn_applyPredicates()
         else if ($axis eq 'attribute') then
-            for $c in $context return $c/@*[$nodeTest(.)]
+            for $c in $context return $c/@*[$nodeTest(.)] 
+            => $fn_applyPredicates()
         else if ($axis eq 'descendant') then
             if ($localName or $nodeKind eq 'element') then        
-                for $c in $context return $c/descendant::*[$nodeTest(.)]
+                for $c in $context return $c/descendant::*[$nodeTest(.)] 
+                => $fn_applyPredicates()
             else
-                for $c in $context return $c/descendant::node()[$nodeTest(.)]
+                for $c in $context return $c/descendant::node()[$nodeTest(.)] 
+                => $fn_applyPredicates()
         else if ($axis eq 'descendant-or-self') then
             if ($localName or $nodeKind eq 'element') then        
-                for $c in $context return $c/descendant-or-self::*[$nodeTest(.)]
+                for $c in $context return $c/descendant-or-self::*[$nodeTest(.)] 
+                => $fn_applyPredicates()
             else                
-                for $c in $context return $c/descendant-or-self::node()[$nodeTest(.)]
+                for $c in $context return $c/descendant-or-self::node()[$nodeTest(.)] 
+                => $fn_applyPredicates()
         else if ($axis eq 'descendant-or-self') then
             if ($localName or $nodeKind eq 'element') then            
-                for $c in $context return $c/descendant-or-self::*[$nodeTest(.)]
+                for $c in $context return $c/descendant-or-self::*[$nodeTest(.)] 
+                => $fn_applyPredicates()
             else
-                for $c in $context return $c/descendant-or-self::node()[$nodeTest(.)]
+                for $c in $context return $c/descendant-or-self::node()[$nodeTest(.)] 
+                => $fn_applyPredicates()
         else if ($axis eq 'following-sibling') then
             if ($localName or $nodeKind eq 'element') then
-                for $c in $context return $c/following-sibling::*[$nodeTest(.)]
+                for $c in $context return $c/following-sibling::*[$nodeTest(.)] 
+                => $fn_applyPredicates()
             else
-                for $c in $context return $c/following-sibling::node()[$nodeTest(.)]
+                for $c in $context return $c/following-sibling::node()[$nodeTest(.)] 
+                => $fn_applyPredicates()
         else if ($axis eq 'following') then
             if ($localName or $nodeKind eq 'element') then        
-                for $c in $context return $c/following::*[$nodeTest(.)]
+                for $c in $context return $c/following::*[$nodeTest(.)] 
+                => $fn_applyPredicates()
             else                
-                for $c in $context return $c/following::node()[$nodeTest(.)]
+                for $c in $context return $c/following::node()[$nodeTest(.)] 
+                => $fn_applyPredicates()
         else if ($axis eq 'self') then
             if ($localName or $nodeKind eq 'element') then        
-                for $c in $context return $c/self::*[$nodeTest(.)]
+                for $c in $context return $c/self::*[$nodeTest(.)] 
+                => $fn_applyPredicates()
             else
-                for $c in $context return $c/self::node()[$nodeTest(.)]
+                for $c in $context return $c/self::node()[$nodeTest(.)] 
+                => $fn_applyPredicates()
         else if ($axis eq 'parent') then
             if ($localName or $nodeKind eq 'element') then        
-                for $c in $context return $c/parent::*[$nodeTest(.)]
+                for $c in $context return $c/parent::*[$nodeTest(.)] 
+                => $fn_applyPredicates()
             else
-                for $c in $context return $c/parent::node()[$nodeTest(.)]
+                for $c in $context return $c/parent::node()[$nodeTest(.)] 
+                => $fn_applyPredicates()
         else if ($axis eq 'ancestor') then
             if ($localName or $nodeKind eq 'element') then
-                for $c in $context return $c/ancestor::*[$nodeTest(.)]
+                for $c in $context return $c/ancestor::*[$nodeTest(.)] 
+                => $fn_applyPredicates()
             else
-                for $c in $context return $c/ancestor::node()[$nodeTest(.)]
+                for $c in $context return $c/ancestor::node()[$nodeTest(.)] 
+                => $fn_applyPredicates()
         else if ($axis eq 'ancestor-or-self') then
             if ($localName or $nodeKind eq 'element') then        
-                for $c in $context return $c/ancestor-or-self::*[$nodeTest(.)]
+                for $c in $context return $c/ancestor-or-self::*[$nodeTest(.)] 
+                => $fn_applyPredicates()
             else
-                for $c in $context return $c/ancestor-or-self::node()[$nodeTest(.)]
+                for $c in $context return $c/ancestor-or-self::node()[$nodeTest(.)] 
+                => $fn_applyPredicates()
         else if ($axis eq 'preceding-sibling') then
             if ($localName or $nodeKind eq 'element') then
-                for $c in $context return $c/preceding-sibling::*[$nodeTest(.)]
+                for $c in $context return $c/preceding-sibling::*[$nodeTest(.)] 
+                => $fn_applyPredicates()
             else                
-                for $c in $context return $c/preceding-sibling::node()[$nodeTest(.)]
+                for $c in $context return $c/preceding-sibling::node()[$nodeTest(.)] 
+                => $fn_applyPredicates()
         else if ($axis eq 'preceding') then
             if ($localName or $nodeKind eq 'element') then        
-                for $c in $context return $c/preceding::*[$nodeTest(.)]
+                for $c in $context return $c/preceding::*[$nodeTest(.)] 
+                => $fn_applyPredicates()
             else
-                for $c in $context return $c/preceding::node()[$nodeTest(.)]
+                for $c in $context return $c/preceding::node()[$nodeTest(.)] 
+                => $fn_applyPredicates()
         else
             f:createFoxpathError('PROGRAM_ERROR', concat('Unexpected axis: ', $axis))
-    let $resultItemsUnfiltered := $resultItemsUnfiltered/.        
+            
+    let $resultItems := $resultItemsUnfiltered/.
+    
+(: 20180310, hjr -
+   ~~~
+   following code deactivated, because filtering now applied to the results obtaind for
+      each context item
+   ~~~   
+    let $resultItemsUnfiltered := trace( $resultItemsUnfiltered/. , 'RESULT_ITEMS_UNFILTERED: ')        
     let $resultItems :=
         if (not($predicates)) then $resultItemsUnfiltered
         else
@@ -903,7 +952,7 @@ declare function f:resolveNodeAxisStep($axisStep as element()+,
                 else  $resultItemsUnfiltered
             return
                 f:testPredicates($predicatesInput, $predicates, $vars, $options)
-
+:)
     return
         $resultItems
 };
