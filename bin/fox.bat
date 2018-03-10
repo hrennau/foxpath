@@ -25,7 +25,7 @@ set name="%~1"
 set char1=%name:~1,1%
 if "%char1%" neq "-" goto :ENDPAR
 
-rem if this is a paraemeter name, remove quote (by re-assigning to %~1)
+rem if this is a parameter name, remove quote (by re-assigning to %~1)
 rem the quote was needed for argument expressions containing <
 set name=%~1
 
@@ -119,5 +119,5 @@ set OPT_UGRAPH_ENDPOINTS=
 if not "%UTREE_DIRS%"=="" (set OPT_UTREE_DIRS=-b "utreeDirs=%UTREE_DIRS%")
 if not "%UGRAPH_ENDPOINTS%"=="" (set OPT_UGRAPH_ENDPOINTS=-b "ugraphEndpoints=%UGRAPH_ENDPOINTS%")
 set OPT_GITHUB_TOKEN=-b "{http://www.ttools.org/xquery-functions}githubToken=%GITHUB_TOKEN%"
-
+rem echo HERE=%HERE%
 basex -b isFile=%ISFILE% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% -b "vars=%VARS%" %HERE%/fox.xq
