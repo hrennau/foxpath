@@ -164,3 +164,14 @@ declare function f:getSvnRootUriRC($prefix as xs:string, $steps as xs:string)
         if (proc:execute('svn', ('list', $tryPath))/code = '0') then $tryPath
         else f:getSvnRootUriRC($tryPath || '/', substring($steps, 2 + string-length($step1)))
 };        
+
+(:~
+ : Creates a copy of a node with all "whitespace only" text nodes
+ : which are element siblings removed. 
+ :)
+declare function f:prettyPrint($n as node())
+        as node()? {
+    copy $n_ := $n
+    modify delete nodes $n_//text()[not(matches(., '\S'))][../*]
+    return $n_
+};        

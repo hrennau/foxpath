@@ -401,6 +401,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 f:rpad($string, $width, $fillChar)
 
+        (: function `serialize` 
+           =============== :)
+        else if ($fname eq 'serialize') then
+            let $nodes := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                $nodes/serialize(.)
+
         (: function `unparsed-text` 
            ======================= :)
         else if ($fname eq 'unparsed-text') then
@@ -474,6 +481,25 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     $deletes
                 ), '&#xA;')
 
+        (: function `write-doc` 
+           ==================== :)
+        else if ($fname eq 'write-doc') then
+            let $items := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fname := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $encoding := $call/*[3] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+
+            let $doc := 
+                let $item := $items[1]
+                return
+                    if ($item instance of node()) then $item
+                    else if (doc-available($item)) then doc($item)
+                    else ()
+            let $doc := $doc ! f:prettyPrint(.)   
+            
+            let $encoding := ($encoding, 'UTF8')[1]
+            return
+                file:write($fname, $doc, map{'method': 'xml', 'encoding': $encoding, 'indent': 'yes'})
+                
         (: function `write-file` 
            ====================== :)
         else if ($fname eq 'write-file') then
