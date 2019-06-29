@@ -169,7 +169,7 @@ declare function f:getSvnRootUriRC($prefix as xs:string, $steps as xs:string)
  : Creates a copy of a node with all "whitespace only" text nodes
  : which are element siblings removed. 
  :)
-declare function f:prettyPrint($n as node())
+declare function f:prettyFoxPrint($n as node())
         as node()? {
     copy $n_ := $n
     modify delete nodes $n_//text()[not(matches(., '\S'))][../*]

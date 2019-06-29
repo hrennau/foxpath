@@ -11,7 +11,7 @@ declare variable $sep as xs:string? external := '/';       (: / | \ :)
 
 let $options := map:merge((
     map:entry('IS_CONTEXT_URI', true()),
-    if ($sep eq '\') then (
+    if ($sep = ('\', 'X')) then (
         map:entry('FOXSTEP_SEPERATOR', '\'),
         map:entry('NODESTEP_SEPERATOR', '/')
     ) else if ($sep eq '%') then (

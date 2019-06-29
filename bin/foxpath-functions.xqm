@@ -494,7 +494,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     if ($item instance of node()) then $item
                     else if (doc-available($item)) then doc($item)
                     else ()
-            let $doc := $doc ! f:prettyPrint(.)   
+            let $doc := $doc ! f:prettyFoxPrint(.)   
             
             let $encoding := ($encoding, 'UTF8')[1]
             return
