@@ -183,7 +183,7 @@ declare function f:finalizeParseTree_namespacesRC($n as node(), $prolog as eleme
         let $namespace :=
             if ($n/@namespace) then ()
             else if ($n/@prefix) then
-                let $prefix := trace( $n/@prefix , 'PREFIX: ')
+                let $prefix := $n/@prefix
                 let $uri := $prolog/nsDecls/namespace[@prefix eq $prefix]/@uri
                 let $uri :=
                     if ($uri) then $uri

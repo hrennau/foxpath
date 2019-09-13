@@ -200,31 +200,58 @@ declare function f:foxfunc_write-json-docs($files as xs:string*,
 
 
 (:~
- : Foxpath function `xwrap#3`. Collects the items of $items into an XML document
+ : Foxpath function `xwrap#3`. Collects the items of $items into an XML document.
+ :
+ : Sorting:
+ : (1) if flag 's' is used: item representations are sorted by the string value of the item
+ : (2) if flag 'S' is used: item representations are sorted by the string value of the item, case-insensitively
+ : (3) otherwise no sorting is performed
+ :
  : Before copying into the result document, every item from $items is processed as follows:
- : (A) if an item is a node: 
- :   (1) if flag 'b' is not set, the item is not modified
- :   (2) otherwise a copy enhanced by an @xml:base attribute is created
+ : (A) if an item is a node:
+ :   (1) if flag 'b' is set, a copy enhanced by an @xml:base attribute is created
+ :   (2) if flag 'a' is set, the item is not modified if it is not an attribute;
+ :       if it is an attribute, it is mapped to an element which has a name 
+ :       equal to the name of the parent of the attribute, and which contains a 
+ :       copy of the attribute 
+ :   (2) if flag 'A' is set, treatment as with flag 'a', but the constructed element
+ :       has no namespace URI 
+ :   (3) otherwise, the item is not modified
+
  : (B) if an item is atomic: 
  :   (1) if flag 'd' is set, the item is interpreted as URI and it is attempted to be
  :       parsed into a document, with an @xml:base attribute added to the root element,
  :       if flag 'b' is set, and without @xml:base otherwise; if parsing fails, a 
- :       <PARSE-ERROR> element is created with the item value as ocntent
+ :       <PARSE-ERROR> element is created with the item value as content
  :   (2) if flag 'w' is set, the item is interpreted as URI and the text found at
- :       this URI is retrieved and wrapped in a <_text_> element with an @xml:base attribute
+ :       this URI is retrieved and wrapped in an element with an @xml:base attribute
+ :       element name given by parameter $name2, default _text_
  :   (3) if flag 't' is set, the item is interpreted as URI and the text found at 
- :       this URI is retrieved
- :   (4) if none of the flags 'd', 'w', 't' is set: the item is not modified 
+ :       this URI is retrieved (not wrapped in an element)
+ :   (4) if flag 'c' is set, the item is treated as a text and wrapped in an element;
+ :       element name given by parameter $name2, default _text_
+ :   (5) if none of the flags 'd', 'w', 't', 'c' is set: the item is not modified 
  :
  : @param items the items from which to create the content of the result document
  : @param name the name of the root element of the result document
+ : @param flags flags controlling the representation of the items and possible sorting
+ : @param name2 the name of inner wrapper elements, wrapping an individual item (only in case of flags c and w)
+ : @param options foxpath processing options
  : @return the result document
  :)
-declare function f:foxfunc_xwrap($items as item()*, $name as xs:QName, $flags as xs:string?, $options as map(*)?) 
+declare function f:foxfunc_xwrap($items as item()*, 
+                                 $name as xs:QName, 
+                                 $flags as xs:string?, 
+                                 $name2 as xs:QName?, $options as map(*)?) 
         as element()? {
+    (: name2 is the name of inner wrapper elements, wrapping an individual item :)
+    let $name2 := if (empty($name2)) then '_text_' else $name2   
+    
+    let $sortRule := if (contains($flags, 's')) then 's' else if (contains($flags, 'S')) then 'S' else ()        
     let $val :=
         for $item in $items 
-        return
+        order by if ($sortRule eq 's') then $item else if ($sortRule eq 'S') then lower-case($item) else ()
+        return 
 
         (: item a node => copy item :)
         if ($item instance of node()) then
@@ -237,6 +264,12 @@ declare function f:foxfunc_xwrap($items as item()*, $name as xs:QName, $flags as
                         element {node-name($elem)} {
                             $elem/@*, $xmlBase, $elem/node()
                         }
+            else if (contains($flags, 'a') or contains($flags, 'A')) then
+                if (not($item/self::attribute())) then $item
+                else 
+                    let $elemName := if (contains($flags, 'A')) then $item/../local-name(.)
+                                     else $item/../QName(namespace-uri(.), local-name(.))
+                    return element {$elemName} {$item}
             else
                 $item
                 
@@ -258,11 +291,11 @@ declare function f:foxfunc_xwrap($items as item()*, $name as xs:QName, $flags as
                 else                                    
                     <PARSE-ERROR>{$item}</PARSE-ERROR>
                     
-        (: item a URI, flag 'w' => read text at that URI, write it intoa wrapper element :)                    
+        (: item a URI, flag 'w' => read text at that URI, write it into a wrapper element :)                    
         else if (contains($flags, 'w')) then
             let $text := try {i:fox-unparsed-text($item, (), $options)} catch * {()}
             return
-                if ($text) then <_text_ xml:base="{$item}">{$text}</_text_>
+                if ($text) then element {$name2} {attribute xml:base {$item}, $text}
                 else <READ-ERROR>{$item}</READ-ERROR>
                 
         (: item a URI, flag 't' => read text at that URI, copy it into result :)                
@@ -271,6 +304,11 @@ declare function f:foxfunc_xwrap($items as item()*, $name as xs:QName, $flags as
             return
                 if ($text) then $text
                 else <READ-ERROR>{$item}</READ-ERROR>
+                
+        (: item a URI, flag 'c' => use item as ist :)                
+        else if (contains($flags, 'c')) then
+            element {$name2} {$item}
+            
         else
             $item
     return
