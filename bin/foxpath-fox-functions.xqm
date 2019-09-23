@@ -314,3 +314,31 @@ declare function f:foxfunc_xwrap($items as item()*,
     return
         element {$name} {attribute countItems {count($val)}, $val}
 };
+
+(:~
+ : Returns for a given element all namespace bindings as strings
+ : prefix=uri. The bindings are ordered by lowercase prefixes,
+ : then lowercase URIs.
+ :
+ : @param elem the element to be observed
+ : @return strings representing namespace bindings
+ :)
+declare function f:foxfunc_in-scope-namespaces($elem as element()) 
+        as xs:string+ {        
+    for $prefix in in-scope-prefixes($elem)
+    order by $prefix
+    return concat($prefix, '=', namespace-uri-for-prefix($prefix, $elem))
+};    
+
+(:~
+ : Returns for a given element all namespace bindings as strings
+ : prefix=uri. The bindings are ordered by lowercase prefixes,
+ : then lowercase URIs.
+ :
+ : @param elem the element to be observed
+ : @return strings representing namespace bindings
+ :)
+declare function f:foxfunc_in-scope-namespaces-descriptor($elem as element()) 
+        as xs:string+ {        
+    f:foxfunc_in-scope-namespaces($elem) => string-join(', ')
+};    

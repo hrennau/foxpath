@@ -670,23 +670,43 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $name2 := normalize-space($name2)            
             let $qname := 
                 let $lname :=
-                    if (empty($name)) then () 
+                    if (not($name)) then () 
                     else substring-before(concat($name, ' '), ' ') 
                 let $ns := 
-                    if (empty($name) or not(contains($name, ' '))) then () 
+                    if (not($name) or not(contains($name, ' '))) then () 
                     else substring-after($name, ' ')
                 return QName($ns, $lname)            
             let $qname2 := 
-                if (empty($name2)) then () else
+                if (not($name2)) then () else
                     let $lname2 :=
-                        if (empty($name2)) then () 
+                        if (not($name2)) then () 
                         else substring-before(concat($name2, ' '), ' ') 
                     let $ns2 := 
-                        if (empty($name2) or not(contains($name2, ' '))) then () 
+                        if (not($name2) or not(contains($name2, ' '))) then () 
                         else substring-after($name, ' ')                
                     return QName($ns2, $lname2)
             return
                 f:foxfunc_xwrap($val, $qname, $flags, $qname2, $options)
+
+        (: function `in-scope-namespaces` 
+           ============================= :)
+        else if ($fname eq 'in-scope-namespaces') then
+            let $elem := 
+                let $explicit := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return
+                    ($explicit, $context)[1]
+            return
+                f:foxfunc_in-scope-namespaces($elem)
+
+        (: function `in-scope-namespaces-descriptor` 
+           ======================================== :)
+        else if ($fname eq 'in-scope-namespaces-descriptor') then
+            let $elem := 
+                let $explicit := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return
+                    ($explicit, $context)[1]
+            return
+                f:foxfunc_in-scope-namespaces-descriptor($elem)
 
 (: the following two functions are at risk:
     eval-xpath
