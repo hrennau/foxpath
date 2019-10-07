@@ -323,8 +323,16 @@ declare function f:foxfunc_xwrap($items as item()*,
  : @param elem the element to be observed
  : @return strings representing namespace bindings
  :)
-declare function f:foxfunc_in-scope-namespaces($elem as element()) 
+declare function f:foxfunc_in-scope-namespaces($item as item()) 
         as xs:string+ {        
+    let $elem :=
+        typeswitch($item)
+        case $doc as document-node() return $doc/*
+        case $elem as element() return $elem
+        case $node as node() return $node/..
+        case $uri as xs:anyAtomicType return doc($uri)/*
+        default return error()
+        
     for $prefix in in-scope-prefixes($elem)
     order by $prefix
     return concat($prefix, '=', namespace-uri-for-prefix($prefix, $elem))
@@ -338,7 +346,7 @@ declare function f:foxfunc_in-scope-namespaces($elem as element())
  : @param elem the element to be observed
  : @return strings representing namespace bindings
  :)
-declare function f:foxfunc_in-scope-namespaces-descriptor($elem as element()) 
+declare function f:foxfunc_in-scope-namespaces-descriptor($item as item()) 
         as xs:string+ {        
-    f:foxfunc_in-scope-namespaces($elem) => string-join(', ')
+    f:foxfunc_in-scope-namespaces($item) => string-join(', ')
 };    
