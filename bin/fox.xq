@@ -2,6 +2,7 @@ import module namespace f="http://www.ttools.org/xquery-functions" at "foxpath.x
 declare namespace soap="http://schemas.xmlsoap.org/soap/envelope/";
 
 declare variable $foxpath external;
+declare variable $context external := ();
 declare variable $vars as xs:string? external := ();
 declare variable $utreeDirs as xs:string? external := ();
 declare variable $ugraphEndpoints as xs:string? external := ();
@@ -32,10 +33,11 @@ let $externalVariables :=
     else
         map:merge(
             for $item in tokenize($vars, '#######')[string()]
-            let $name := replace($item, '^\s*(.*?)\s*=.*', '$1')
-            let $value := replace($item, '^.+?=\s*(.*?)\s*$', '$1')
+            let $name := replace($item, '^\s*(.*?)\s*:.*', '$1')
+            let $value := replace($item, '^.*?:\s*(.*?)\s*$', '$1')
             let $value := xs:untypedAtomic($value)
-            return map:entry(QName((), $name), $value)
+            let $qname := QName((), $name) 
+            return map:entry($qname, $value)
         )
         
 let $foxpathExpr :=
@@ -68,4 +70,4 @@ return
     if ($foxpathExpr instance of element(error)) then string($foxpathExpr)
     else
         if ($mode eq 'parse') then f:parseFoxpath($foxpathExpr, $options)
-        else f:resolveFoxpath($foxpathExpr, $options, $externalVariables)
+        else f:resolveFoxpath($foxpathExpr, $options, $context, $externalVariables)

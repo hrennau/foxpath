@@ -42,6 +42,21 @@ declare function f:resolveFoxpath($foxpath as xs:string?,
 };
 
 (:~
+ : Resolves a foxpath expression. The result is an XDM value.
+ :
+ : @param foxpath the expression text
+ : @param options evaluation options
+ : @return the expression value, which is an XDM value
+ :)
+declare function f:resolveFoxpath($foxpath as xs:string?,
+                                  $options as map(*)?,
+                                  $context as item()?,                                  
+                                  $externalVariableBindings as map(xs:QName, item()*)?) 
+        as item()* {
+    f:resolveFoxpath($foxpath, false(), $context, (), $options, $externalVariableBindings)
+};
+
+(:~
  : Resolves a foxpath expression to a value.
  :
  : @param foxpath the text of a foxpath expression
@@ -90,6 +105,8 @@ declare function f:resolveFoxpath($foxpath as xs:string?,
  :    boolean value, rather than its value
  : @param context if specified, a file system folder used for resolving 
  :    relative path expressions; defaults to the current working directory
+ : @param options options controlling the parsing and evaluation of the foxpath expression
+ : @param externalVariableBindings a map providing the names and values of external variables
  : @return the expression value
  :)
 declare function f:resolveFoxpath($foxpath as xs:string, 

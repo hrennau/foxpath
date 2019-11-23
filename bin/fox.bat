@@ -42,6 +42,9 @@ if "%name%"=="-p" (
    set SEP=\   
  ) else if "%name%"=="-c" (
    set SEP="%%"   
+ ) else if "%name%"=="-i" (
+   set CONTEXT_ITEM=!VALUE!
+   shift   
  ) else if "%name%"=="-t" (
    set UTREE_DIRS=!VALUE!
    shift   
@@ -108,6 +111,8 @@ if %FOXPATH%=="?" (
     echo -g endpoints : 
     echo           SPARQL endpoints exposing UGRAPH graphs defining literal file systems;
     echo             endpoints are whitespace-separated
+    echo -i context-dir : 
+    echo           a folder to be used as initial context item    
     echo -v "name=value" 
     echo         : name and value of an external variable
     exit /b
@@ -116,8 +121,10 @@ if "%PARSE%"=="Y" (set MODE=parse) else (set MODE=eval)
 if "%ISFILE%"=="Y" (set ISFILE=true) else (set ISFILE=false)
 set OPT_UTREE_DIRS=
 set OPT_UGRAPH_ENDPOINTS=
+set OPT_CONTEXT_ITEM=
 if not "%UTREE_DIRS%"=="" (set OPT_UTREE_DIRS=-b "utreeDirs=%UTREE_DIRS%")
 if not "%UGRAPH_ENDPOINTS%"=="" (set OPT_UGRAPH_ENDPOINTS=-b "ugraphEndpoints=%UGRAPH_ENDPOINTS%")
 set OPT_GITHUB_TOKEN=-b "{http://www.ttools.org/xquery-functions}githubToken=%GITHUB_TOKEN%"
+if not "%CONTEXT_ITEM%"=="" (set OPT_CONTEXT_ITEM=-b "context=%CONTEXT_ITEM%")
 rem echo HERE=%HERE%
-basex -b isFile=%ISFILE% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% -b "vars=%VARS%" %HERE%/fox.xq
+basex -b isFile=%ISFILE% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% %OPT_CONTEXT_ITEM% -b "vars=%VARS%" %HERE%/fox.xq
