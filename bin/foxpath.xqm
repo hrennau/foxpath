@@ -685,7 +685,7 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                     [not($regex) or matches(replace(., '.*/', ''), $regex, 'i')]            
                 return
                     if (not($predicates)) then $ctxtFiles
-                    else f:testPredicates(sort($ctxtFiles, lower-case#1), $predicates, $vars, $options)
+                    else f:testPredicates(sort($ctxtFiles, (), lower-case#1), $predicates, $vars, $options)
         else if ($axis = 'following-sibling') then
                 for $ctxt in $context
                 let $parent := (replace($ctxt, '/[^/]*$', '')[string()], '/')[1]
@@ -696,7 +696,7 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                     ! concat($parent, '/', .)                
                 return
                     if (not($predicates)) then $followingSiblings
-                    else f:testPredicates(sort($followingSiblings, lower-case#1), $predicates, $vars, $options)
+                    else f:testPredicates(sort($followingSiblings, (), lower-case#1), $predicates, $vars, $options)
         
         (: reverse axis :)        
         else    
@@ -748,7 +748,7 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                     ! concat($parent, '/', .)                
                 return
                     if (not($predicates)) then $precedingSiblings
-                    else f:testPredicates(reverse(sort($precedingSiblings, lower-case#1)), $predicates, $vars, $options)
+                    else f:testPredicates(reverse(sort($precedingSiblings, (), lower-case#1)), $predicates, $vars, $options)
                         
         else
             f:createFoxpathError('NOT_YET_IMPLEMENTED', 
