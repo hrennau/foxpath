@@ -528,6 +528,121 @@ declare function f:fox-file-lines($uri as xs:string,
 };
 
 (:~
+ : Returns an XML representation of the CSV record identified by URI or file path.
+ :
+ : @param uri the URI or file path of the resource
+ : @param separator the separator character (or token `comma` or token `semicolon`)
+ : @param withHeader if 'yes', the first row contains column headers
+ : @return an XML document representing JSON data, or the empty sequence if 
+ :     retrieval or parsing fails
+ :)
+declare function f:fox-csv-doc($uri as xs:string,
+                               $options as map(*)?)
+        as document-node()? {
+    f:fox-csv-doc($uri, 'comma', 'no', 'direct', 'yes', $options)        
+};
+
+(:~
+ : Returns an XML representation of the CSV record identified by URI or file path.
+ :
+ : @param uri the URI or file path of the resource
+ : @param separator the separator character (or token `comma` or token `semicolon`)
+ : @param withHeader if 'yes', the first row contains column headers
+ : @return an XML document representing JSON data, or the empty sequence if 
+ :     retrieval or parsing fails
+ :)
+declare function f:fox-csv-doc($uri as xs:string,
+                               $separator as xs:string,
+                               $options as map(*)?)
+        as document-node()? {
+    f:fox-csv-doc($uri, $separator, 'no', 'direct', 'yes', $options)        
+};
+
+(:~
+ : Returns an XML representation of the CSV record identified by URI or file path.
+ :
+ : @param uri the URI or file path of the resource
+ : @param separator the separator character (or token `comma` or token `semicolon`)
+ : @param withHeader if 'yes', the first row contains column headers
+ : @return an XML document representing JSON data, or the empty sequence if 
+ :     retrieval or parsing fails
+ :)
+declare function f:fox-csv-doc($uri as xs:string,
+                               $separator as xs:string,
+                               $withHeader as xs:string,
+                               $options as map(*)?)
+        as document-node()? {
+    f:fox-csv-doc($uri, $separator, $withHeader, 'direct', 'yes', $options)        
+};
+
+(:~
+ : Returns an XML representation of the CSV record identified by URI or file path.
+ :
+ : @param uri the URI or file path of the resource
+ : @param separator the separator character (or token `comma` or token `semicolon`)
+ : @param withHeader if 'yes', the first row contains column headers
+ : @param names if 'direct', column names are used as element names;
+ :              if 'attributes', column names are provided by @name
+ : @param options options controlling the evaluation
+ : @return an XML document representing JSON data, or the empty sequence if 
+ :     retrieval or parsing fails
+ :)
+declare function f:fox-csv-doc($uri as xs:string,
+                               $separator as xs:string,
+                               $withHeader as xs:string,
+                               $names as xs:string,
+                               $options as map(*)?)
+        as document-node()? {
+    f:fox-csv-doc($uri, $separator, $withHeader, $names, 'yes', $options)        
+};
+(:~
+ : Returns an XML representation of the CSV record identified by URI or file path.
+ :
+ : @param uri the URI or file path of the resource
+ : @param separator the separator character (or token `comma` or token `semicolon`)
+ : @param withHeader if 'yes', the first row contains column headers
+ : @param names if 'direct', column names are used as element names;
+ :              if 'attributes', column names are provided by @name
+ : @param quotes if 'yes', quotes at start and end of field are treated as control characters
+ : @param options options controlling the evaluation
+ : @return an XML document representing JSON data, or the empty sequence if 
+ :     retrieval or parsing fails
+ :)
+declare function f:fox-csv-doc($uri as xs:string,
+                               $separator as xs:string,
+                               $withHeader as xs:string,
+                               $names as xs:string,
+                               $quotes as xs:string,
+                               $options as map(*)?)
+        as document-node()? {
+    let $uriDomain := f:uriDomain($uri, $options)
+    
+    let $csvOptions := map{
+        'separator': $separator,
+        'header': $withHeader,
+        'format': $names,
+        'quotes': $quotes
+    }
+    return
+
+    if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
+        let $text := f:fox-navURI-to-text_github($uri, (), $options)
+        return
+            try {$text ! csv:parse(., $csvOptions)} catch * {()}  
+    else if ($uriDomain eq 'RDF') then        
+        let $accessURI := f:fox-get-access-uri_rdf($uri, $options)
+        return $accessURI ! f:fox-csv-doc(., $separator, $withHeader, $names, $quotes, $options)       
+    else if ($uriDomain eq 'UTREE') then
+        let $accessURI := f:fox-get-access-uri_utree($uri, $options)
+        return $accessURI ! f:fox-csv-doc(., $separator, $withHeader, $names, $quotes, $options)
+    else if ($uriDomain eq 'GITHUB') then
+        error(QName((), 'NOT_YET_IMPLEMENTED'), 'Not yet implemented: csv@github') (: f:fox-json-doc_github($uri, $options) :)
+    else 
+        try {unparsed-text($uri) ! csv:parse(., $csvOptions)} catch * {()}
+};
+
+
+(:~
  : Returns an XML representation of the JSON record identified by URI or file path.
  :
  : @param uri the URI or file path of the resource

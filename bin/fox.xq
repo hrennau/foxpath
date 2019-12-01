@@ -1,4 +1,4 @@
-import module namespace f="http://www.ttools.org/xquery-functions" at "foxpath.xqm", "foxpath-parser.xqm", "foxpath-util.xqm";
+import module namespace f="http://www.ttools.org/xquery-functions" at "foxpath.xqm", "foxpath-parser.xqm", "foxpath-util.xqm", "foxpath-processorDependent.xqm";
 declare namespace soap="http://schemas.xmlsoap.org/soap/envelope/";
 
 declare variable $foxpath external;
@@ -65,7 +65,10 @@ let $foxpathExpr :=
                                     '; &#xA;valid names: ', string-join(sort(('', $lib//foxpath/@name)), '&#xA;   '))}</error>
                                 else
                                     $lib//foxpath[@name eq $fragmentId]/replace(., '^\s+|\s$', '')
-                                    
+                       
+let $context :=
+    if ($context) then $context
+    else f:currentDirectory()
 return    
     if ($foxpathExpr instance of element(error)) then string($foxpathExpr)
     else

@@ -2202,8 +2202,10 @@ declare function f:parsePostfixExpr($text as xs:string, $context as map(*))
                 if (starts-with($textAfter, '[') or starts-with($textAfter, '(')) then
                     (: update context - the context is not a URI, as it has not
                        been produced by a foxStep expression :)
-                    let $newContext := map:put($context, 'IS_CONTEXT_URI', false())
-                    
+                    let $CHANGE := 1
+                    let $newContext :=
+                        if (not($CHANGE)) then map:put($context, 'IS_CONTEXT_URI', false())
+                        else $context                    
                     let $postfixesEtc := f:parsePostfixes($textAfter, $newContext)
                     let $postfixes := $postfixesEtc[. instance of node()]
                     let $tree := f:buildPostfixesTree($primaryExpr, $postfixes)

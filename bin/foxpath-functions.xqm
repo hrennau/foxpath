@@ -315,6 +315,24 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 try {i:fox-json-doc-available($uri, $options)} catch * {false()}
                             
+        (: function `csv-doc` 
+           =================== :)
+        else if ($fname eq 'csv-doc') then        
+            let $uri := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            let $separator := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $header := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $names := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $quotes := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+                
+            return
+                if (empty($separator)) then i:fox-csv-doc($uri, $options)
+                else if (empty($header)) then i:fox-csv-doc($uri, $separator, $options)
+                else if (empty($names)) then i:fox-csv-doc($uri, $separator, $header, $options)
+                else if (empty($quotes)) then i:fox-csv-doc($uri, $separator, $header, $names, $options)
+                else i:fox-csv-doc($uri, $separator, $header, $names, $quotes, $options)
+                            
        (: function `linefeed` 
           ================== :)
         else if ($fname eq 'linefeed') then
