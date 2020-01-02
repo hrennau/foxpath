@@ -976,6 +976,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (not(count($arg) eq 1 and $arg[1] instance of node())) then ()
                 else local-name($arg)
 
+        (: function `local-name-from-QName` 
+           ================================ :)
+        else if ($fname eq 'local-name-from-QName') then
+            let $arg := 
+                let $explicit := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                local-name-from-QName($arg)
+
         (: function `lower-case` 
            ===================== :)
         else if ($fname eq 'lower-case') then
@@ -1036,6 +1045,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (not(count($arg) eq 1 and $arg[1] instance of node())) then ()
                 else namespace-uri($arg)
 
+        (: function `namespace-uri-from-QName` 
+           =================================== :)
+        else if ($fname eq 'namespace-uri-from-QName') then
+            let $arg := 
+                let $explicit := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                namespace-uri-from-QName($arg)
+
         (: function `node-name` 
            ==================== :)
         else if ($fname eq 'node-name') then
@@ -1090,6 +1108,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 reverse($arg)
+
+        (: function `resolve-QName` 
+           ======================== :)
+        else if ($fname eq 'resolve-QName') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                let $nameContext := if ($arg2) then $arg2 else $context
+                return
+                    resolve-QName($arg1, $nameContext)
 
         (: function `root` 
            ===================== :)
