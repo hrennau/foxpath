@@ -350,3 +350,18 @@ declare function f:foxfunc_in-scope-namespaces-descriptor($item as item())
         as xs:string+ {        
     f:foxfunc_in-scope-namespaces($item) => string-join(', ')
 };    
+
+(:~
+ : Transforms a string by reversing character replacements used by 
+ : the BaseX JSON representation (conversion format 'direct') for 
+ : representing the names of object members.
+ :
+ : @param item a string
+ : @return the result of character replacements reversed
+ :)
+declare function f:foxfunc_unescape-json-name($item as item()) as xs:string { 
+    string-join(
+        analyze-string($item, '_[0-9a-f]{4}')/*/(typeswitch(.)
+        case element(fn:match) return substring(., 2) ! concat('"\u', ., '"') ! parse-json(.)
+        default return replace(., '__', '_')), '')
+};

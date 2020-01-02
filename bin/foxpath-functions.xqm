@@ -314,7 +314,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return ($explicit, $context)[1]
             return
                 try {i:fox-json-doc-available($uri, $options)} catch * {false()}
-                            
+
+        (: function `json-name`, `jname` 
+           ============================= :)
+        else if ($fname = ('json-name', 'jname')) then
+            let $node := 
+                let $explicit := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return
+                    ($explicit, $context)[1]
+            return
+                f:foxfunc_unescape-json-name($node/local-name(.))
+
         (: function `csv-doc` 
            =================== :)
         else if ($fname eq 'csv-doc') then        
@@ -757,6 +767,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 else ()
             return
                 boolean(i:xquery($xpath, map{'':$xpathContextNode})[1])
+
+        (: function `unescape-json-name` 
+           ============================= :)
+        else if ($fname = 'unescape-json-name') then
+            let $string := 
+                let $explicit := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return
+                    ($explicit, $context)[1]
+            return
+                f:foxfunc_unescape-json-name($string)
+                
                    
         (: function `echo` 
            ==================== :)
