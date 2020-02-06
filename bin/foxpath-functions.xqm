@@ -248,7 +248,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                             
         (: function `html-doc-available` 
            ============================= :)
-        else if ($fname eq 'html-doc-available') then
+        else if ($fname = ('html-doc-available', 'is-html')) then
             let $uri :=
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
@@ -257,7 +257,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                             
         (: function `is-dir` 
            ================= :)
-        else if ($fname eq 'is-dir' or $fname eq 'isDir') then
+        else if ($fname = ('is-dir', 'isDir')) then
             let $uri :=
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return
@@ -267,7 +267,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             
         (: function `is-file` 
            ================== :)
-        else if ($fname eq 'is-file' or $fname eq 'isFile') then
+        else if ($fname = ('is-file', 'isFile')) then
             let $uri := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return
@@ -277,7 +277,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             
         (: function `is-xml` 
            ================ :)
-        else if ($fname eq 'is-xml' or $fname eq 'isXml') then
+        else if ($fname = ('is-xml', 'isXml')) then
             let $uri := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
@@ -299,7 +299,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                             
         (: function `json-doc` 
            =================== :)
-        else if ($fname eq 'json-doc') then
+        else if ($fname = ('json-doc', 'jdoc')) then
             let $uri := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
@@ -308,7 +308,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                             
         (: function `json-doc-available` 
            ============================= :)
-        else if ($fname eq 'json-doc-available') then
+        else if ($fname = ('json-doc-available', 'is-json')) then
             let $uri := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
