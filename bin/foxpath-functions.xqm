@@ -767,7 +767,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 else ()
             return
                 boolean(i:xquery($xpath, map{'':$xpathContextNode})[1])
-
+    
+        (: function `resolve-link` 
+           ======================= :)
+        else if ($fname eq 'resolve-link') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            return
+                f:foxfunc_resolve-link($arg1, $arg2)
+                
         (: function `unescape-json-name` 
            ============================= :)
         else if ($fname = 'unescape-json-name') then
@@ -1118,6 +1126,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 let $nameContext := if ($arg2) then $arg2 else $context
                 return
                     resolve-QName($arg1, $nameContext)
+
+        (: function `resolve-uri` 
+           ====================== :)
+        else if ($fname eq 'resolve-uri') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                let $baseUri := if ($arg2) then $arg2 else $context
+                return
+                    resolve-uri($arg1, $baseUri)
 
         (: function `root` 
            ===================== :)
