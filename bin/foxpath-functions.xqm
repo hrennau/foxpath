@@ -1277,6 +1277,20 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 year-from-date($arg)
                 
+        (: function `xs:date` 
+           ===================== :)
+        else if ($fname eq 'xs:date') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
+            return
+                xs:date($arg1)
+                
+        (: function `xs:dateTime` 
+           ===================== :)
+        else if ($fname eq 'xs:date') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
+            return
+                xs:dateTime($arg1)
+                
         (: function `xs:decimal` 
            ===================== :)
         else if ($fname eq 'xs:decimal') then
@@ -1290,6 +1304,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
             return
                 xs:integer($arg1)
+                
+        (: function `xs:string` 
+           ===================== :)
+        else if ($fname eq 'xs:string') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
+            return
+                xs:string($arg1)
                 
         else
         error(QName((), 'NOT_YET_IMPLEMENTED'),

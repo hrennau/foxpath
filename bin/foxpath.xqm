@@ -1997,7 +1997,7 @@ declare function f:resolveFunctionCall($call as element(),
                 ($explicit, $context)[1]
         let $useOptions :=
             if ($context and $context instance of node()) then $options
-            else if ($context?IS_CONTEXT_URI) then $options
+            (: else if ($context?IS_CONTEXT_URI) then $options :)   (: 20200213 - commented out _TO_DO_ must be analyzed :)
             else
                 map:put($options, 'IS_CONTEXT_URI', true())
         return

@@ -13,7 +13,8 @@ declare variable $f:PREDECLARED_NAMESPACES := (
     <namespace prefix="rdfs" uri="http://www.w3.org/2000/01/rdf-schema,#"/>,
     <namespace prefix="rdf" uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>,
     <namespace prefix="owl" uri="http://www.w3.org/2002/07/owl#"/>,
-    <namespace prefix="wsdl" uri="http://schemas.xmlsoap.org/wsdl/"/>
+    <namespace prefix="wsdl" uri="http://schemas.xmlsoap.org/wsdl/"/>,
+    <namespace prefix="docbook" uri="http://docbook.org/ns/docbook"/>    
 );
 
 (:
