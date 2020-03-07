@@ -3735,8 +3735,8 @@ declare function f:parseItem_abbreviatedFoxnameTest($text as xs:string,
     (: if the text does not start with an unescaped or escaped fox name character ... :)
     if (not(matches($text,
             concat(
-            '^(',            '[^ ', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>{}()=!|,; \d . ] |',
-            $FOXSTEP_ESCAPE, '[  ', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>{}()=!|,; \d . ] )'
+            '^(',            '[^ ', $FOXSTEP_ESCAPE, $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>\[\]{}()=!|,; \d . ] |',
+            $FOXSTEP_ESCAPE, '[  ', $FOXSTEP_ESCAPE, $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>\[\]{}()=!|,; \d . ] )'
             ), 'sx'))) 
     then ()
     
@@ -3746,10 +3746,10 @@ declare function f:parseItem_abbreviatedFoxnameTest($text as xs:string,
             replace($text,
                 concat(
                 '^(',
-                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>{}()=!|,; \d . ] |',
-                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>{}()=!|,; \d . ] )',
-                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>{}()=!|,; \s ] |',
-                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>{}()=!|,; \s ] )*', 
+                ' (',               '[^', $FOXSTEP_ESCAPE, $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>\[\]{}()=!|,; \d . ] |',
+                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>\[\]{}()=!|,; \d . ] )',
+                ' (',               '[^', $FOXSTEP_ESCAPE, $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>\[\]{}()=!|,; \s ] |',
+                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>\[\]{}()=!|,; \s ] )*', 
                 ' ).*'), '$1', 'sx')
         return (
             (: name, after removing escapes :)
