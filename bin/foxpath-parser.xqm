@@ -2040,16 +2040,12 @@ declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
         else $nameEtc[2]
         
     let $regex := 
-        if (not($name)) then () else
- 
-        let $raw := concat('^', 
-                    replace(replace(replace(replace($name, '\.', '\\.'), 
-                                                            '\*', '.*', 's'), 
-                                                            '\+', '\\+', 's'),                                                               
-                                                            '\?', '.', 's'), 
-                    '$')
-        let $raw := replace($raw, '[()]', '\\$0')
-        return $raw
+        if (not($name)) then () 
+        else
+            replace($name, '[.\\/\[\]^${}()|]', '\\$0')
+            ! replace(., '\*', '.*')
+            ! replace(., '\?', '.')
+            ! concat('^', ., '$')
     return
         if (starts-with($afterName, '[')) then
             (: update context - context is URI (as the current step is a fox axis step) :)
@@ -3660,9 +3656,11 @@ declare function f:skipOperator($text as xs:string, $operator as xs:string?)
  :        the empty sequence if the text does not begin with an
  :        abbreviated name test
  :) 
-declare function f:parseItem_canonicalFoxnameTest($text as xs:string, $FOXSTEP_NAME_DELIM as xs:string)
+declare function f:parseItem_canonicalFoxnameTest($text as xs:string, 
+                                                  $FOXSTEP_NAME_DELIM as xs:string)
         as xs:string* {
         
+    (: do not process unless the first character is a delimiter char :)    
     if (not(starts-with($text, $FOXSTEP_NAME_DELIM))) then () else
     
     let $patternText :=
@@ -3735,42 +3733,23 @@ declare function f:parseItem_abbreviatedFoxnameTest($text as xs:string,
     :)
 
     (: if the text does not start with an unescaped or escaped fox name character ... :)
-(:    
     if (not(matches($text,
             concat(
-            '^(',            '[^ ', $FOXSTEP_ESCAPE, '\[\]} \\/ <>()=!|,; \d . ] |',
-            $FOXSTEP_ESCAPE, '[  ', $FOXSTEP_ESCAPE, '\[\]} \\/ <>()=!|,; \d . ] )'
-            ), 'sx'))) 
-    then ()
-:)            
-    if (not(matches($text,
-            concat(
-            '^(',            '[^ ', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' <>()=!|,; \d . ] |',
-            $FOXSTEP_ESCAPE, '[  ', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' <>()=!|,; \d . ] )'
+            '^(',            '[^ ', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>{}()=!|,; \d . ] |',
+            $FOXSTEP_ESCAPE, '[  ', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>{}()=!|,; \d . ] )'
             ), 'sx'))) 
     then ()
     
     (: extract the leading fox name test :)            
     else
-(:    
         let $namePattern :=
             replace($text,
                 concat(
                 '^(',
-                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\]} \\/ <>()=!|,; \d . ] |',
-                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\]} \\/ <>()=!|,; \d . ] )',
-                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\]} \\/ <>()=!|,; \s ] |',
-                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\]} \\/ <>()=!|,; \s ] )*', 
-                ' ).*'), '$1', 'sx')
-:)                
-        let $namePattern :=
-            replace($text,
-                concat(
-                '^(',
-                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' <>()=!|,; \d . ] |',
-                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' <>()=!|,; \d . ] )',
-                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' <>()=!|,; \s ] |',
-                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' <>()=!|,; \s ] )*', 
+                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>{}()=!|,; \d . ] |',
+                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>{}()=!|,; \d . ] )',
+                ' (',               '[^', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>{}()=!|,; \s ] |',
+                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, '\[\]}', $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>{}()=!|,; \s ] )*', 
                 ' ).*'), '$1', 'sx')
         return (
             (: name, after removing escapes :)
