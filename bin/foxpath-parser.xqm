@@ -1694,17 +1694,9 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
             <foxRoot path="{replace($text, '^(rdf-file://.:/).*', '$1')}"/>        
         else if (starts-with($text, 'basex:/')) then
             let $rootUri := replace($text, '^(basex:/+).*', '$1')
-(:            
-            let $db := replace($text, '^(basex://.*?/).*', '$1')
-            let $db := replace($db, '[^/]$', '$0/')
-:)            
             return
                 <foxRoot path="basex://"/>        
         else if (matches($text, 'svn-(file|https?):/+')) then
-            (: let $DUMMY := trace((), concat('GOING TO FIND REPO ROOT; TEXT: ', $text)) :)
-(:            
-            let $repoPath := trace(f:getSvnRootUri(substring($text, 5)) , 'REPO_PATH: ')
-:)
             let $repoPath := replace($text, 'svn-(.*?:/+[^/]*).*', '$1')
             return
                 if (not($repoPath)) then error(QName((), 'INVALID_SVN_PATH'), concat('Path does not address SVN repo: ', $text))
