@@ -2043,8 +2043,10 @@ declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
         if (not($name)) then () 
         else
             replace($name, '[.\\/\[\]^${}()|]', '\\$0')
-            ! replace(., '\*', '.*')
-            ! replace(., '\?', '.')
+            ! replace(., '(^|[^~])\*', '$1.*')
+            ! replace(., '~\*', '\\*')
+            ! replace(., '(^|[^~])\?', '$1.')
+            ! replace(., '~\?', '\\?')
             ! concat('^', ., '$')
     return
         if (starts-with($afterName, '[')) then
@@ -3689,6 +3691,7 @@ declare function f:parseItem_canonicalFoxnameTest($text as xs:string,
                 concat($FOXSTEP_NAME_DELIM, $FOXSTEP_NAME_DELIM),
                 $FOXSTEP_NAME_DELIM
             )
+            ! replace(., '[*?]', '~$0')
             ,
             substring($text, string-length($patternText) + 1)
         )
@@ -3747,13 +3750,16 @@ declare function f:parseItem_abbreviatedFoxnameTest($text as xs:string,
                 concat(
                 '^(',
                 ' (',               '[^', $FOXSTEP_ESCAPE, $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>\[\]{}()=!|,; \d . ] |',
-                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>\[\]{}()=!|,; \d . ] )',
+                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$*?<>\[\]{}()=!|,; \d . ] )',
                 ' (',               '[^', $FOXSTEP_ESCAPE, $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>\[\]{}()=!|,; \s ] |',
-                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$<>\[\]{}()=!|,; \s ] )*', 
+                   $FOXSTEP_ESCAPE, '[ ', $FOXSTEP_ESCAPE, $FOXSTEP_SEPERATOR_REGEX, $NODESTEP_SEPERATOR_REGEX, ' ^$*?<>\[\]{}()=!|,; \s ] )*', 
                 ' ).*'), '$1', 'sx')
         return (
             (: name, after removing escapes :)
-            replace($namePattern, concat($FOXSTEP_ESCAPE, '(.)'), '$1'),
+            replace($namePattern, '~([*?])', '\\$1')             (: replace ~* with \*, ~? with \? :)
+            ! replace(., concat($FOXSTEP_ESCAPE, '(.)'), '$1')   (: remove ~ :)
+            ! replace(., '\\([*?])', '~$1')                      (: replace \* with ~*, \? with ~? :)   
+            ,
             substring($text, string-length($namePattern) + 1) ! replace(., '^\s+', '')
         )
 };        
