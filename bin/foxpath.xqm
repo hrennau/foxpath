@@ -2080,8 +2080,13 @@ declare function f:pattern2Regex($pattern as xs:string)
  : @return the edited context
  :)
 declare function f:editInitialContext($context as item()?) as item()? {
+    (: let $_DEBUG := trace($context, '___INITIAL_CONTEXT: ') return :)
     if (empty($context)) then $context
     else if ($context instance of node()) then $context
-    else $context ! file:path-to-native(.) ! replace(., '\\', '/') ! replace(., '/$', '')
+    else $context 
+         ! ( try {file:path-to-native(.)} catch * {.} ) 
+         ! replace(., '\\', '/') 
+         ! replace(., '/$', '')
 };
+
 
