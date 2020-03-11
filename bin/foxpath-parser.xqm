@@ -1903,6 +1903,9 @@ declare function f:parseStep($text as xs:string?,
     let $DEBUG := f:trace($text, 'parse.step', 'INTEXT_STEP: ')  
     let $postfixExprEtc := f:parsePostfixExpr($text, $context)
     let $postfixExpr := $postfixExprEtc[. instance of node()]
+    let $FOXSTEP_SEPERATOR := map:get($context, 'FOXSTEP_SEPERATOR')
+    let $FOXSTEP_SEPERATOR_REGEX := map:get($context, 'FOXSTEP_SEPERATOR_REGEX')
+    let $NODESTEP_SEPERATOR := map:get($context, 'NODESTEP_SEPERATOR')
     return
         (: first, try to parse step as postfix expr 
            (primary expr + optional postfix) :)
@@ -1911,12 +1914,9 @@ declare function f:parseStep($text as xs:string?,
             let $wrapperName :=
                 if (not($precedingOperator)) then ()
                 else
-                    let $FOXSTEP_SEPERATOR := map:get($context, 'FOXSTEP_SEPERATOR')
-                    let $NODESTEP_SEPERATOR := map:get($context, 'NODESTEP_SEPERATOR')
-                    return
-                        if ($precedingOperator eq $FOXSTEP_SEPERATOR) then 'foxStep'
-                        else if ($precedingOperator eq $NODESTEP_SEPERATOR) then 'step'
-                        else error()
+                    if ($precedingOperator eq $FOXSTEP_SEPERATOR) then 'foxStep'
+                    else if ($precedingOperator eq $NODESTEP_SEPERATOR) then 'step'
+                    else error()
             let $parsed :=
                 if (not($wrapperName)) then $postfixExpr
                 else element {$wrapperName} {$postfixExpr}
@@ -1925,10 +1925,10 @@ declare function f:parseStep($text as xs:string?,
                 (: ($postfixExpr, $textAfter) :)
                 
         (: archive entry step :)        
-        else if (matches($text, '^#archive#(\s*(/.*)?)?$')) then (
+        else if (matches($text, '^#archive#(\s*('||$FOXSTEP_SEPERATOR_REGEX||'.*)?)?$')) then (
             <foxStep><archiveEntry/></foxStep>,
             replace($text, '^#archive#\s*', '')
-        )    
+        )
         else
             (: then, try to parse as fox axis step :)
             let $foxAxisStepEtc := f:parseFoxAxisStep($text, $context)
