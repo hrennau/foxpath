@@ -281,7 +281,7 @@ declare function f:childUriCollection_archive($archive as xs:base64Binary,
                 return
                     if ($kindFilter eq 'dir') then $folderChildren
                     else ($fileChildren, $folderChildren)
-        ) [string()]
+        ) [string()] => distinct-values()   
     let $matchName :=
         if (not($pattern)) then $children else
             $children[matches(replace(replace(., '/$', ''), '.*/', ''), $pattern, 'i')]
@@ -317,9 +317,12 @@ declare function f:descendantUriCollection_archive(
             concat('^', replace(replace($name, '\*', '.*'), '\?', '.'), '$')
 
     let $entries := archive:entries($archive) ! string()    
-    let $relPaths := 
-        if (not($archivePath)) then $entries else 
-            $entries ! substring(., 2 + string-length($archivePath))   
+    let $relPaths :=
+        if (not($archivePath)) then $entries 
+        else
+            let $prefix := $archivePath || '/'
+            return            
+                $entries[starts-with(., $prefix)] ! substring(., 2 + string-length($archivePath)) 
         
     let $files := distinct-values($relPaths)
     let $matchKind :=
