@@ -539,7 +539,7 @@ declare function f:fox-file-lines($uri as xs:string,
 declare function f:fox-csv-doc($uri as xs:string,
                                $options as map(*)?)
         as document-node()? {
-    f:fox-csv-doc($uri, 'comma', 'no', 'direct', 'yes', $options)        
+    f:fox-csv-doc($uri, 'comma', 'no', 'direct', 'yes', 'no', $options)        
 };
 
 (:~
@@ -555,7 +555,7 @@ declare function f:fox-csv-doc($uri as xs:string,
                                $separator as xs:string,
                                $options as map(*)?)
         as document-node()? {
-    f:fox-csv-doc($uri, $separator, 'no', 'direct', 'yes', $options)        
+    f:fox-csv-doc($uri, $separator, 'no', 'direct', 'yes', 'no', $options)        
 };
 
 (:~
@@ -572,7 +572,7 @@ declare function f:fox-csv-doc($uri as xs:string,
                                $withHeader as xs:string,
                                $options as map(*)?)
         as document-node()? {
-    f:fox-csv-doc($uri, $separator, $withHeader, 'direct', 'yes', $options)        
+    f:fox-csv-doc($uri, $separator, $withHeader, 'direct', 'yes', 'no', $options)        
 };
 
 (:~
@@ -593,7 +593,7 @@ declare function f:fox-csv-doc($uri as xs:string,
                                $names as xs:string,
                                $options as map(*)?)
         as document-node()? {
-    f:fox-csv-doc($uri, $separator, $withHeader, $names, 'yes', $options)        
+    f:fox-csv-doc($uri, $separator, $withHeader, $names, 'yes', 'no', $options)        
 };
 (:~
  : Returns an XML representation of the CSV record identified by URI or file path.
@@ -613,6 +613,7 @@ declare function f:fox-csv-doc($uri as xs:string,
                                $withHeader as xs:string,
                                $names as xs:string,
                                $quotes as xs:string,
+                               $backslashes as xs:string,
                                $options as map(*)?)
         as document-node()? {
     let $uriDomain := f:uriDomain($uri, $options)
@@ -621,7 +622,8 @@ declare function f:fox-csv-doc($uri as xs:string,
         'separator': $separator,
         'header': $withHeader,
         'format': $names,
-        'quotes': $quotes
+        'quotes': $quotes,
+        'backslashes': $backslashes
     }
     return
 
@@ -631,10 +633,10 @@ declare function f:fox-csv-doc($uri as xs:string,
             try {$text ! csv:parse(., $csvOptions)} catch * {()}  
     else if ($uriDomain eq 'RDF') then        
         let $accessURI := f:fox-get-access-uri_rdf($uri, $options)
-        return $accessURI ! f:fox-csv-doc(., $separator, $withHeader, $names, $quotes, $options)       
+        return $accessURI ! f:fox-csv-doc(., $separator, $withHeader, $names, $quotes, $backslashes, $options)       
     else if ($uriDomain eq 'UTREE') then
         let $accessURI := f:fox-get-access-uri_utree($uri, $options)
-        return $accessURI ! f:fox-csv-doc(., $separator, $withHeader, $names, $quotes, $options)
+        return $accessURI ! f:fox-csv-doc(., $separator, $withHeader, $names, $quotes, $backslashes, $options)
     else if ($uriDomain eq 'GITHUB') then
         error(QName((), 'NOT_YET_IMPLEMENTED'), 'Not yet implemented: csv@github') (: f:fox-json-doc_github($uri, $options) :)
     else 
