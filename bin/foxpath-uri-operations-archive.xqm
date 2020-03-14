@@ -61,6 +61,8 @@ import module namespace i="http://www.ttools.org/xquery-functions" at
                                         $archivePath as xs:string?, 
                                         $options as map(*)?)
         as xs:boolean { 
+    if (not($archivePath)) then true() else
+    
     let $entries := archive:entries($archive)
     return
         if ($entries = $archivePath) then false()
