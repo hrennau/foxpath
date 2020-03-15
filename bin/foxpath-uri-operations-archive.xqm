@@ -144,13 +144,23 @@ import module namespace i="http://www.ttools.org/xquery-functions" at
  : @param options options controlling the evaluation
  : @return the document node, if the resource exists and is a well-formed XML document
  :)
- declare function f:fox-doc_archive($archive as xs:base64Binary, 
+ declare function f:fox-doc_archive($uri as xs:string,
+                                    $archive as xs:base64Binary, 
                                     $archivePath as xs:string?, 
+                                    $addXmlBase as xs:boolean?,
                                     $options as map(*)?)
         as document-node()? {    
     let $text := f:fox-unparsed-text_archive($archive, $archivePath, (), $options)
     return    
-        try {$text ! parse-xml(.)} catch * {()}
+        let $doc := try {$text ! parse-xml(.)} catch * {()}
+        return
+            if (not($doc)) then () 
+            else if (not($addXmlBase)) then $doc
+            else
+                (: Add @xml:base :)
+                copy $doc_ := $doc
+                modify insert node attribute xml:base {$uri ! file:path-to-uri(.)} into $doc_/*
+                return $doc_
 };
 
 (:~
