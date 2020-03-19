@@ -672,6 +672,19 @@ declare function f:fox-json-doc($uri as xs:string,
         return $accessURI ! f:fox-json-doc(., $options)
     else if ($uriDomain eq 'GITHUB') then
         f:fox-json-doc_github($uri, $options)
+    else if ($uriDomain eq 'ARCHIVE') then
+            let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+            let $archiveURI := $archiveURIAndPath[1]
+            let $archivePath := $archiveURIAndPath[2]
+            let $archive := f:fox-binary($archiveURI, $options)
+            return
+                if (empty($archive)) then ()
+                else
+                    f:fox-json-doc_archive($archive, $archivePath, (), $options)
+                    (:
+                    let $text := trace(f:fox-unparsed-text_archive($archive, $archivePath, (), $options) , '_TEXT: ')
+                    return try {$text ! json:parse(.)} catch * {()}
+                    :)
     else 
         try {unparsed-text($uri) ! json:parse(.)} catch * {()}
 };
