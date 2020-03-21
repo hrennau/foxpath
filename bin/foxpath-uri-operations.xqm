@@ -317,23 +317,22 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
     let $uriDomain := f:uriDomain($uri, $options)
     return
     
-    if ($uriDomain eq 'FILE_SYSTEM') then 
-        file:exists($uri)
-    else if ($uriDomain eq 'BASEX') then 
-        f:fox-file-exists_basex($uri, $options)   
-    else if ($uriDomain eq 'SVN') then 
-        f:fox-file-exists_svn($uri, $options)
-    else if ($uriDomain eq 'RDF') then 
-        f:fox-file-exists_rdf($uri, $options)
+    if ($uriDomain eq 'FILE_SYSTEM') then file:exists($uri)
+    else if ($uriDomain eq 'BASEX') then f:fox-file-exists_basex($uri, $options)   
+    else if ($uriDomain eq 'SVN') then f:fox-file-exists_svn($uri, $options)
+    else if ($uriDomain eq 'RDF') then f:fox-file-exists_rdf($uri, $options)
     else if ($uriDomain eq 'ARCHIVE') then
         let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
         let $archiveURI := $archiveURIAndPath[1]
         let $archivePath := $archiveURIAndPath[2]
-        let $archive := f:fox-binary($archiveURI, $options)
         return
-            if (empty($archive)) then false()
+            if (not($archivePath)) then true()   (: Archive root folder :)
             else
-                f:fox-file-exists_archive($archive, $archivePath, $options)       
+                let $archive := f:fox-binary($archiveURI, $options)
+                return
+                    if (empty($archive)) then false()
+                    else
+                        f:fox-file-exists_archive($archive, $archivePath, $options)       
     else 
         true()
 };
