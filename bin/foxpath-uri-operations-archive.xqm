@@ -21,6 +21,8 @@ import module namespace i="http://www.ttools.org/xquery-functions" at
     "foxpath-processorDependent.xqm",
     "foxpath-util.xqm";
 
+declare namespace fox="http://www.foxpath.org/ns/annotations";
+
 (: 
  : ===============================================================================
  :
@@ -147,7 +149,6 @@ import module namespace i="http://www.ttools.org/xquery-functions" at
  declare function f:fox-doc_archive($uri as xs:string,
                                     $archive as xs:base64Binary, 
                                     $archivePath as xs:string?, 
-                                    $addXmlBase as xs:boolean?,
                                     $options as map(*)?)
         as document-node()? {    
     let $text := f:fox-unparsed-text_archive($archive, $archivePath, (), $options)
@@ -155,12 +156,21 @@ import module namespace i="http://www.ttools.org/xquery-functions" at
         let $doc := try {$text ! parse-xml(.)} catch * {()}
         return
             if (not($doc)) then () 
-            else if (not($addXmlBase)) then $doc
-            else
-                (: Add @xml:base :)
-                copy $doc_ := $doc
-                modify insert node attribute xml:base {$uri ! file:path-to-uri(.)} into $doc_/*
-                return $doc_
+            else 
+                (: Check if must add @xml:base :)
+                let $addXmlBase := 
+                    if (empty($options)) then false()
+                    else $options?addXmlBase
+                return
+                    if (not($addXmlBase)) then $doc
+                    else
+                        (: Add @xml:base :)
+                        copy $doc_ := $doc
+                        modify (
+                            insert node attribute xml:base {$uri ! file:path-to-uri(.)} into $doc_/*,
+                            insert node attribute fox:base-added {true()} into $doc_/*
+                        )
+                        return $doc_
 };
 
 (:~

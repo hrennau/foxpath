@@ -1,5 +1,7 @@
 module namespace f="http://www.ttools.org/xquery-functions";
 
+declare namespace fox="http://www.foxpath.org/ns/annotations";
+
 declare variable $f:DEBUG := ''; 
 declare variable $f:DG :=
     for $item in tokenize(normalize-space($f:DEBUG), ' ') 

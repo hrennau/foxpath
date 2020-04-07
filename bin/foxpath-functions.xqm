@@ -1152,7 +1152,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `round` 
            ================ :)
-        else if ($fname eq 'matches') then
+        else if ($fname eq 'round') then
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return

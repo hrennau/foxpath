@@ -368,10 +368,7 @@ declare function f:fox-doc($uri as xs:string, $options as map(*)?)
         let $archive := f:fox-binary($archiveURI, $options)
         return
             if (empty($archive)) then ()
-            else
-                let $addXmlBase := true()
-                return
-                    f:fox-doc_archive($uri, $archive, $archivePath, $addXmlBase, $options)
+            else f:fox-doc_archive($uri, $archive, $archivePath, $options)
 (:                
     else if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
         let $text := f:fox-navURI-to-text_github($uri, (), $options)
