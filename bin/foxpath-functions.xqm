@@ -197,6 +197,83 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 f:fox-file-sdate($uri, $options)
 
+        (: function `fox-child` 
+           ==================== :)
+        else if ($fname eq 'fox-child') then
+            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fromSubstring := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $toSubstring := 
+                if (not($fromSubstring)) then () else
+                    $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                f:foxfunc_fox-child($context, $name, $fromSubstring, $toSubstring)
+
+        (: function `fox-descendant` 
+           ========================= :)
+        else if ($fname eq 'fox-descendant') then
+            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fromSubstring := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $toSubstring := 
+                if (not($fromSubstring)) then () else
+                    $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                f:foxfunc_fox-descendant($context, $name, $fromSubstring, $toSubstring)
+
+        (: function `fox-descendant-or-self` 
+           ================================= :)
+        else if ($fname eq 'fox-descendant-or-self') then
+            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fromSubstring := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $toSubstring := 
+                if (not($fromSubstring)) then () else
+                    $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                f:foxfunc_fox-descendant-or-self($context, $name, $fromSubstring, $toSubstring)
+
+        (: function `fox-sibling` 
+           ====================== :)
+        else if ($fname eq 'fox-sibling') then
+            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fromSubstring := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $toSubstring := 
+                if (not($fromSubstring)) then () else
+                    $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                f:foxfunc_fox-sibling($context, $name, $fromSubstring, $toSubstring)
+
+        (: function `fox-parent` 
+           ===================== :)
+        else if ($fname eq 'fox-parent') then
+            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fromSubstring := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $toSubstring := 
+                if (not($fromSubstring)) then () else
+                    $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                f:foxfunc_fox-parent($context, $name, $fromSubstring, $toSubstring)
+
+        (: function `fox-ancestor` 
+           ====================== :)
+        else if ($fname eq 'fox-ancestor') then
+            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fromSubstring := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $toSubstring := 
+                if (not($fromSubstring)) then () else
+                    $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                f:foxfunc_fox-ancestor($context, $name, $fromSubstring, $toSubstring)
+
+        (: function `fox-ancestor-or-self` 
+           =============================== :)
+        else if ($fname eq 'fox-ancestor-or-self') then
+            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fromSubstring := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $toSubstring := 
+                if (not($fromSubstring)) then () else
+                    $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                f:foxfunc_fox-ancestor-or-self($context, $name, $fromSubstring, $toSubstring)
+                
         (: function `frequencies` 
            ====================== :)
         else if ($fname eq 'frequencies') then

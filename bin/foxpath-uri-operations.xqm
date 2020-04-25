@@ -755,6 +755,75 @@ declare function f:fox-binary($uri as xs:string,
  :)
 
 (:~
+ : Returns a given URI, if it matches an optional regex.
+ :
+ : @param uri the URI to be evaluated
+ : @param nameRegex an optional regex constraining the URI name
+ : @return the URI, or the empty sequence if the URI does not
+ :   match the regex
+ :)
+declare function f:selfUri($uri as xs:string, $nameRegex as xs:string?) 
+        as xs:string? {
+    $uri
+    [not($nameRegex) or matches(replace(., '.*/', ''), $nameRegex, 'i')]
+};
+
+(:~
+ : Returns the parent URI of a given URI, with a name matching the
+ : optional regex.
+ :
+ : @param uri the URI for which the ancestors are sought
+ : @param nameRegex an optional regex constraining the URI names
+ : @return the parent URI, or the empty sequence if the URI does not
+ :   match the regex
+ :)
+declare function f:parentUri($uri as xs:string, $nameRegex as xs:string?) 
+        as xs:string? {
+    let $raw := replace($uri, '/[^/]*$', '')[string()]
+                [not($nameRegex) or matches(replace(., '.*/', ''), $nameRegex, 'i')]
+    return
+        if (matches($raw, '^.:$')) then concat($raw, '/') else $raw
+
+};
+
+(:~
+ : Returns the ancestor URIs of a given URI, with a name matching the
+ : optional regex. If $orSelf is true, also the given URI itself is
+ : returned, provided it matches the regex. The URIs are returned
+ : in reverse document order.
+ :
+ : @param uri the URI for which the ancestors are sought
+ : @param nameRegex an optional regex constraining the URI names
+ : @param orSelf if true, also the given URI itself is considered
+ : @retrun the ancestor URI, or ancestor-or-self URIs, in reverese document order
+ :)
+declare function f:ancestorUriCollection($uri as xs:string,
+                                         $nameRegex as xs:string?,
+                                         $orSelf as xs:boolean?)
+        as xs:string* {
+    let $items := tokenize($uri, '/')
+    let $root := concat(head($items), '/')            
+    let $steps := tail($items)[position() lt last()]
+    let $ancestorsIndices :=
+        for $pos in 1 to count($steps)
+        where not($nameRegex) or matches($steps[$pos], $nameRegex, 'i')
+        return $pos
+    let $ancestors := (
+        $root[not($nameRegex) or $nameRegex eq '^.*$'], 
+        (: the root folder is only considered if there is no, or a wildcard, name test :)
+        for $ai in $ancestorsIndices
+        return
+            concat($root, string-join(for $index in 1 to $ai return $steps[$index], '/'))
+    )
+    let $uris := (
+         if (not($orSelf)) then () else
+            $uri[not($nameRegex) or matches(replace(., '.*/', ''), $nameRegex, 'i')],
+         $ancestors
+    )
+    return $uris                    
+};
+        
+(:~
  : Returns the child URIs of a given URI, matching an optional name pattern
  : and matching an optional kind test (file or folder).
  :
@@ -792,6 +861,7 @@ declare function f:childUriCollection($uri as xs:string,
         else
         
     let $kindFilter := $stepDescriptor/@kindFilter
+    let $name := ($name, '*')[1]
     let $ignKindTest :=        
         try {file:list($uri, false(), $name)           
             ! replace(., '\\', '/')
@@ -847,6 +917,7 @@ declare function f:descendantUriCollection($uri as xs:string,
         else
         
     let $kindFilter := $stepDescriptor/@kindFilter
+    let $name := ($name, '*')[1]    
     let $ignKindTest :=
         try {
             file:list($uri, true(), $name)           
