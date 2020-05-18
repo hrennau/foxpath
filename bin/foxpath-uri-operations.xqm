@@ -682,7 +682,12 @@ declare function f:fox-json-doc($uri as xs:string,
                     return try {$text ! json:parse(.)} catch * {()}
                     :)
     else 
-        try {unparsed-text($uri) ! json:parse(.)} catch * {()}
+        let $jdoc := function-lookup(QName('http://basex.org/modules/json', 'doc'), 1)
+        return
+            try {
+                if (exists($jdoc)) then $jdoc($uri)
+                else unparsed-text($uri) ! json:parse(.)
+            } catch * {()}        
 };
 
 (:~
