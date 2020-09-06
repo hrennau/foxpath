@@ -638,7 +638,7 @@ declare function f:fox-csv-doc($uri as xs:string,
     else if ($uriDomain eq 'GITHUB') then
         error(QName((), 'NOT_YET_IMPLEMENTED'), 'Not yet implemented: csv@github') (: f:fox-json-doc_github($uri, $options) :)
     else 
-        try {unparsed-text($uri) ! csv:parse(., $csvOptions)} catch * {()}
+        try {csv:doc($uri, $csvOptions)} catch * {()}
 };
 
 
@@ -685,8 +685,8 @@ declare function f:fox-json-doc($uri as xs:string,
         let $jdoc := function-lookup(QName('http://basex.org/modules/json', 'doc'), 1)
         return
             try {
-                if (exists($jdoc)) then $jdoc($uri)
-                else unparsed-text($uri) ! json:parse(.)
+                if (exists($jdoc)) then $jdoc($uri) else
+                    unparsed-text($uri) ! json:parse(.)
             } catch * {()}        
 };
 

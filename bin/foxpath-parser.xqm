@@ -2045,7 +2045,7 @@ declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
             replace($name, '[.\\/\[\]^${}()|]', '\\$0')
             ! replace(., '(^|[^~])\*', '$1.*')
             ! replace(., '~\*', '\\*')
-            ! replace(., '(^|[^~])\?', '$1.')
+            ! replace(., '(^|[^~])\?', '$1.')   (: 20200830, hjr: KNOWN BUG - a???b becomes: a.?.b :)
             ! replace(., '~\?', '\\?')
             ! concat('^', ., '$')
     return

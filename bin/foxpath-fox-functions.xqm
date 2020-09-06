@@ -199,6 +199,25 @@ declare function f:foxfunc_fox-sibling($context as xs:string,
 };
 
 (:~
+ : Returns the sibling URIs of the parent URI of a given URI, provided their 
+ ; name matches a given name, or a regex derived from it. If $fromSubstring 
+ : and $toSubstring are supplied, the URI names must match the regex obtained 
+ : obtained by replacing in $name substring $fromSubstring with $toSubstring.
+ :
+ : @param context the context URI
+ : @param name a name pattern
+ : @param fromSubstring used to map $name to a regex
+ : @param toSubstring used to map $name to a regex
+ : @return sibling URIs matching the name or the derived regex
+ :)
+declare function f:foxfunc_fox-parent-sibling($context as xs:string,
+                                              $name as xs:string,
+                                              $fromSubstring as xs:string?,
+                                              $toSubstring as xs:string?)
+        as xs:string* {
+    f:parentUri($context, ()) ! f:foxfunc_fox-sibling(., $name, $fromSubstring, $toSubstring)
+};
+(:~
  : Returns the ancestor URIs of a given URI, provided their name matches a given 
  : name, or a regex derived from it. If $fromSubstring and $toSubstring are 
  : supplied, the URI names must match the regex obtained obtained by replacing 
