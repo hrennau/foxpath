@@ -289,17 +289,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ====================== :)
         else if ($fname eq 'frequencies') then
             let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
-            let $width := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            
-            let $rep :=
-                if (empty($width)) then function ($s, $c, $w) {concat($s, ' (', $c, ')')}
-                else function ($s, $c, $w) {concat($s, string-join(for $i in 1 to $w - string-length($s) return ' ', ''), ' (', $c, ')')}
-
-            for $value in $values
-            group by $s := string($value)
-            let $c := count($value)
-            order by lower-case($s)
-            return $rep[1]($s, $c, $width[1])
+            let $min := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $max := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $format := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $width := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                f:foxfunc_frequencies($values, $min, $max, $format, $width)
 
        (: function `grep` 
           =============== :)

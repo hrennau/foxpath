@@ -276,6 +276,57 @@ declare function f:foxfunc_fox-ancestor-or-self($context as xs:string,
 };
 
 (:~
+ : Returns a frequency distribution.
+ :
+ : @param values a sequence of terms
+ : @param min if specified - return only terms with a frequency >= $min
+ : @param max if specified - return only terms with a frequency >= $max
+ : @format format the output format, one of text|xml|json|csv, default = textf
+ : @format width if format = text - the width of the term column
+ : @return the frequency distribution
+ :)
+declare function f:foxfunc_frequencies($values as item()*, 
+                                       $min as xs:integer?, 
+                                       $max as xs:integer?, 
+                                       $format as xs:string?,
+                                       $width as xs:integer?)
+        as item() {
+        
+    let $format := ($format, 'text')[1]
+ 
+    (: Function item returning a text representation :)
+    let $textrep :=
+        if ($format ne 'text') then ()
+        else if (empty($width)) then function ($s, $c, $w) {concat($s, ' (', $c, ')')}
+        else function ($s, $c, $w) {concat($s, string-join(for $i in 1 to $w - string-length($s) return '.', ''), ' (', $c, ')')}
+        
+    (: Function item returning a term representation :)
+    let $item :=
+        switch($format) 
+        case 'text' return function($s, $c) {$textrep[1]($s, $c, $width[1])} 
+        case 'xml' return function($s, $c) {<term text="{$s}" count="{$c}"/>}
+        case 'json' return function($s, $c) {'"'||$s||'": '||$c}
+        case 'csv' return function($s, $c) {'"'||$s||'",'||$c}
+        default return error(QName((), 'INVALID_ARG'), concat('Unknown frequencies format, should be text|xml|json|csv; found: ', $format))
+        
+    (: Item frequencies :)        
+    let $items :=
+        for $value in $values
+        group by $s := string($value)
+        let $c := count($value)
+        where (empty($min) or $c ge $min) and (empty($max) or $c le $max)
+        order by lower-case($s)
+        return $item($s, $c)
+        
+    (: The report :)
+    return
+        switch($format)
+        case 'xml' return <terms minCount="{min($items/@count)}" maxCount="{min($items/@count)}">{$items}</terms>
+        case 'json' return ('{', $items ! concat('  ', .), '}') => string-join('&#xA;')
+        default return $items => string-join('&#xA;')
+};      
+
+(:~
  : Foxpath function `repeat#2'. Creates a string which is the concatenation of
  : a given number of instances of a given string.
  :

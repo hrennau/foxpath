@@ -257,6 +257,27 @@ declare function f:fox-json-doc_archive($archive as xs:base64Binary,
 };
 
 (:~
+ : Returns an XML representation of a CSV record contained by an archive.
+ :
+ : @param archive an archive file
+ : @param archivePath a within-archive data path (e.g. a/b/c)
+ : @param encoding the encoding of the file to be retrieved
+ : @param csvOptions CSV parsing options (e.g. separator, with header, etc.)
+ : @param options options controlling the evaluation
+ : @return the document, or the empty sequence if retrieval or parsing fails
+ :)
+declare function f:fox-csv-doc_archive($archive as xs:base64Binary, 
+                                       $archivePath as xs:string?, 
+                                       $encoding as xs:string?,
+                                       $csvOptions as map(*)?,
+                                       $options as map(*)?)
+        as document-node() {                                             
+    let $text := f:fox-unparsed-text_archive($archive, $archivePath, $encoding, $options)
+    return
+        try {$text ! csv:parse(., $csvOptions)} catch * {()}
+};
+
+(:~
  : Returns the content of a file contained by an archive as the 
  : Base64 representation of its bytes.
  :

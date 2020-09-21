@@ -637,6 +637,15 @@ declare function f:fox-csv-doc($uri as xs:string,
         return $accessURI ! f:fox-csv-doc(., $separator, $withHeader, $names, $quotes, $backslashes, $options)
     else if ($uriDomain eq 'GITHUB') then
         error(QName((), 'NOT_YET_IMPLEMENTED'), 'Not yet implemented: csv@github') (: f:fox-json-doc_github($uri, $options) :)
+    else if ($uriDomain eq 'ARCHIVE') then
+            let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+            let $archiveURI := $archiveURIAndPath[1]
+            let $archivePath := $archiveURIAndPath[2]
+            let $archive := f:fox-binary($archiveURI, $options)
+            return
+                if (empty($archive)) then ()
+                else
+                    f:fox-csv-doc_archive($archive, $archivePath, (), $csvOptions, $options)        
     else 
         let $cdoc := function-lookup(QName('http://basex.org/modules/csv', 'doc'), 2)
         return
@@ -682,10 +691,6 @@ declare function f:fox-json-doc($uri as xs:string,
                 if (empty($archive)) then ()
                 else
                     f:fox-json-doc_archive($archive, $archivePath, (), $options)
-                    (:
-                    let $text := trace(f:fox-unparsed-text_archive($archive, $archivePath, (), $options) , '_TEXT: ')
-                    return try {$text ! json:parse(.)} catch * {()}
-                    :)
     else 
         let $jdoc := function-lookup(QName('http://basex.org/modules/json', 'doc'), 1)
         return
