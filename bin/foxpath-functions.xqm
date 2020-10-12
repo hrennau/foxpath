@@ -200,13 +200,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `fox-child` 
            ==================== :)
         else if ($fname eq 'fox-child') then
-            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $fromSubstring := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $toSubstring := 
                 if (not($fromSubstring)) then () else
                     $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                f:foxfunc_fox-child($context, $name, $fromSubstring, $toSubstring)
+                f:foxfunc_fox-child($context, $names, $fromSubstring, $toSubstring)
 
         (: function `fox-descendant` 
            ========================= :)
@@ -317,15 +317,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `html-doc` 
            =================== :)
-        else if ($fname eq 'html-doc') then
+        else if ($fname = ('html-doc', 'hdoc')) then
             let $uri :=
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
             let $doc-text := f:fox-unparsed-text($uri, (), $options)
             let $doc := $doc-text ! html:parse(.)
             return (
-                if ($doc) then trace((), concat('HTML:   ', $uri, ': '))
-                    else trace((), concat('NO_HTML: ', $uri, ': ')),
                 $doc
             )
                             
@@ -346,7 +344,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return
                     ($explicit, $context)[1]
             return
-                i:fox-is-dir($uri, $options)
+                i:fox-is-dir($uri, $options)            
             
         (: function `is-file` 
            ================== :)
@@ -391,7 +389,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                             
         (: function `json-doc-available` 
            ============================= :)
-        else if ($fname = ('json-doc-available', 'is-json')) then
+        else if ($fname = ('json-doc-available', 'jdoc-available', 'is-json')) then
             let $uri := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
@@ -445,6 +443,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $fillChar := ($fillChar, ' ')[1]
             return
                 f:lpad($string, $width, $fillChar)
+
+        (: function `non-distinct-values` 
+           ============================== :)
+        else if ($fname = ('non-distinct-values', 'non-distinct')) then
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            return
+                for $item in $arg
+                group by $value := data($item)
+                where count($item) gt 1
+                return $value
 
         (: function `pads` 
            =============== :)
@@ -564,7 +572,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     'Param($odir = $targetDir)',
                     $copies
                 ), '&#xA;')
-                            
+            
+        (: function `values-distinct` 
+           ========================== :)
+        else if ($fname eq 'values-distinct') then
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            return
+                count(distinct-values($arg)) eq count($arg)                
+            
         (: function `win.copy` 
            ===================== :)
         else if ($fname eq 'win.copy') then

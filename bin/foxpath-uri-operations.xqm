@@ -883,7 +883,9 @@ declare function f:childUriCollection($uri as xs:string,
             ! replace(., '/$', '')
         } catch * {()}
     return
-        if (not($kindFilter)) then $ignKindTest
+        if (not($kindFilter)) then 
+            (: This check is made because of a BaseX bug - implicit use of a trailing * ... :)
+            if ($ignKindTest[1] eq $name) then $ignKindTest[1] else $ignKindTest
         else 
             let $useUri := replace($uri, '/$', '')   (: normalization :)
             return
