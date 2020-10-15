@@ -276,9 +276,12 @@ declare function f:descendantUriCollection_basex($uri as xs:string,
             (: folders - all path prefixes of all files :)
             let $folders := distinct-values(
                 for $resource in $files
+                let $steps := tokenize($resource, '/')[position() lt last()]
+                for $length in 1 to count($steps)
                 return
-                    tokenize($resource, '/')[position() lt last()] 
-                    => string-join('/')
+                    $steps[position() le $length] => string-join('/')
+(:                  hjr, 20201015: bugfix, copied from foxpath-uri-operations-archive.xqm - 
+                                   deliver *all* paths (consisting of 1, 2, ... steps) :)                
             )
             return
                 if ($kindFilter eq 'dir') then $folders
