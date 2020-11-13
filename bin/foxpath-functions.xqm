@@ -956,6 +956,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 $argNode/base-uri(.)
             
+        (: function `boolean` 
+           ================= :)
+        (: Note - an argument with several items starting with an atomic item is treated differently
+           from fn:boolean: rather than throwing an error, the first item is inspected :)
+        else if ($fname eq 'boolean') then
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                if (count($arg) gt 1) then boolean($arg[1])
+                else boolean($arg)
+            
         (: function `concat` 
            ================= :)
         else if ($fname eq 'concat') then
