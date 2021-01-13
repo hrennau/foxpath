@@ -713,5 +713,75 @@ declare function f:foxfunc_resolve-link($node as node(), $mediatype as xs:string
             return
                 if ($mediatype eq 'json') then try {json:parse($text)} catch * {()}
                 else $text
-};            
+};        
+
+(:~
+ : Returns the attribute names of a node. If $separator is specified, the sorted
+ : names are concatenated, using this separator, otherwise the names are returned
+ : as a sequence. If $localNames is true, the local names
+ : are returned, otherwise the lexical names. 
+ :
+ : @param node a node (unless it is an element, the function returns the empty sequence)
+ : @param localNames if true, the local names are returned, otherwise the lexical names
+ : @param separator if used, the names are concatenated, using this separator
+ : @return the names as a sequence, or as a concatenated string
+ :)
+declare function f:foxfunc_att-names($node as node(), $separator as xs:string?, $localNames as xs:boolean?)
+        as xs:string* {
+    let $items := $node/@*
+    let $names := if ($localNames) then $items/local-name(.) => sort()
+                  else $items/name(.) => sort()
+    return
+        if (exists($separator)) then string-join($names, $separator)
+        else $names
+};        
+
+(:~
+ : Returns the child element names of a node. If $separator is specified, the sorted
+ : names are concatenated, using this separator, otherwise the names are returned
+ : as a sequence. If $localNames is true, the local names are returned, otherwise the 
+ : lexical names. 
+ :
+ : @param node a node (unless it is an element, the function returns the empty sequence)
+ : @param localNames if true, the local names are returned, otherwise the lexical names
+ : @param separator if used, the names are concatenated, using this separator
+ : @return the names as a sequence, or as a concatenated string
+ :)
+declare function f:foxfunc_child-names($node as node(), $separator as xs:string?, $localNames as xs:boolean?)
+        as xs:string* {
+    let $items := $node/*
+    let $names := if ($localNames) then $items/local-name(.) => sort()
+                  else $items/name(.) => sort()
+    return
+        if (exists($separator)) then string-join($names, $separator)
+        else $names
+};        
+
+(:~
+ : Returns the parent name of a node. If $localNames is true, the local name is returned, 
+ : otherwise the lexical names. 
+ :
+ : @param node a node
+ : @param localName if true, the local name is returned, otherwise the lexical name
+ : @return the parent name
+ :)
+declare function f:foxfunc_parent-name($node as node(), $localName as xs:boolean?)
+        as xs:string* {
+    let $item := $node/..
+    let $name := if ($localName) then $item/local-name(.)
+                 else $item/name(.)
+    return
+        $name
+};        
+
+(:~
+ : Returns the local name of a lexical QName.
+ :
+ : @param name a lexical QName
+ : @return the name with the prefix removed
+ :)
+declare function f:foxfunc_remove-prefix($name as xs:string?)
+        as xs:string? {
+    $name ! replace(., '^.+:', '')
+};        
 
