@@ -34,16 +34,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $node := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
-            let $separator :=
-                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return $explicit                    
-            let $localNames :=
-                let $explicit := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                                 [. castable as xs:boolean]
-                return ($explicit ! xs:boolean(.), false())[1]   
-            let $namePattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
+            let $concat := f:booleanValue(
+                    $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options),
+                    false())
+            let $localNames := f:booleanValue(
+                    $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options),
+                    false())                
+            let $namePattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNamePattern := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                i:foxfunc_att-names($node, $separator, $localNames, $namePattern)            
+                i:foxfunc_att-names($node, $concat, $localNames, $namePattern, $excludedNamePattern)            
 
         (: function `bslash` 
            ================= :)
@@ -61,19 +61,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $node := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
-            let $separator :=
-                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return $explicit                   
- 
-            let $localNames :=
-                let $explicit := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                                 [. castable as xs:boolean]
-                return ($explicit ! xs:boolean(.), false())[1]
-                
+            let $concat := f:booleanValue(
+                    $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options),
+                    false())
+            let $localNames := f:booleanValue(
+                    $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options),
+                    false())                
             let $namePattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNamePattern := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 
             return
-                i:foxfunc_child-names($node, $separator, $localNames, $namePattern)            
+                i:foxfunc_child-names($node, $concat, $localNames, $namePattern, $excludedNamePattern)            
 
         (: function `dcat` 
            =============== :)
@@ -99,19 +97,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $node := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
-            let $separator :=
-                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return $explicit                   
- 
-            let $localNames :=
-                let $explicit := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                                 [. castable as xs:boolean]
-                return ($explicit ! xs:boolean(.), false())[1]
-                
+            let $concat := f:booleanValue(
+                    $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options),
+                    false())
+            let $localNames := f:booleanValue(
+                    $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options),
+                    false())                
             let $namePattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                
+            let $excludedNamePattern := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                i:foxfunc_descendant-names($node, $separator, $localNames, $namePattern)            
+                i:foxfunc_descendant-names($node, $concat, $localNames, $namePattern, $excludedNamePattern)            
 
         (: function `dir-name` 
            ==================== :)
@@ -124,6 +119,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 replace($uri[1], '^(.*[/\\])?(.+?)[/\\][^/\\]*$', '$2')[not(. eq $uri)]
             
                             
+        (: function `file-basename` 
+           ======================== :)
+        else if ($fname eq 'file-basename' or $fname eq 'fbname') then
+            let $uri := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                replace($uri[1], '.*[/\\]', '') ! replace(., '\.[^.]+$', '')
+            
         (: function `file-contains` 
            ======================= :)
         else if ($fname eq 'file-contains') then
@@ -355,7 +359,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 
         (: function `frequencies` 
            ====================== :)
-        else if ($fname eq 'frequencies') then
+        else if ($fname = ('frequencies', 'f', 'freq')) then
             let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             let $min := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $max := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -512,6 +516,20 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 f:lpad($string, $width, $fillChar)
 
+        (: function `name-path` 
+           ==================== :)
+        else if ($fname = ('name-path', 'npath', 'np')) then
+            let $node := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]        
+            let $localNames := f:booleanValue(
+                    $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options), 
+                    true())        
+            let $numSteps := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                f:foxfunc_name-path($node, $localNames, $numSteps)
+
+
         (: function `non-distinct-values` 
            ============================== :)
         else if ($fname = ('non-distinct-values', 'non-distinct')) then
@@ -556,10 +574,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $node := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
-            let $localName :=
-                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                                 [. castable as xs:boolean]
-                return ($explicit ! xs:boolean(.), false())[1]                   
+            let $localName := f:booleanValue(
+                    $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options),
+                    false())                
             return
                 i:foxfunc_parent-name($node, $localName)            
 

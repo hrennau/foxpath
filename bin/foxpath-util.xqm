@@ -171,6 +171,17 @@ declare function f:getSvnRootUriRC($prefix as xs:string, $steps as xs:string)
 };        
 
 (:~
+ : Maps an atomic value to a boolean value. Intended for convenient
+ : entry of boolean parameters.
+ :)
+declare function f:booleanValue($s as xs:anyAtomicType?, $default as xs:boolean?) as xs:boolean {
+    if (empty($s)) then boolean($default)
+    else if ($s instance of xs:boolean) then $s
+    else if ($s instance of xs:decimal) then $s ne 0
+    else string($s) = ('true', 'y', '1')
+};
+
+(:~
  : Creates a copy of a node with all "whitespace only" text nodes
  : which are element siblings removed. 
  :)
