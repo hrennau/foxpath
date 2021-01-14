@@ -36,14 +36,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return ($explicit, $context)[1]
             let $separator :=
                 let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return $explicit                   
- 
+                return $explicit                    
             let $localNames :=
                 let $explicit := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                                  [. castable as xs:boolean]
-                return ($explicit ! xs:boolean(.), false())[1]                   
+                return ($explicit ! xs:boolean(.), false())[1]   
+            let $namePattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
             return
-                i:foxfunc_att-names($node, $separator, $localNames)            
+                i:foxfunc_att-names($node, $separator, $localNames, $namePattern)            
 
         (: function `bslash` 
            ================= :)
@@ -68,9 +68,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $localNames :=
                 let $explicit := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                                  [. castable as xs:boolean]
-                return ($explicit ! xs:boolean(.), false())[1]                   
+                return ($explicit ! xs:boolean(.), false())[1]
+                
+            let $namePattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                
             return
-                i:foxfunc_child-names($node, $separator, $localNames)            
+                i:foxfunc_child-names($node, $separator, $localNames, $namePattern)            
 
         (: function `dcat` 
            =============== :)
@@ -90,6 +93,26 @@ declare function f:resolveStaticFunctionCall($call as element(),
                       t="{current-dateTime()}" 
                       onlyDocAvailable="{boolean($onlyDocAvailable)}">{$refs}</dcat>
                             
+        (: function `descendant-names` 
+           =========================== :)
+        else if ($fname eq 'descendant-names') then
+            let $node := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            let $separator :=
+                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return $explicit                   
+ 
+            let $localNames :=
+                let $explicit := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                                 [. castable as xs:boolean]
+                return ($explicit ! xs:boolean(.), false())[1]
+                
+            let $namePattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                
+            return
+                i:foxfunc_descendant-names($node, $separator, $localNames, $namePattern)            
+
         (: function `dir-name` 
            ==================== :)
         else if ($fname eq 'dir-name' or $fname eq 'dname') then

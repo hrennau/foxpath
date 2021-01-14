@@ -718,19 +718,32 @@ declare function f:foxfunc_resolve-link($node as node(), $mediatype as xs:string
 (:~
  : Returns the attribute names of a node. If $separator is specified, the sorted
  : names are concatenated, using this separator, otherwise the names are returned
- : as a sequence. If $localNames is true, the local names
- : are returned, otherwise the lexical names. 
+ : as a sequence. If $localNames is true, the local names are returned, otherwise 
+ : the lexical names. 
+ : 
+ : When using $namePattern, only those child elements are considered which have
+ : a local name matching the pattern.
+ :
+ : Example: .../foo/att-names(., ', ', false(), '*put')
+ : Example: .../foo/att-names(., ', ', false(), 'input|output') 
  :
  : @param node a node (unless it is an element, the function returns the empty sequence)
- : @param localNames if true, the local names are returned, otherwise the lexical names
  : @param separator if used, the names are concatenated, using this separator
+ : @param localNames if true, the local names are returned, otherwise the lexical names 
+ : @param namePattern an optional name pattern filtering the attributes to be considered 
  : @return the names as a sequence, or as a concatenated string
  :)
-declare function f:foxfunc_att-names($node as node(), $separator as xs:string?, $localNames as xs:boolean?)
+declare function f:foxfunc_att-names($node as node(), 
+                                     $separator as xs:string?, 
+                                     $localNames as xs:boolean?,
+                                     $namePattern as xs:string?)
         as xs:string* {
-    let $items := $node/@*
+    let $nameRegex := $namePattern ! replace(., '\*', '.*') ! replace(., '\?', '.') 
+                      ! concat('^', ., '$')        
+    let $items := $node/@*[not($nameRegex) or matches(local-name(.), $nameRegex, 'i')]
     let $names := if ($localNames) then $items/local-name(.) => sort()
                   else $items/name(.) => sort()
+    let $names := distinct-values($names)                  
     return
         if (exists($separator)) then string-join($names, $separator)
         else $names
@@ -742,16 +755,63 @@ declare function f:foxfunc_att-names($node as node(), $separator as xs:string?, 
  : as a sequence. If $localNames is true, the local names are returned, otherwise the 
  : lexical names. 
  :
+ : When using $namePattern, only those child elements are considered which have
+ : a local name matching the pattern.
+ :
+ : Example: .../foo/child-names(., ', ', false(), '*put')
+ : Example: .../foo/child-names(., ', ', false(), 'input|output') 
+ :
  : @param node a node (unless it is an element, the function returns the empty sequence)
- : @param localNames if true, the local names are returned, otherwise the lexical names
  : @param separator if used, the names are concatenated, using this separator
+ : @param localNames if true, the local names are returned, otherwise the lexical names 
+ : @param namePattern an optional name pattern filtering the child elements to be considered
  : @return the names as a sequence, or as a concatenated string
  :)
-declare function f:foxfunc_child-names($node as node(), $separator as xs:string?, $localNames as xs:boolean?)
+declare function f:foxfunc_child-names($node as node(), 
+                                       $separator as xs:string?, 
+                                       $localNames as xs:boolean?,
+                                       $namePattern as xs:string?)
         as xs:string* {
-    let $items := $node/*
+    let $nameRegex := $namePattern ! replace(., '\*', '.*') ! replace(., '\?', '.') 
+                      ! concat('^', ., '$')        
+    let $items := $node/*[not($nameRegex) or matches(local-name(.), $nameRegex, 'i')]
     let $names := if ($localNames) then $items/local-name(.) => sort()
                   else $items/name(.) => sort()
+    let $names := distinct-values($names)                  
+    return
+        if (exists($separator)) then string-join($names, $separator)
+        else $names
+};        
+
+(:~
+ : Returns the descendant element names of a node. If $separator is specified, the sorted
+ : names are concatenated, using this separator, otherwise the names are returned
+ : as a sequence. If $localNames is true, the local names are returned, otherwise the 
+ : lexical names. 
+ :
+ : When using $namePattern, only those descendant elements are considered which have
+ : a local name matching the pattern.
+ :
+ : Example: .../foo/descendant-names(., ', ', false(), '*put')
+ : Example: .../foo/descendant-names(., ', ', false(), 'input|output') 
+ :
+ : @param node a node (unless it is an element, the function returns the empty sequence)
+ : @param separator if used, the names are concatenated, using this separator
+ : @param localNames if true, the local names are returned, otherwise the lexical names 
+ : @param namePattern an optional name pattern filtering the descendant elements to be considered
+ : @return the names as a sequence, or as a concatenated string
+ :)
+declare function f:foxfunc_descendant-names($node as node(), 
+                                            $separator as xs:string?, 
+                                            $localNames as xs:boolean?,
+                                            $namePattern as xs:string?)
+        as xs:string* {
+    let $nameRegex := $namePattern ! replace(., '\*', '.*') ! replace(., '\?', '.') 
+                      ! concat('^', ., '$')        
+    let $items := $node//*[not($nameRegex) or matches(local-name(.), $nameRegex, 'i')]
+    let $names := if ($localNames) then $items/local-name(.) => sort()
+                  else $items/name(.) => sort()
+    let $names := distinct-values($names)                  
     return
         if (exists($separator)) then string-join($names, $separator)
         else $names
