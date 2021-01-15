@@ -735,7 +735,7 @@ declare function f:foxfunc_resolve-link($node as node(), $mediatype as xs:string
  :)
 declare function f:foxfunc_att-names($node as node(), 
                                      $concat as xs:boolean?, 
-                                     $localNames as xs:boolean?,
+                                     $nameKind as xs:string?,   (: name | lname | jname :)
                                      $namePattern as xs:string?,
                                      $excludedNamePattern as xs:string?)
         as xs:string* {
@@ -747,9 +747,12 @@ declare function f:foxfunc_att-names($node as node(),
        [not($nameRegex) or matches(local-name(.), $nameRegex, 'i')]
        [not($excludedNameRegex) or not(matches(local-name(.), $excludedNameRegex, 'i'))]
     let $separator := ', '[$concat]
-    let $names := if ($localNames) then $items/local-name(.) => sort()
-                  else $items/name(.) => sort()
-    let $names := distinct-values($names)        
+    let $names := 
+        if ($nameKind eq 'lname') then 
+            ($items/local-name(.)) => distinct-values() => sort()
+        else if ($nameKind eq 'jname') then 
+            ($items/f:foxfunc_unescape-json-name(local-name(.))) => distinct-values() => sort()
+        else ($items/name(.)) => distinct-values() => sort()
     return
         if (exists($separator)) then string-join($names, $separator)
         else $names
@@ -775,7 +778,7 @@ declare function f:foxfunc_att-names($node as node(),
  :)
 declare function f:foxfunc_child-names($node as node(), 
                                        $concat as xs:boolean?, 
-                                       $localNames as xs:boolean?,
+                                       $nameKind as xs:string?,   (: name | lname | jname :)
                                        $namePattern as xs:string?,
                                        $excludedNamePattern as xs:string?)
         as xs:string* {
@@ -787,9 +790,12 @@ declare function f:foxfunc_child-names($node as node(),
        [not($nameRegex) or matches(local-name(.), $nameRegex, 'i')]
        [not($excludedNameRegex) or not(matches(local-name(.), $excludedNameRegex, 'i'))]
     let $separator := ', '[$concat]
-    let $names := if ($localNames) then $items/local-name(.) => sort()
-                  else $items/name(.) => sort()
-    let $names := distinct-values($names)        
+    let $names := 
+        if ($nameKind eq 'lname') then 
+            ($items/local-name(.)) => distinct-values() => sort()
+        else if ($nameKind eq 'jname') then 
+            ($items/f:foxfunc_unescape-json-name(local-name(.))) => distinct-values() => sort()
+        else ($items/name(.)) => distinct-values() => sort()
     return
         if (exists($separator)) then string-join($names, $separator)
         else $names
@@ -816,7 +822,7 @@ declare function f:foxfunc_child-names($node as node(),
 declare function f:foxfunc_descendant-names(
                                        $node as node(), 
                                        $concat as xs:boolean?, 
-                                       $localNames as xs:boolean?,
+                                       $nameKind as xs:string?,   (: name | lname | jname :)
                                        $namePattern as xs:string?,
                                        $excludedNamePattern as xs:string?)
         as xs:string* {
@@ -828,9 +834,12 @@ declare function f:foxfunc_descendant-names(
        [not($nameRegex) or matches(local-name(.), $nameRegex, 'i')]
        [not($excludedNameRegex) or not(matches(local-name(.), $excludedNameRegex, 'i'))]
     let $separator := ', '[$concat]
-    let $names := if ($localNames) then $items/local-name(.) => sort()
-                  else $items/name(.) => sort()
-    let $names := distinct-values($names)        
+    let $names := 
+        if ($nameKind eq 'lname') then 
+            ($items/local-name(.)) => distinct-values() => sort()
+        else if ($nameKind eq 'jname') then 
+            ($items/f:foxfunc_unescape-json-name(local-name(.))) => distinct-values() => sort()
+        else ($items/name(.)) => distinct-values() => sort()
     return
         if (exists($separator)) then string-join($names, $separator)
         else $names
@@ -844,10 +853,12 @@ declare function f:foxfunc_descendant-names(
  : @param localName if true, the local name is returned, otherwise the lexical name
  : @return the parent name
  :)
-declare function f:foxfunc_parent-name($node as node(), $localName as xs:boolean?)
+declare function f:foxfunc_parent-name($node as node(),
+                                       $nameKind as xs:string?)   (: name | lname | jname :)
         as xs:string* {
     let $item := $node/..
-    let $name := if ($localName) then $item/local-name(.)
+    let $name := if ($nameKind eq 'lname') then $item/local-name(.)
+                 else if ($nameKind eq 'jname') then $item/f:foxfunc_unescape-json-name(local-name(.))
                  else $item/name(.)
     return
         $name
@@ -862,14 +873,22 @@ declare function f:foxfunc_parent-name($node as node(), $localName as xs:boolean
  : @return the parent name
  :)
 declare function f:foxfunc_name-path($node as node(), 
-                                     $localNames as xs:boolean?, 
+                                     $nameKind as xs:string?,   (: name | lname | jname :) 
                                      $numSteps as xs:integer?)
         as xs:string* {
+    (: _TO_DO_ Remove hack when BaseX Bug is removed; return to: let $nodes := $node/ancestor-or-self::node() :)        
+    let $nodes := 
+        let $all := $node/ancestor-or-self::node()
+        let $dnode := $all[. instance of document-node()]
+        return ($dnode, $all except $dnode)
     let $steps := 
-        if ($localNames) then 
-            $node/ancestor-or-self::node()/concat(self::attribute()/'@', local-name(.))
+        
+        if ($nameKind eq 'lname') then 
+            $nodes/concat(self::attribute()/'@', local-name(.))
+        else if ($nameKind eq 'jname') then 
+            $nodes/concat(self::attribute()/'@', f:foxfunc_unescape-json-name(local-name(.)))
         else 
-            $node/ancestor-or-self::node()/concat(self::attribute()/'@', name(.))
+            $nodes/concat(self::attribute()/'@', name(.))
     let $steps := if (empty($numSteps)) then $steps else subsequence($steps, count($steps) + 1 - $numSteps)
     return string-join($steps, '/')
 };        

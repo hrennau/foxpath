@@ -30,20 +30,32 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `att-names` 
            ==================== :)
-        if ($fname eq 'att-names') then
+        if ($fname eq 'att-jnames') then
             let $node := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
-            let $concat := f:booleanValue(
-                    $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options),
-                    false())
-            let $localNames := f:booleanValue(
-                    $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options),
-                    false())                
-            let $namePattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNamePattern := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                i:foxfunc_att-names($node, $concat, $localNames, $namePattern, $excludedNamePattern)            
+                i:foxfunc_att-names($node, true(), 'jname', $namePattern, $excludedNamePattern)
+                
+        else if ($fname eq 'att-lnames') then
+            let $node := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                i:foxfunc_att-names($node, true(), 'lname', $namePattern, $excludedNamePattern)
+                
+        else if ($fname eq 'att-names') then
+            let $node := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                i:foxfunc_att-names($node, true(), 'name', $namePattern, $excludedNamePattern)            
 
         (: function `bslash` 
            ================= :)
@@ -56,22 +68,34 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 f:foxfunc_bslash($arg)
 
         (: function `child-names` 
-           ====================== :)
+           ===================== :)
         else if ($fname eq 'child-names') then
             let $node := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
-            let $concat := f:booleanValue(
-                    $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options),
-                    false())
-            let $localNames := f:booleanValue(
-                    $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options),
-                    false())                
-            let $namePattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNamePattern := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                
-            return
-                i:foxfunc_child-names($node, $concat, $localNames, $namePattern, $excludedNamePattern)            
+            let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
+            return i:foxfunc_child-names($node, true(), 'name', $namePattern, $excludedNamePattern)            
+
+        (: function `child-lnames` 
+           ====================== :)
+        else if ($fname eq 'child-lnames') then
+            let $node := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
+            return i:foxfunc_child-names($node, true(), 'lname', $namePattern, $excludedNamePattern)            
+
+        (: function `child-jnames` 
+           ======================= :)
+        else if ($fname eq 'child-jnames') then
+            let $node := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
+            return i:foxfunc_child-names($node, true(), 'jname', $namePattern, $excludedNamePattern)            
 
         (: function `dcat` 
            =============== :)
@@ -97,16 +121,29 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $node := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
-            let $concat := f:booleanValue(
-                    $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options),
-                    false())
-            let $localNames := f:booleanValue(
-                    $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options),
-                    false())                
-            let $namePattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNamePattern := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                i:foxfunc_descendant-names($node, $concat, $localNames, $namePattern, $excludedNamePattern)            
+            let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return i:foxfunc_descendant-names($node, true(), 'name', $namePattern, $excludedNamePattern)            
+
+        (: function `descendant-lnames` 
+           ============================ :)
+        else if ($fname eq 'descendant-lnames') then
+            let $node := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return i:foxfunc_descendant-names($node, true(), 'lname', $namePattern, $excludedNamePattern)            
+
+        (: function `descendant-jnames` 
+           ============================ :)
+        else if ($fname eq 'descendant-jnames') then
+            let $node := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return i:foxfunc_descendant-names($node, true(), 'jname', $namePattern, $excludedNamePattern)            
 
         (: function `dir-name` 
            ==================== :)
@@ -522,13 +559,26 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $node := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]        
-            let $localNames := f:booleanValue(
-                    $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options), 
-                    true())        
-            let $numSteps := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                f:foxfunc_name-path($node, $localNames, $numSteps)
+            let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return f:foxfunc_name-path($node, 'name', $numSteps)
 
+        (: function `lname-path` 
+           ==================== :)
+        else if ($fname = ('lname-path', 'lnpath', 'lnp')) then
+            let $node := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]        
+            let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return f:foxfunc_name-path($node, 'lname', $numSteps)
+
+        (: function `jname-path` 
+           ==================== :)
+        else if ($fname = ('jname-path', 'jnpath', 'jnp')) then
+            let $node := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]        
+            let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return f:foxfunc_name-path($node, 'jname', $numSteps)
 
         (: function `non-distinct-values` 
            ============================== :)
@@ -574,11 +624,26 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $node := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
-            let $localName := f:booleanValue(
-                    $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options),
-                    false())                
             return
-                i:foxfunc_parent-name($node, $localName)            
+                i:foxfunc_parent-name($node, 'name')            
+
+        (: function `parent-lname` 
+           ====================== :)
+        else if ($fname eq 'parent-lname') then
+            let $node := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                i:foxfunc_parent-name($node, 'lname')            
+
+        (: function `parent-jname` 
+           ====================== :)
+        else if ($fname eq 'parent-jname') then
+            let $node := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                i:foxfunc_parent-name($node, 'jname')            
 
         (: function `rcat` 
            =============== :)
