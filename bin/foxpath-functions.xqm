@@ -155,6 +155,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 replace($uri[1], '^(.*[/\\])?(.+?)[/\\][^/\\]*$', '$2')[not(. eq $uri)]
             
+        (: function `distinct` 
+           =================== :)
+        else if ($fname eq 'distinct') then
+            let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                count(distinct-values($values)) eq count($values)
+            
                             
         (: function `file-basename` 
            ======================== :)
@@ -400,10 +407,21 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             let $min := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $max := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $format := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $width := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $order := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $format := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                f:foxfunc_frequencies($values, $min, $max, $format, $width)
+                f:foxfunc_frequencies($values, $min, $max, 'count', $order, $format)
+
+        (: function `pfrequencies` 
+           ======================= :)
+        else if ($fname = ('pfrequencies', 'pf', 'pfreq')) then
+            let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $min := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $max := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $order := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $format := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                f:foxfunc_frequencies($values, $min, $max, 'percent', $order, $format)
 
        (: function `grep` 
           =============== :)
@@ -543,6 +561,29 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return
                     string-join(for $i in 1 to $count return '&#xA;')
         
+       (: function `lines` 
+          ===================== :)
+        else if ($fname = 'lines') then
+            let $text := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $lines := tokenize($text, '&#xA;')
+            return
+                $lines 
+
+       (: function `indent` 
+          ===================== :)
+        else if ($fname = 'indent') then
+            let $lines := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $indent := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $indentChar := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            
+            let $indent := $indent[. castable as xs:integer] ! xs:integer(.)
+            let $indentChar := ($indentChar ! normalize-space(.) ! substring(., 1, 1), ' ')[1]
+            return
+                if (empty($indent)) then $lines else 
+                let $prefix := (for $i in 1 to $indent return $indentChar) => string-join('') 
+                return
+                    $lines ! concat($prefix, .)
+
         (: function `lpad` 
            =============== :)
         else if ($fname eq 'lpad') then
