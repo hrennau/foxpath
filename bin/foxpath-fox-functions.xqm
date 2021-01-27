@@ -328,9 +328,15 @@ declare function f:foxfunc_frequencies($values as item()*,
                                        $format as xs:string?)
         as item() {
         
-    let $width := $format[starts-with(., 'text')] ! replace(., '^text', '')[string()] ! xs:integer(.)
-    let $format := $format ! replace(., '\d+$', '')    
-    let $format := ($format, 'text')[1] 
+    let $width := 
+        if (not($format) or $format eq 'text*') then 1 + ($values ! string(.) ! string-length(.)) => max()
+        else if (matches($format, '^text\d')) then replace(., '^text', '')[string()] ! xs:integer(.)
+        else ()
+    let $format := 
+        if (not($format)) then 'text'
+        else if (matches($format, '^text.')) then 'text'
+        else $format    
+ 
     let $freqAttName := ($kind, 'count')[1]
     
     (: Function return the frequency representation :)
@@ -361,7 +367,7 @@ declare function f:foxfunc_frequencies($values as item()*,
         group by $s := string($value)
         let $c := count($value)        
         let $f := $fn_count2freq($c, $nvalues)
-        where (empty($min) or $c ge $min) and (empty($max) or $c le $max)
+        where (empty($min) or not($c) or $c ge $min) and (empty($max) or not($max) or $c le $max)
         return <term text="{$s}" f="{$f}"/>
 
     let $items :=
