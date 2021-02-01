@@ -330,7 +330,7 @@ declare function f:foxfunc_frequencies($values as item()*,
         
     let $width := 
         if (not($format) or $format eq 'text*') then 1 + ($values ! string(.) ! string-length(.)) => max()
-        else if (matches($format, '^text\d')) then replace(., '^text', '')[string()] ! xs:integer(.)
+        else if (matches($format, '^text\d')) then replace($format, '^text', '')[string()] ! xs:integer(.)
         else ()
     let $format := 
         if (not($format)) then 'text'
@@ -960,4 +960,49 @@ declare function f:foxfunc_remove-prefix($name as xs:string?)
         as xs:string? {
     $name ! replace(., '^.+:', '')
 };        
+
+(:~
+ : Transforms a sequence of value into an indented list. Each value is a concatenated 
+ : list of items from subsequent levels of hierarchy. Example:
+ :
+ : foo#bar
+ : foo#bar2#bar3
+ : foo#zoo#zoo2
+ : boo#len
+ : zoo
+ : =>
+ : foo
+ : . bar2
+ : . . bar3
+ : . zoo
+ . . . zoo2
+ . boo
+ . . len
+ . zoo
+ :)
+declare function f:foxfunc_group-concat($values as xs:string*, $sep as xs:string?)
+        as xs:string {
+    let $sep := ($sep, '#')[1]        
+    let $valuesSorted := $values => sort()    
+    return
+        f:foxfunc_group-concatRC(0, $values, $sep) => string-join('&#xA;')        
+};
+
+declare function f:foxfunc_group-concatRC($level as xs:integer, $values as xs:string*, $sep as xs:string)
+        as xs:string* {
+    let $prefix := (for $i in 1 to $level return '.  ') => string-join('')
+    return
+        if (not(some $value in $values satisfies contains($value, $sep))) then 
+            $values ! concat($prefix, .)
+        else
+            for $value in $values
+            group by $groupValue := (substring-before($value, $sep)[string()], $value)[1]
+            let $contentValue := $value ! substring-after(., $sep)[string()]           
+            order by $groupValue
+            return (
+                concat($prefix, $groupValue),
+                f:foxfunc_group-concatRC($level + 1, $contentValue, $sep),
+                ''[$level eq 0]
+            )
+};
 

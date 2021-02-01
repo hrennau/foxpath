@@ -412,6 +412,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 f:foxfunc_frequencies($values, $min, $max, 'count', $order, $format)
 
+        (: function `group-concat` 
+           ======================= :)
+        else if ($fname = ('group-concat', 'gconcat')) then
+            let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $sep := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                f:foxfunc_group-concat($values, $sep)
+
         (: function `pfrequencies` 
            ======================= :)
         else if ($fname = ('pfrequencies', 'pf', 'pfreq')) then
@@ -702,7 +710,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname eq 'remove-prefix') then
             let $name := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context[. instance of node()]/name(.))[1]
+                return ($explicit, $context[. instance of node()])[1]
             return
                 i:foxfunc_remove-prefix($name)            
                             
@@ -1168,6 +1176,30 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 else i:fox-doc($contextItem, $options)
             return
                 $argNode/base-uri(.)
+            
+        (: function `base-dir-name` 
+           ========================= :)
+        else if ($fname = ('base-dir-name', 'base-dname', 'bdname')) then
+            let $contextItem :=
+                if (empty($call/*)) then $context
+                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $argNode :=
+                if ($contextItem instance of node()) then $contextItem
+                else i:fox-doc($contextItem, $options)
+            return
+                $argNode/base-uri(.) ! replace(., '.*[/\\](.*)[/\\][^/\\]*$', '$1')
+            
+        (: function `base-file-name` 
+           ========================= :)
+        else if ($fname = ('base-file-name', 'base-fname', 'bfname')) then
+            let $contextItem :=
+                if (empty($call/*)) then $context
+                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $argNode :=
+                if ($contextItem instance of node()) then $contextItem
+                else i:fox-doc($contextItem, $options)
+            return
+                $argNode/base-uri(.) ! replace(., '.*[/\\]', '')
             
         (: function `boolean` 
            ================= :)
