@@ -28,9 +28,18 @@ declare function f:resolveStaticFunctionCall($call as element(),
          : p a r t  1:    e x t e n s i o n    f u n c t i o n s
          : ################################################################ :)
 
+        (: function `all-descendants` 
+           ========================== :)
+        if ($fname eq 'all-descendants') then
+            let $node := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1][. instance of node()]
+            return
+                if (not($node)) then () else $node//(@*, *)
+                
         (: function `att-names` 
            ==================== :)
-        if ($fname eq 'att-jnames') then
+        else if ($fname eq 'att-jnames') then
             let $node := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
@@ -593,12 +602,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             
         (: function `jname-path` 
            ==================== :)
-        else if ($fname = ('jname-path', 'jnpath', 'jnp')) then
-            let $node := 
+        else if ($fname = ('jname-path', 'jnpath', 'jnp')) then           
+            let $nodes := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]        
-            let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return f:foxfunc_name-path($node, 'jname', $numSteps)
+                return if ($explicit) then $explicit else $context
+            return
+                if (empty($nodes)) then () else
+                    let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                    let $contextNode := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                    return f:foxfunc_name-path($nodes, 'jname', $numSteps, $contextNode)
 
         (: function `jsoncat` 
            ================== :)
@@ -661,11 +673,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `lname-path` 
            ==================== :)
         else if ($fname = ('lname-path', 'lnpath', 'lnp')) then
-            let $node := 
+            let $nodes := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]        
-            let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return f:foxfunc_name-path($node, 'lname', $numSteps)
+                return if ($explicit) then $explicit else $context
+            return
+                if (empty($nodes)) then () else
+                    let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                    let $contextNode := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                    return f:foxfunc_name-path($nodes, 'lname', $numSteps, $contextNode)
 
         (: function `lpad` 
            =============== :)
@@ -694,11 +709,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `name-path` 
            ==================== :)
         else if ($fname = ('name-path', 'npath', 'np')) then
-            let $node := 
+            let $nodes := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]        
-            let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return f:foxfunc_name-path($node, 'name', $numSteps)
+                return if ($explicit) then $explicit else $context
+            return
+                if (empty($nodes)) then () else
+                    let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                    let $contextNode := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                    return f:foxfunc_name-path($nodes, 'name', $numSteps, $contextNode)
 
         (: function `non-distinct-values` 
            ============================== :)

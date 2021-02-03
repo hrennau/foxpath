@@ -926,26 +926,32 @@ declare function f:foxfunc_parent-name($node as node(),
  : @param localName if true, the local name is returned, otherwise the lexical name
  : @return the parent name
  :)
-declare function f:foxfunc_name-path($node as node(), 
+declare function f:foxfunc_name-path($nodes as node()*, 
                                      $nameKind as xs:string?,   (: name | lname | jname :) 
-                                     $numSteps as xs:integer?)
+                                     $numSteps as xs:integer?,
+                                     $contextNode as node()?)
         as xs:string* {
+    for $node in $nodes return
+    
     (: _TO_DO_ Remove hack when BaseX Bug is removed; return to: let $nodes := $node/ancestor-or-self::node() :)        
-    let $nodes := 
+    let $ancos := 
         let $all := $node/ancestor-or-self::node()
         let $dnode := $all[. instance of document-node()]
         return ($dnode, $all except $dnode)
+    let $ancos :=
+        if (empty($contextNode)) then $ancos
+        else $ancos[. >> $contextNode]
     let $steps := 
         
         if ($nameKind eq 'lname') then 
-            $nodes/concat(self::attribute()/'@', local-name(.))
+            $ancos/concat(self::attribute()/'@', local-name(.))
         else if ($nameKind eq 'jname') then 
-            $nodes/concat(self::attribute()/'@', 
+            $ancos/concat(self::attribute()/'@', 
                 let $raw := f:foxfunc_unescape-json-name(local-name(.))
                 return if (not(contains($raw, '/'))) then $raw else concat('"', $raw, '"')
             )
         else 
-            $nodes/concat(self::attribute()/'@', name(.))
+            $ancos/concat(self::attribute()/'@', name(.))
     let $steps := if (empty($numSteps)) then $steps else subsequence($steps, count($steps) + 1 - $numSteps)
     return string-join($steps, '/')
 };        
