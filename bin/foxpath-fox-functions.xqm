@@ -688,8 +688,13 @@ declare function f:foxfunc_xwrap($items as item()*,
             
         else
             $item
+    let $namespaces := f:extractNamespaceNodes($val)            
     return
-        element {$name} {attribute countItems {count($val)}, $val}
+        element {$name} {
+            attribute countItems {count($val)},
+            $namespaces,
+            $val
+        }
 };
 
 (:~
@@ -968,6 +973,17 @@ declare function f:foxfunc_remove-prefix($name as xs:string?)
 };        
 
 (:~
+ : Truncates a string if longer than a maximum length, appending '...'.
+ :
+ : @param name a lexical QName
+ : @return the name with the prefix removed
+ :)
+declare function f:foxfunc_truncate($string as xs:string?, $len as xs:integer, $flag as xs:string?)
+        as xs:string? {
+    $string ! substring($string, 1, $len) || ' ...'[string-length($string) gt $len]
+};        
+
+(:~
  : Transforms a sequence of value into an indented list. Each value is a concatenated 
  : list of items from subsequent levels of hierarchy. Example:
  :
@@ -986,15 +1002,29 @@ declare function f:foxfunc_remove-prefix($name as xs:string?)
  . . len
  . zoo
  :)
-declare function f:foxfunc_group-concat($values as xs:string*, $sep as xs:string?)
+declare function f:foxfunc_group-concat($values as xs:string*, $sep as xs:string?, $emptyLines as xs:string?)
         as xs:string {
     let $sep := ($sep, '#')[1]        
     let $valuesSorted := $values => sort()    
+    let $emptyLineFns :=
+        if (not($emptyLines)) then ()
+        else
+            map:merge(
+                for $i in 1 to string-length($emptyLines)
+                let $lineCount := substring($emptyLines, $i, 1) ! xs:integer(.)
+                where $lineCount
+                return
+                    map:entry($i - 1, function() {for $j in 1 to $lineCount return ''})
+            )                    
+            
     return
-        f:foxfunc_group-concatRC(0, $values, $sep) => string-join('&#xA;')        
+        f:foxfunc_group-concatRC(0, $values, $sep, $emptyLineFns) => string-join('&#xA;')        
 };
 
-declare function f:foxfunc_group-concatRC($level as xs:integer, $values as xs:string*, $sep as xs:string)
+declare function f:foxfunc_group-concatRC($level as xs:integer, 
+                                          $values as xs:string*, 
+                                          $sep as xs:string,
+                                          $emptyLineFns as map(*)?)
         as xs:string* {
     let $prefix := (for $i in 1 to $level return '.  ') => string-join('')
     return
@@ -1007,8 +1037,43 @@ declare function f:foxfunc_group-concatRC($level as xs:integer, $values as xs:st
             order by $groupValue
             return (
                 concat($prefix, $groupValue),
-                f:foxfunc_group-concatRC($level + 1, $contentValue, $sep),
-                ''[$level eq 0]
+                f:foxfunc_group-concatRC($level + 1, $contentValue, $sep, $emptyLineFns),
+                $emptyLineFns ! map:get(., $level) ! .()
+                (:''[$level eq 0] :)
             )
+};
+
+(:~
+ :
+ : ===    U t i l i t i e s ===
+ :
+ :)
+
+(:~
+ : Returns namespace nodes which apply to all elements in the
+ : input sequence of elements.
+ :
+ : @param elems a sequence of elements
+ : @return a sequence of namespace nodes
+ :)
+declare function f:extractNamespaceNodes($elems as element()*)
+        as namespace-node()* {
+    let $nspairs := (
+        for $elem in $elems
+        let $prefixes := in-scope-prefixes($elem)
+        let $nspair := $prefixes ! concat(., '#', namespace-uri-for-prefix(., $elem))
+        return $nspair 
+    ) => distinct-values()
+    
+    for $nspair in $nspairs
+    group by $nsuri := substring-after($nspair, '#')
+    where 1 eq ($nspair => distinct-values() => count())
+    return
+        let $prefix := $nspair[1] ! substring-before(., '#')
+        return
+            if ($prefix eq '' and 
+                (some $elem in $elems satisfies not('' = in-scope-prefixes($elem)))) 
+            then () else namespace {$prefix} {$nsuri}
+               
 };
 

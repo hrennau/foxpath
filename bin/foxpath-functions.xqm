@@ -512,8 +512,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname = ('group-concat', 'gconcat')) then
             let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $sep := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $emptyLines := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                f:foxfunc_group-concat($values, $sep)
+                f:foxfunc_group-concat($values, $sep, $emptyLines)
 
         (: function `html-doc` 
            =================== :)
@@ -863,6 +864,19 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $nodes := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 $nodes/serialize(.)
+
+        (: function `truncate` 
+           =================== :)
+        else if ($fname = ('truncate', 'trunc')) then
+            let $string := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            let $len :=                
+                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, 80)[1]
+            let $trailer := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                f:foxfunc_truncate($string, $len, $trailer)
 
         (: function `values-distinct` 
            ========================== :)
