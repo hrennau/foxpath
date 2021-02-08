@@ -486,7 +486,7 @@ declare function f:resolveFoxpathRC($n as node(),
         return if ($ebvMode) then f:getEbv($value) else $value
             
     case element(seq) return
-        let $args := $n/*/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+        let $args := $n/* ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
         return if ($ebvMode) then f:getEbv($args) else $args
 
     case element(string) return

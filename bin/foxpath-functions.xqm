@@ -1457,6 +1457,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 not($arg[1])
                 
+        (: function `number` 
+           ================= :)
+        else if ($fname eq 'number') then
+            let $arg := 
+                let $explicit := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                $arg ! number(.)
+
         (: function `position` 
            =================== :)
         else if ($fname eq 'position') then
@@ -1559,9 +1568,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `string-join` 
            ====================== :)
         else if ($fname eq 'string-join') then
-            let $items := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $items := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $sep := 
-                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                let $explicit := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, '')[1]
             return
                 string-join($items, $sep)                
