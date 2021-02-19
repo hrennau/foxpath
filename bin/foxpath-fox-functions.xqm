@@ -1,8 +1,8 @@
-module namespace f="http://www.ttools.org/xquery-functions";
-import module namespace i="http://www.ttools.org/xquery-functions" at 
-    "foxpath-processorDependent.xqm",
-    "foxpath-uri-operations.xqm",
-    "foxpath-util.xqm";
+module namespace f="http://www.foxpath.org/ns/fox-functions";
+import module namespace i="http://www.ttools.org/xquery-functions" 
+at "foxpath-processorDependent.xqm",
+   "foxpath-uri-operations.xqm",
+   "foxpath-util.xqm";
 
 (:~
  : Foxpath function `bslash#1'. Edits a text, replacing forward slashes by 
@@ -27,7 +27,7 @@ declare function f:foxfunc_file-content($uri as xs:string?,
                                         $encoding as xs:string?,
                                         $options as map(*)?)
         as xs:string? {
-    let $redirectedRetrieval := f:fox-unparsed-text_github($uri, $encoding, $options)
+    let $redirectedRetrieval := i:fox-unparsed-text_github($uri, $encoding, $options)
     return
         if ($redirectedRetrieval) then $redirectedRetrieval
         else i:fox-unparsed-text($uri, $encoding, $options)
@@ -53,13 +53,13 @@ declare function f:foxfunc_fox-child($context as xs:string,
         as xs:string* {
     (
     if (not($fromSubstring) or not($toSubstring)) then 
-        $names ! f:childUriCollection($context, ., (), ()) ! concat($context, '/', .) 
+        $names ! i:childUriCollection($context, ., (), ()) ! concat($context, '/', .) 
     else 
         for $name in $names
         let $regex := replace($name, $fromSubstring, $toSubstring, 'i') !
                       concat('^', ., '$')
         return
-            for $child in f:childUriCollection($context, (), (), ())
+            for $child in i:childUriCollection($context, (), (), ())
             let $cname := replace($child, '.*/', '')
             where matches($cname, $regex, 'i')
             return concat($context, '/', $child)
@@ -94,7 +94,7 @@ declare function f:foxfunc_fox-parent($context as xs:string,
         else
             replace($name, $fromSubstring, $toSubstring, 'i') !
             concat('^', ., '$')
-    let $uri := f:parentUri($context, $regex) 
+    let $uri := i:parentUri($context, $regex) 
     return $uri
     ) => distinct-values()
 };
@@ -126,7 +126,7 @@ declare function f:foxfunc_fox-self($context as xs:string,
         else
             replace($name, $fromSubstring, $toSubstring, 'i') !
             concat('^', ., '$')
-    let $uri := f:selfUri($context, $regex) 
+    let $uri := i:selfUri($context, $regex) 
     return $uri
     ) => distinct-values()
 };
@@ -153,12 +153,12 @@ declare function f:foxfunc_fox-descendant($context as xs:string,
     for $name in $names return
     
     if (not($fromSubstring) or not($toSubstring)) then 
-        f:descendantUriCollection($context, $name, (), ()) ! concat($context, '/', .) 
+        i:descendantUriCollection($context, $name, (), ()) ! concat($context, '/', .) 
     else 
         let $regex := replace($name, $fromSubstring, $toSubstring, 'i') !
                       concat('^', ., '$')        
         return
-            for $child in f:descendantUriCollection($context, (), (), ())
+            for $child in i:descendantUriCollection($context, (), (), ())
             let $cname := replace($child, '.*/', '')
             where matches($cname, $regex, 'i')
             return concat($context, '/', $child)
@@ -211,7 +211,7 @@ declare function f:foxfunc_fox-sibling($context as xs:string,
         as xs:string* {
     (
     for $name in $names
-    let $parent := f:parentUri($context, ())
+    let $parent := i:parentUri($context, ())
     let $raw := f:foxfunc_fox-child($parent, $name, $fromSubstring, $toSubstring)
     return $raw[not(. eq $context)]
     ) => distinct-values()
@@ -236,7 +236,7 @@ declare function f:foxfunc_fox-parent-sibling($context as xs:string,
         as xs:string* {
     (        
     for $name in $names return
-        f:parentUri($context, ()) 
+        i:parentUri($context, ()) 
         ! f:foxfunc_fox-sibling(., $name, $fromSubstring, $toSubstring)
     ) => distinct-values()        
 };
@@ -268,7 +268,7 @@ declare function f:foxfunc_fox-ancestor($context as xs:string,
         else
             replace($name, $fromSubstring, $toSubstring, 'i') !
             concat('^', ., '$')
-    let $uris := f:ancestorUriCollection($context, $regex, false()) 
+    let $uris := i:ancestorUriCollection($context, $regex, false()) 
     return $uris
     ) => distinct-values()
 };
@@ -300,7 +300,7 @@ declare function f:foxfunc_fox-ancestor-or-self($context as xs:string,
         else
             replace($name, $fromSubstring, $toSubstring, 'i') !
             concat('^', ., '$')
-    let $uris := f:ancestorUriCollection($context, $regex, true()) 
+    let $uris := i:ancestorUriCollection($context, $regex, true()) 
     return $uris
     ) => distinct-values()
 };
@@ -475,7 +475,7 @@ declare function f:foxfunc_write-files($files as item()*,
         let $fname_ := string-join(($dir, $fname), '/')        
         let $fileContent := 
             if ($file instance of node()) then serialize($file)
-            else f:fox-unparsed-text($file, $encoding, ())        
+            else i:fox-unparsed-text($file, $encoding, ())        
         return
             try {
                 trace(file:write-text($fname_, $fileContent) , concat('Write file: ', $fname_, ' '))
@@ -546,7 +546,7 @@ declare function f:foxfunc_write-json-docs($files as xs:string*,
             if ($file instance of node()) then serialize($file)
             else 
                 try {
-                    let $fileContent := f:fox-unparsed-text($file, $encoding, ())
+                    let $fileContent := i:fox-unparsed-text($file, $encoding, ())
                     return
                         json:parse($fileContent) ! serialize(.)
                 } catch * {trace((), 
@@ -616,10 +616,10 @@ declare function f:foxfunc_write-json-docs($files as xs:string*,
  : @param options foxpath processing options
  : @return the result document
  :)
-declare function f:foxfunc_xwrap($items as item()*, 
-                                 $name as xs:QName, 
-                                 $flags as xs:string?, 
-                                 $name2 as xs:QName?, $options as map(*)?) 
+declare function f:xwrap($items as item()*, 
+                         $name as xs:QName, 
+                         $flags as xs:string?, 
+                         $name2 as xs:QName?, $options as map(*)?) 
         as element()? {
     (: name2 is the name of inner wrapper elements, wrapping an individual item :)
     let $name2 := if (empty($name2)) then '_text_' else $name2   
@@ -688,7 +688,10 @@ declare function f:foxfunc_xwrap($items as item()*,
             
         else
             $item
-    let $namespaces := f:extractNamespaceNodes($val)            
+    let $namespaces := 
+        for $nn in f:extractNamespaceNodes($val)
+        group by $prefix := name($nn)
+        return $nn[1]
     return
         element {$name} {
             attribute countItems {count($val)},
@@ -1002,7 +1005,7 @@ declare function f:foxfunc_truncate($string as xs:string?, $len as xs:integer, $
  . . len
  . zoo
  :)
-declare function f:foxfunc_group-concat($values as xs:string*, $sep as xs:string?, $emptyLines as xs:string?)
+declare function f:group-concat($values as xs:string*, $sep as xs:string?, $emptyLines as xs:string?)
         as xs:string {
     let $sep := ($sep, '#')[1]        
     let $valuesSorted := $values => sort()    
@@ -1032,7 +1035,8 @@ declare function f:foxfunc_group-concatRC($level as xs:integer,
             $values ! concat($prefix, .)
         else
             for $value in $values
-            group by $groupValue := (substring-before($value, $sep)[string()], $value)[1]
+            (: group by $groupValue := (substring-before($value, $sep)[string()], $value)[1] :)
+            group by $groupValue := replace($value, '(^.*?)' || $sep || '.*', '$1')
             let $contentValue := $value ! substring-after(., $sep)[string()]           
             order by $groupValue
             return (
@@ -1042,6 +1046,141 @@ declare function f:foxfunc_group-concatRC($level as xs:integer,
                 (:''[$level eq 0] :)
             )
 };
+
+
+(:~
+ :
+ : ===    J S O N   r e l a t e d ===
+ :
+ :)
+
+(:~
+ : Resolves a JSON reference to a JSON object. The reference is
+ : a JSON Pointer (https://tools.ietf.org/html/rfc6901).
+ :
+ : @param reference the reference string
+ : @param oad the OpenAPI documents considered
+ : @return the referenced schema object, or the empty string if no such object is found
+ :)
+declare function f:resolveJsonRef($reference as xs:string?, 
+                                  $doc as element(json)+)
+        as element()? {
+    if (not($reference)) then () else
+    let $resource := substring-before($reference, '#')
+    let $path := replace($reference, '.*?#/', '')
+    let $pathContextDoc :=
+        if (not($resource)) then $doc else
+            resolve-uri($resource, $doc/base-uri(.)) ! json:doc(.)/*
+    return        
+        let $steps := tokenize($path, '\s*/\s*')
+        let $target := f:resolveJsonRefRC($steps, $pathContextDoc)
+        return 
+            if ($target/_0024ref) then 
+                $target/_0024ref/f:resolveJsonRef(., $doc)
+            else $target
+};
+
+(:~
+ : Resolves an XSD type reference to the referenced type definition.
+ :)
+declare function f:resolveXsdTypeRef($reference as attribute(type), 
+                                     $schema as element(xs:schema)?)
+        as element()? {
+    if (not($reference)) then () else
+    
+    let $schema := ($schema, $reference/ancestor::xs:schema[1])[1]
+    let $refQname := $reference/resolve-QName(., ..)
+    let $refNs := string(namespace-uri-from-QName($refQname))
+    let $refName := local-name-from-QName($refQname)
+    let $result := f:resolveXsdTypeRefRC($refNs, $refName, $schema, (), (), ())
+    return $result[self::xs:simpleType, xs:complexType][1]
+};
+
+declare function f:resolveXsdTypeRefRC($refNs as xs:string,
+                                       $refName as xs:string,
+                                       $schema as element(xs:schema),
+                                       $schemasSameLevel as element(xs:schema)*,
+                                       $chameleonNs as xs:string?,
+                                       $visited as element(xs:schema)*)
+        as element()? {
+    if ($visited intersect $schema) then $visited else
+    
+    let $tns := ($schema/@targetNamespace, $chameleonNs, '')[1]
+    let $typeDefHere :=
+        if ($refNs ne $tns) then () else
+            $schema/(xs:simpleType, xs:complexType)[@name eq $refName]            
+    return
+        if ($typeDefHere) then $typeDefHere else
+
+            let $visitedNew := ($visited, $schema)
+            let $resultSSL := 
+                if (not($schemasSameLevel)) then () else
+                    f:resolveXsdTypeRefRC($refNs, $refName, 
+                        head($schemasSameLevel), tail($schemasSameLevel), $chameleonNs, $visitedNew)
+            let $typeDefSSL := $resultSSL[self::xs:simpleType, self::xs:complexType]
+            return
+                if ($typeDefSSL) then $typeDefSSL
+                else                
+                    let $visitedNew := ($visitedNew, $resultSSL)
+                    let $schemaLocationsNextLevel :=
+                        if ($tns eq $refNs) then $schema/xs:include/@schemaLocation
+                        else $schema/xs:import[@namespace eq $tns]/@schemaLocation
+                    let $schemasNextLevel := 
+                        $schemaLocationsNextLevel/resolve-uri(., ..)
+                        ! (try {doc(.)} catch * {()})
+                        [not(. intersect $visited)]
+                    let $resultSNL := 
+                        if (not($schemasNextLevel)) then () else
+                            f:resolveXsdTypeRefRC($refNs, $refName, 
+                                head($schemasNextLevel), tail($schemasNextLevel), $tns, $visitedNew)
+                    return $resultSNL                                
+};        
+
+(:~
+ : Resolves a JSON Schema allOf group.
+ :
+ : @param reference the reference string
+ : @param oad the OpenAPI documents considered
+ : @return the referenced schema object, or the empty string if no such object is found
+ :)
+declare function f:resolveJsonAllOf($allOf as element(), 
+                                    $doc as element(json)+)
+        as element()* {
+    for $subschema in $allOf/_        
+    return
+        if ($subschema[_0024ref]) then 
+            let $effective := f:resolveJsonRef($subschema/_0024ref, $doc)
+            return
+                if ($effective/allOf) then $effective/allOf/f:resolveJsonAllOf(., $doc)
+                else $effective
+        else if ($subschema/_allOf) then $subschema/allOf/f:resolveJsonAllOf(., $doc)
+        else $subschema
+};
+
+(:~
+ : Recursive helper function of 'resolveJsonRef'.
+ :
+ : @param steps the steps of the path (JSON Pointer steps)
+ : @param context the context in which to resolve the path
+ : @return the targets addressed by the path
+ :)
+declare function f:resolveJsonRefRC($steps as xs:string+, 
+                                    $context as element()*)
+        as element()* {
+    let $head := head($steps)
+    let $tail := tail($steps)
+    let $elemName := convert:encode-key($head) 
+                     ! replace(., '~1', '/') 
+                     ! replace(., '~0', '~')
+    let $elem :=
+        if (matches($elemName, '^\d+$')) then $context/_[1 + xs:integer($elemName)] 
+        else $context/*[name() eq $elemName]
+    return
+        if (not($elem)) then ()
+        else if (empty($tail)) then $elem
+        else f:resolveJsonRefRC($tail, $elem)
+};
+
 
 (:~
  :
