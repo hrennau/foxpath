@@ -67,6 +67,35 @@ declare function f:foxfunc_fox-child($context as xs:string,
 };
 
 (:~
+ : Returns the child elements of input nodes with a JSON name equal to
+ : one of a set of input names. The JSON name is the name obtained by
+ : decoding the element name as a JSON key.
+ :
+ : @param context the context URI
+ : @param names one or several name patterns
+ : @return child elements with a matching JSON name
+ :)
+declare function f:jchild($context as node()*,
+                          $names as xs:string+)
+        as xs:string* {
+    let $flags := '' return
+    
+    if (every $name in $names satisfies not(matches($name, '[*?]'))) then        
+        $context/*[convert:decode-key(local-name()) = $names]
+    else
+        let $namesRX := 
+            $names 
+            ! replace(., '\*', '.*') 
+            ! replace(., '\?', '.') 
+            ! concat('^', ., '$')
+        return
+            $context/*[
+                let $jname := convert:decode-key(local-name())
+                return some $rx in $namesRX satisfies matches($jname, $rx, $flags)
+            ]                
+};
+
+(:~
  : Returns the parent URIs of a given URI, provided its name matches
  : a given name, or a regex derived from it. If $fromSubstring and 
  : $toSubstring are supplied, the parent URI name must match the regex 

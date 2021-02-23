@@ -376,6 +376,8 @@ declare function f:fox-doc($uri as xs:string, $options as map(*)?)
             try {parse-xml($text)} catch * {()}
 :)            
     else if (doc-available($uri)) then doc($uri)
+    (: If not parsable as XML, try JSON :)
+    else if (unparsed-text-available($uri)) then try {json:doc($uri)} catch * {()}
     else ()
 };
 

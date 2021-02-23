@@ -602,6 +602,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 i:fox-doc-available($uri, $options)
             
+        (: function `jchild` 
+           ================= :)
+        else if ($fname eq 'jchild') then
+            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:jchild($context, $names)
+            
         (: function `jname-path` 
            ==================== :)
         else if ($fname = ('jname-path', 'jnpath', 'jnp')) then           
