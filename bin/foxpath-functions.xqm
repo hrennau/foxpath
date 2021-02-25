@@ -508,14 +508,19 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (empty($lines)) then () else
                     string-join((concat('##### ', $uri, ' #####'), $lines, '----------'), '&#xA;')
 
-        (: function `group-concat` 
-           ======================= :)
-        else if ($fname = ('group-concat', 'gconcat')) then
+        (: function `hlist` 
+           ================ :)
+        else if ($fname = ('hierarchical-list', 'hier-list', 'hlist')) then
             let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $sep := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $emptyLines := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:group-concat($values, $sep, $emptyLines)
+                foxf:hierarchical-list($values, $sep, $emptyLines)
+
+        (: function `hlist-entry` 
+           ====================== :)
+        else if ($fname = ('hierarchical-list-entry', 'hier-list-entry', 'hlist-entry', 'hentry')) then
+            $call/*/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) => string-join('#')
 
         (: function `html-doc` 
            =================== :)

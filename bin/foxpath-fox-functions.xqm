@@ -1034,7 +1034,9 @@ declare function f:foxfunc_truncate($string as xs:string?, $len as xs:integer, $
  . . len
  . zoo
  :)
-declare function f:group-concat($values as xs:string*, $sep as xs:string?, $emptyLines as xs:string?)
+declare function f:hierarchical-list($values as xs:string*, 
+                                     $sep as xs:string?, 
+                                     $emptyLines as xs:string?)
         as xs:string {
     let $sep := ($sep, '#')[1]        
     let $valuesSorted := $values => sort()    
