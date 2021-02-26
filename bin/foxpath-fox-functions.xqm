@@ -956,6 +956,19 @@ declare function f:foxfunc_parent-name($node as node(),
 };        
 
 (:~
+ : Returns those atomic items which are in the left value, but not in the right one. 
+ :
+ : @param leftValue a value
+ : @param rightValue another value 
+ : @return the items in the left value, but not the right one
+ :)
+declare function f:leftValueOnly($leftValue as item()*,
+                                 $rightValue as item()*)
+    as item()* {
+    $leftValue[not(. = $rightValue)]
+};
+
+(:~
  : Returns the parent name of a node. If $localNames is true, the local name is returned, 
  : otherwise the lexical names. 
  :
@@ -963,10 +976,10 @@ declare function f:foxfunc_parent-name($node as node(),
  : @param localName if true, the local name is returned, otherwise the lexical name
  : @return the parent name
  :)
-declare function f:foxfunc_name-path($nodes as node()*, 
-                                     $nameKind as xs:string?,   (: name | lname | jname :) 
-                                     $numSteps as xs:integer?,
-                                     $contextNode as node()?)
+declare function f:name-path($nodes as node()*, 
+                             $nameKind as xs:string?,   (: name | lname | jname :) 
+                             $numSteps as xs:integer?,
+                             $contextNode as node()?)
         as xs:string* {
     for $node in $nodes return
     
@@ -1005,6 +1018,19 @@ declare function f:foxfunc_remove-prefix($name as xs:string?)
 };        
 
 (:~
+ : Returns those atomic items which are in the right value, but not in the left one. 
+ :
+ : @param leftValue a value
+ : @param rightValue another value 
+ : @return the items in the right value, but not the left one
+ :)
+declare function f:rightValueOnly($leftValue as item()*,
+                                  $rightValue as item()*)
+    as item()* {
+    $rightValue[not(. = $leftValue)]
+};
+
+(:~
  : Truncates a string if longer than a maximum length, appending '...'.
  :
  : @param name a lexical QName
@@ -1034,9 +1060,9 @@ declare function f:foxfunc_truncate($string as xs:string?, $len as xs:integer, $
  . . len
  . zoo
  :)
-declare function f:hierarchical-list($values as xs:string*, 
-                                     $sep as xs:string?, 
-                                     $emptyLines as xs:string?)
+declare function f:hlist($values as xs:string*, 
+                         $sep as xs:string?, 
+                         $emptyLines as xs:string?)
         as xs:string {
     let $sep := ($sep, '#')[1]        
     let $valuesSorted := $values => sort()    
@@ -1052,18 +1078,21 @@ declare function f:hierarchical-list($values as xs:string*,
             )                    
             
     return
-        f:foxfunc_group-concatRC(0, $values, $sep, $emptyLineFns) => string-join('&#xA;')        
+        f:hlistRC(0, $values, $sep, $emptyLineFns) => string-join('&#xA;')        
 };
 
-declare function f:foxfunc_group-concatRC($level as xs:integer, 
-                                          $values as xs:string*, 
-                                          $sep as xs:string,
-                                          $emptyLineFns as map(*)?)
+declare function f:hlistRC($level as xs:integer, 
+                           $values as xs:string*, 
+                           $sep as xs:string,
+                           $emptyLineFns as map(*)?)
         as xs:string* {
     let $prefix := (for $i in 1 to $level return '.  ') => string-join('')
     return
         if (not(some $value in $values satisfies contains($value, $sep))) then 
-            $values ! concat($prefix, .)
+            for $value in $values
+            group by $v := $value
+            let $suffix := count($value)[. ne 1] ! concat(' (', ., ')')
+            return $prefix || $v || $suffix
         else
             for $value in $values
             (: group by $groupValue := (substring-before($value, $sep)[string()], $value)[1] :)
@@ -1072,7 +1101,7 @@ declare function f:foxfunc_group-concatRC($level as xs:integer,
             order by $groupValue
             return (
                 concat($prefix, $groupValue),
-                f:foxfunc_group-concatRC($level + 1, $contentValue, $sep, $emptyLineFns),
+                f:hlistRC($level + 1, $contentValue, $sep, $emptyLineFns),
                 $emptyLineFns ! map:get(., $level) ! .()
                 (:''[$level eq 0] :)
             )

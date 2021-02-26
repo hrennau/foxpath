@@ -515,12 +515,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $sep := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $emptyLines := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:hierarchical-list($values, $sep, $emptyLines)
+                foxf:hlist($values, $sep, $emptyLines)
 
         (: function `hlist-entry` 
            ====================== :)
         else if ($fname = ('hierarchical-list-entry', 'hier-list-entry', 'hlist-entry', 'hentry')) then
-            $call/*/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) => string-join('#')
+            $call/* ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) => string-join('#')
 
         (: function `html-doc` 
            =================== :)
@@ -624,7 +624,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (empty($nodes)) then () else
                     let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                     let $contextNode := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                    return foxf:foxfunc_name-path($nodes, 'jname', $numSteps, $contextNode)
+                    return foxf:name-path($nodes, 'jname', $numSteps, $contextNode)
 
         (: function `jsoncat` 
            ================== :)
@@ -667,6 +667,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:foxfunc_unescape-json-name($node/local-name(.))
 
+       (: function `left-value-only` 
+          ========================== :)
+        else if ($fname = ('left-value-only', 'left-value')) then
+            let $leftValue := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $rightValue := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:leftValueOnly($leftValue, $rightValue)
+
        (: function `linefeed` 
           ================== :)
         else if ($fname eq 'linefeed') then
@@ -694,7 +702,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (empty($nodes)) then () else
                     let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                     let $contextNode := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                    return foxf:foxfunc_name-path($nodes, 'lname', $numSteps, $contextNode)
+                    return foxf:name-path($nodes, 'lname', $numSteps, $contextNode)
 
         (: function `lpad` 
            =============== :)
@@ -730,7 +738,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (empty($nodes)) then () else
                     let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                     let $contextNode := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                    return foxf:foxfunc_name-path($nodes, 'name', $numSteps, $contextNode)
+                    return foxf:name-path($nodes, 'name', $numSteps, $contextNode)
 
         (: function `non-distinct-values` 
            ============================== :)
@@ -892,6 +900,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 i:fox-resolve-foxpath($expression)
 :)                
+
+       (: function `right-value-only` 
+          =========================== :)
+        else if ($fname = ('right-value-only', 'right-value')) then
+            let $leftValue := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $rightValue := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:rightValueOnly($leftValue, $rightValue)
+
+
         (: function `rpad` 
            =============== :)
         else if ($fname eq 'rpad') then
