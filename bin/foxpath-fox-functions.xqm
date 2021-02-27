@@ -850,10 +850,10 @@ declare function f:foxfunc_att-names($node as node(),
 };        
 
 (:~
- : Returns the child element names of a node. If $separator is specified, the sorted
- : names are concatenated, using this separator, otherwise the names are returned
- : as a sequence. If $localNames is true, the local names are returned, otherwise the 
- : lexical names. 
+ : Returns the child element names of a node. If $concat is true, the sorted names are 
+ : concatenated, using ', ' as separator. Otherwise the names are returned
+ : as a sequence. Dependent on $nameKind, the local names (lname), the JSON
+ : names (jname) or the lexical names (name) are returned. Names are sorted.
  :
  : When using $namePattern, only those child elements are considered which have
  : a local name matching the pattern.
@@ -862,24 +862,33 @@ declare function f:foxfunc_att-names($node as node(),
  : Example: .../foo/child-names(., ', ', false(), 'input|output') 
  :
  : @param node a node (unless it is an element, the function returns the empty sequence)
- : @param separator if used, the names are concatenated, using this separator
- : @param localNames if true, the local names are returned, otherwise the lexical names 
- : @param namePattern an optional name pattern filtering the child elements to be considered
+ : @param concat if true, the names are concatenated
+ : @param nameKind one of "name", "lname" or "jname" 
+ : @param namePatterns optional name patterns selecting child names to be considered
+ : @param excludedNamePattern optional name patterns selecting child elements to be ignored
  : @return the names as a sequence, or as a concatenated string
  :)
-declare function f:foxfunc_child-names($node as node(), 
-                                       $concat as xs:boolean?, 
-                                       $nameKind as xs:string?,   (: name | lname | jname :)
-                                       $namePattern as xs:string?,
-                                       $excludedNamePattern as xs:string?)
+declare function f:child-names($node as node(), 
+                               $concat as xs:boolean?, 
+                               $nameKind as xs:string?,   (: name | lname | jname :)
+                               $namePatterns as xs:string?,
+                               $excludedNamePatterns as xs:string?)
         as xs:string* {
-    let $nameRegex := $namePattern ! replace(., '\*', '.*') ! replace(., '\?', '.') 
+    let $nameRegexes := $namePatterns 
+                      ! tokenize(.)
+                      ! replace(., '\*', '.*') ! replace(., '\?', '.') 
                       ! concat('^', ., '$')        
-    let $excludedNameRegex := $excludedNamePattern ! replace(., '\*', '.*') ! replace(., '\?', '.') 
+    let $excludedNameRegexes := 
+                      $excludedNamePatterns
+                      ! tokenize(.)
+                      ! replace(., '\*', '.*') ! replace(., '\?', '.') 
                       ! concat('^', ., '$')        
     let $items := $node/*
-       [not($nameRegex) or matches(local-name(.), $nameRegex, 'i')]
-       [not($excludedNameRegex) or not(matches(local-name(.), $excludedNameRegex, 'i'))]
+       [empty($nameRegexes) or (some $nameRegex in $nameRegexes satisfies 
+         matches(local-name(.), $nameRegex, 'i'))]
+       [empty($excludedNameRegexes) or not(
+         some $excludedNameRegex in $excludedNameRegexes satisfies 
+            matches(local-name(.), $excludedNameRegex, 'i'))]
     let $separator := ', '[$concat]
     let $names := 
         if ($nameKind eq 'lname') then 
