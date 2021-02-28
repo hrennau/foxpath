@@ -106,7 +106,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname eq 'child-jnames') then
             let $node := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]
+                return if (exists($explicit)) then $explicit else $context
             let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
             return foxf:child-names($node, true(), 'jname', $namePattern, $excludedNamePattern)            
@@ -116,7 +116,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname eq 'child-lnames') then
             let $node := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]
+                return if (exists($explicit)) then $explicit else $context
             let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
             return foxf:child-names($node, true(), 'lname', $namePattern, $excludedNamePattern)            
@@ -126,7 +126,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname eq 'child-names') then
             let $node := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]
+                return if (exists($explicit)) then $explicit else $context
             let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
             return foxf:child-names($node, true(), 'name', $namePattern, $excludedNamePattern)            
@@ -789,6 +789,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 group by $value := data($item)
                 where count($item) gt 1
                 return $value
+
+        (: function `oas-msg-schemas` 
+           ========================== :)
+        else if ($fname = ('oas-msg-schemas', 'oasmsg')) then
+            let $nodes := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                foxf:oasMsgSchemas($nodes)            
 
         (: function `pads` 
            =============== :)

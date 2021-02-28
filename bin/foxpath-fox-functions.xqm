@@ -440,6 +440,35 @@ declare function f:foxfunc_frequencies($values as item()*,
 };      
 
 (:~
+ : Returns the schema objects describing the messages of an OpenAPI document.
+ :
+ : @param oas OpenAPI documents (root element or some other node)
+ : @return the schema objects describing messages
+ :)
+declare function f:oasMsgSchemas($oas as node()*) {
+    let $fn_soContent := function ($co) {$co/*/schema}
+    let $fn_soParameters := function ($p) {$p/*[in eq 'body']/schema}
+    let $fn_soRequestBody := function ($rb) {$rb/content/$fn_soContent(.)}
+    let $fn_soResponseObject := function ($ro) {$ro/(schema, content/$fn_soContent(.))}
+    let $fn_soPathItem := 
+        function ($pi) {
+            $pi/(get, post, put, delete, options, head, patch, trace)/(
+                parameters/$fn_soParameters(.),
+                requestBody/$fn_soRequestBody(.),
+                responses/*/$fn_soResponseObject(.))}
+    let $oas := $oas/root()/descendant-or-self::json[1]            
+    return (
+        $oas/paths/*/$fn_soPathItem(.),
+        $oas/parameters/$fn_soParameters(.),
+        $oas/responses/*/$fn_soResponseObject(.),
+        $oas/components/(
+            responses/*/$fn_soResponseObject(.),
+            requestBodies/*/$fn_soRequestBody(.),
+            pathItems/*/$fn_soPathItem(.))
+    )    
+};
+
+(:~
  : Foxpath function `repeat#2'. Creates a string which is the concatenation of
  : a given number of instances of a given string.
  :
@@ -861,14 +890,14 @@ declare function f:foxfunc_att-names($node as node(),
  : Example: .../foo/child-names(., ', ', false(), '*put')
  : Example: .../foo/child-names(., ', ', false(), 'input|output') 
  :
- : @param node a node (unless it is an element, the function returns the empty sequence)
+ : @param nodes nodes (only elements contribute to the result)
  : @param concat if true, the names are concatenated
  : @param nameKind one of "name", "lname" or "jname" 
  : @param namePatterns optional name patterns selecting child names to be considered
  : @param excludedNamePattern optional name patterns selecting child elements to be ignored
  : @return the names as a sequence, or as a concatenated string
  :)
-declare function f:child-names($node as node(), 
+declare function f:child-names($nodes as node()*, 
                                $concat as xs:boolean?, 
                                $nameKind as xs:string?,   (: name | lname | jname :)
                                $namePatterns as xs:string?,
@@ -882,23 +911,28 @@ declare function f:child-names($node as node(),
                       $excludedNamePatterns
                       ! tokenize(.)
                       ! replace(., '\*', '.*') ! replace(., '\?', '.') 
-                      ! concat('^', ., '$')        
+                      ! concat('^', ., '$')
+    let $separator := ', '[$concat]
+
+    for $node in $nodes
     let $items := $node/*
        [empty($nameRegexes) or (some $nameRegex in $nameRegexes satisfies 
          matches(local-name(.), $nameRegex, 'i'))]
        [empty($excludedNameRegexes) or not(
          some $excludedNameRegex in $excludedNameRegexes satisfies 
             matches(local-name(.), $excludedNameRegex, 'i'))]
-    let $separator := ', '[$concat]
     let $names := 
         if ($nameKind eq 'lname') then 
             ($items/local-name(.)) => distinct-values() => sort()
         else if ($nameKind eq 'jname') then 
             ($items/f:foxfunc_unescape-json-name(local-name(.))) => distinct-values() => sort()
         else ($items/name(.)) => distinct-values() => sort()
-    return
+    let $path :=        
         if (exists($separator)) then string-join($names, $separator)
         else $names
+    order by $path        
+    return
+        $path
 };        
 
 (:~
