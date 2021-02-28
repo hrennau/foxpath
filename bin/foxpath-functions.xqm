@@ -633,6 +633,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 json:parse($text)
 
+        (: function `jpath-content` 
+           ======================== :)
+        else if ($fname = ('jpath-content', 'jpcontent')) then           
+            let $c := $context
+            let $includedNames := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNames := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNodes := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            return
+                foxf:path-content($c, 'jname', $includedNames, $excludedNames, $excludedNodes)
+
         (: function `jname-path` 
            ==================== :)
         else if ($fname = ('jname-path', 'jnpath', 'jnp')) then           
@@ -734,6 +744,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 f:lpad($string, $width, $fillChar)
 
+        (: function `lpath-content` 
+           ======================= :)
+        else if ($fname = ('lpath-content', 'lpcontent')) then           
+            let $c := $context
+            let $includedNames := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNames := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNodes := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            return
+                foxf:path-content($c, 'lname', $includedNames, $excludedNames, $excludedNodes)
+
         (: function `matches-xpath` 
            ======================= :)
         else if ($fname eq 'matches-xpath') then
@@ -824,6 +844,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return ($explicit, $context)[1]
             return
                 foxf:foxfunc_parent-name($node, 'name')            
+
+        (: function `path-content` 
+           ======================= :)
+        else if ($fname = ('path-content', 'pcontent')) then           
+            let $c := $context
+            let $includedNames := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNames := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNodes := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            return
+                foxf:path-content($c, 'name', $includedNames, $excludedNames, $excludedNodes)
 
         (: function `pfrequencies` 
            ======================= :)

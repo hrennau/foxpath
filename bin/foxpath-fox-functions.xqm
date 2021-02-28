@@ -978,6 +978,79 @@ declare function f:leftValueOnly($leftValue as item()*,
 };
 
 (:~
+ : Returns the paths leading from a context node to all descendants. This may be
+ : regarded as a representation of the node's content, hence the function name.
+ :
+ : @param context a node
+ : @param nameKind the kind of name used as path steps: 
+ :   jname - JSON names; lname - local names; name - lexical names
+ : @param includedNames name patterns of nodes which must be present in the path 
+ : @param excludedNames name patterns of nodes excluded from the content 
+ : @param excludedNodes nodes excluded from the content 
+ : @return the parent name
+ :)
+declare function f:path-content($context as node()*, 
+                                $nameKind as xs:string?,
+                                $includedNames as xs:string?,
+                                $excludedNames as xs:string?,
+                                $excludedNodes as node()*)
+        as xs:string* {
+        
+    let $descendants := 
+        if ($nameKind eq 'jname') then $context/descendant::*
+        else $context/descendant::*/(., @*)
+        
+    let $includedNamesRegex :=
+        $includedNames ! tokenize(.)
+        ! replace(., '\*', '.*')
+        ! replace(., '\?', '.')
+        ! concat('^', ., '$')
+
+    let $excludedNamesRegex :=
+        $excludedNames ! tokenize(.)
+        ! replace(., '\*', '.*')
+        ! replace(., '\?', '.')
+        ! concat('^', ., '$')
+
+    let $includedNodes :=
+        if (empty($includedNamesRegex)) then ()
+        else if ($nameKind eq 'jname') then
+            $descendants[name() ! convert:decode-key(.) ! (some $r in $includedNamesRegex satisfies matches(., $r, 'i'))]
+        else
+            $descendants[local-name(.) ! (some $r in $includedNamesRegex satisfies matches(., $r, 'i'))]
+    
+    let $excludedNodes := (
+        $excludedNodes,
+        
+        if (empty($excludedNamesRegex)) then ()
+        else if ($nameKind eq 'jname') then
+            $descendants[name() ! convert:decode-key(.) ! (some $r in $excludedNamesRegex satisfies matches(., $r, 'i'))]
+        else
+            $descendants[local-name(.) ! (some $r in $excludedNamesRegex satisfies matches(., $r, 'i'))]
+    )
+    let $descendants2 :=
+        if (empty($includedNamesRegex)) then $descendants
+        else $descendants[ancestor-or-self::* intersect $includedNodes]
+        
+    let $descendants3 := 
+        if (empty($excludedNodes)) then $descendants2
+        else $descendants2[not(ancestor-or-self::* intersect $excludedNodes)]
+    
+    for $d in $descendants3 return
+    let $ancos := $d/ancestor-or-self::node()[. >> $context]
+    let $steps :=        
+        if ($nameKind eq 'lname') then 
+            $ancos/concat(self::attribute()/'@', local-name(.))
+        else if ($nameKind eq 'jname') then 
+            $ancos/concat(self::attribute()/'@', 
+                let $raw := f:foxfunc_unescape-json-name(local-name(.))
+                return if (not(contains($raw, '/'))) then $raw else concat('"', $raw, '"')
+            )
+        else $ancos/concat(self::attribute()/'@', name(.))
+    return string-join($steps, '/')
+};        
+
+(:~
  : Returns the parent name of a node. If $localNames is true, the local name is returned, 
  : otherwise the lexical names. 
  :
