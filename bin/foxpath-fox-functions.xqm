@@ -457,15 +457,14 @@ declare function f:oasMsgSchemas($oas as node()*) {
                 requestBody/$fn_soRequestBody(.),
                 responses/*/$fn_soResponseObject(.))}
     let $oas := $oas/root()/descendant-or-self::json[1]            
-    return (
-        $oas/paths/*/$fn_soPathItem(.),
-        $oas/parameters/$fn_soParameters(.),
-        $oas/responses/*/$fn_soResponseObject(.),
-        $oas/components/(
+    return $oas/(
+        paths/*/$fn_soPathItem(.),
+        parameters/$fn_soParameters(.),
+        responses/*/$fn_soResponseObject(.),
+        components/(
             responses/*/$fn_soResponseObject(.),
             requestBodies/*/$fn_soRequestBody(.),
-            pathItems/*/$fn_soPathItem(.))
-    )    
+            pathItems/*/$fn_soPathItem(.)))    
 };
 
 (:~
