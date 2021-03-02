@@ -33,8 +33,8 @@ let $externalVariables :=
     else
         map:merge(
             for $item in tokenize($vars, '#######')[string()]
-            let $name := replace($item, '^\s*(.*?)\s*:.*', '$1')
-            let $value := replace($item, '^.*?:\s*(.*?)\s*$', '$1')
+            let $name := replace($item, '^\s*(.*?)\s*[:=].*', '$1')
+            let $value := replace($item, '^.*?[:=]\s*(.*?)\s*$', '$1')
             let $value := xs:untypedAtomic($value)
             let $qname := QName((), $name) 
             return map:entry($qname, $value)

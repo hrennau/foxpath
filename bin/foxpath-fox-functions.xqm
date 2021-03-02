@@ -632,6 +632,27 @@ declare function f:foxfunc_write-json-docs($files as xs:string*,
 :)        
 };
 
+(:~
+ : Constructs an element with content given by $content. Each pair of items in $atts
+ : provides the name and value of an attribute to be added.
+ :
+ : @param content the element content
+ : @param name the element name
+ : @param atts attributes to be added
+ : @return the constructed element
+ :)
+declare function f:xelement($content as item()*,
+                            $name as xs:string,
+                            $atts as item()*)
+        as element() {
+    element {$name} {
+        for $attName at $pos in $atts[(position() + 1) mod 2 eq 0]
+        let $attValue := $atts[$pos + 1]
+        return
+            attribute {$attName} {$attValue},
+        $content            
+    }
+};      
 
 (:~
  : Foxpath function `xwrap#3`. Collects the items of $items into an XML document.
@@ -1156,6 +1177,13 @@ declare function f:foxfunc_truncate($string as xs:string?, $len as xs:integer, $
     $string ! substring($string, 1, $len) || ' ...'[string-length($string) gt $len]
 };        
 
+declare function f:hlistEntry($items as item()*)
+        as xs:string {
+    let $sep := codepoints-to-string(30000)
+    return
+        string-join($items, $sep)
+};
+
 (:~
  : Transforms a sequence of value into an indented list. Each value is a concatenated 
  : list of items from subsequent levels of hierarchy. Example:
@@ -1176,11 +1204,10 @@ declare function f:foxfunc_truncate($string as xs:string?, $len as xs:integer, $
  . zoo
  :)
 declare function f:hlist($values as xs:string*, 
-                         $sep as xs:string?, 
                          $emptyLines as xs:string?)
         as xs:string {
-    let $sep := ($sep, '#')[1]        
-    let $valuesSorted := $values => sort()    
+    let $sep := codepoints-to-string(30000) (:  ($sep, '#')[1] :)        
+    let $values := $values[string(.)] => sort()    
     let $emptyLineFns :=
         if (not($emptyLines)) then ()
         else
@@ -1207,15 +1234,22 @@ declare function f:hlistRC($level as xs:integer,
             for $value in $values
             group by $v := $value
             let $suffix := count($value)[. ne 1] ! concat(' (', ., ')')
-            return $prefix || $v || $suffix
+            let $parts := tokenize($v, '~~~')
+            return 
+                if (count($parts) eq 1) then $prefix || $v || $suffix
+                else
+                    for $part in $parts
+                    return $prefix || $part
         else
             for $value in $values
             (: group by $groupValue := (substring-before($value, $sep)[string()], $value)[1] :)
-            group by $groupValue := replace($value, '(^.*?)' || $sep || '.*', '$1')
+            group by $groupValue := replace($value, '(^.*?)' || $sep || '.*', '$1', 's')
             let $contentValue := $value ! substring-after(., $sep)[string()]           
             order by $groupValue
+            let $parts := tokenize($groupValue, '~~~')
             return (
-                concat($prefix, $groupValue),
+                if (count($parts) eq 1) then concat($prefix, $groupValue)
+                else for $part in $parts return ($prefix || $part),
                 f:hlistRC($level + 1, $contentValue, $sep, $emptyLineFns),
                 $emptyLineFns ! map:get(., $level) ! .()
                 (:''[$level eq 0] :)

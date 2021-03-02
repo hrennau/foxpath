@@ -232,6 +232,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 $val
 
+        (: function `xelement` 
+           ================== :)
+        else if ($fname eq 'xelement') then
+            let $content := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $name := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $atts := $call/*[position() gt 2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+
+            return
+                foxf:xelement($content, $name, $atts)
+                
+
 (: the following two functions are at risk:
     eval-xpath
     matches-xpath    
@@ -522,15 +533,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ================ :)
         else if ($fname = ('hierarchical-list', 'hier-list', 'hlist')) then
             let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $sep := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $emptyLines := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $emptyLines := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:hlist($values, $sep, $emptyLines)
+                foxf:hlist($values, $emptyLines)
 
         (: function `hlist-entry` 
            ====================== :)
         else if ($fname = ('hierarchical-list-entry', 'hier-list-entry', 'hlist-entry', 'hentry')) then
-            $call/* ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) => string-join('#')
+            let $items := $call/* ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:hlistEntry($items)
 
         (: function `html-doc` 
            =================== :)
@@ -792,7 +804,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `oas-msg-schemas` 
            ========================== :)
-        else if ($fname = ('oas-msg-schemas', 'oasmsg')) then
+        else if ($fname = ('oas-msg-schemas', 'oasmsgs')) then
             let $nodes := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
@@ -1626,7 +1638,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
                 if (exists($arg3)) then replace($arg1, $arg2, $arg3)
-                else substring($arg1, $arg2)
+                else replace($context, $arg1, $arg2)
 
         (: function `reverse` 
            ================== :)

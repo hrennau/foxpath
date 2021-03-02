@@ -113,7 +113,8 @@ if %FOXPATH%=="?" (
     echo             endpoints are whitespace-separated
     echo -i context-dir : 
     echo           a folder to be used as initial context item    
-    echo -v "name=value" 
+    echo -v "name=value    ( note that using Powershell, the '=' must be framed by whitespace )" 
+    echo -v "name:value    ( some consoles have problems with '=', hence alternative syntax using ':' )"
     echo         : name and value of an external variable
     exit /b
 )
