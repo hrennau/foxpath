@@ -1279,7 +1279,14 @@ declare function f:resolveJsonRef($reference as xs:string?,
     let $path := replace($reference, '.*?#/', '')
     let $pathContextDoc :=
         if (not($resource)) then $doc else
-            resolve-uri($resource, $doc/base-uri(.)) ! json:doc(.)/*
+            try {
+                resolve-uri($resource, $doc/base-uri(.)) 
+                ! json:doc(.)/*
+            } catch * {
+                trace((), '___WARNING - CANNOT RESOLVE REFERENCE: ' || $reference
+                || ' ; CONTEXT: ' || $doc/base-uri(.))
+            }
+    where $pathContextDoc            
     return        
         let $steps := tokenize($path, '\s*/\s*')
         let $target := f:resolveJsonRefRC($steps, $pathContextDoc)
