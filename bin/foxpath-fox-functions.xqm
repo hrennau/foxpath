@@ -1385,12 +1385,16 @@ declare function f:resolveJsonRefRC($steps as xs:string+,
         as element()* {
     let $head := head($steps)
     let $tail := tail($steps)
-    let $elemName := convert:encode-key($head) 
+    let $elemName := $head 
                      ! replace(., '~1', '/') 
                      ! replace(., '~0', '~')
+                     ! web:decode-url(.)
+                     
     let $elem :=
         if (matches($elemName, '^\d+$')) then $context/_[1 + xs:integer($elemName)] 
-        else $context/*[name() eq $elemName]
+        else 
+            let $elemName := $elemName ! convert:encode-key(.)
+            return $context/*[name() eq $elemName]
     return
         if (not($elem)) then ()
         else if (empty($tail)) then $elem
