@@ -1275,25 +1275,74 @@ declare function f:resolveJsonRef($reference as xs:string?,
                                   $doc as element(json)+)
         as element()? {
     if (not($reference)) then () else
-    let $resource := substring-before($reference, '#')
-    let $path := replace($reference, '.*?#/', '')
-    let $pathContextDoc :=
+    let $withFragment := contains($reference, '#')
+    let $resource := 
+        if ($withFragment) then substring-before($reference, '#') else $reference
+    let $path := 
+        if ($withFragment) then replace($reference, '.*?#/', '') else ()
+    let $context :=
         if (not($resource)) then $doc else
             try {
                 resolve-uri($resource, $doc/base-uri(.)) 
                 ! json:doc(.)/*
             } catch * {
                 trace((), '___WARNING - CANNOT RESOLVE REFERENCE: ' || $reference
-                || ' ; CONTEXT: ' || $doc/base-uri(.))
+                || ' ; CONTEXT: ' || $doc/base-uri(.)),
+                
+                (: Second try - replace '-' with '/' in base URI;
+                   motivation: maybe this document has been downloaded to a file
+                   with a name obtained by replacing in an internet address
+                   / with - :)
+                let $baseUri2 := $doc/base-uri(.) ! replace(., '-', '/')
+                return
+                    try {
+                        let $baseUri2 := $doc/base-uri(.) ! replace(., '-', '/')
+                        let $dirPart := replace($baseUri2, '/[^/]+$', '')
+                        let $uri := resolve-uri($resource, $baseUri2)
+                        let $uriAdjusted := replace($uri, $dirPart||'/', $dirPart||'-')
+                        return json:doc($uriAdjusted)/*
+                    } catch * {
+                        trace((), '___WARNING - SECOND ATTEMPT ALSO FAILED; BASE-URI 2: ' || $baseUri2)
+                    }                     
             }
-    where $pathContextDoc            
-    return        
-        let $steps := tokenize($path, '\s*/\s*')
-        let $target := f:resolveJsonRefRC($steps, $pathContextDoc)
-        return 
-            if ($target/_0024ref) then 
-                $target/_0024ref/f:resolveJsonRef(., $doc)
-            else $target
+    where $context            
+    return   
+        if (not($path)) then $context else
+            let $steps := tokenize($path, '\s*/\s*')
+            let $target := f:resolveJsonRefRC($steps, $context)
+            return 
+                if ($target/_0024ref) then 
+                    $target/_0024ref/f:resolveJsonRef(., $doc)
+                else $target
+};
+
+(:~
+ : Recursive helper function of 'resolveJsonRef'.
+ :
+ : @param steps the steps of the path (JSON Pointer steps)
+ : @param context the context in which to resolve the path
+ : @return the targets addressed by the path
+ :)
+declare function f:resolveJsonRefRC($steps as xs:string+, 
+                                    $context as element()*)
+        as element()* {
+    let $head := head($steps)
+    let $tail := tail($steps)
+    let $refToken := $head 
+                     ! web:decode-url(.)
+                     ! replace(., '~1', '/') 
+                     ! replace(., '~0', '~')
+    let $elem :=
+        if ($context/@type eq 'array') then
+            if (matches($refToken, '^\d+$')) then $context/_[1 + xs:integer($refToken)]
+            else () (: Invalid JSON Pointer syntax :)
+        else 
+            let $elemName := $refToken ! convert:encode-key(.)
+            return $context/*[name() eq $elemName]
+    return
+        if (not($elem)) then ()
+        else if (empty($tail)) then $elem
+        else f:resolveJsonRefRC($tail, $elem)
 };
 
 (:~
@@ -1372,35 +1421,6 @@ declare function f:resolveJsonAllOf($allOf as element(),
         else if ($subschema/_allOf) then $subschema/allOf/f:resolveJsonAllOf(., $doc)
         else $subschema
 };
-
-(:~
- : Recursive helper function of 'resolveJsonRef'.
- :
- : @param steps the steps of the path (JSON Pointer steps)
- : @param context the context in which to resolve the path
- : @return the targets addressed by the path
- :)
-declare function f:resolveJsonRefRC($steps as xs:string+, 
-                                    $context as element()*)
-        as element()* {
-    let $head := head($steps)
-    let $tail := tail($steps)
-    let $elemName := $head 
-                     ! replace(., '~1', '/') 
-                     ! replace(., '~0', '~')
-                     ! web:decode-url(.)
-                     
-    let $elem :=
-        if (matches($elemName, '^\d+$')) then $context/_[1 + xs:integer($elemName)] 
-        else 
-            let $elemName := $elemName ! convert:encode-key(.)
-            return $context/*[name() eq $elemName]
-    return
-        if (not($elem)) then ()
-        else if (empty($tail)) then $elem
-        else f:resolveJsonRefRC($tail, $elem)
-};
-
 
 (:~
  :
