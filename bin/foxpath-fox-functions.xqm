@@ -5,27 +5,49 @@ at "foxpath-processorDependent.xqm",
    "foxpath-util.xqm";
 
 (:~
- : Foxpath function `bslash#1'. Edits a text, replacing forward slashes by 
- : back slashes.
+ : Edits a text, replacing forward slashes by back slashes.
  :
  : @param arg text to be edited
  : @return edited text
  :)
-declare function f:foxfunc_bslash($arg as xs:string?)
+declare function f:bslash($arg as xs:string?)
         as xs:string? {
     replace($arg, '/', '\\')        
 };      
 
 (:~
- : Foxpath function `file-content#1'. Edits a text, replacing forward slashes by 
- : back slashes.
+ : Returns true if all items have deep-equal content. When comparing  the items,
+ : only their content is considered, not their name. Thus elements with different
+ : names can have deep-equal content.
  :
- : @param arg text to be edited
- : @return edited text
+ : @param items the items to be checked
+ : @return false if there is a pair of items which do not have deep-equal content, true otherwise
  :)
-declare function f:foxfunc_file-content($uri as xs:string?, 
-                                        $encoding as xs:string?,
-                                        $options as map(*)?)
+declare function f:content-deep-equal($items as item()*)
+        as xs:boolean? {
+    let $count := count($items)
+    return if ($count le 1) then true() else
+    
+    every $i in 1 to $count - 1 satisfies
+        let $item1 := $items[1]
+        let $item2 := $items[2]
+        let $atts1 := for $a in $item1/@* order by node-name($a), string($a) return $a
+        let $atts2 := for $a in $item2/@* order by node-name($a), string($a) return $a
+        return
+            deep-equal($atts1, $atts2) and deep-equal($item1/node(), $item2/node())
+};      
+
+(:~
+ : Returns the text content of a file resource.
+ :
+ : @param uri the file URI
+ : @param encoding an encoding
+ : @param options for future use
+ : @return the text content
+ :)
+declare function f:file-content($uri as xs:string?, 
+                                $encoding as xs:string?,
+                                $options as map(*)?)
         as xs:string? {
     let $redirectedRetrieval := i:fox-unparsed-text_github($uri, $encoding, $options)
     return
@@ -77,7 +99,7 @@ declare function f:foxfunc_fox-child($context as xs:string,
  :)
 declare function f:jchild($context as node()*,
                           $names as xs:string+)
-        as xs:string* {
+        as item()* {
     let $flags := '' return
     
     if (every $name in $names satisfies not(matches($name, '[*?]'))) then        
@@ -438,6 +460,31 @@ declare function f:foxfunc_frequencies($values as item()*,
         case 'text' return $items/$fn_itemText(@text, @f) => string-join('&#xA;')
         default return $items => string-join('&#xA;')
 };      
+
+(:~
+ : Returns the effective content of a JSON value: if it is an object containing
+ : a reference, the reference is recursively resolved. Otherwise, the original
+ : value is returned.
+ :
+ : This function can be used in order to integrate reference resolving into navigation.
+ : Example: all payload schemas in an OpenAPI document may be collected like this:
+ :
+ :    $oas\paths\*\jeff()\(get, post, put, delete, options, head, patch, trace)
+ :    \(
+ :         (requestBody, responses\*)\jeff()\(content\schema, schema),
+ :         parameters\_\jeff()[in eq 'body']\schema
+ :    )
+ :
+ : @param value a JSON value
+ : @return the resolved reference, if the value contains one, or the original value
+ :)
+declare function f:jsonEffectiveValue($value as element())
+        as element()? {
+    let $reference := $value/_0024ref return
+    
+    if (not($reference)) then $value else
+        $reference ! f:resolveJsonRef(., .) ! f:jsonEffectiveValue(.)
+};
 
 (:~
  : Returns the schema objects describing the messages of an OpenAPI document.
@@ -1007,6 +1054,99 @@ declare function f:foxfunc_descendant-names(
  : @param localName if true, the local name is returned, otherwise the lexical name
  : @return the parent name
  :)
+declare function f:fileCopy($fileUri as xs:string,
+                            $targetUri as xs:string,
+                            $options as map(xs:string, item()*)?)
+        as empty-sequence() {
+    let $fileUriDomain := i:uriDomain($fileUri, ())
+    return
+        if (not($fileUriDomain eq 'FILE_SYSTEM')) then 
+            error(QName((), 'INVALID_CALL'),
+                concat('Function file-copy() expects a source file from the ',
+                  'file system; file URI: ', $fileUri))
+            else
+
+    let $targetUriDomain := i:uriDomain($targetUri, ())
+    return
+        if (not($targetUriDomain eq 'FILE_SYSTEM')) then 
+            error(QName((), 'INVALID_CALL'),
+                concat('Function file-copy() expects a target folder in the ',
+                  'file system; target dir URI: ', $targetUri))
+            else
+            
+    if (i:fox-file-exists($targetUri, ())) then
+        if (i:fox-is-file($targetUri, ()) and not($options?overwrite)) then
+             error(QName((), 'INVALID_CALL'), concat('Target file exists; use option "overwrite" ',
+                 'if you want to overwrite existing files; file URI: ', $targetUri))
+        else file:copy($fileUri, $targetUri)
+    else
+        let $targetParentUri := trace(file:parent($targetUri) , '___TARGET_PARENT_URI: ')
+        let $_CRETE := 
+            if (i:fox-file-exists($targetParentUri, ())) then ()
+            else if (not($options?create)) then
+                error(QName((), 'INVALID_CALL'), concat('Target directory does not ',
+                    'exists; use option "create" if you want automatic creation of ',
+                    'a non-existent target dir; target dir URI: ', $targetParentUri))
+            else file:create-dir($targetParentUri)
+        return
+            file:copy($fileUri, $targetUri)
+                
+(:                
+                if (not(i:fox-file-exists(file:parent($targetUri))) then file:copy($
+    let $targetFileExists :=
+        $targetResourceExists and (
+            i:fox-is-file($targetUri, ()) or
+            i:fox-file-exists($targetUri||'/'||file:name($fileUri), ()))
+    let $_CHECK := (
+        if (not($targetFileExists) or $options?overwrite) then () 
+        else
+            error(QName((), 'INVALID_CALL'), concat('Target file exists; use option "overwrite" ',
+                'if you want to overwrite existing files; file URI: ', $targetUri))
+        ,                
+        
+    if (i:fox-file-exists($targetUri, ())) then
+        let $_CHECK :=
+            if (i:fox-is-dir($targetDirUri)) then
+                let $targetFileUri := $targetUri || '/' || file:name($fileUri)
+                return
+                    if (i:fox-file-exists($targetFileUri, .)) then
+                if ($options?overwrite) then ()
+                else
+                    error(QName((), 'INVALID_CALL'), concat('Target file exists; use option "overwrite" ',
+                        'if you want to overwrite existing files; file URI: ', $targetUri))
+                        
+        return
+            file:copy($fileUri, $targetUri)
+                
+    else            
+    let $_CREATE_DIR :=
+        let $targetDirExists := i:fox-file-exists($targetDirUri, ())    
+        return
+            if ($targetDirExists) then ()
+            else if ($options?create) then file:create-dir($targetDirUri)
+            else
+                error(QName((), 'INVALID_CALL'), concat('Target directory does not ',
+                    'exists; use option "create" if you want automatic creation of ',
+                    'a non-existent target dir; target dir URI: ', $targetDirUri))
+    let $_CHECK_OVERWRITE :=
+        if ($options?overwrite) then ()
+        else if (not(i:fox-file-exists($targetDirUri || '/' || file:name($fileUri), ()))) then ()
+        else
+            error(QName((), 'INVALID_CALL'), concat('Target file exists; use option "overwrite" ',
+                'if you want to overwrite existing files; file URI: ', $fileUri))
+    return
+        file:copy($fileUri, $targetDirUri)
+:)        
+};        
+
+(:~
+ : Returns the parent name of a node. If $localNames is true, the local name is returned, 
+ : otherwise the lexical names. 
+ :
+ : @param node a node
+ : @param localName if true, the local name is returned, otherwise the lexical name
+ : @return the parent name
+ :)
 declare function f:foxfunc_parent-name($node as node(),
                                        $nameKind as xs:string?)   (: name | lname | jname :)
         as xs:string* {
@@ -1268,13 +1408,15 @@ declare function f:hlistRC($level as xs:integer,
  : a JSON Pointer (https://tools.ietf.org/html/rfc6901).
  :
  : @param reference the reference string
- : @param oad the OpenAPI documents considered
+ : @param doc a node from the document used as congtext
  : @return the referenced schema object, or the empty string if no such object is found
  :)
 declare function f:resolveJsonRef($reference as xs:string?, 
-                                  $doc as element(json)+)
+                                  $doc as element())
         as element()? {
     if (not($reference)) then () else
+    
+    let $doc := $doc/ancestor-or-self::*[last()]
     let $withFragment := contains($reference, '#')
     let $resource := 
         if ($withFragment) then substring-before($reference, '#') else $reference

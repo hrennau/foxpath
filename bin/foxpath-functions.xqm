@@ -99,7 +99,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return
                     ($explicit, $context)[1]
             return
-                foxf:foxfunc_bslash($arg)
+                foxf:bslash($arg)
 
         (: function `child-jnames` 
            ======================= :)
@@ -314,6 +314,23 @@ declare function f:resolveStaticFunctionCall($call as element(),
                          else substring(substring($text, 1, $end - 1), $start)
             return
                 $text
+                
+        (: function `file-copy` 
+           ======================= :)
+        else if ($fname = ('file-copy', 'fcopy')) then
+            let $file := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $dirname:= $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $options := 
+                let $values := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) ! tokenize(.)
+                return
+                    if (empty($values)) then () else
+                        map:merge((
+                            $values[. = ('create', 'c')] ! map:entry('create', true()),            
+                            $values[. = ('overwrite', 'o')] ! map:entry('overwrite', true()),
+                            ()
+                        ))
+            return
+                foxf:fileCopy($file, $dirname, $options)
                 
         (: function `file-date` 
            ==================== :)
@@ -667,6 +684,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     let $contextNode := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                     return foxf:name-path($nodes, 'jname', $numSteps, $contextNode)
 
+        (: function `json-effective-value` 
+           =============================== :)
+        else if ($fname = ('json-effective-value', 'jsoneff', 'jeff')) then
+            let $value := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return
+                    if (exists($explicit)) then $explicit 
+                    else $context
+            return
+                $value ! foxf:jsonEffectiveValue(.)            
+
         (: function `jsoncat` 
            ================== :)
         else if ($fname eq 'jsoncat') then
@@ -942,7 +970,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                             
         (: function `resolve-json-ref` 
            ========================== :)
-        else if ($fname = ('resolve-json-ref', 'jref')) then
+        else if ($fname = ('resolve-json-ref', 'jsonref', 'jref')) then
             let $ref := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
@@ -1421,6 +1449,19 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 convert:decode-key($arg)
                 
+        (: function `content-deep-equal` 
+           ============================= :)
+        else if ($fname eq 'content-deep-equal') then
+            let $args := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:content-deep-equal($args) 
+
+        (: function `deep-equal` 
+           ===================== :)
+        else if ($fname eq 'deep-equal') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return deep-equal($arg2, $arg2) 
+
         (: function `distinct-values` 
            ========================== :)
         else if ($fname eq 'distinct-values') then

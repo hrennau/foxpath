@@ -56,10 +56,16 @@ declare variable $f:TOKEN external :=
 
 (:~
  : Returns the domain of an URI. This is one of these:
- :    SIMPLE_URI_TREE
- :    REDIRECTING_URI_TREE
  :    FILE_SYSTEM
- :    SVN_REPO
+ :    ARCHIVE
+ :    BASEX
+ :    HTTP
+ :    HTTPS
+ :    SVN
+ :    RDF
+ :    GITHUB
+ :    UTREE
+ :    RAW
  :
  : @param uri the URI
  : @param options options controlling the evaluation
