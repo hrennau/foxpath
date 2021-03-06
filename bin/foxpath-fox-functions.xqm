@@ -483,6 +483,7 @@ declare function f:jschemaKeywordsRC($n as node())
         as node()* {
     typeswitch($n)
     case element(default) return $n    
+    case element(discriminator) return $n    
     case element(example) return $n
     case element(examples) return $n
     case element(enum) return $n    
@@ -490,7 +491,9 @@ declare function f:jschemaKeywordsRC($n as node())
     case element(patternProperties) return ($n, $n/*/*/f:jschemaKeywordsRC(.))    
     case element(properties) return ($n, $n/*/*/f:jschemaKeywordsRC(.))
     case element(_) return $n/*/f:jschemaKeywords(.)
-    default return ($n, $n/*/f:jschemaKeywordsRC(.))
+    default return 
+        if (starts-with($n/name(), 'x-')) then $n
+        else ($n, $n/*/f:jschemaKeywordsRC(.))
 };        
 
 (:~
