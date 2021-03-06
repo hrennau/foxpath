@@ -1,7 +1,9 @@
 module namespace f="http://www.ttools.org/xquery-functions";
-import module namespace i="http://www.ttools.org/xquery-functions" at 
-   "foxpath-util.xqm",
-   "foxpath-processorDependent.xqm";
+import module namespace i="http://www.ttools.org/xquery-functions" 
+at "foxpath-processorDependent.xqm";
+
+import module namespace util="http://www.ttools.org/xquery-functions/util" 
+at  "foxpath-util.xqm";
 
 declare variable $f:FOXSTEP_SEPERATOR := '/';
 declare variable $f:NODESTEP_SEPERATOR := '\';
@@ -57,24 +59,24 @@ declare function f:parseFoxpath_noOptimization($text as xs:string?)
  :)
 declare function f:parseFoxpath($text as xs:string?, $options as map(*)?)
         as element()+ {    
-    let $DEBUG := f:trace($text, 'parse.text.foxpath', 'INTEXT_FOXPATH: ')
+    let $DEBUG := util:trace($text, 'parse.text.foxpath', 'INTEXT_FOXPATH: ')
     let $context := f:getInitialParsingContext($options)
     let $prologEtc := f:parseProlog($text, $context)
     let $prolog := $prologEtc[. instance of node()]
-    let $errors := f:finalizeFoxpathErrors($prolog/descendant-or-self::error)
+    let $errors := util:finalizeFoxpathErrors($prolog/descendant-or-self::error)
     return
         if ($errors) then $errors else        
     let $textAfter := f:extractTextAfter($prologEtc)
     
-    let $seqExprEtc := f:trace(f:parseSeqExpr($textAfter, $context) , 'tree', 'PARSED: ')   
+    let $seqExprEtc := util:trace(f:parseSeqExpr($textAfter, $context) , 'tree', 'PARSED: ')   
     let $textAfter := f:extractTextAfter($seqExprEtc)    
     let $seqExpr := $seqExprEtc[. instance of node()]
-    let $errors := f:finalizeFoxpathErrors($seqExpr/descendant-or-self::error)        
+    let $errors := util:finalizeFoxpathErrors($seqExpr/descendant-or-self::error)        
     return
         if ($errors) then $errors
         else if ($textAfter) then
-            f:finalizeFoxpathErrors(
-                f:createFoxpathError('SYNTAX_ERROR', 
+            util:finalizeFoxpathErrors(
+                util:createFoxpathError('SYNTAX_ERROR', 
                     concat('Unexpected text after expression end: ', $textAfter)))                    
         else
             let $nsDecls := $prolog/nsDecls
@@ -87,7 +89,7 @@ declare function f:parseFoxpath($text as xs:string?, $options as map(*)?)
                         f:finalizeParseTree_annotateSteps($finalized) !
                         f:finalizeParseTree_extendFoxRoots(.)
 
-            let $errors := f:finalizeFoxpathErrors($exprTree/descendant-or-self::error)            
+            let $errors := util:finalizeFoxpathErrors($exprTree/descendant-or-self::error)            
             return
                 if ($errors) then $errors 
                 else
@@ -187,10 +189,10 @@ declare function f:finalizeParseTree_namespacesRC($n as node(), $prolog as eleme
                 let $uri := $prolog/nsDecls/namespace[@prefix eq $prefix]/@uri
                 let $uri :=
                     if ($uri) then $uri
-                    else $f:PREDECLARED_NAMESPACES[@prefix eq $prefix]/@uri
+                    else $util:PREDECLARED_NAMESPACES[@prefix eq $prefix]/@uri
                 return
                     if (not($uri)) then
-                        f:createFoxpathError('SYNTAX_ERROR',
+                        util:createFoxpathError('SYNTAX_ERROR',
                             concat('Prefix not bound to a namespace URI: ', $prefix))
                     else
                         attribute namespace {$uri}
@@ -215,7 +217,7 @@ declare function f:finalizeParseTree_namespacesRC($n as node(), $prolog as eleme
                 let $uri := $prolog/nsDecls/namespace[@prefix eq $prefix]/@uri
                 return
                     if (not($uri)) then
-                        f:createFoxpathError('SYNTAX_ERROR',
+                        util:createFoxpathError('SYNTAX_ERROR',
                             concat('Prefix not bound to a namespace URI: ', $prefix))
                     else
                         attribute namespace {$uri}
@@ -365,6 +367,7 @@ declare function f:finalizeParseTree_extendFoxRoots($tree as element())
  :
  : ===============================================================================
  :)
+ 
 (:~
  : Parses the prolog of a foxpath expression.
  :
@@ -381,7 +384,7 @@ declare function f:finalizeParseTree_extendFoxRoots($tree as element())
  :)
 declare function f:parseProlog($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.prolog', 'INTEXT_PROLOG: ')
+    let $DEBUG := util:trace($text, 'parse.prolog', 'INTEXT_PROLOG: ')
     
     (: parse namespace declarations :)
     let $nsDeclsEtc := f:parseNsDecls($text, $context)
@@ -437,7 +440,7 @@ declare function f:completeNsDecls($nsDecls as element(namespace)*)
  :)
 declare function f:parseNsDecls($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.ns_decls', 'INTEXT_NS_DECLS: ')
+    let $DEBUG := util:trace($text, 'parse.ns_decls', 'INTEXT_NS_DECLS: ')
     let $nsDeclEtc := f:parseNsDecl($text, $context)
     let $nsDecl := $nsDeclEtc[. instance of node()]
     let $textAfterNsDecl := f:extractTextAfter($nsDeclEtc)
@@ -457,7 +460,7 @@ declare function f:parseNsDecls($text as xs:string, $context as map(*))
  :)
 declare function f:parseNsDecl($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.ns_decl', 'INTEXT_NS_DECL: ') return
+    let $DEBUG := util:trace($text, 'parse.ns_decl', 'INTEXT_NS_DECL: ') return
     
     (: default namespace declaration :)
     if (matches($text, '^declare\s+default\s+element\s+namespace\s+')) then
@@ -470,11 +473,11 @@ declare function f:parseNsDecl($text as xs:string, $context as map(*))
             let $textAfterNamespace := f:extractTextAfter($namespaceEtc)
             return
                 if (not($namespace)) then
-                    f:createFoxpathError('SYNTAX_ERROR',
+                    util:createFoxpathError('SYNTAX_ERROR',
                         concat('Invalid default namespace declaration - ',
                             'URIliteral expected; text: ', $text))
                 else if (not(starts-with($textAfterNamespace, ';'))) then                        
-                    f:createFoxpathError('SYNTAX_ERROR',
+                    util:createFoxpathError('SYNTAX_ERROR',
                         concat('Syntax error - default namespace declaration must be followed ',
                             'by semicolon; text: ', $text))
                 else
@@ -498,11 +501,11 @@ declare function f:parseNsDecl($text as xs:string, $context as map(*))
                 let $textAfterNamespace := f:extractTextAfter($namespaceEtc)
                 return
                     if (not($namespace)) then
-                        f:createFoxpathError('SYNTAX_ERROR',
+                        util:createFoxpathError('SYNTAX_ERROR',
                             concat('Invalid namespace declaration - pattern ',
                                 'prefix = URIliteral expected; text: ', $text))                        
                     else if (not(starts-with($textAfterNamespace, ';'))) then                        
-                        f:createFoxpathError('SYNTAX_ERROR',
+                        util:createFoxpathError('SYNTAX_ERROR',
                             concat('Syntax error - default namespace declaration must be followed ',
                                 'by semicolon; text: ', $text))
                     else 
@@ -518,7 +521,7 @@ declare function f:parseNsDecl($text as xs:string, $context as map(*))
  :)
 declare function f:parseVarDecls($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.var_decls', 'INTEXT_VAR_DECLS: ')
+    let $DEBUG := util:trace($text, 'parse.var_decls', 'INTEXT_VAR_DECLS: ')
     let $varDeclEtc := f:parseVarDecl($text, $context)
     let $varDecl := $varDeclEtc[. instance of node()]
     let $textAfterVarDecl := f:extractTextAfter($varDeclEtc)
@@ -536,7 +539,7 @@ declare function f:parseVarDecls($text as xs:string, $context as map(*))
  :)
 declare function f:parseVarDecl($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.var_decl', 'INTEXT_VAR_DECL: ')
+    let $DEBUG := util:trace($text, 'parse.var_decl', 'INTEXT_VAR_DECL: ')
     
     let $eqnameEtcText := 
         replace($text, '^declare\s+variable\s+(\$.+)$', '$1', 's')[. ne $text] 
@@ -563,11 +566,11 @@ declare function f:parseVarDecl($text as xs:string, $context as map(*))
             let $textAfterValue := f:extractTextAfter($valueEtc)
             return
                 if (not($value)) then 
-                    f:createFoxpathError('SYNTAX_ERROR',
+                    util:createFoxpathError('SYNTAX_ERROR',
                         concat('Syntax error - variable declaration contains ',
                             'invalid value expression; var name: ', $eqname/@localName))                
                 else if (not(starts-with($textAfterValue, ';'))) then
-                    f:createFoxpathError('SYNTAX_ERROR',
+                    util:createFoxpathError('SYNTAX_ERROR',
                         concat('Syntax error - variable declaration must be followed ',
                             'by semicolon; var name: ', $eqname/@localName))
                 else
@@ -593,12 +596,12 @@ declare function f:parseVarDecl($text as xs:string, $context as map(*))
                     let $textAfterValue := f:extractTextAfter($valueEtc)
                     return
                         if (not($value)) then
-                            f:createFoxpathError('SYNTAX_ERROR',
+                            util:createFoxpathError('SYNTAX_ERROR',
                                 concat('Syntax error - external variable declaration ',
                                     'contains invalid default value expression; ',
                                     'var name: ', $eqname/@localName))               
                         else if (not(starts-with($textAfterValue, ';'))) then
-                            f:createFoxpathError('SYNTAX_ERROR',                        
+                            util:createFoxpathError('SYNTAX_ERROR',                        
                                 concat('Syntax error - external variable declaration must ',
                                     'be followed by semicolon; var name: ', $eqname/@localName))               
                         else
@@ -613,7 +616,7 @@ declare function f:parseVarDecl($text as xs:string, $context as map(*))
                             )
                                 
                 else if (not(starts-with($textAfterExternal, ';'))) then
-                    f:createFoxpathError('SYNTAX_ERROR',                
+                    util:createFoxpathError('SYNTAX_ERROR',                
                         concat('Syntax error - external variable declaration must be followed ',
                             'by semicolon; var name: ', $eqname/@localName))
                 (: without default value :)                        
@@ -627,7 +630,7 @@ declare function f:parseVarDecl($text as xs:string, $context as map(*))
                         $textAfterVarDecl
                     )
         else
-            f:createFoxpathError('SYNTAX_ERROR',                
+            util:createFoxpathError('SYNTAX_ERROR',                
                 concat('Syntax error - in a variable declaration, name and optional ',
                     'sequence type must be followed either by ":=" or by "external"; ',
                     'var name: ', $eqname/@localName))
@@ -657,7 +660,7 @@ declare function f:parseVarDecl($text as xs:string, $context as map(*))
  :)
 declare function f:parseSeqExpr($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_SEQ: ') return        
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_SEQ: ') return        
     let $seqExprEtc := f:parseSeqExprRC($text, $context)
     let $seqExpr := $seqExprEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($seqExprEtc)        
@@ -678,7 +681,7 @@ declare function f:parseSeqExpr($text as xs:string, $context as map(*))
  :)
 declare function f:parseSeqExprRC($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_SEQ_RC: ') return
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_SEQ_RC: ') return
     let $termOp := ','
     let $exprSingleEtc := f:parseExprSingle($text, $context)
     let $exprSingle := $exprSingleEtc[. instance of node()]
@@ -713,7 +716,7 @@ declare function f:parseSeqExprRC($text as xs:string, $context as map(*))
  :)
 declare function f:parseExprSingle($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_EXPR_SINGLE: ') return
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_EXPR_SINGLE: ') return
     let $forLetExprEtc := f:parseForLetExpr($text, $context)
     return
         if (exists($forLetExprEtc)) then
@@ -757,7 +760,7 @@ declare function f:parseExprSingle($text as xs:string, $context as map(*))
  :)
 declare function f:parseForLetExpr($text as xs:string, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.for_let_expr', 'INTEXT_FOR_LET_EXPR: ') return
+    let $DEBUG := util:trace($text, 'parse.for_let_expr', 'INTEXT_FOR_LET_EXPR: ') return
     if (not(matches($text, '^(for|let)\s+\$'))) then () else
     
     let $clauseKind := replace($text, '^(for|let).*', '$1', 's')
@@ -802,7 +805,7 @@ declare function f:parseForLetExpr($text as xs:string, $context as map(*))
  :)
 declare function f:parseVarBindings($text as xs:string, $clauseKind as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.var_bindings', 'INTEXT_VAR_BINDINGS: ') return
+    let $DEBUG := util:trace($text, 'parse.var_bindings', 'INTEXT_VAR_BINDINGS: ') return
     let $op := if ($clauseKind eq 'for') then 'in' else ':='
     
     let $varNameEtc := f:parseVarName($text, $context)
@@ -849,7 +852,7 @@ declare function f:parseVarBindings($text as xs:string, $clauseKind as xs:string
  :)
  declare function f:parseQuantifiedExpr($text as xs:string, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_QUANTIFIED_EXPR: ') return    
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_QUANTIFIED_EXPR: ') return    
     if (not(matches($text, '^(some|every)\s+\$'))) then () else
     
     let $quantKind := replace($text, '^(some|every).*', '$1') 
@@ -890,7 +893,7 @@ declare function f:parseVarBindings($text as xs:string, $clauseKind as xs:string
  :)
 declare function f:parseIfExpr($text as xs:string, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_IF_EXPR: ') return    
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_IF_EXPR: ') return    
     if (not(matches($text, '^if\s+\('))) then () else
     
     let $textCondExprEtc := replace($text, '^if\s+\((.*)', '$1')
@@ -938,7 +941,7 @@ declare function f:parseIfExpr($text as xs:string, $context as map(*))
  :)
 declare function f:parseOrExpr($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_OR: ') return        
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_OR: ') return        
     let $orEtc := f:parseOrExprRC($text, $context)
     let $or := $orEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($orEtc)        
@@ -959,7 +962,7 @@ declare function f:parseOrExpr($text as xs:string, $context as map(*))
  :)
 declare function f:parseOrExprRC($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_OR_RC: ') return        
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_OR_RC: ') return        
     let $andEtc := f:parseAndExpr($text, $context)
     let $and := $andEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($andEtc)        
@@ -1206,7 +1209,7 @@ declare function f:parseRangeExpr($text as xs:string, $context as map(*))
  :) 
 declare function f:parseAdditiveExpr($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_ADDITIVE: ')        
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_ADDITIVE: ')        
     let $multiplicativeEtc := f:parseMultiplicativeExpr($text, $context)
     let $multiplicative := $multiplicativeEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($multiplicativeEtc)    
@@ -1258,7 +1261,7 @@ declare function f:parseAdditiveExprRC($text as xs:string, $leftOperand as eleme
  :) 
 declare function f:parseMultiplicativeExpr($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_MULTIPLICATIVE: ')        
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_MULTIPLICATIVE: ')        
     let $unionExprEtc := f:parseUnionExpr($text, $context)
     let $unionExpr := $unionExprEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($unionExprEtc)    
@@ -1277,7 +1280,7 @@ declare function f:parseMultiplicativeExpr($text as xs:string, $context as map(*
  :)
 declare function f:parseMultiplicativeExprRC($text as xs:string, $leftOperand as element(), $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_MULTIPLICATIVE_RC: ')        
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_MULTIPLICATIVE_RC: ')        
     let $operator := replace($text, '^(\*|div|idiv|mod).*', '$1', 's')[not(. eq $text)]
     return
         if (not($operator)) then ($leftOperand, $text)
@@ -1319,7 +1322,7 @@ declare function f:parseMultiplicativeExprRC($text as xs:string, $leftOperand as
  :)
 declare function f:parseUnionExpr($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.union', 'INTEXT_UNION: ')        
+    let $DEBUG := util:trace($text, 'parse.union', 'INTEXT_UNION: ')        
     let $unionOperandsEtc := f:parseUnionExprRC($text, $context)
     let $unionOperands := $unionOperandsEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($unionOperandsEtc)    
@@ -1339,7 +1342,7 @@ declare function f:parseUnionExpr($text as xs:string, $context as map(*))
  :)
 declare function f:parseUnionExprRC($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.union_rc', 'INTEXT_UNION_RC: ')        
+    let $DEBUG := util:trace($text, 'parse.union_rc', 'INTEXT_UNION_RC: ')        
     let $intersectExceptExprEtc := f:parseIntersectExceptExpr($text, $context)
     let $intersectExceptExpr := $intersectExceptExprEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($intersectExceptExprEtc)    
@@ -1370,7 +1373,7 @@ declare function f:parseUnionExprRC($text as xs:string, $context as map(*))
  :) 
 declare function f:parseIntersectExceptExpr($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_INTERSECT_EXCEPT: ')        
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_INTERSECT_EXCEPT: ')        
     let $instanceOfExprEtc := f:parseInstanceOfExpr($text, $context)
     let $instanceOfExpr := $instanceOfExprEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($instanceOfExprEtc)    
@@ -1389,7 +1392,7 @@ declare function f:parseIntersectExceptExpr($text as xs:string, $context as map(
  :)
 declare function f:parseIntersectExceptExprRC($text as xs:string, $leftOperand as element(), $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_INTERSECT_EXCEPT_RC: ')        
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_INTERSECT_EXCEPT_RC: ')        
     let $operator := replace($text, '^(intersect|except).*', '$1', 's')[not(. eq $text)]
     return
         if (not($operator)) then ($leftOperand, $text)
@@ -1423,7 +1426,7 @@ declare function f:parseIntersectExceptExprRC($text as xs:string, $leftOperand a
  :) 
 declare function f:parseArrowExpr($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.arrow', 'INTEXT_ARROW: ')
+    let $DEBUG := util:trace($text, 'parse.arrow', 'INTEXT_ARROW: ')
     let $unaryExprEtc := f:parseUnaryExpr($text, $context)
     let $unaryExpr := $unaryExprEtc[. instance of node()]
     let $textAfterUnary := f:extractTextAfter($unaryExprEtc)   
@@ -1484,7 +1487,7 @@ declare function f:foldArrowExpr($lhsExpr as element(), $clauses as element()*)
  :) 
 declare function f:parseArrowExprClauses($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.arrow_clauses', 'INTEXT_ARROW_CLAUSES: ')
+    let $DEBUG := util:trace($text, 'parse.arrow_clauses', 'INTEXT_ARROW_CLAUSES: ')
     return if (not(starts-with($text, '=>'))) then $text else
         
     let $textAfterArrow := f:skipOperator($text, '=>')
@@ -1567,7 +1570,7 @@ declare function f:parseArrowExprClauses($text as xs:string, $context as map(*))
  :) 
 declare function f:parseUnaryExpr($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.unary', 'INTEXT_UNARY: ')    
+    let $DEBUG := util:trace($text, 'parse.unary', 'INTEXT_UNARY: ')    
     let $signChars := replace($text, '^([\-+\s]+).*', '$1', 's')[. ne $text]
     return
         if (not($signChars)) then f:parseMapExpr($text, $context)
@@ -1599,7 +1602,7 @@ declare function f:parseUnaryExpr($text as xs:string, $context as map(*))
  :)
 declare function f:parseMapExpr($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_MAP: ') return        
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_MAP: ') return        
     let $operandsEtc := f:parseMapExprRC($text, $context)
     let $operands := $operandsEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($operandsEtc)        
@@ -1620,7 +1623,7 @@ declare function f:parseMapExpr($text as xs:string, $context as map(*))
  :)
 declare function f:parseMapExprRC($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_MAP_RC: ') return
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_MAP_RC: ') return
     let $operator := "!"
     let $pathExprEtc := f:parsePathExpr($text, $context)
     let $pathExpr := $pathExprEtc[. instance of node()]
@@ -1677,7 +1680,7 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
     (: hjr, 20180112 - exclude confusion with FLWOR expression :)
     if (matches($text, '^(let|for)\s+\$')) then $text else
     
-    let $DEBUG := f:trace($text, 'parse.path', 'INTEXT_PATH: ')   
+    let $DEBUG := util:trace($text, 'parse.path', 'INTEXT_PATH: ')   
     let $FOXSTEP_SEPERATOR_REGEX := map:get($context, 'FOXSTEP_SEPERATOR_REGEX')
     let $NODESTEP_SEPERATOR_REGEX := map:get($context, 'NODESTEP_SEPERATOR_REGEX')    
     let $FOXSTEP_SEPERATOR := map:get($context, 'FOXSTEP_SEPERATOR')
@@ -1829,7 +1832,7 @@ declare function f:parseSteps($text as xs:string?,
         as item()* {
     if (not($text)) then () else
     
-    let $DEBUG := f:trace($text, 'parse.steps', 'INTEXT_STEPS: ')
+    let $DEBUG := util:trace($text, 'parse.steps', 'INTEXT_STEPS: ')
     let $FOXSTEP_SEPERATOR := map:get($context, 'FOXSTEP_SEPERATOR')
     let $NODESTEP_SEPERATOR := map:get($context, 'NODESTEP_SEPERATOR')
     
@@ -1900,7 +1903,7 @@ declare function f:parseStep($text as xs:string?,
                              $precedingOperator as xs:string?,
                              $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.step', 'INTEXT_STEP: ')  
+    let $DEBUG := util:trace($text, 'parse.step', 'INTEXT_STEP: ')  
     let $postfixExprEtc := f:parsePostfixExpr($text, $context)
     let $postfixExpr := $postfixExprEtc[. instance of node()]
     let $FOXSTEP_SEPERATOR := map:get($context, 'FOXSTEP_SEPERATOR')
@@ -1945,7 +1948,7 @@ declare function f:parseStep($text as xs:string?,
                     let $textAfter := f:extractTextAfter($nodeAxisStepEtc)
                     return
                         if (not($nodeAxisStep)) then
-                            f:createFoxpathError('SYNTAX_ERROR',
+                            util:createFoxpathError('SYNTAX_ERROR',
                                 concat('Expected path step, but did not encounter a valid one; ',
                                 'expression text: ', $text))
                         else                                
@@ -1958,7 +1961,7 @@ declare function f:parseStep($text as xs:string?,
  :)
 declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.fox_axis_step', 'INTEXT_FOX_AXIS_STEP: ')
+    let $DEBUG := util:trace($text, 'parse.fox_axis_step', 'INTEXT_FOX_AXIS_STEP: ')
     let $isContextUri := $context?IS_CONTEXT_URI    
     let $acceptAbbrevSyntax := $isContextUri
     let $FOXSTEP_SEPERATOR := map:get($context, 'FOXSTEP_SEPERATOR')
@@ -2075,7 +2078,7 @@ declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
  :)
 declare function f:parseNodeAxisStep($text as xs:string?, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.node_axis_step', 'NODE_AXIS_STEP_EXPR: ') return            
+    let $DEBUG := util:trace($text, 'parse.node_axis_step', 'NODE_AXIS_STEP_EXPR: ') return            
     let $DEBUG := map:get($context, 'IS_CONTEXT_URI')
     
     let $NODESTEP_SEPERATOR := map:get($context, 'NODESTEP_SEPERATOR')
@@ -2178,7 +2181,7 @@ declare function f:parseNodeAxisStep($text as xs:string?, $context as map(*))
  :)
 declare function f:parsePostfixExpr($text as xs:string, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.text.postfix', 'INTEXT_POSTFIX_EXPR: ') return
+    let $DEBUG := util:trace($text, 'parse.text.postfix', 'INTEXT_POSTFIX_EXPR: ') return
     
     let $primaryExprEtc := f:parsePrimaryExpr($text, $context)
     let $primaryExpr := $primaryExprEtc[. instance of node()]
@@ -2228,7 +2231,7 @@ declare function f:buildPostfixesTree($primaryExpr as element(), $postfixes as e
                 $postfix1/*
             }</dynFuncCall>
         else
-            f:createFoxpathError('SYNTAX_ERROR', 
+            util:createFoxpathError('SYNTAX_ERROR', 
                 concat('Unexpected postfix element: ', local-name($postfix1)))
     return
         if (not($tail)) then $innermostExpr
@@ -2259,7 +2262,7 @@ declare function f:buildPostfixesTreeRC($postfixExpr as element(), $postfixes as
                 $postfix1/*
             }</dynFuncCall>
         else     
-            f:createFoxpathError('SYNTAX_ERROR', concat('Unexpected postfix element: ', local-name($postfix1)))        
+            util:createFoxpathError('SYNTAX_ERROR', concat('Unexpected postfix element: ', local-name($postfix1)))        
     return
         if (not($tail)) then $outerExpr
         else
@@ -2278,7 +2281,7 @@ declare function f:buildPostfixesTreeRC($postfixExpr as element(), $postfixes as
  :)
 declare function f:parsePostfixes($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_POSTFIXES: ') return
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_POSTFIXES: ') return
     
     let $postfixEtc :=
         if (starts-with($text, '[')) then
@@ -2316,7 +2319,7 @@ declare function f:parsePostfixes($text as xs:string, $context as map(*))
  :)
 declare function f:parseFilterExpr($text as xs:string, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_FILTER_EXPR: ') return
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_FILTER_EXPR: ') return
     
     let $primaryExprEtc := f:parsePrimaryExpr($text, $context)
     let $primaryExpr := $primaryExprEtc[. instance of node()]
@@ -2360,7 +2363,7 @@ declare function f:parseFilterExpr($text as xs:string, $context as map(*))
  :)
 declare function f:parsePredicates($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_PREDICATES: ') return
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_PREDICATES: ') return
     
     let $predEtc := f:parsePredicate($text, $context)
     let $pred := $predEtc[. instance of node()]
@@ -2389,7 +2392,7 @@ declare function f:parsePredicates($text as xs:string, $context as map(*))
  :)
 declare function f:parsePredicate($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text.predicate', 'INTEXT_PREDICATE: ')
+    let $DEBUG := util:trace($text, 'parse.text.predicate', 'INTEXT_PREDICATE: ')
     let $useText := replace($text, '^\s*\[\s*', '')  
     let $seqExprEtc := f:parseSeqExpr($useText, $context)
     let $seqExpr := $seqExprEtc[. instance of node()]
@@ -2397,7 +2400,7 @@ declare function f:parsePredicate($text as xs:string, $context as map(*))
     return
         if ($seqExpr/self::error) then $seqExpr    
         else if (not(starts-with($textAfter, ']'))) then
-            f:createFoxpathError('SYNTAX_ERROR', 
+            util:createFoxpathError('SYNTAX_ERROR', 
                 concat('Unbalanced square brackets; predicate text: ', $text))
         else
             let $textAfterOp := f:skipOperator($textAfter, ']')
@@ -2415,7 +2418,7 @@ declare function f:parsePredicate($text as xs:string, $context as map(*))
 
 declare function f:parsePrimaryExpr($text as xs:string, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.text.primary', 'INTEXT_PRIMARY_EXPR: ') return
+    let $DEBUG := util:trace($text, 'parse.text.primary', 'INTEXT_PRIMARY_EXPR: ') return
 
     (: node test => not primary expression :)
     if (matches($text, '^(node|text|comment|processing-instruction|element|attribute|document-node)\s*\(')) then ()
@@ -2451,7 +2454,7 @@ declare function f:parseVariableRef($text as xs:string, $context as map(*))
     let $textAfter := f:extractTextAfter($nameEtc)
     return
         if (not($name)) then
-            f:createFoxpathError('SYNTAX_ERROR', 
+            util:createFoxpathError('SYNTAX_ERROR', 
                 concat('Invalid variable reference: ', $text))
         else (
             <var>{$name/(@localName, @prefix, @namespace)}</var>,
@@ -2484,7 +2487,7 @@ declare function f:parseParenthesizedExpr($text as xs:string, $context as map(*)
     let $textAfter := f:extractTextAfter($seqExprEtc)    
     return
         if (not(starts-with($textAfter, ')'))) then
-            f:createFoxpathError('SYNTAX_ERROR', 
+            util:createFoxpathError('SYNTAX_ERROR', 
                 concat('Unbalanced parentheses: (', $text))
         else
             let $textAfterOperator := f:skipOperator($textAfter, ')')
@@ -2524,7 +2527,7 @@ declare function f:parseContextItem($text as xs:string, $context as map(*))
  :)
 declare function f:parseFunctionCall($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text.function_call', 'INTEXT_FUNCTION_CALL: ')        
+    let $DEBUG := util:trace($text, 'parse.text.function_call', 'INTEXT_FUNCTION_CALL: ')        
     let $name := replace($text, '^(\i\c*)\s*\(.*', '$1', 's')[not(. eq $text)]
     let $argumentsText := f:skipOperator($text, $name)
     let $argumentsEtc := f:parseArgumentList($argumentsText, $context)
@@ -2548,7 +2551,7 @@ declare function f:parseFunctionCall($text as xs:string, $context as map(*))
  :)
 declare function f:parseNamedFunctionItem($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_NAMED_FUNCTION_REF: ')        
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_NAMED_FUNCTION_REF: ')        
     let $funcRefText := replace($text, '^(\i\c*\s*#\s*\d+).*', '$1', 's')
     let $funcRef := replace($funcRefText, '\s+', '')
     let $parsed := <functionRef name="{$funcRef}"/>
@@ -2577,7 +2580,7 @@ declare function f:parseNamedFunctionItem($text as xs:string, $context as map(*)
  :)
 declare function f:parseInlineFunctionExpr($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text.inline_function_expr', 'INTEXT_INLINE_FUNCTION_EXPR: ')
+    let $DEBUG := util:trace($text, 'parse.text.inline_function_expr', 'INTEXT_INLINE_FUNCTION_EXPR: ')
     let $paramListText := replace($text, '^function\s*(\(.*)', '$1', 's')
     let $paramListEtc := f:parseParamList($paramListText, $context) 
     
@@ -2629,7 +2632,7 @@ declare function f:parseInlineFunctionExpr($text as xs:string, $context as map(*
  :)
 declare function f:parseArgumentList($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_ARGUMENT_LIST: ') return
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_ARGUMENT_LIST: ') return
     
     (: case 1: empty argument list :)
     if (matches($text, '^\(\s*\)')) then 
@@ -2648,7 +2651,7 @@ declare function f:parseArgumentList($text as xs:string, $context as map(*))
 
 declare function f:parseArgumentListRC($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_ARGUMENT_LIST_RC: ') return
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_ARGUMENT_LIST_RC: ') return
     
     let $exprSingleEtc := 
         if (matches($text, '^\?\s*[,)]')) then (
@@ -2669,7 +2672,7 @@ declare function f:parseArgumentListRC($text as xs:string, $context as map(*))
             return 
                 $textAfterArguments
         else
-            f:createFoxpathError('SYNTAX_ERROR', 
+            util:createFoxpathError('SYNTAX_ERROR', 
                 concat('Function call with unbalanced parentheses: ', $text))
         )                    
 };
@@ -2689,7 +2692,7 @@ declare function f:parseArgumentListRC($text as xs:string, $context as map(*))
  :)
 declare function f:parseParamList($text as xs:string, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.text.param_list', 'INTEXT_PARAM_LIST: ') return
+    let $DEBUG := util:trace($text, 'parse.text.param_list', 'INTEXT_PARAM_LIST: ') return
     
     (: case 0: text does not start with "(" 
        => return empty sequence, indicating that parsing failed :)    
@@ -2725,7 +2728,7 @@ declare function f:parseParamList($text as xs:string, $context as map(*))
  :)
 declare function f:parseParamListRC($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text.param_list_rc', 'INTEXT_PARAM_LIST_RC: ') return
+    let $DEBUG := util:trace($text, 'parse.text.param_list_rc', 'INTEXT_PARAM_LIST_RC: ') return
     
     let $eqnameEtc := f:parseVarName($text, $context)
     let $eqname := $eqnameEtc[. instance of node()]
@@ -2756,7 +2759,7 @@ declare function f:parseParamListRC($text as xs:string, $context as map(*))
             return 
                 $textAfterParams
         else
-            f:createFoxpathError('SYNTAX_ERROR', 
+            util:createFoxpathError('SYNTAX_ERROR', 
                 concat('Param list of function item with unbalanced parentheses: ', $text))
         )                    
 };
@@ -2766,7 +2769,7 @@ declare function f:parseParamListRC($text as xs:string, $context as map(*))
  :)
 declare function f:parseReturnType($text as xs:string, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.text.return_type', 'INTEXT_RETURN_TYPE: ') return      
+    let $DEBUG := util:trace($text, 'parse.text.return_type', 'INTEXT_RETURN_TYPE: ') return      
     let $useText := if (not(matches($text, '^as\s'))) then concat('as item()* ', $text) else $text
     return
         let $textSequenceType := f:skipOperator($useText, 'as')
@@ -2816,7 +2819,7 @@ declare function f:parseParamSequenceType($text as xs:string, $context as map(*)
  :)
 declare function f:parseStringLiteral($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text.string', 'INTEXT_STRING_LITERAL: ') return 
+    let $DEBUG := util:trace($text, 'parse.text.string', 'INTEXT_STRING_LITERAL: ') return 
     let $char1 := substring($text, 1, 1)
     let $text2 := substring($text, 2)    
     let $literalString :=
@@ -2824,7 +2827,7 @@ declare function f:parseStringLiteral($text as xs:string, $context as map(*))
             [not(. eq $text2)]
     return
         if (empty($literalString)) then
-            f:createFoxpathError('SYNTAX_ERROR', 
+            util:createFoxpathError('SYNTAX_ERROR', 
                 concat('Unbalanced string delimiter: ', $text))
         else
             let $textAfter := replace(substring($text, 3 + string-length($literalString)), '^\s+', '')
@@ -2851,7 +2854,7 @@ declare function f:parseStringLiteral($text as xs:string, $context as map(*))
  :)
 declare function f:parseNumericLiteral($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_NUMERIC_LITERAL: ') return        
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_NUMERIC_LITERAL: ') return        
     let $number := replace($text, 
         '( (\d+ (\.\d*)? ) | (\.\d+) ) (\s*[eE]\s*[+\-]?\s*\d+)? .*', '$1$5', 'xs')
     let $value := replace(replace($number, '\s+', ''), 'e', 'E')        
@@ -2891,7 +2894,7 @@ declare function f:parseNumericLiteral($text as xs:string, $context as map(*))
  :)
 declare function f:parseInstanceOfExpr($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_INSTANCE_OF: ')        
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_INSTANCE_OF: ')        
     let $treatExprEtc := f:parseTreatExpr($text, $context)
     let $treatExpr := $treatExprEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($treatExprEtc)    
@@ -2924,7 +2927,7 @@ declare function f:parseInstanceOfExpr($text as xs:string, $context as map(*))
  :)
 declare function f:parseTreatExpr($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_TREAT: ')        
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_TREAT: ')        
     let $castableExprEtc := f:parseCastableExpr($text, $context)
     let $castableExpr := $castableExprEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($castableExprEtc)    
@@ -2957,7 +2960,7 @@ declare function f:parseTreatExpr($text as xs:string, $context as map(*))
  :)
 declare function f:parseCastableExpr($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.text', 'INTEXT_CASTABLE: ')        
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_CASTABLE: ')        
     let $castExprEtc := f:parseCastExpr($text, $context)
     let $castExpr := $castExprEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($castExprEtc)    
@@ -2990,7 +2993,7 @@ declare function f:parseCastableExpr($text as xs:string, $context as map(*))
  :)
 declare function f:parseCastExpr($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := f:trace($text, 'parse.cast', 'INTEXT_CAST: ')        
+    let $DEBUG := util:trace($text, 'parse.cast', 'INTEXT_CAST: ')        
     let $arrowExprEtc := f:parseArrowExpr($text, $context)
     let $arrowExpr := $arrowExprEtc[. instance of node()]
     let $textAfterArrow := f:extractTextAfter($arrowExprEtc)    
@@ -3041,7 +3044,7 @@ declare function f:parseSequenceType($text as xs:string, $context as map(*))
     let $itemTypeEtc := f:parseItemType($text, $context)
     return
         if (empty($itemTypeEtc)) then
-            f:createFoxpathError('SYNTAX_ERROR', 
+            util:createFoxpathError('SYNTAX_ERROR', 
                 concat('Not a valid sequence type at beginning of string: ', $text))
         else
             let $itemType := $itemTypeEtc[. instance of node()]
@@ -3158,7 +3161,7 @@ declare function f:parseItemType($text as xs:string, $context as map(*))
             let $atomicTypeEtc := f:parseAtomicTypeTest($text, $context)
             return
                 if (empty($atomicTypeEtc)) then
-                    f:createFoxpathError('SYNTAX_ERROR', 
+                    util:createFoxpathError('SYNTAX_ERROR', 
                         concat('Not a valid item type at beginning of string: ', $text))
                 else
                     let $atomicType := $atomicTypeEtc[. instance of node()]
@@ -3408,7 +3411,7 @@ declare function f:parseSchemaElementOrAttributeTest($text as xs:string, $contex
  :)
 declare function f:parseVarName($text as xs:string, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.var_name', 'INTEXT_VAR_NAME: ') return
+    let $DEBUG := util:trace($text, 'parse.var_name', 'INTEXT_VAR_NAME: ') return
     
     if (not(starts-with($text, '$'))) then 
         $text 
@@ -3521,7 +3524,7 @@ declare function f:parseNametest($text as xs:string, $context as map(*))
  :)
 declare function f:parseEQName($text as xs:string, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.eqname', 'INTEXT_EQNAME: ') return
+    let $DEBUG := util:trace($text, 'parse.eqname', 'INTEXT_EQNAME: ') return
 
     let $nameRegex := '^(\i[\c-[:]]*(:\i[\c-[:]]*)?).*'
     let $s := $text || '###'
@@ -3581,7 +3584,7 @@ declare function f:parseEQName($text as xs:string, $context as map(*))
 (: 
 declare function f:parseEQName($text as xs:string, $context as map(*))
         as item()* {
-    let $DEBUG := f:trace($text, 'parse.text.eqname', 'INTEXT_EQNAME: ') return        
+    let $DEBUG := util:trace($text, 'parse.text.eqname', 'INTEXT_EQNAME: ') return        
     let $lnameUri := 
         replace($text, '^\$Q\s*\{\s*(.*)\}\s*(.*)', '$2#$1', 's')[not(. eq $text)]
     return

@@ -1,8 +1,12 @@
 module namespace f="http://www.ttools.org/xquery-functions";
+
 import module namespace i="http://www.ttools.org/xquery-functions" 
 at "foxpath-processorDependent.xqm",
-   "foxpath-uri-operations.xqm",
-   "foxpath-util.xqm";
+   "foxpath-uri-operations.xqm";
+   
+import module namespace util="http://www.ttools.org/xquery-functions/util" 
+at  "foxpath-util.xqm";
+  
 import module namespace foxf="http://www.foxpath.org/ns/fox-functions" 
 at "foxpath-fox-functions.xqm";
     
@@ -23,7 +27,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         as item()* {
     let $fname := $call/@name
     return    
-        f:trace(
+        util:trace(
         
         (: ################################################################
          : p a r t  1:    e x t e n s i o n    f u n c t i o n s
@@ -678,8 +682,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $nodes := 
                 if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 else $context
+            let $nameFilter := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
             return
-                foxf:jschemaKeywords($nodes)                            
+                foxf:jschemaKeywords($nodes, $nameFilter)                            
 
         (: function `jname-path` 
            ==================== :)
@@ -851,8 +856,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $nodes := 
                 if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 else $context
+            let $nameFilter := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                 
             return
-                foxf:oasJschemaKeywords($nodes)            
+                foxf:oasJschemaKeywords($nodes, $nameFilter)            
 
         (: function `pads` 
            =============== :)
@@ -1117,7 +1123,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     if ($item instance of node()) then $item
                     else if (doc-available($item)) then doc($item)
                     else ()
-            let $doc := $doc ! f:prettyFoxPrint(.)   
+            let $doc := $doc ! util:prettyFoxPrint(.)   
             
             let $encoding := ($encoding, 'UTF8')[1]
             return

@@ -1,4 +1,11 @@
-import module namespace f="http://www.ttools.org/xquery-functions" at "foxpath.xqm", "foxpath-parser.xqm", "foxpath-util.xqm", "foxpath-processorDependent.xqm";
+import module namespace f="http://www.ttools.org/xquery-functions" 
+at "foxpath.xqm", 
+   "foxpath-parser.xqm", 
+   "foxpath-processorDependent.xqm";
+
+import module namespace util="http://www.ttools.org/xquery-functions/util" 
+at  "foxpath-util.xqm";
+
 declare namespace soap="http://schemas.xmlsoap.org/soap/envelope/";
 
 declare variable $foxpath external;

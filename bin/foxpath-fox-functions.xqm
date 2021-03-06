@@ -1,8 +1,10 @@
 module namespace f="http://www.foxpath.org/ns/fox-functions";
 import module namespace i="http://www.ttools.org/xquery-functions" 
 at "foxpath-processorDependent.xqm",
-   "foxpath-uri-operations.xqm",
-   "foxpath-util.xqm";
+   "foxpath-uri-operations.xqm";
+
+import module namespace util="http://www.ttools.org/xquery-functions/util" 
+at  "foxpath-util.xqm";
 
 (:~
  : Edits a text, replacing forward slashes by back slashes.
@@ -466,34 +468,48 @@ declare function f:foxfunc_frequencies($values as item()*,
  : JSON Schema document.
  :
  : @param values JSON values
+ : @param namePatterns a list of names or name patterns, whitespace separated
  : @return the resolved reference, if the value contains one, or the original value
  :)
-declare function f:jschemaKeywords($values as element()*)
+declare function f:jschemaKeywords($values as element()*, 
+                                   $namePatterns as xs:string?)
         as element()* {
-    $values/f:jschemaKeywordsRC(.)
+    let $nameFilter := util:patternsToNamesAndRegexes($namePatterns, true())
+    return
+        $values/f:jschemaKeywordsRC(., $nameFilter)
 };
 
 (:~
  : Recursive helper function of jschemaKeywords().
  :
  : @param n a node to process
+ : @param filter a filter consisting of names and regular expressions
  : @return the keyword nodes under the input node, including it
  :)
-declare function f:jschemaKeywordsRC($n as node())
+declare function f:jschemaKeywordsRC($n as node(),
+                                     $nameFilter as map(xs:string, item()*)?)
         as node()* {
-    typeswitch($n)
-    case element(default) return $n    
-    case element(discriminator) return $n    
-    case element(example) return $n
-    case element(examples) return $n
-    case element(enum) return $n    
-    case element(json) return ($n[parent::*], $n/*/f:jschemaKeywordsRC(.))
-    case element(patternProperties) return ($n, $n/*/*/f:jschemaKeywordsRC(.))    
-    case element(properties) return ($n, $n/*/*/f:jschemaKeywordsRC(.))
-    case element(_) return $n/*/f:jschemaKeywords(.)
-    default return 
-        if (starts-with($n/name(), 'x-')) then $n
-        else ($n, $n/*/f:jschemaKeywordsRC(.))
+    let $unfiltered :=        
+        typeswitch($n)
+        case element(default) return $n    
+        case element(discriminator) return $n    
+        case element(example) return $n
+        case element(examples) return $n
+        case element(enum) return $n    
+        case element(json) return ($n[parent::*], $n/*/f:jschemaKeywordsRC(., $nameFilter))
+        case element(patternProperties) return ($n, $n/*/*/f:jschemaKeywordsRC(., $nameFilter))    
+        case element(properties) return ($n, $n/*/*/f:jschemaKeywordsRC(., $nameFilter))
+        case element(_) return $n/*/f:jschemaKeywordsRC(., $nameFilter)
+        default return 
+            if (starts-with($n/name(), 'x-')) then $n
+            else ($n, $n/*/f:jschemaKeywordsRC(., $nameFilter))
+    return
+        if (empty($nameFilter)) then $unfiltered else
+        for $node in $unfiltered
+        let $jname := $node/local-name() ! convert:decode-key(.) ! lower-case(.)
+        where (empty($nameFilter?namesLC) or $jname = $nameFilter?namesLC) and        
+              (empty($nameFilter?regexes) or (some $r in $nameFilter?regexes satisfies matches($jname, $r, 'i')))        
+        return $node
 };        
 
 (:~
@@ -502,12 +518,17 @@ declare function f:jschemaKeywordsRC($n as node())
  : @param oasNodes nodes from OpenAPI documents
  : @return the keywords contained by the OpenAPI documents
  :)
-declare function f:oasJschemaKeywords($oasNodes as element()*)
+declare function f:oasJschemaKeywords($oasNodes as node()*,
+                                      $namePatterns as xs:string?)
         as element()* {
+    let $oasNodes :=
+        $oasNodes ! (typeswitch(.) case document-node() return * default return ancestor-or-self::*[last()])
+    return
+    
     $oasNodes/ancestor-or-self::*[last()]/(
-        definitions/*/*/f:jschemaKeywords(.),
-        components/schemas/*/*/f:jschemaKeywords(.),
-        f:oasMsgSchemas(.)/*/f:jschemaKeywords(.)
+        definitions/*/*/f:jschemaKeywords(., $namePatterns),
+        components/schemas/*/*/f:jschemaKeywords(., $namePatterns),
+        f:oasMsgSchemas(.)/*/f:jschemaKeywords(., $namePatterns)
     )        
 };
 

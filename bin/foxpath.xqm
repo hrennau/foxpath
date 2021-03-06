@@ -1,10 +1,12 @@
 module namespace f="http://www.ttools.org/xquery-functions";
-import module namespace i="http://www.ttools.org/xquery-functions" at
-    "foxpath-functions.xqm",
+import module namespace i="http://www.ttools.org/xquery-functions" 
+at  "foxpath-functions.xqm",
     "foxpath-parser.xqm",
     "foxpath-processorDependent.xqm",
-    "foxpath-uri-operations.xqm",
-    "foxpath-util.xqm";
+    "foxpath-uri-operations.xqm";
+
+import module namespace util="http://www.ttools.org/xquery-functions/util" 
+at  "foxpath-util.xqm";
 
 (:~
  : Resolves a foxpath expression. The result is an XDM value.
@@ -115,9 +117,9 @@ declare function f:resolveFoxpath($foxpath as xs:string,
                                   $options as map(*)?,
                                   $externalVariableBindings as map(xs:QName, item()*)?)
         as item()* {
-    let $DEBUG := f:trace($foxpath, 'parse.resolve_foxpath', 'INTEXT_RESOLVE_FOXPATH: ')
+    let $DEBUG := util:trace($foxpath, 'parse.resolve_foxpath', 'INTEXT_RESOLVE_FOXPATH: ')
     let $context := f:editInitialContext($context)
-    let $tree := f:trace(i:parseFoxpath($foxpath, $options), 'parse', 'FOXPATH_ELEM: ')
+    let $tree := util:trace(i:parseFoxpath($foxpath, $options), 'parse', 'FOXPATH_ELEM: ')
     let $errors := $tree/self::errors 
     return 
         if ($errors) then $errors
@@ -252,7 +254,7 @@ declare function f:bindVars($vars as map(xs:QName, item()*),
                     let $valueRaw := $externalVariableBindings($qname)                            
                     let $value := 
                         let $seqType := $varDecl/sequenceType
-                        return f:applyFunctionConversionRules($valueRaw, $seqType)
+                        return util:applyFunctionConversionRules($valueRaw, $seqType)
                     return map:entry($varName, $value)
                 else 
                     let $valueExpr := $varDecl/*[not(self::sequenceType)]
@@ -265,7 +267,7 @@ declare function f:bindVars($vars as map(xs:QName, item()*),
                             let $valueRaw := f:resolveFoxpathRC($valueExpr, false(), $context, (), (), $vars, $options)                            
                             let $value := 
                                 let $seqType := $varDecl/sequenceType
-                                return f:applyFunctionConversionRules($valueRaw, $seqType)
+                                return util:applyFunctionConversionRules($valueRaw, $seqType)
                             return
                                 map:entry($varName, $value)
         else
@@ -273,7 +275,7 @@ declare function f:bindVars($vars as map(xs:QName, item()*),
             let $valueRaw := f:resolveFoxpathRC($valueExpr, false(), $context, (), (), $vars, $options)            
             let $value := 
                 let $seqType := $varDecl/sequenceType
-                return f:applyFunctionConversionRules($valueRaw, $seqType)
+                return util:applyFunctionConversionRules($valueRaw, $seqType)
             return
                 map:entry($varName, $value)
     
@@ -324,7 +326,7 @@ declare function f:resolveFoxpathRC($n as node(),
             every $arg in $args satisfies $arg
  
     case element(archiveEntry) return
-        $context ! concat(., '/', $f:ARCHIVE_TOKEN)
+        $context ! concat(., '/', $util:ARCHIVE_TOKEN)
         
     case element(cast) return
         f:resolveCastExpr($n, $ebvMode, $context, $position, $last, $vars, $options)
@@ -553,7 +555,7 @@ declare function f:resolveFoxpathExpr($foxpath as element(foxpath),
             else if (exists($context)) then 
                 i:fox-doc($context, $options)
             else 
-                f:createFoxpathError('SYNTAX_ERROR', 
+                util:createFoxpathError('SYNTAX_ERROR', 
                     concat('Absolute node path encountered, but no context provided; ',
                         'expr=', $foxpath/@text))
         (: no initial step to the root resource or root node;
@@ -752,7 +754,7 @@ declare function f:resolveFoxAxisStep($axisStep as element()+,
                     else f:testPredicates(reverse(sort($precedingSiblings, (), lower-case#1)), $predicates, $vars, $options)
                         
         else
-            f:createFoxpathError('NOT_YET_IMPLEMENTED', 
+            util:createFoxpathError('NOT_YET_IMPLEMENTED', 
                 concat('Axis not yet implemented: ', $axis))
                 
     let $files := distinct-values(for $f in $files order by lower-case($f) return $f)  
@@ -859,7 +861,7 @@ declare function f:resolveNodeAxisStep($axisStep as element()+,
                         which presupposes in-scope namespace bindings :)
             else ()
         else
-            f:createFoxpathError('NOT_YET_IMPLEMENTED', 
+            util:createFoxpathError('NOT_YET_IMPLEMENTED', 
                 concat('Not yet implemented: path step with node kind test: ', $nodeKind))
    
     let $resultItemsUnfiltered :=
@@ -951,7 +953,7 @@ declare function f:resolveNodeAxisStep($axisStep as element()+,
                 for $c in $context return $c/preceding::node()[$nodeTest(.)] 
                 => $fn_applyPredicates()
         else
-            f:createFoxpathError('PROGRAM_ERROR', concat('Unexpected axis: ', $axis))
+            util:createFoxpathError('PROGRAM_ERROR', concat('Unexpected axis: ', $axis))
             
     let $resultItems := $resultItemsUnfiltered/.
     
@@ -1065,7 +1067,7 @@ declare function f:resolveFlworExpr($flwor as element(flwor),
         case element(let) return 
             f:resolveFlworExpr_let($firstClause, $ebvMode, $context, $position, $last, $vars, $options)
         default return
-            f:createFoxpathError('NOT_YET_IMPLEMENTED', 
+            util:createFoxpathError('NOT_YET_IMPLEMENTED', 
                 concat('Flwor clause not yet implemented: ', local-name($firstClause)))
 };
 
@@ -1102,7 +1104,7 @@ declare function f:resolveFlworExpr_for($for as element(for),
                 case element(let) return 
                     f:resolveFlworExpr_let($nextClause, $ebvMode, $context, $position, $last, $vars, $options)
                 default return
-                    f:createFoxpathError('NOT_YET_IMPLEMENTED', 
+                    util:createFoxpathError('NOT_YET_IMPLEMENTED', 
                         concat('Flwor clause not yet implemented: ', local-name($nextClause)))
     return
         if (not($ebvMode)) then $exprValue
@@ -1140,7 +1142,7 @@ declare function f:resolveFlworExpr_let($let as element(let),
             case element(let) return 
                 f:resolveFlworExpr_let($nextClause, $ebvMode, $context, $position, $last, $vars, $options)
             default return
-                f:createFoxpathError('NOT_YET_IMPLEMENTED', 
+                util:createFoxpathError('NOT_YET_IMPLEMENTED', 
                     concat('Flwor clause not yet implemented: ', local-name($nextClause)))
     return
         if (not($ebvMode)) then $exprValue
@@ -1178,7 +1180,7 @@ declare function f:resolveQuantifiedExpr($quant as element(quantified),
                     f:resolveQuantifiedExpr_for($firstClause, $context, $position, $last, $vars, $options)
                 satisfies $result eq true()
         default return
-            f:createFoxpathError('NOT_YET_IMPLEMENTED', 
+            util:createFoxpathError('NOT_YET_IMPLEMENTED', 
                 concat('Quantified clause not yet implemented: ', local-name($firstClause)))
 };
 
@@ -1213,7 +1215,7 @@ declare function f:resolveQuantifiedExpr_for($for as element(for),
             case element(for) return 
                 f:resolveQuantifiedExpr_for($nextClause, $context, $position, $last, $vars, $options)
             default return
-                f:createFoxpathError('NOT_YET_IMPLEMENTED', 
+                util:createFoxpathError('NOT_YET_IMPLEMENTED', 
                     concat('Quantified clause not yet implemented: ', local-name($nextClause)))
 };
 
@@ -1469,11 +1471,11 @@ declare function f:resolveNamedFunctionRef($funcRef as element(),
                                            $options as map(*)?)
         as item()* {
     let $funcName := $funcRef/@name
-    let $funcItem := $i:STD-FUNC-ITEMS($funcName)
-    let $funcItem := i:resolveFuncItemText($funcName)
+    let $funcItem := $util:STD-FUNC-ITEMS($funcName)
+    let $funcItem := util:resolveFuncItemText($funcName)
     return
         if (empty($funcItem)) then 
-            f:createFoxpathError('NOT_YET_IMPLEMENTED', 
+            util:createFoxpathError('NOT_YET_IMPLEMENTED', 
                 concat('Named function reference, name: ', $funcName))
         else $funcItem
 };    
@@ -1691,7 +1693,7 @@ declare function f:resolveDynFunctionCall($callExpr as element(),
             return
                 $funcItem($arg1, $arg2, $arg3)
         else
-            f:createFoxpathError('NOT_YET_IMPLEMENTED', 
+            util:createFoxpathError('NOT_YET_IMPLEMENTED', 
                 concat('Dynamic function call with >3 arguments; # arguments: ', count($argExprs)))
 };    
 

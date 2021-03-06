@@ -1,4 +1,4 @@
-module namespace f="http://www.ttools.org/xquery-functions";
+module namespace f="http://www.ttools.org/xquery-functions/util";
 
 declare namespace fox="http://www.foxpath.org/ns/annotations";
 
@@ -18,6 +18,33 @@ declare variable $f:PREDECLARED_NAMESPACES := (
     <namespace prefix="wsdl" uri="http://schemas.xmlsoap.org/wsdl/"/>,
     <namespace prefix="docbook" uri="http://docbook.org/ns/docbook"/>    
 );
+
+(:~
+ : Translates a whitespace-separated list of string patterns
+ : into regular expressions.
+ :
+ : @param patterns a list of names and/or patterns, whitespace concatenated
+ : @param toLowerCase if true, names (but not regular expressions) are also returned in lower-case 
+ : @return a map with entries 'names', 'regexes' and 'namesLC' giving names, regular expressions
+ :   and names in lower case (in lower case only if $toLowerCase is used) 
+ :)
+declare function f:patternsToNamesAndRegexes($patterns as xs:string?, 
+                                             $toLowerCase as xs:boolean?)
+        as map(xs:string, item()*)? {
+    if (not($patterns)) then () else
+    
+    let $items := $patterns ! normalize-space(.) ! tokenize(.)
+    let $names := $items[not(contains(., '*')) and not(contains(., '?'))]
+    let $regexes := $items[contains(., '*') or contains(., '?')]
+    ! replace(., '\*', '.*')
+    ! replace(., '\?', '.')
+    ! concat('^', ., '$')
+     
+    return 
+        if ($toLowerCase and exists($names)) then
+            map{'names': $names, 'regexes': $regexes, 'namesLC': $names ! lower-case(.) }
+        else map{'names': $names, 'regexes': $regexes}            
+};
 
 (:
 declare variable $f:STDLIB := map{

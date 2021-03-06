@@ -17,9 +17,11 @@ Group: resource retrieval
   
 :)
 module namespace f="http://www.ttools.org/xquery-functions";
-import module namespace i="http://www.ttools.org/xquery-functions" at 
-    "foxpath-processorDependent.xqm",
-    "foxpath-util.xqm";
+import module namespace i="http://www.ttools.org/xquery-functions" 
+at  "foxpath-processorDependent.xqm";
+
+import module namespace util="http://www.ttools.org/xquery-functions/util" 
+at  "foxpath-util.xqm";
 
 declare namespace fox="http://www.foxpath.org/ns/annotations";
 
@@ -427,7 +429,7 @@ declare function f:descendantUriCollection_archive(
         as xs:string+ {
     let $sep := '~~~~~~~'
     let $comps :=
-        replace($uri, concat('^(.*)\s*/\s*', $f:ARCHIVE_TOKEN, '(\s*/(.*$))?'), 
+        replace($uri, concat('^(.*)\s*/\s*', $util:ARCHIVE_TOKEN, '(\s*/(.*$))?'), 
                 concat('$1', $sep, '$3'), 's')        
     return
         (substring-before($comps, $sep), substring-after($comps, $sep))

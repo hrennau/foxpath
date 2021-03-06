@@ -17,9 +17,13 @@ Group: resource retrieval
   
 :)
 module namespace f="http://www.ttools.org/xquery-functions";
-import module namespace i="http://www.ttools.org/xquery-functions" at 
-    "foxpath-processorDependent.xqm",
-    "foxpath-util.xqm";
+
+import module namespace i="http://www.ttools.org/xquery-functions" 
+at  "foxpath-processorDependent.xqm";
+
+import module namespace util="http://www.ttools.org/xquery-functions/util" 
+at  "foxpath-util.xqm";
+
 
 (: 
  : ===============================================================================
