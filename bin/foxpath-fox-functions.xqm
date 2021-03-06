@@ -482,10 +482,15 @@ declare function f:jschemaKeywords($values as element()*)
 declare function f:jschemaKeywordsRC($n as node())
         as node()* {
     typeswitch($n)
+    case element(default) return $n    
     case element(example) return $n
     case element(examples) return $n
+    case element(enum) return $n    
+    case element(json) return ($n[parent::*], $n/*/f:jschemaKeywordsRC(.))
+    case element(patternProperties) return ($n, $n/*/*/f:jschemaKeywordsRC(.))    
     case element(properties) return ($n, $n/*/*/f:jschemaKeywordsRC(.))
-    default return $n
+    case element(_) return $n/*/f:jschemaKeywords(.)
+    default return ($n, $n/*/f:jschemaKeywordsRC(.))
 };        
 
 (:~
