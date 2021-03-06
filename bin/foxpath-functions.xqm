@@ -672,6 +672,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:path-content($c, 'jname', $includedNames, $excludedNames, $excludedNodes)
 
+        (: function `jschemaKeywords` 
+           ========================== :)
+        else if ($fname eq 'jschemaKeywords') then
+            let $nodes := 
+                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $context
+            return
+                foxf:jschemaKeywords($nodes)                            
+
         (: function `jname-path` 
            ==================== :)
         else if ($fname = ('jname-path', 'jnpath', 'jnp')) then           
@@ -681,8 +690,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 if (empty($nodes)) then () else
                     let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                    let $contextNode := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                    return foxf:name-path($nodes, 'jname', $numSteps, $contextNode)
+                    return foxf:name-path($nodes, 'jname', $numSteps)
 
         (: function `json-effective-value` 
            =============================== :)
@@ -771,8 +779,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 if (empty($nodes)) then () else
                     let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                    let $contextNode := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                    return foxf:name-path($nodes, 'lname', $numSteps, $contextNode)
+                    return foxf:name-path($nodes, 'lname', $numSteps)
 
         (: function `lpad` 
            =============== :)
@@ -817,8 +824,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 if (empty($nodes)) then () else
                     let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                    let $contextNode := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                    return foxf:name-path($nodes, 'name', $numSteps, $contextNode)
+                    return foxf:name-path($nodes, 'name', $numSteps)
 
         (: function `non-distinct-values` 
            ============================== :)
@@ -838,6 +844,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return ($explicit, $context)[1]
             return
                 foxf:oasMsgSchemas($nodes)            
+
+        (: function `oas-jschema-keywords` 
+           ================================ :)
+        else if ($fname = ('oas-jschema-keywords')) then
+            let $nodes := 
+                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $context
+            return
+                foxf:oasJschemaKeywords($nodes)            
 
         (: function `pads` 
            =============== :)

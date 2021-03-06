@@ -462,6 +462,48 @@ declare function f:foxfunc_frequencies($values as item()*,
 };      
 
 (:~
+ : Returns the JSON Schema keywords found at and under a set of nodes from a 
+ : JSON Schema document.
+ :
+ : @param values JSON values
+ : @return the resolved reference, if the value contains one, or the original value
+ :)
+declare function f:jschemaKeywords($values as element()*)
+        as element()* {
+    $values/f:jschemaKeywordsRC(.)
+};
+
+(:~
+ : Recursive helper function of jschemaKeywords().
+ :
+ : @param n a node to process
+ : @return the keyword nodes under the input node, including it
+ :)
+declare function f:jschemaKeywordsRC($n as node())
+        as node()* {
+    typeswitch($n)
+    case element(example) return $n
+    case element(examples) return $n
+    case element(properties) return ($n, $n/*/*/f:jschemaKeywordsRC(.))
+    default return $n
+};        
+
+(:~
+ : Returns the JSON Schema keywords found in OpenAPI document.
+ :
+ : @param oasNodes nodes from OpenAPI documents
+ : @return the keywords contained by the OpenAPI documents
+ :)
+declare function f:oasJschemaKeywords($oasNodes as element()*)
+        as element()* {
+    $oasNodes/ancestor-or-self::*[last()]/(
+        definitions/*/*/f:jschemaKeywords(.),
+        components/schemas/*/*/f:jschemaKeywords(.),
+        f:oasMsgSchemas(.)/*/f:jschemaKeywords(.)
+    )        
+};
+
+(:~
  : Returns the effective content of a JSON value: if it is an object containing
  : a reference, the reference is recursively resolved. Otherwise, the original
  : value is returned.
@@ -712,13 +754,15 @@ declare function f:xelement($content as item()*,
  : Before copying into the result document, every item from $items is processed as follows:
  : (A) if an item is a node:
  :   (1) if flag 'b' is set, a copy enhanced by an @xml:base attribute is created
- :   (2) if flag 'a' is set, the item is not modified if it is not an attribute;
+ :   (2) if flag 'p' is set, a copy enhanced by a @fox:path attribute is created
+ :   (3) if flag 'j' is set, a copy enhanced by a @fox:jpath attribute is created 
+ :   (4) if flag 'a' is set, the item is not modified if it is not an attribute;
  :       if it is an attribute, it is mapped to an element which has a name 
  :       equal to the name of the parent of the attribute, and which contains a 
  :       copy of the attribute 
- :   (2) if flag 'A' is set, treatment as with flag 'a', but the constructed element
+ :   (5) if flag 'A' is set, treatment as with flag 'a', but the constructed element
  :       has no namespace URI 
- :   (3) otherwise, the item is not modified
+ :   (6) otherwise, the item is not modified
 
  : (B) if an item is atomic: 
  :   (1) if flag 'd' is set, the item is interpreted as URI and it is attempted to be
@@ -757,15 +801,22 @@ declare function f:xwrap($items as item()*,
 
         (: item a node => copy item :)
         if ($item instance of node()) then
-            if (contains($flags, 'b') and ($item instance of element() or $item instance of document-node())) then
-                let $baseUri := base-uri($item)
+            if (matches($flags, '[bpj]') and ($item instance of element() or $item instance of document-node())) then
+                let $additionalAtts := ( 
+                    if (not(contains($flags, 'b'))) then () else
+                        attribute xml:base {$item/base-uri(.)},
+                    if (not(contains($flags, 'p'))) then () else
+                        attribute path {$item/f:name-path(., 'name', ())},
+                    if (not(contains($flags, 'j'))) then () else
+                        attribute jpath {$item/f:name-path(., 'jname', ())}
+                )
+                let $additionalAttNames := $additionalAtts/node-name(.)
                 let $elem := $item/descendant-or-self::*[1]
                 return
-                    let $xmlBase := if ($elem/@xml:base) then () else attribute xml:base {$baseUri}
-                    return
-                        element {node-name($elem)} {
-                            $elem/@*, $xmlBase, $elem/node()
-                        }
+                    element {node-name($elem)} {
+                        $additionalAtts,
+                        $elem/@*[not(node-name(.) = $additionalAttNames)], $elem/node()
+                    }
             else if (contains($flags, 'a') or contains($flags, 'A')) then
                 if (not($item/self::attribute())) then $item
                 else 
@@ -1254,8 +1305,7 @@ declare function f:path-content($context as node()*,
  :)
 declare function f:name-path($nodes as node()*, 
                              $nameKind as xs:string?,   (: name | lname | jname :) 
-                             $numSteps as xs:integer?,
-                             $contextNode as node()?)
+                             $numSteps as xs:integer?)
         as xs:string* {
     for $node in $nodes return
     
@@ -1264,9 +1314,6 @@ declare function f:name-path($nodes as node()*,
         let $all := $node/ancestor-or-self::node()
         let $dnode := $all[. instance of document-node()]
         return ($dnode, $all except $dnode)
-    let $ancos :=
-        if (empty($contextNode)) then $ancos
-        else $ancos[. >> $contextNode]
     let $steps := 
         
         if ($nameKind eq 'lname') then 
