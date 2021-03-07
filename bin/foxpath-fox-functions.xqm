@@ -507,8 +507,8 @@ declare function f:jschemaKeywordsRC($n as node(),
         if (empty($nameFilter)) then $unfiltered else
         for $node in $unfiltered
         let $jname := $node/local-name() ! convert:decode-key(.) ! lower-case(.)
-        where (empty($nameFilter?namesLC) or $jname = $nameFilter?namesLC) and        
-              (empty($nameFilter?regexes) or (some $r in $nameFilter?regexes satisfies matches($jname, $r, 'i')))        
+        where $jname = $nameFilter?namesLC or 
+               (some $r in $nameFilter?regexes satisfies matches($jname, $r, 'i'))        
         return $node
 };        
 
