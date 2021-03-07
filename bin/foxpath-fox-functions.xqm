@@ -513,6 +513,119 @@ declare function f:jschemaKeywordsRC($n as node(),
 };        
 
 (:~
+ : Returns the JSON Schema keywords found at and under a set of nodes from a 
+ : JSON Schema document.
+ :
+ : @param values JSON values
+ : @param namePatterns a list of names or name patterns, whitespace separated
+ : @return the resolved reference, if the value contains one, or the original value
+ :)
+declare function f:oasKeywords($values as element()*, 
+                               $namePatterns as xs:string?)
+        as element()* {
+    let $nameFilter := util:patternsToNamesAndRegexes($namePatterns, true())
+    for $value in $values
+    let $oasVersion := $value/ancestor-or-self::*[last()]/(
+        openapi/substring(., 1, 1),
+        swagger/substring(., 1, 1)
+        )[1]
+    return        
+        $value/f:oasKeywordsRC(., $oasVersion, $nameFilter)
+};
+
+(:~
+ : Recursive helper function of jschemaKeywords().
+ :
+ : @param n a node to process
+ : @param filter a filter consisting of names and regular expressions
+ : @return the keyword nodes under the input node, including it
+ :)
+declare function f:oasKeywordsRC($n as node(),
+                                 $version as xs:string?,
+                                 $nameFilter as map(xs:string, item()*)?)
+        as node()* {
+    let $unfiltered :=        
+        typeswitch($n)
+        
+        (: Array item - continue with children :)
+        case element(_) return $n/*/f:oasKeywordsRC(., $version, $nameFilter)
+        
+        (: Keywords with version-dependent treatment :)
+        
+        (: Keyword 'examples' 
+           - if version 2: do not continue recursion;
+           - if version 3: treat as map and continue with children :)           
+        case element(examples) return (
+            $n,
+            if ($version ! starts-with(., '2')) then ()
+            else $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))
+            
+        (: Schema-related keywords - do not continue recursion :)
+        case element(schema) return $n
+        case element(schemas) return $n
+        case element(definitions) return $n (: V2 :)
+        
+        (: Maps with object-valued entries - use the map object and continue with the children of the map entries :)
+
+        case element(callbacks) return ($n, $n/*/*/*/f:oasKeywordsRC(., $version, $nameFilter)) (: Callback has a single member = expr :)
+        case element(content) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))   
+        case element(encoding) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))        
+        case element(examples) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))        
+        case element(headers) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))
+        case element(links) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))
+        case element(pathItems) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))        
+        case element(paths) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))        
+        case element(requestBodies) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))
+        case element(responses) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))
+        case element(securitySchemes) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))        
+        case element(variables) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))
+        case element(webhooks) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))        
+        
+        (: Keywords which MAY be a map :)
+        (: ... parameters - dependent on location an array or a map:
+               - in Components Object or Link Object or Swagger Object (V2): a map
+               - elsewhere (in PathItem Object, Operation Object): an array
+         :)
+        case element(parameters) return (
+            $n, 
+            if ($n/(parent::components, ../parent::links, parent::json)) then $n/*/*/f:oasKeywordsRC(., $version, $nameFilter)
+            else $n/*/f:oasKeywordsRC(., $version, $nameFilter)
+        )            
+        
+        (: Maps string-string - do not consider children :)        
+        case element(mapping) return $n (: map: string -> string :)        
+        case element(scopes) return $n (: map: string -> string :)
+        
+        (: Keywords with type Any - do not consider children :)
+        case element(example) return $n
+        case element(value) return $n
+        
+        (: Keyword 'security' :)
+        case element(security) return $n   (: an array of objects with a single property '{name}' :)
+
+        (: requestBody - if in Link Object, do not recurse deeper :)
+        case element(requestBody) return (
+            $n,
+            if ($n/../parent::links) then () else
+            $n/*/f:oasKeywordsRC(., $version, $nameFilter)
+        )
+        
+        default return (
+            $n, 
+            if (starts-with(local-name($n), 'x-')) then () else
+                $n/*/f:oasKeywordsRC(., $version, $nameFilter))
+   
+    return
+        if (empty($nameFilter)) then $unfiltered else
+        for $node in $unfiltered
+        let $jname := $node/local-name() ! convert:decode-key(.) ! lower-case(.)
+        where (empty($nameFilter?namesLC) or $jname = $nameFilter?namesLC) and        
+              (empty($nameFilter?regexes) or (some $r in $nameFilter?regexes satisfies matches($jname, $r, 'i')))        
+        return $node
+};        
+
+
+(:~
  : Returns the JSON Schema keywords found in OpenAPI document.
  :
  : @param oasNodes nodes from OpenAPI documents
@@ -784,7 +897,8 @@ declare function f:xelement($content as item()*,
  : (A) if an item is a node:
  :   (1) if flag 'b' is set, a copy enhanced by an @xml:base attribute is created
  :   (2) if flag 'p' is set, a copy enhanced by a @fox:path attribute is created
- :   (3) if flag 'j' is set, a copy enhanced by a @fox:jpath attribute is created 
+ :   (3) if flag 'j' is set, a copy enhanced by a @fox:jpath attribute is created
+ :   (4) if flag 'f' is set, the copy is "flattened" - child nodes are discarded  
  :   (4) if flag 'a' is set, the item is not modified if it is not an attribute;
  :       if it is an attribute, it is mapped to an element which has a name 
  :       equal to the name of the parent of the attribute, and which contains a 
@@ -828,73 +942,83 @@ declare function f:xwrap($items as item()*,
         order by if ($sortRule eq 's') then $item else if ($sortRule eq 'S') then lower-case($item) else ()
         return 
 
-        (: item a node => copy item :)
-        if ($item instance of node()) then
-            if (matches($flags, '[bpj]') and ($item instance of element() or $item instance of document-node())) then
-                let $additionalAtts := ( 
-                    if (not(contains($flags, 'b'))) then () else
-                        attribute xml:base {$item/base-uri(.)},
-                    if (not(contains($flags, 'p'))) then () else
-                        attribute path {$item/f:name-path(., 'name', ())},
-                    if (not(contains($flags, 'j'))) then () else
-                        attribute jpath {$item/f:name-path(., 'jname', ())}
-                )
-                let $additionalAttNames := $additionalAtts/node-name(.)
-                let $elem := $item/descendant-or-self::*[1]
-                return
-                    element {node-name($elem)} {
-                        $additionalAtts,
-                        $elem/@*[not(node-name(.) = $additionalAttNames)], $elem/node()
-                    }
-            else if (contains($flags, 'a') or contains($flags, 'A')) then
-                if (not($item/self::attribute())) then $item
-                else 
-                    let $elemName := if (contains($flags, 'A')) then $item/../local-name(.)
-                                     else $item/../QName(namespace-uri(.), local-name(.))
-                    return element {$elemName} {$item}
-            else
-                $item
-                
-        (: item a URI, flag 'd' => parse document at that URI :)                
-        else if (contains($flags, 'd')) then
-            let $doc := try {i:fox-doc($item, $options)/*} catch * {()}
+        typeswitch($item)
+        
+        (: item a node => copy item :)        
+        case element() | attribute() | document-node() return
+            let $item := if ($item/self::document-node()) then $item/* else $item
+            let $additionalAtts := (
+                if (not(contains($flags, 'b'))) then () else
+                    attribute xml:base {$item/base-uri(.)},
+                if (not(contains($flags, 'p'))) then () else
+                    attribute path {$item/f:name-path(., 'name', ())},
+                if (not(contains($flags, 'j'))) then () else
+                    attribute jpath {$item/f:name-path(., 'jname', ())}
+            )
+            let $atts :=
+                if (empty($additionalAtts) or empty($item/@*)) then $item/@*
+                else
+                    let $additionalAttNames := $additionalAtts ! node-name(.)
+                    return $item/@*[not(node-name() = $additionalAttNames)]
             return
-                if ($doc) then 
-                    if (contains($flags, 'b')) then
-                        let $xmlBase := if ($doc/@xml:base) then () else attribute xml:base {$item}
-                        return
-                            if (not($xmlBase)) then $doc else
-                                element {node-name($doc)} {
-                                    $doc/@*,
-                                    $xmlBase,
-                                    $doc/node()
-                                }
-                    else $doc
-                else                                    
-                    <PARSE-ERROR>{$item}</PARSE-ERROR>
+                (: Flags aA - attribute item is turned into an element :)
+                if (contains($flags, 'a') or contains($flags, 'A')) then    
+                    if (not($item/self::attribute())) then $item
+                    else 
+                        let $elemName := $item/../(
+                            if (contains($flags, 'A')) then local-name(.)
+                            else QName(namespace-uri(.), local-name(.)))
+                        return element {$elemName} {$additionalAtts, $item}
+                        
+                (: Flag f - discard child nodes :)
+                else if (contains($flags, 'f')) then
+                    element {node-name($item)} {$additionalAtts, $atts}
                     
-        (: item a URI, flag 'w' => read text at that URI, write it into a wrapper element :)                    
-        else if (contains($flags, 'w')) then
-            let $text := try {i:fox-unparsed-text($item, (), $options)} catch * {()}
-            return
-                if ($text) then element {$name2} {attribute xml:base {$item}, $text}
-                else <READ-ERROR>{$item}</READ-ERROR>
+                (: With additional attributes :)
+                else if (not($additionalAtts)) then $item
                 
-        (: item a URI, flag 't' => read text at that URI, copy it into result :)                
-        else if (contains($flags, 't')) then
-            let $text := try {i:fox-unparsed-text($item, (), $options)} catch * {()}
-            return
-                if ($text) then $text
-                else <READ-ERROR>{$item}</READ-ERROR>
+                (: Plain copy :)
+                else
+                    element {node-name($item)} {$additionalAtts, $atts, node()}
                 
-        (: item a URI, flag 'c' => use item as ist :)                
-        else if (contains($flags, 'c')) then
-            element {$name2} {$item}
+        (: item a URI, flag 'd' => parse document at that URI :)
+        default return
+            if (contains($flags, 'd')) then
+                let $doc := try {i:fox-doc($item, $options)/*} catch * {()}
+                return if (not($doc)) then <PARSE-ERROR uri="{$item}"/> else
+ 
+                if (contains($flags, 'b')) then
+                    let $xmlBase := if ($doc/@xml:base) then () else attribute xml:base {$item}
+                    return
+                        if (not($xmlBase)) then $doc else
+                            element {node-name($doc)} {
+                                $doc/@*, $xmlBase, $doc/node()
+                                    }
+                else $doc
+                    
+            (: item a URI, flag 'w' => read text at that URI, write it into a wrapper element :)                    
+            else if (contains($flags, 'w')) then
+                let $text := try {i:fox-unparsed-text($item, (), $options)} catch * {()}
+                return
+                    if ($text) then element {$name2} {attribute xml:base {$item}, $text}
+                    else <READ-ERROR uri="{$item}"/>
+                
+            (: item a URI, flag 't' => read text at that URI, copy it into result :)                
+            else if (contains($flags, 't')) then
+                let $text := try {i:fox-unparsed-text($item, (), $options)} catch * {()}
+                return
+                    if ($text) then $text
+                    else <READ-ERROR uri="{$item}"/>
+                
+            (: flag 'c' => wrap item in an element :)                
+            else if (contains($flags, 'c')) then
+                element {$name2} {$item}
             
-        else
-            $item
+            else $item
+            
+    (: Write wrapper :)            
     let $namespaces := 
-        for $nn in f:extractNamespaceNodes($val)
+        for $nn in f:extractNamespaceNodes($val[. instance of element()])
         group by $prefix := name($nn)
         return $nn[1]
     return
@@ -1263,17 +1387,19 @@ declare function f:leftValueOnly($leftValue as item()*,
  : @param excludedNodes nodes excluded from the content 
  : @return the parent name
  :)
-declare function f:path-content($context as node()*, 
-                                $nameKind as xs:string?,
-                                $includedNames as xs:string?,
-                                $excludedNames as xs:string?,
-                                $excludedNodes as node()*)
+declare function f:pathContent($context as node()*, 
+                               $nameKind as xs:string?,
+                               $alsoInnerNodes as xs:boolean?,
+                               $includedNames as xs:string?,
+                               $excludedNames as xs:string?,
+                               $excludedNodes as node()*)
         as xs:string* {
-        
-    let $descendants := 
+            
+    let $descendants := (
         if ($nameKind eq 'jname') then $context/descendant::*
         else $context/descendant::*/(., @*)
-        
+    )[$alsoInnerNodes or not(*)]
+    
     let $includedNamesRegex :=
         $includedNames ! tokenize(.)
         ! replace(., '\*', '.*')

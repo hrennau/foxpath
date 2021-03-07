@@ -670,11 +670,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ======================== :)
         else if ($fname = ('jpath-content', 'jpcontent')) then           
             let $c := $context
-            let $includedNames := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNames := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNodes := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $alsoInnerNodes := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
+            let $includedNames := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNames := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNodes := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
-                foxf:path-content($c, 'jname', $includedNames, $excludedNames, $excludedNodes)
+                foxf:pathContent($c, 'jname', $alsoInnerNodes, $includedNames, $excludedNames, $excludedNodes)
 
         (: function `jschemaKeywords` 
            ========================== :)
@@ -800,11 +801,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ======================= :)
         else if ($fname = ('lpath-content', 'lpcontent')) then           
             let $c := $context
-            let $includedNames := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNames := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNodes := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $alsoInnerNodes := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
+                               ! xs:boolean(.)
+            let $includedNames := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNames := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNodes := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
-                foxf:path-content($c, 'lname', $includedNames, $excludedNames, $excludedNodes)
+                foxf:pathContent($c, 'lname', $alsoInnerNodes, $includedNames, $excludedNames, $excludedNodes)
 
         (: function `matches-xpath` 
            ======================= :)
@@ -859,6 +862,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $nameFilter := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                 
             return
                 foxf:oasJschemaKeywords($nodes, $nameFilter)            
+
+        (: function `oas-keywords` 
+           ======================= :)
+        else if ($fname = ('oas-keywords')) then
+            let $nodes := 
+                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $context
+            let $nameFilter := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                 
+            return
+                foxf:oasKeywords($nodes, $nameFilter)            
 
         (: function `pads` 
            =============== :)
@@ -919,11 +932,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ======================= :)
         else if ($fname = ('path-content', 'pcontent')) then           
             let $c := $context
-            let $includedNames := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNames := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNodes := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $alsoInnerNodes := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                               ! xs:boolean(.)            
+            let $includedNames := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNames := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNodes := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
-                foxf:path-content($c, 'name', $includedNames, $excludedNames, $excludedNodes)
+                foxf:pathContent($c, 'name', $alsoInnerNodes, $includedNames, $excludedNames, $excludedNodes)
 
         (: function `pfrequencies` 
            ======================= :)
