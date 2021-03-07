@@ -577,6 +577,7 @@ declare function f:oasKeywordsRC($n as node(),
         case element(paths) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))        
         case element(requestBodies) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))
         case element(responses) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))
+        case element(securityDefinitions) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))   (: V2 :)
         case element(securitySchemes) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))        
         case element(variables) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))
         case element(webhooks) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))        
@@ -979,7 +980,7 @@ declare function f:xwrap($items as item()*,
                 
                 (: Plain copy :)
                 else
-                    element {node-name($item)} {$additionalAtts, $atts, node()}
+                    $item/element {node-name(.)} {$additionalAtts, $atts, node()}
                 
         (: item a URI, flag 'd' => parse document at that URI :)
         default return
