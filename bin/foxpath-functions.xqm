@@ -36,31 +36,24 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `all-descendants` 
            ========================== :)
         if ($fname eq 'all-descendants') then
-            let $node := 
+            let $nodes := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1][. instance of node()]
+                return if (exists($explicit)) then $explicit else $context
             return
-                if (not($node)) then () else $node//(@*, *)
+                $nodes[. instance of node()]//(@*, *)
                 
-        (: function `att-names` 
+        (: function `att-lnames` 
            ==================== :)
-        else if ($fname eq 'att-jnames') then
-            let $node := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]
-            let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                foxf:foxfunc_att-names($node, true(), 'jname', $namePattern, $excludedNamePattern)
-                
         else if ($fname eq 'att-lnames') then
-            let $node := 
+            let $nodes := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]
+                return if (exists($explicit)) then $explicit else $context
             let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                                ! normalize-space(.) ! tokenize(.)
             let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                                ! normalize-space(.) ! tokenize(.)            
             return
-                foxf:foxfunc_att-names($node, true(), 'lname', $namePattern, $excludedNamePattern)
+                foxf:attNames($nodes, true(), 'lname', $namePattern, $excludedNamePattern)
                 
         else if ($fname eq 'att-names') then
             let $node := 
@@ -69,7 +62,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:foxfunc_att-names($node, true(), 'name', $namePattern, $excludedNamePattern)            
+                foxf:attNames($node, true(), 'name', $namePattern, $excludedNamePattern)            
 
         (: function `base-dir-name` 
            ========================= :)
@@ -134,6 +127,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
             return foxf:child-names($node, true(), 'name', $namePattern, $excludedNamePattern)            
+
+        (: function `content-deep-equal` 
+           ============================= :)
+        else if ($fname eq 'content-deep-equal') then
+            let $args := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:content-deep-equal($args) 
 
         (: function `create-dir` 
            ====================== :)
@@ -554,9 +553,11 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ================ :)
         else if ($fname = ('hierarchical-list', 'hier-list', 'hlist')) then
             let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $emptyLines := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $headers := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                            (: ! normalize-space(.) ! tokenize(.) :)
+            let $emptyLines := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:hlist($values, $emptyLines)
+                foxf:hlist($values, $headers, $emptyLines)
 
         (: function `hlist-entry` 
            ====================== :)
@@ -837,12 +838,19 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `non-distinct-values` 
            ============================== :)
         else if ($fname = ('non-distinct-values', 'non-distinct')) then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
-            return
-                for $item in $arg
-                group by $value := data($item)
-                where count($item) gt 1
-                return $value
+            let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $ignoreCase := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                               ! xs:boolean(.)
+            return foxf:nonDistinctValues($values, $ignoreCase)
+                
+
+        (: function `non-distinct-file-names` 
+           ================================== :)
+        else if ($fname = ('non-distinct-file-names', 'non-distinct-fnames')) then
+            let $uris := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $ignoreCase := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                               ! xs:boolean(.)            
+            return foxf:nonDistinctFileNames($uris, $ignoreCase)                
 
         (: function `oas-msg-schemas` 
            ========================== :)
@@ -1485,12 +1493,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 convert:decode-key($arg)
                 
-        (: function `content-deep-equal` 
-           ============================= :)
-        else if ($fname eq 'content-deep-equal') then
-            let $args := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:content-deep-equal($args) 
-
         (: function `deep-equal` 
            ===================== :)
         else if ($fname eq 'deep-equal') then

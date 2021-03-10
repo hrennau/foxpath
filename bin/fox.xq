@@ -16,6 +16,7 @@ declare variable $ugraphEndpoints as xs:string? external := ();
 declare variable $isFile as xs:boolean? external := false();
 declare variable $mode as xs:string? external := 'eval';   (: eval | parse :)
 declare variable $sep as xs:string? external := '/';       (: / | \ :)
+declare variable $debugtime as xs:boolean? external := ();
 
 let $options := map:merge((
     map:entry('IS_CONTEXT_URI', true()),
@@ -72,12 +73,18 @@ let $foxpathExpr :=
                                     '; &#xA;valid names: ', string-join(sort(('', $lib//foxpath/@name)), '&#xA;   '))}</error>
                                 else
                                     $lib//foxpath[@name eq $fragmentId]/replace(., '^\s+|\s$', '')
-                       
+let $_DEBUG := trace($debugtime, '_DEBUG_TIME: ')                                    
+let $startTime := prof:current-ms()[$debugtime]                       
 let $context :=
     if ($context) then $context
     else f:currentDirectory()
-return    
+let $value :=    
     if ($foxpathExpr instance of element(error)) then string($foxpathExpr)
     else
         if ($mode eq 'parse') then f:parseFoxpath($foxpathExpr, $options)
         else f:resolveFoxpath($foxpathExpr, $options, $context, $externalVariables)
+let $stopTime := prof:current-ms()[$debugtime]      
+let $t := ((($stopTime - $startTime) div 1000) ! round(., 3))[$debugtime] 
+return ($value,
+        if (not($debugtime)) then () else
+            trace('time consumed: ' || $t || ' s'))

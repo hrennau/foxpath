@@ -19,6 +19,7 @@ set VARS=
 set UTREE_DIRS=
 set UGRAPH_ENDPOINTS=
 set GITHUB_TOKEN=/git/token
+set DEBUG_TIME=0
 
 :NEXTPAR
 set name="%~1"
@@ -40,6 +41,8 @@ if "%name%"=="-p" (
    set ISFILE=Y
  ) else if "%name%"=="-b" (
    set SEP=\   
+ ) else if "%name%"=="-D" (
+   set DEBUG_TIME=1
  ) else if "%name%"=="-c" (
    set SEP="%%"   
  ) else if "%name%"=="-i" (
@@ -60,7 +63,7 @@ if "%name%"=="-p" (
 ) else (
    echo Unknown option: %name%
    echo Supported options: 
-   echo    -b -c -f -g -t -v   
+   echo    -b -c -f -g -t -v -D
    echo Aborted.
    exit /b
 )
@@ -70,7 +73,7 @@ set foxpath=%name%
 if %foxpath%=="?" echo NO else (echo YES)
 
 if %FOXPATH%=="?" (
-    echo Usage: fox [-f] [-p] [-b] [-c] [-t utree-dirs] [-g ugraph-endpoints] [-h github-token] [-v name=value]* foxpath
+    echo Usage: fox [-f] [-p] [-b] [-c] [-t utree-dirs] [-g ugraph-endpoints] [-h github-token] [-D] [-v name=value]* foxpath
     echo foxpath : a foxpath expression, or a file containing a foxpath expression
     echo.
     echo -f      : the foxpath parameter is not a foxpath expression, but the path or URI of 
@@ -112,7 +115,8 @@ if %FOXPATH%=="?" (
     echo           SPARQL endpoints exposing UGRAPH graphs defining literal file systems;
     echo             endpoints are whitespace-separated
     echo -i context-dir : 
-    echo           a folder to be used as initial context item    
+    echo           a folder to be used as initial context item  
+    echo -D :      write execution time to stderr ( e.g.: time consumed: 8.612 s )   
     echo -v "name=value    ( note that using Powershell, the '=' must be framed by whitespace )" 
     echo -v "name:value    ( some consoles have problems with '=', hence alternative syntax using ':' )"
     echo         : name and value of an external variable
@@ -123,9 +127,14 @@ if "%ISFILE%"=="Y" (set ISFILE=true) else (set ISFILE=false)
 set OPT_UTREE_DIRS=
 set OPT_UGRAPH_ENDPOINTS=
 set OPT_CONTEXT_ITEM=
+set OPT_DEBUG_TIME=
+
 if not "%UTREE_DIRS%"=="" (set OPT_UTREE_DIRS=-b "utreeDirs=%UTREE_DIRS%")
 if not "%UGRAPH_ENDPOINTS%"=="" (set OPT_UGRAPH_ENDPOINTS=-b "ugraphEndpoints=%UGRAPH_ENDPOINTS%")
 set OPT_GITHUB_TOKEN=-b "{http://www.ttools.org/xquery-functions}githubToken=%GITHUB_TOKEN%"
 if not "%CONTEXT_ITEM%"=="" (set OPT_CONTEXT_ITEM=-b "context=%CONTEXT_ITEM%")
-rem echo HERE=%HERE%
-basex -b isFile=%ISFILE% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% %OPT_CONTEXT_ITEM% -b "vars=%VARS%" %HERE%/fox.xq
+if "%DEBUG_TIME%"=="1" (set OPT_DEBUG_TIME=-b debugtime=1)
+echo "DEBUG_TIME:%DEBUG_TIME%"
+echo "OPT_DEBUG_TIME:%OPT_DEBUG_TIME%"
+echo HERE=%HERE%
+basex -b isFile=%ISFILE% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% %OPT_CONTEXT_ITEM% %OPT_DEBUG_TIME% -b "vars=%VARS%" %HERE%/fox.xq

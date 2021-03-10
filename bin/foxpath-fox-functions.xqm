@@ -7,6 +7,55 @@ import module namespace util="http://www.ttools.org/xquery-functions/util"
 at  "foxpath-util.xqm";
 
 (:~
+ : Returns the attribute names of a node. If $separator is specified, the sorted
+ : names are concatenated, using this separator, otherwise the names are returned
+ : as a sequence. If $localNames is true, the local names are returned, otherwise 
+ : the lexical names. 
+ : 
+ : When using $namePattern, only those child elements are considered which have
+ : a local name matching the pattern.
+ :
+ : Example: .../foo/att-names(., ', ', false(), '*put')
+ : Example: .../foo/att-names(., ', ', false(), 'input|output') 
+ :
+ : @param nodes a sequence of nodes (only element nodes contribute to the result)
+ : @param separator if used, the names are concatenated, using this separator
+ : @param localNames if true, the local names are returned, otherwise the lexical names 
+ : @param namePattern an optional name pattern filtering the attributes to be considered 
+ : @return the names as a sequence, or as a concatenated string
+ :)
+declare function f:attNames($nodes as node()*, 
+                            $concat as xs:boolean?, 
+                            $nameKind as xs:string?,   (: name | lname | jname :)
+                            $namePatterns as xs:string*,
+                            $excludedNamePatterns as xs:string*)
+        as xs:string* {
+    let $nameRegexes := $namePatterns 
+       ! replace(., '\*', '.*') ! replace(., '\?', '.') 
+       ! concat('^', ., '$')        
+    let $excludedNameRegexes := $excludedNamePatterns 
+       ! replace(., '\*', '.*') ! replace(., '\?', '.') 
+       ! concat('^', ., '$')    
+       
+    for $node in $nodes       
+    let $items := $node/@*
+       [empty($nameRegexes) or 
+            (some $r in $nameRegexes satisfies matches(local-name(.), $r, 'i'))]
+       [empty($excludedNameRegexes) or 
+            not(some $r in $excludedNameRegexes satisfies matches(local-name(.), $r, 'i'))]
+    let $separator := ', '[$concat]
+    let $names := 
+        if ($nameKind eq 'lname') then 
+            ($items/local-name(.)) => distinct-values() => sort()
+        else if ($nameKind eq 'jname') then 
+            ($items/f:foxfunc_unescape-json-name(local-name(.))) => distinct-values() => sort()
+        else ($items/name(.)) => distinct-values() => sort()
+    return
+        if (exists($separator)) then string-join($names, $separator)
+        else $names
+};        
+
+(:~
  : Edits a text, replacing forward slashes by back slashes.
  :
  : @param arg text to be edited
@@ -31,10 +80,10 @@ declare function f:content-deep-equal($items as item()*)
     return if ($count le 1) then true() else
     
     every $i in 1 to $count - 1 satisfies
-        let $item1 := $items[1]
-        let $item2 := $items[2]
-        let $atts1 := for $a in $item1/@* order by node-name($a), string($a) return $a
-        let $atts2 := for $a in $item2/@* order by node-name($a), string($a) return $a
+        let $item1 := $items[$i]
+        let $item2 := $items[$i + 1]
+        let $atts1 := for $a in $item1/@* order by local-name($a), namespace-uri($a), string($a) return $a
+        let $atts2 := for $a in $item2/@* order by local-name($a), namespace-uri($a), string($a) return $a
         return
             deep-equal($atts1, $atts2) and deep-equal($item1/node(), $item2/node())
 };      
@@ -512,6 +561,53 @@ declare function f:jschemaKeywordsRC($n as node(),
         return $node
 };        
 
+
+(:~
+ : Returns the items in $value which are not distinct, that is, which
+ : occur in $value more than once.
+ :
+ : @param value the items to analyze
+ : @param ignoreCase if true, distinctness check ignores case
+ : @return the non-distinct values
+ :)
+declare function f:nonDistinctValues($value as item()*,
+                                     $ignoreCase as xs:boolean?)
+        as item()* {
+    if (not($ignoreCase)) then
+        for $item in $value
+        group by $data := data($item)
+        where count($item) gt 1
+        return $data
+    else
+        for $item in $value
+        group by $data := data($item) ! lower-case(.)
+        where count($item) gt 1
+        return distinct-values($item)
+};
+
+(:~
+ : Returns the URIs in $uris which are contain a non-distinct file name, that is,
+ : which contain a file name also contained by a different URI.
+ :
+ : @param uris the URIs to analyze
+ : @param ignoreCase if true, distinctness check ignores case
+ : @return the URIs with a non-distinct file name
+ :)
+declare function f:nonDistinctFileNames($uris as item()*,
+                                        $ignoreCase as xs:boolean?)
+        as item()* {
+    if (not($ignoreCase)) then
+        for $uri in $uris
+        group by $fname := file:name($uri)
+        where count($uri) gt 1
+        return $uri
+    else
+        for $uri in $uris
+        group by $fname := file:name($uri) ! lower-case(.)
+        where count($uri) gt 1
+        return distinct-values($uri)
+};
+
 (:~
  : Returns the JSON Schema keywords found at and under a set of nodes from a 
  : JSON Schema document.
@@ -520,10 +616,11 @@ declare function f:jschemaKeywordsRC($n as node(),
  : @param namePatterns a list of names or name patterns, whitespace separated
  : @return the resolved reference, if the value contains one, or the original value
  :)
-declare function f:oasKeywords($values as element()*, 
+declare function f:oasKeywords($values as node()*, 
                                $namePatterns as xs:string?)
         as element()* {
-    let $nameFilter := util:patternsToNamesAndRegexes($namePatterns, true())
+    let $values := $values ! root()/descendant-or-self::*[1]        
+    let $nameFilter := trace(util:patternsToNamesAndRegexes($namePatterns, true()) , '___NAME_FILTER: ')
     for $value in $values
     let $oasVersion := $value/ancestor-or-self::*[last()]/(
         openapi/substring(., 1, 1),
@@ -1108,49 +1205,6 @@ declare function f:foxfunc_resolve-link($node as node(), $mediatype as xs:string
 };        
 
 (:~
- : Returns the attribute names of a node. If $separator is specified, the sorted
- : names are concatenated, using this separator, otherwise the names are returned
- : as a sequence. If $localNames is true, the local names are returned, otherwise 
- : the lexical names. 
- : 
- : When using $namePattern, only those child elements are considered which have
- : a local name matching the pattern.
- :
- : Example: .../foo/att-names(., ', ', false(), '*put')
- : Example: .../foo/att-names(., ', ', false(), 'input|output') 
- :
- : @param node a node (unless it is an element, the function returns the empty sequence)
- : @param separator if used, the names are concatenated, using this separator
- : @param localNames if true, the local names are returned, otherwise the lexical names 
- : @param namePattern an optional name pattern filtering the attributes to be considered 
- : @return the names as a sequence, or as a concatenated string
- :)
-declare function f:foxfunc_att-names($node as node(), 
-                                     $concat as xs:boolean?, 
-                                     $nameKind as xs:string?,   (: name | lname | jname :)
-                                     $namePattern as xs:string?,
-                                     $excludedNamePattern as xs:string?)
-        as xs:string* {
-    let $nameRegex := $namePattern ! replace(., '\*', '.*') ! replace(., '\?', '.') 
-                      ! concat('^', ., '$')        
-    let $excludedNameRegex := $excludedNamePattern ! replace(., '\*', '.*') ! replace(., '\?', '.') 
-                      ! concat('^', ., '$')        
-    let $items := $node/@*
-       [not($nameRegex) or matches(local-name(.), $nameRegex, 'i')]
-       [not($excludedNameRegex) or not(matches(local-name(.), $excludedNameRegex, 'i'))]
-    let $separator := ', '[$concat]
-    let $names := 
-        if ($nameKind eq 'lname') then 
-            ($items/local-name(.)) => distinct-values() => sort()
-        else if ($nameKind eq 'jname') then 
-            ($items/f:foxfunc_unescape-json-name(local-name(.))) => distinct-values() => sort()
-        else ($items/name(.)) => distinct-values() => sort()
-    return
-        if (exists($separator)) then string-join($names, $separator)
-        else $names
-};        
-
-(:~
  : Returns the child element names of a node. If $concat is true, the sorted names are 
  : concatenated, using ', ' as separator. Otherwise the names are returned
  : as a sequence. Dependent on $nameKind, the local names (lname), the JSON
@@ -1547,6 +1601,7 @@ declare function f:hlistEntry($items as item()*)
  . zoo
  :)
 declare function f:hlist($values as xs:string*, 
+                         $headers as xs:string*,
                          $emptyLines as xs:string?)
         as xs:string {
     let $sep := codepoints-to-string(30000) (:  ($sep, '#')[1] :)        
@@ -1563,7 +1618,20 @@ declare function f:hlist($values as xs:string*,
             )                    
             
     return
-        f:hlistRC(0, $values, $sep, $emptyLineFns) => string-join('&#xA;')        
+        let $lines := f:hlistRC(0, $values, $sep, $emptyLineFns)
+        return (
+            if (empty($headers)) then () else 
+                let $maxLen := (($lines ! string-length(.) => max()), 80)[1]
+                let $sepline := string-join(for $i in 1 to $maxLen return '=', '')
+                return (
+                    $sepline,        
+                    for $header at $pos in $headers
+                    let $prefix := (for $i in 1 to $pos - 1 return '.  ') => string-join('')
+                    return $prefix || $header,
+                    $sepline,
+                    ''                    
+                ),
+            $lines) => string-join('&#xA;')
 };
 
 declare function f:hlistRC($level as xs:integer, 
@@ -1631,9 +1699,6 @@ declare function f:resolveJsonRef($reference as xs:string?,
                 resolve-uri($resource, $doc/base-uri(.)) 
                 ! json:doc(.)/*
             } catch * {
-                trace((), '___WARNING - CANNOT RESOLVE REFERENCE: ' || $reference
-                || ' ; CONTEXT: ' || $doc/base-uri(.)),
-                
                 (: Second try - replace '-' with '/' in base URI;
                    motivation: maybe this document has been downloaded to a file
                    with a name obtained by replacing in an internet address
@@ -1647,7 +1712,8 @@ declare function f:resolveJsonRef($reference as xs:string?,
                         let $uriAdjusted := replace($uri, $dirPart||'/', $dirPart||'-')
                         return json:doc($uriAdjusted)/*
                     } catch * {
-                        trace((), '___WARNING - SECOND ATTEMPT ALSO FAILED; BASE-URI 2: ' || $baseUri2)
+                        trace((), '___WARNING - CANNOT RESOLVE REFERENCE: ' || $reference ||
+                              ' ; CONTEXT: ' || $doc/base-uri(.))
                     }                     
             }
     where $context            
