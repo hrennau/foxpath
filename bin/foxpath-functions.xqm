@@ -70,24 +70,29 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $contextItem :=
                 if (empty($call/*)) then $context
                 else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:baseUriDirectory($contextItem)                
+(:            
             let $argNode :=
                 if ($contextItem instance of node()) then $contextItem
                 else i:fox-doc($contextItem, $options)
             return
                 $argNode/base-uri(.) ! replace(., '.*[/\\](.*)[/\\][^/\\]*$', '$1')
-            
+:)
+
         (: function `base-file-name` 
            ========================= :)
         else if ($fname = ('base-file-name', 'base-fname', 'bfname')) then
             let $contextItem :=
                 if (empty($call/*)) then $context
                 else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:baseUriFileName($contextItem)
+            (:
             let $argNode :=
                 if ($contextItem instance of node()) then $contextItem
                 else i:fox-doc($contextItem, $options)
             return
                 $argNode/base-uri(.) ! replace(., '.*[/\\]', '')
-
+:)
         (: function `bslash` 
            ================= :)
         else if ($fname eq 'back-slash' or $fname eq 'bslash') then
@@ -473,7 +478,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (not($fromSubstring)) then () else
                     $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:foxfunc_fox-descendant($context, $name, $fromSubstring, $toSubstring)
+                foxf:fox-descendant($context, $name, $fromSubstring, $toSubstring)
 
         (: function `fox-descendant-or-self` 
            ================================= :)
@@ -651,12 +656,25 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 i:fox-doc-available($uri, $options)
             
-        (: function `jchild` 
-           ================= :)
-        else if ($fname eq 'jchild') then
-            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+        (: function `jchildren` 
+           ==================== :)
+        else if ($fname eq 'jchildren') then
+            let $nodes :=
+                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $context
+            let $nameFilter := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
+            let $ignoreCase := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:jchild($context, $names)
+                foxf:jchildren($context, $nameFilter, $ignoreCase)
+
+        (: function `jnodes-location-report` 
+           ================================= :)
+        else if ($fname = ('jnodes-location-report', 'jlocations')) then
+            let $nodes :=
+                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $context
+            let $withFolders := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:nodesLocationReport($nodes, 'jname', $withFolders)
 
         (: function `json-parse` 
            ===================== :)
@@ -678,9 +696,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:pathContent($c, 'jname', $alsoInnerNodes, $includedNames, $excludedNames, $excludedNodes)
 
-        (: function `jschemaKeywords` 
+        (: function `jschema-keywords` 
            ========================== :)
-        else if ($fname eq 'jschemaKeywords') then
+        else if ($fname = ('jschema-keywords', 'jskeywords')) then
             let $nodes := 
                 if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 else $context
@@ -745,12 +763,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ============================= :)
         else if ($fname = ('json-name', 'jname')) then
             let $arg := 
-                let $explicit := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return
-                    ($explicit, $context)[1]
-            let $name := if ($arg instance of node()) then $arg/name() else $arg                    
-            return
-                convert:decode-key($name)
+                if ($call/*) then $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $context
+            return foxf:jname($arg)
 
        (: function `left-value-only` 
           ========================== :)
@@ -852,15 +867,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
                                ! xs:boolean(.)            
             return foxf:nonDistinctFileNames($uris, $ignoreCase)                
 
-        (: function `oas-msg-schemas` 
-           ========================== :)
-        else if ($fname = ('oas-msg-schemas', 'oasmsgs')) then
-            let $nodes := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]
-            return
-                foxf:oasMsgSchemas($nodes)            
-
         (: function `oas-jschema-keywords` 
            ================================ :)
         else if ($fname = ('oas-jschema-keywords')) then
@@ -870,6 +876,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $nameFilter := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                 
             return
                 foxf:oasJschemaKeywords($nodes, $nameFilter)            
+
+        (: function `oas-msg-schemas` 
+           ========================== :)
+        else if ($fname = ('oas-msg-schemas', 'oasmsgs')) then
+            let $nodes := 
+                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $context
+            return foxf:oasMsgSchemas($nodes)            
 
         (: function `oas-keywords` 
            ======================= :)
@@ -1443,6 +1457,11 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ========================== :)
         else if ($fname eq 'current-dateTime') then
             string(current-dateTime())
+                
+        (: function `current-dir` 
+           ====================== :)
+        else if ($fname eq 'current-dir') then
+            file:current-dir()
                 
         (: function `date` 
            =============== :)

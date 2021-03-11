@@ -116,7 +116,7 @@ if %FOXPATH%=="?" (
     echo             endpoints are whitespace-separated
     echo -i context-dir : 
     echo           a folder to be used as initial context item  
-    echo -D :      write execution time to stderr ( e.g.: time consumed: 8.612 s )   
+    echo -D :      write execution time to stderr //e.g.: time consumed: 8.612 s   
     echo -v "name=value    ( note that using Powershell, the '=' must be framed by whitespace )" 
     echo -v "name:value    ( some consoles have problems with '=', hence alternative syntax using ':' )"
     echo         : name and value of an external variable
@@ -134,7 +134,5 @@ if not "%UGRAPH_ENDPOINTS%"=="" (set OPT_UGRAPH_ENDPOINTS=-b "ugraphEndpoints=%U
 set OPT_GITHUB_TOKEN=-b "{http://www.ttools.org/xquery-functions}githubToken=%GITHUB_TOKEN%"
 if not "%CONTEXT_ITEM%"=="" (set OPT_CONTEXT_ITEM=-b "context=%CONTEXT_ITEM%")
 if "%DEBUG_TIME%"=="1" (set OPT_DEBUG_TIME=-b debugtime=1)
-echo "DEBUG_TIME:%DEBUG_TIME%"
-echo "OPT_DEBUG_TIME:%OPT_DEBUG_TIME%"
-echo HERE=%HERE%
+rem echo HERE=%HERE%
 basex -b isFile=%ISFILE% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% %OPT_CONTEXT_ITEM% %OPT_DEBUG_TIME% -b "vars=%VARS%" %HERE%/fox.xq

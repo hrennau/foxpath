@@ -55,6 +55,18 @@ declare function f:attNames($nodes as node()*,
         else $names
 };        
 
+declare function f:baseUriDirectory($item as item())
+        as xs:string {
+    (if ($item instance of node()) then $item else i:fox-doc($item, ()))
+    ! base-uri(.) ! replace(., '.*[/\\](.*)[/\\][^/\\]*$', '$1')
+};
+
+declare function f:baseUriFileName($item as item())
+        as xs:string {
+    (if ($item instance of node()) then $item else i:fox-doc($item, ()))
+    ! base-uri(.) ! file:name(.)
+};
+
 (:~
  : Edits a text, replacing forward slashes by back slashes.
  :
@@ -169,6 +181,38 @@ declare function f:jchild($context as node()*,
 };
 
 (:~
+ : Returns the child elements of input nodes with a JSON name equal to
+ : one of a set of input names. The JSON name is the name obtained by
+ : decoding the element name as a JSON key.
+ :
+ : @param context the context URI
+ : @param names one or several name patterns
+ : @return child elements with a matching JSON name
+ :)
+declare function f:jchildren($context as node()*,
+                             $nameFilter as xs:string?,
+                             $ignoreCase as xs:boolean?)
+        as item()* {
+    let $cnameFilter := util:compileNameFilter($nameFilter, $ignoreCase)        
+    return $context/*[convert:decode-key(local-name()) ! util:matchesNameFilter(., $cnameFilter)]
+(:    
+    if (every $name in $names satisfies not(matches($name, '[*?]'))) then        
+        $context/*[convert:decode-key(local-name()) = $names]
+    else
+        let $namesRX := 
+            $names 
+            ! replace(., '\*', '.*') 
+            ! replace(., '\?', '.') 
+            ! concat('^', ., '$')
+        return
+            $context/*[
+                let $jname := convert:decode-key(local-name())
+                return some $rx in $namesRX satisfies matches($jname, $rx, $flags)
+            ]
+:)            
+};
+
+(:~
  : Returns the parent URIs of a given URI, provided its name matches
  : a given name, or a regex derived from it. If $fromSubstring and 
  : $toSubstring are supplied, the parent URI name must match the regex 
@@ -246,16 +290,17 @@ declare function f:foxfunc_fox-self($context as xs:string,
  : @param toSubstring used to map $name to a regex
  : @return descendant URIs matching the name or the derived regex
  :)
-declare function f:foxfunc_fox-descendant($context as xs:string,
-                                          $names as xs:string+,
-                                          $fromSubstring as xs:string?,
-                                          $toSubstring as xs:string?)
+declare function f:fox-descendant($context as xs:string,
+                                  $names as xs:string+,
+                                  $fromSubstring as xs:string?,
+                                  $toSubstring as xs:string?)
         as xs:string* {
+            
     (
     for $name in $names return
     
-    if (not($fromSubstring) or not($toSubstring)) then 
-        i:descendantUriCollection($context, $name, (), ()) ! concat($context, '/', .) 
+    if (not($fromSubstring) or not($toSubstring)) then trace(
+        i:descendantUriCollection($context, $name, (), ()) ! concat($context, '/', .) , '_URI_COLL: ') 
     else 
         let $regex := replace($name, $fromSubstring, $toSubstring, 'i') !
                       concat('^', ., '$')        
@@ -286,7 +331,7 @@ declare function f:foxfunc_fox-descendant-or-self($context as xs:string,
         as xs:string* {
     (
     for $name in $names
-    let $descendantUris := f:foxfunc_fox-descendant($context, $name, $fromSubstring, $toSubstring)
+    let $descendantUris := f:fox-descendant($context, $name, $fromSubstring, $toSubstring)
     return (
         f:foxfunc_fox-self($context, $name, $fromSubstring, $toSubstring),
         $descendantUris
@@ -513,6 +558,44 @@ declare function f:foxfunc_frequencies($values as item()*,
 };      
 
 (:~
+ : Creates an Item Location Report for a sequence of given JSON nodes.
+ :
+ : @param nodes a sequence of JSON nodes
+ : @param withFolders the location report should include the folder containing the documents
+ : @return a location report
+ :)
+declare function f:nodesLocationReport($nodes as node()*,
+                                       $nameKind as xs:string?,   (: name | lname | jname :)
+                                       $withFolders as xs:boolean?)
+        as xs:string {        
+    let $fn_name := 
+        switch($nameKind)
+        case 'name' return name#1
+        case 'lname' return local-name#1
+        case 'jname' return f:jname#1
+        default return error(QName((), 'INVALID_ARG'), concat('Invalid "nameKind": ', $nameKind))
+    return
+    
+    $nodes/f:hlistEntry((
+        if ($withFolders) then f:baseUriDirectory(.) else (),
+        f:baseUriFileName(.), 
+        $fn_name(.), 
+        f:name-path(., 'jname', ())))
+        => f:hlist(('Folder'[$withFolders], 'File', 'Name', 'Path'), ())
+};
+
+(:~
+ : Returns the JSON names of given nodes.
+ :
+ : @param nodes a sequence of nodes
+ : @return a sequence of JSON names
+ :)
+declare function f:jname($nodes as node()*)
+        as xs:string* {
+    $nodes ! local-name(.) ! convert:decode-key(.)        
+};
+
+(:~
  : Returns the JSON Schema keywords found at and under a set of nodes from a 
  : JSON Schema document.
  :
@@ -521,11 +604,11 @@ declare function f:foxfunc_frequencies($values as item()*,
  : @return the resolved reference, if the value contains one, or the original value
  :)
 declare function f:jschemaKeywords($values as element()*, 
-                                   $namePatterns as xs:string?)
+                                   $nameFilter as xs:string?)
         as element()* {
-    let $nameFilter := util:patternsToNamesAndRegexes($namePatterns, true())
+    let $cnameFilter := util:compileNameFilter($nameFilter, true())
     return
-        $values/f:jschemaKeywordsRC(., $nameFilter)
+        $values/f:jschemaKeywordsRC(., $cnameFilter)
 };
 
 (:~
@@ -556,8 +639,7 @@ declare function f:jschemaKeywordsRC($n as node(),
         if (empty($nameFilter)) then $unfiltered else
         for $node in $unfiltered
         let $jname := $node/local-name() ! convert:decode-key(.) ! lower-case(.)
-        where $jname = $nameFilter?namesLC or 
-               (some $r in $nameFilter?regexes satisfies matches($jname, $r, 'i'))        
+        where util:matchesNameFilter($jname, $nameFilter)        
         return $node
 };        
 
@@ -620,7 +702,7 @@ declare function f:oasKeywords($values as node()*,
                                $namePatterns as xs:string?)
         as element()* {
     let $values := $values ! root()/descendant-or-self::*[1]        
-    let $nameFilter := trace(util:patternsToNamesAndRegexes($namePatterns, true()) , '___NAME_FILTER: ')
+    let $nameFilter := util:compileNameFilter($namePatterns, true())
     for $value in $values
     let $oasVersion := $value/ancestor-or-self::*[last()]/(
         openapi/substring(., 1, 1),
@@ -717,8 +799,7 @@ declare function f:oasKeywordsRC($n as node(),
         if (empty($nameFilter)) then $unfiltered else
         for $node in $unfiltered
         let $jname := $node/local-name() ! convert:decode-key(.) ! lower-case(.)
-        where (empty($nameFilter?namesLC) or $jname = $nameFilter?namesLC) and        
-              (empty($nameFilter?regexes) or (some $r in $nameFilter?regexes satisfies matches($jname, $r, 'i')))        
+        where util:matchesNameFilter($jname, $nameFilter)
         return $node
 };        
 
@@ -1621,7 +1702,7 @@ declare function f:hlist($values as xs:string*,
         let $lines := f:hlistRC(0, $values, $sep, $emptyLineFns)
         return (
             if (empty($headers)) then () else 
-                let $maxLen := (($lines ! string-length(.) => max()), 80)[1]
+                let $maxLen := min(( (($lines ! string-length(.) => max()), 80)[1], 100))
                 let $sepline := string-join(for $i in 1 to $maxLen return '=', '')
                 return (
                     $sepline,        

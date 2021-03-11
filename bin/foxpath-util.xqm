@@ -21,29 +21,45 @@ declare variable $f:PREDECLARED_NAMESPACES := (
 
 (:~
  : Translates a whitespace-separated list of string patterns
- : into regular expressions.
+ : into a list of regular expressions and a list of literal strings.
  :
  : @param patterns a list of names and/or patterns, whitespace concatenated
- : @param toLowerCase if true, names (but not regular expressions) are also returned in lower-case 
- : @return a map with entries 'names', 'regexes' and 'namesLC' giving names, regular expressions
- :   and names in lower case (in lower case only if $toLowerCase is used) 
+ : @param ignoreCase if true, the filter ignores case 
+ : @return a map with entries 'names', 'regexes' and 'flags' 
  :)
-declare function f:patternsToNamesAndRegexes($patterns as xs:string?, 
-                                             $toLowerCase as xs:boolean?)
+declare function f:compileNameFilter($patterns as xs:string?, 
+                                     $ignoreCase as xs:boolean?)
         as map(xs:string, item()*)? {
     if (not($patterns)) then () else
     
     let $items := $patterns ! normalize-space(.) ! tokenize(.)
-    let $names := $items[not(contains(., '*')) and not(contains(., '?'))]
+    let $names := 
+        let $raw := $items[not(contains(., '*')) and not(contains(., '?'))]
+        return
+            if (not($ignoreCase)) then $raw else $raw ! lower-case(.)
     let $regexes := $items[contains(., '*') or contains(., '?')]
     ! replace(., '\*', '.*')
     ! replace(., '\?', '.')
     ! concat('^', ., '$')
-     
+    let $flags := if ($ignoreCase) then 'i' else ''     
     return 
-        if ($toLowerCase and exists($names)) then
-            map{'names': $names, 'regexes': $regexes, 'namesLC': $names ! lower-case(.) }
-        else map{'names': $names, 'regexes': $regexes}            
+        map{'names': $names, 'regexes': $regexes, 'flags': $flags}
+};
+
+(:~
+ : Matches a string against a name filter constructed by `patternsToNameFilter()`.
+ :
+ : @param string the string to match
+ : @param nameFilter the name filter 
+ : @return true if the name filter is matched, false otherwise
+ :)
+declare function f:matchesNameFilter($string as xs:string, 
+                                     $nameFilter as map(xs:string, item()*)?)
+        as xs:boolean {
+    let $flags := $nameFilter?flags return
+    
+    (empty($nameFilter?names) or $string = $nameFilter?names) and        
+    (empty($nameFilter?regexes) or (some $r in $nameFilter?regexes satisfies matches($string, $r, $flags)))
 };
 
 (:

@@ -73,7 +73,7 @@ let $foxpathExpr :=
                                     '; &#xA;valid names: ', string-join(sort(('', $lib//foxpath/@name)), '&#xA;   '))}</error>
                                 else
                                     $lib//foxpath[@name eq $fragmentId]/replace(., '^\s+|\s$', '')
-let $_DEBUG := trace($debugtime, '_DEBUG_TIME: ')                                    
+                                   
 let $startTime := prof:current-ms()[$debugtime]                       
 let $context :=
     if ($context) then $context
@@ -86,5 +86,7 @@ let $value :=
 let $stopTime := prof:current-ms()[$debugtime]      
 let $t := ((($stopTime - $startTime) div 1000) ! round(., 3))[$debugtime] 
 return ($value,
-        if (not($debugtime)) then () else
-            trace('time consumed: ' || $t || ' s'))
+        if (not($debugtime)) then () else (
+            trace(''),
+            trace('--- created by Foxpath, at ' || current-dateTime()),
+            trace('--- time consumed: ' || $t || ' s')))
