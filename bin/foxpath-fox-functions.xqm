@@ -299,8 +299,8 @@ declare function f:fox-descendant($context as xs:string,
     (
     for $name in $names return
     
-    if (not($fromSubstring) or not($toSubstring)) then trace(
-        i:descendantUriCollection($context, $name, (), ()) ! concat($context, '/', .) , '_URI_COLL: ') 
+    if (not($fromSubstring) or not($toSubstring)) then
+        i:descendantUriCollection($context, $name, (), ()) ! concat($context, '/', .) 
     else 
         let $regex := replace($name, $fromSubstring, $toSubstring, 'i') !
                       concat('^', ., '$')        

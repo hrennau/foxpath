@@ -1035,7 +1035,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $context := $context ! root() ! descendant-or-self::*[1]                
             return
                 $context ! foxf:resolveJsonRef($ref, .)            
-                            
+                  
+        (: function `resolve-path` 
+           ====================== :)
+        else if ($fname eq 'resolve-path') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                (: Resolves the path and turns it into URI without trailing / :)
+                file:resolve-path($arg1) ! file:path-to-uri(.) ! replace(., '/$', '')
+                  
         (: function `resolve-xsdtype-ref` 
            ============================== :)
         else if ($fname = ('resolve-xsdtype-ref', 'typeref')) then
@@ -1046,18 +1054,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 $context ! foxf:resolveXsdTypeRef($ref, .)            
                             
-(:
-        (: function `resolve-foxpath` 
-           ========================= :)
-        else if ($fname eq 'resolve-foxpath') then
-            let $expression := 
-                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return
-                    ($explicit, $context)[1]
-            return
-                i:fox-resolve-foxpath($expression)
-:)                
-
        (: function `right-value-only` 
           =========================== :)
         else if ($fname = ('right-value-only', 'right-value')) then
@@ -1461,7 +1457,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `current-dir` 
            ====================== :)
         else if ($fname eq 'current-dir') then
-            file:current-dir()
+            file:current-dir() ! file:path-to-uri(.) ! replace(., '[/\\]$', '')
                 
         (: function `date` 
            =============== :)
