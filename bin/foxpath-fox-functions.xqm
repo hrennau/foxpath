@@ -7,6 +7,18 @@ import module namespace util="http://www.ttools.org/xquery-functions/util"
 at  "foxpath-util.xqm";
 
 (:~
+ : Returns for given items all descendants and their attributes. Atomic
+ : items are ignored.
+ :
+ : @param a sequence of items
+ : @return descendant nodes and their attributes
+ :) 
+declare function f:allDescendants($items as item()*)
+        as node()* {
+    $items[. instance of node()]//(@*, *)        
+};        
+
+(:~
  : Returns the attribute names of a node. If $separator is specified, the sorted
  : names are concatenated, using this separator, otherwise the names are returned
  : as a sequence. If $localNames is true, the local names are returned, otherwise 
@@ -24,7 +36,7 @@ at  "foxpath-util.xqm";
  : @param namePattern an optional name pattern filtering the attributes to be considered 
  : @return the names as a sequence, or as a concatenated string
  :)
-declare function f:attNames($nodes as node()*, 
+declare function f:attNamesOld($nodes as node()*, 
                             $concat as xs:boolean?, 
                             $nameKind as xs:string?,   (: name | lname | jname :)
                             $namePatterns as xs:string*,
@@ -43,6 +55,31 @@ declare function f:attNames($nodes as node()*,
             (some $r in $nameRegexes satisfies matches(local-name(.), $r, 'i'))]
        [empty($excludedNameRegexes) or 
             not(some $r in $excludedNameRegexes satisfies matches(local-name(.), $r, 'i'))]
+    let $separator := ', '[$concat]
+    let $names := 
+        if ($nameKind eq 'lname') then 
+            ($items/local-name(.)) => distinct-values() => sort()
+        else if ($nameKind eq 'jname') then 
+            ($items/f:foxfunc_unescape-json-name(local-name(.))) => distinct-values() => sort()
+        else ($items/name(.)) => distinct-values() => sort()
+    return
+        if (exists($separator)) then string-join($names, $separator)
+        else $names
+};        
+
+declare function f:attNames($nodes as node()*, 
+                            $concat as xs:boolean?, 
+                            $nameKind as xs:string?,   (: name | lname | jname :)
+                            $nameFilter as xs:string?,
+                            $nameFilterExclude as xs:string?)
+        as xs:string* {
+    let $cnameFilter := util:compileNameFilter($nameFilter, true())        
+    let $cnameFilterExclude := util:compileNameFilter($nameFilterExclude, true())
+       
+    for $node in $nodes       
+    let $items := $node/@*
+       [empty($cnameFilter) or util:matchesNameFilter(local-name(.), $cnameFilter)]
+       [empty($cnameFilterExclude) or not(util:matchesNameFilter(local-name(.), $cnameFilterExclude))] 
     let $separator := ', '[$concat]
     let $names := 
         if ($nameKind eq 'lname') then 
@@ -88,12 +125,16 @@ declare function f:bslash($arg as xs:string?)
  :)
 declare function f:content-deep-equal($items as item()*)
         as xs:boolean? {
-    let $count := count($items)
+    let $docs :=
+        for $item in $items return
+            if ($item instance of node()) then $item
+            else i:fox-doc($item, ())
+    let $count := count($docs)
     return if ($count le 1) then true() else
     
     every $i in 1 to $count - 1 satisfies
-        let $item1 := $items[$i]
-        let $item2 := $items[$i + 1]
+        let $item1 := $docs[$i]
+        let $item2 := $docs[$i + 1]
         let $atts1 := for $a in $item1/@* order by local-name($a), namespace-uri($a), string($a) return $a
         let $atts2 := for $a in $item2/@* order by local-name($a), namespace-uri($a), string($a) return $a
         return
@@ -119,11 +160,11 @@ declare function f:file-content($uri as xs:string?,
 };      
 
 (:~
- : Returns the child URIs of a given URI, provided their name matches
- : a given name, or a regex derived from it. If $fromSubstring and 
- : $toSubstring are supplied, the URI names must match the regex 
- : obtained by replacing in $name substring $fromSubstring with 
- : $toSubstring.
+ : Returns the child URIs of a given URI which contain a file name (final step)
+ : matching a name or name pattern from a sequence of names or name patterns. 
+ :
+ : If $fromSubstring and $toSubstring are supplied, the file name must match the 
+ : regex obtained by replacing in $name substring $fromSubstring with $toSubstring.
  :
  : @param context the context URI
  : @param names one or several name patterns
@@ -131,10 +172,10 @@ declare function f:file-content($uri as xs:string?,
  : @param toSubstring used to map $name to a regex
  : @return child URIs matching the name or the derived regex
  :)
-declare function f:foxfunc_fox-child($context as xs:string,
-                                     $names as xs:string+,
-                                     $fromSubstring as xs:string?,
-                                     $toSubstring as xs:string?)
+declare function f:fox-child($context as xs:string,
+                             $names as xs:string+,
+                             $fromSubstring as xs:string?,
+                             $toSubstring as xs:string?)
         as xs:string* {
     (
     if (not($fromSubstring) or not($toSubstring)) then 
@@ -195,21 +236,6 @@ declare function f:jchildren($context as node()*,
         as item()* {
     let $cnameFilter := util:compileNameFilter($nameFilter, $ignoreCase)        
     return $context/*[convert:decode-key(local-name()) ! util:matchesNameFilter(., $cnameFilter)]
-(:    
-    if (every $name in $names satisfies not(matches($name, '[*?]'))) then        
-        $context/*[convert:decode-key(local-name()) = $names]
-    else
-        let $namesRX := 
-            $names 
-            ! replace(., '\*', '.*') 
-            ! replace(., '\?', '.') 
-            ! concat('^', ., '$')
-        return
-            $context/*[
-                let $jname := convert:decode-key(local-name())
-                return some $rx in $namesRX satisfies matches($jname, $rx, $flags)
-            ]
-:)            
 };
 
 (:~
@@ -359,7 +385,7 @@ declare function f:foxfunc_fox-sibling($context as xs:string,
     (
     for $name in $names
     let $parent := i:parentUri($context, ())
-    let $raw := f:foxfunc_fox-child($parent, $name, $fromSubstring, $toSubstring)
+    let $raw := f:fox-child($parent, $name, $fromSubstring, $toSubstring)
     return $raw[not(. eq $context)]
     ) => distinct-values()
 };
@@ -558,7 +584,46 @@ declare function f:foxfunc_frequencies($values as item()*,
 };      
 
 (:~
- : Creates an Item Location Report for a sequence of given JSON nodes.
+ : Returns selected child elements of a given sequence of nodes. Selected child elementsnodes
+ : have a name matching a given name filter and not matching an optional name filter defining 
+ : exclusions. 
+ :
+ : Depending on $nameKind, the local name ('lname'), the JSON name ('jname') or
+ : the lexical name 'name') is considered when matching.
+ :
+ : When $ignoreCase is true, matching is performed ignoring character case.
+ :
+ : A name filter is a whitespace separated list of names or name patterns. Name
+ : patterns can use wildcards * and ?. Example: "foo bar* *foobar"
+ :
+ : @param context the context node
+ : @param names a name filter
+ : @param namesExcluded a name filter defining exclusions
+ : @return child nodes matching the name filter and not matching the name filter defining exclusions
+ :)
+declare function f:node-child($contextNodes as node()*,
+                              $nameKind as xs:string?,   (: name | lname | jname :)
+                              $names as xs:string?,
+                              $namesExcluded as xs:string?,
+                              $ignoreCase as xs:boolean?
+)
+        as node()* {
+    let $cnameFilter := $names ! util:compileNameFilter(., $ignoreCase)        
+    let $cnameFilterExclude := $namesExcluded ! util:compileNameFilter(., $ignoreCase)
+    let $fn_name := 
+        switch($nameKind)
+        case 'lname' return function($node) {$node/local-name(.)}
+        case 'jname' return function($node) {$node/local-name(.) ! convert:decode-key(.)}
+        case 'name' return function($node) {$node/name(.)}
+        default return error()
+    return
+        $contextNodes/*[$fn_name(.) ! 
+            util:matchesNameFilter(., $cnameFilter) and (
+                not($namesExcluded) or util:matchesNameFilter(., $cnameFilterExclude))]
+};
+
+(:~
+ : Creates an Item Location Report for a sequence of given nodes.
  :
  : @param nodes a sequence of JSON nodes
  : @param withFolders the location report should include the folder containing the documents
@@ -702,14 +767,14 @@ declare function f:oasKeywords($values as node()*,
                                $namePatterns as xs:string?)
         as element()* {
     let $values := $values ! root()/descendant-or-self::*[1]        
-    let $nameFilter := util:compileNameFilter($namePatterns, true())
+    let $cnameFilter := util:compileNameFilter($namePatterns, true())
     for $value in $values
     let $oasVersion := $value/ancestor-or-self::*[last()]/(
         openapi/substring(., 1, 1),
         swagger/substring(., 1, 1)
         )[1]
     return        
-        $value/f:oasKeywordsRC(., $oasVersion, $nameFilter)
+        $value/f:oasKeywordsRC(., $oasVersion, $cnameFilter)
 };
 
 (:~
@@ -885,7 +950,7 @@ declare function f:oasMsgSchemas($oas as node()*) {
  : @param count the number of repeats
  : @return the result of repeating the string
  :)
-declare function f:foxfunc_repeat($string as xs:string?, $count as xs:integer?)
+declare function f:repeat($string as xs:string?, $count as xs:integer?)
         as xs:string {
     string-join(for $i in 1 to $count return $string, '')
 };      
@@ -1509,6 +1574,60 @@ declare function f:leftValueOnly($leftValue as item()*,
                                  $rightValue as item()*)
     as item()* {
     $leftValue[not(. = $rightValue)]
+};
+
+(:~
+ : Returns for a sequence of documents for each document those data paths which are not contained
+ : in all other documents.
+ :
+ : @param docs a sequence of documents or document URIs
+ : @return a structured representation of data paths not used by all documents
+ :)
+declare function f:pathCompare($items as item()*,
+                               $nameKind as xs:string?,
+                               $options as xs:string?)
+        as item()? {
+    let $options := $options ! tokenize(.) ! lower-case(.)
+    
+    let $nameKind := ($nameKind, 'lname')[1]
+    let $docs :=
+        for $item in $items return
+            if ($item instance of node()) then $item
+            else i:fox-doc($item, ())
+    let $count := count($docs)
+    return
+        if ($count lt 2) then () else
+    
+    let $pathArrays := 
+        for $doc at $pos in $docs
+        let $paths := $doc/f:allDescendants(.)/f:name-path(., $nameKind, ()) => distinct-values() => sort()
+        return array{$paths}
+        
+    let $commonPaths := util:atomIntersection($pathArrays)
+    let $pathsMap := map:merge(
+        for $doc at $pos in $docs
+        let $paths := $doc/f:allDescendants(.)/f:name-path(., $nameKind, ()) => distinct-values() => sort()
+        return map:entry($pos, $paths)
+    )
+    let $deviations :=    
+        for $i in 1 to $count
+        let $paths := $pathArrays[$i] ! array:flatten(.)
+        let $pathsNotCommon := $paths[not(. = $commonPaths)]
+        return
+            if (empty($pathsNotCommon)) then () else
+            <document nr="{$i}">{
+                $docs[$i]/base-uri(.) ! attribute uri {.},
+                <pathsNotInAll count="{count($pathsNotCommon)}">{
+                    if ($options = 'counts') then () else
+                    ($pathsNotCommon => sort()) ! <path p="{.}"/>
+                }</pathsNotInAll>            
+            }</document>
+    return
+        if (empty($deviations)) then ()
+        else
+            <deviations>{
+                $deviations
+            }</deviations>
 };
 
 (:~

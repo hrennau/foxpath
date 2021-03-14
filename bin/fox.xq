@@ -86,7 +86,8 @@ let $value :=
 let $stopTime := prof:current-ms()[$debugtime]      
 let $t := ((($stopTime - $startTime) div 1000) ! round(., 3))[$debugtime] 
 return ($value,
-        if (not($debugtime)) then () else (
-            trace(''),
+        if (not($debugtime)) then () else
+            let $_ := (
             trace('--- created by Foxpath, at ' || current-dateTime()),
-            trace('--- time consumed: ' || $t || ' s')))
+            trace('--- time consumed: ' || $t || ' s')
+            ) return ())

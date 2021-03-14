@@ -62,6 +62,33 @@ declare function f:matchesNameFilter($string as xs:string,
     (empty($nameFilter?regexes) or (some $r in $nameFilter?regexes satisfies matches($string, $r, $flags)))
 };
 
+(:~
+ : Returns all items contained in every array in a given
+ : sequence of arrays. Array members are evaluated and
+ : returned in atomized form.
+ :
+ : @param sequences a sequence of arrays
+ : @return the items contained by all arrays
+ :)
+declare function f:atomIntersection($sequences as array(item()*)*)
+        as item()* {
+    let $seq1 := head($sequences)
+    let $seq2 := tail($sequences)
+    return fold-left($seq2, array:flatten($seq1), 
+        function($sofar, $new) {
+            let $t1 := prof:current-ms()
+            let $newItems := array:flatten($new)
+            let $t2 := prof:current-ms()
+            let $newAccum := $sofar[. = $newItems]
+            
+            let $t3 := prof:current-ms()
+            let $_DEBUG := trace(concat('_NEXT_INTERSECTION; #OLD_ITEMS: ', count($sofar), ' ; #NEW_ITEMS: ', count($newItems)))            
+            let $_DEBUG := trace($t2 - $t1, 't(flatten): ')
+            let $_DEBUG := trace($t3 - $t2, 't(filter) : ')
+            
+            return $newAccum})
+};
+
 (:
 declare variable $f:STDLIB := map{
     'lower-case#1' : map{'funcItem' : lower-case#1, 'args' : ['xs:string?'], 'result' : 'xs:string'}
