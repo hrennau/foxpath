@@ -43,7 +43,7 @@ declare function f:compileNameFilter($patterns as xs:string?,
     ! concat('^', ., '$')
     let $flags := if ($ignoreCase) then 'i' else ''     
     return 
-        map{'names': $names, 'regexes': $regexes, 'empty': empty(($names, $regexes)), 'flags': $flags}
+        map{'names': $names, 'regexes': $regexes, 'empty': empty(($names, $regexes)), 'ignoreCase': $ignoreCase}
 };
 
 (:~
@@ -56,11 +56,12 @@ declare function f:compileNameFilter($patterns as xs:string?,
 declare function f:matchesNameFilter($string as xs:string, 
                                      $nameFilter as map(xs:string, item()*)?)
         as xs:boolean {
-    let $flags := $nameFilter?flags return
-    
-    $nameFilter?empty
-     or exists($nameFilter?names) and $string = $nameFilter?names
-     or exists($nameFilter?regexes) and (some $r in $nameFilter?regexes satisfies matches($string, $r, $flags))
+    let $flags := if ($nameFilter?ignoreCase) then 'i' else ''
+    let $string := if ($nameFilter?ignoreCase) then lower-case($string) else $string 
+    return
+        $nameFilter?empty
+        or exists($nameFilter?names) and $string = $nameFilter?names
+        or exists($nameFilter?regexes) and (some $r in $nameFilter?regexes satisfies matches($string, $r, $flags))
 };
 
 (:~

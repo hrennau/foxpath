@@ -184,6 +184,7 @@ declare function f:foxChild($context as xs:string*,
             [not($names) or util:matchesNameFilter(., $cnameFilter)]
             [not($namesExcluded) or not(util:matchesNameFilter(., $cnameFilterExclude))]
             ! concat($c, '/', .)
+            
 (: _TO_DO_ - remove: $fromSubstring, $toSubstring ---    
     (
     if (not($fromSubstring) or not($toSubstring)) then 
@@ -248,36 +249,26 @@ declare function f:jchildren($context as node()*,
 };
 
 (:~
- : Returns the parent URIs of a given URI, provided its name matches
- : a given name, or a regex derived from it. If $fromSubstring and 
- : $toSubstring are supplied, the parent URI name must match the regex 
- : obtained by replacing in $name substring $fromSubstring with 
- : $toSubstring.
+ : Returns for a set of URIs the parent URIs with a file name (final step) 
+ : matching a name or name pattern from $names, and not matching a name or 
+ : name pattern from $namesExcluded. 
  :
- : @param context the context URI
- : @param names one or several name patterns
- : @param fromSubstring used to map $name to a regex
- : @param toSubstring used to map $name to a regex
- : @return the parent URI, if it matches the name or the derived regex
- :)
-declare function f:fox-parent($context as xs:string,
-                              $names as xs:string+,
-                              $fromSubstring as xs:string?,
-                              $toSubstring as xs:string?)
+ : @param context the context URIs
+ : @param names names or name paterns of URIs to be included, whitespace separated
+ : @param namesExcluded names or name paterns of URIs to be excluded, whitespace separated
+ : @return selected parent URIs
+:)
+declare function f:foxParent($context as xs:string,
+                             $names as xs:string?,
+                             $namesExcluded as xs:string?)
         as xs:string? {
-    (
-    for $name in $names
-    let $regex :=
-        if (not($fromSubstring) or not($toSubstring)) then 
-            replace($name, '\*', '.*') !
-            replace(., '\?', '.') !
-            concat('^', ., '$')
-        else
-            replace($name, $fromSubstring, $toSubstring, 'i') !
-            concat('^', ., '$')
-    let $uri := i:parentUri($context, $regex) 
-    return $uri
-    ) => distinct-values()
+    let $cnameFilter := util:compileNameFilter($names, true())        
+    let $cnameFilterExclude := util:compileNameFilter($namesExcluded, true())    
+    return
+        for $c in $context return
+            i:parentUri($c, ()) 
+            [not($names) or util:matchesNameFilter(., $cnameFilter)]
+            [not($namesExcluded) or not(util:matchesNameFilter(., $cnameFilterExclude))]
 };
 
 (:~
