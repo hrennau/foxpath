@@ -391,22 +391,29 @@ declare function f:fox-parent-sibling($context as xs:string,
 };
 
 (:~
- : Returns the ancestor URIs of a given URI, provided their name matches a given 
- : name, or a regex derived from it. If $fromSubstring and $toSubstring are 
- : supplied, the URI names must match the regex obtained obtained by replacing 
- : in $name substring $fromSubstring with $toSubstring.
+ : Returns for a set of URIs the ancestor URIs with a file name (final step) 
+ : matching a name or name pattern from $names, and not matching a name or name 
+ : pattern from $namesExcluded. 
  :
- : @param context the context URI
- : @param names one or several name patterns
- : @param fromSubstring used to map $name to a regex
- : @param toSubstring used to map $name to a regex
- : @return sibling URIs matching the name or the derived regex
+ : @param context the context URIs
+ : @param names names or name paterns of URIs to be included, whitespace separated
+ : @param namesExcluded names or name paterns of URIs to be excluded, whitespace separated
+ : @return selected child URIs
  :)
-declare function f:fox-ancestor($context as xs:string,                                        
-                                $names as xs:string+,
-                                $fromSubstring as xs:string?,
-                                $toSubstring as xs:string?)
+declare function f:foxAncestor($context as xs:string,                                        
+                               $names as xs:string?,
+                               $namesExcluded as xs:string?)
         as xs:string* {
+
+    let $cnameFilter := util:compileNameFilter($names, true())        
+    let $cnameFilterExclude := util:compileNameFilter($namesExcluded, true())
+    return (
+        for $c in $context 
+            return i:ancestorUriCollection($c, (), ()) 
+                   [not($names) or file:name(.) ! util:matchesNameFilter(., $cnameFilter)]
+                   [not($namesExcluded) or file:name(.) ! not(util:matchesNameFilter(., $cnameFilterExclude))]
+    ) => distinct-values()
+(:
     (
     for $name in $names
     let $regex :=
@@ -420,6 +427,7 @@ declare function f:fox-ancestor($context as xs:string,
     let $uris := i:ancestorUriCollection($context, $regex, false()) 
     return $uris
     ) => distinct-values()
+:)    
 };
 
 (:~
@@ -560,9 +568,9 @@ declare function f:frequencies($values as item()*,
 };      
 
 (:~
- : Returns selected child elements of a given sequence of nodes. Selected child elementsnodes
- : have a name matching a given name filter and not matching an optional name filter defining 
- : exclusions. 
+ : Returns selected child elements of a given sequence of nodes. Selected elements 
+ : have a name matching a given name filter and not matching an optional name filter 
+ : defining exclusions. 
  :
  : Depending on $nameKind, the local name ('lname'), the JSON name ('jname') or
  : the lexical name 'name') is considered when matching.
@@ -577,12 +585,12 @@ declare function f:frequencies($values as item()*,
  : @param namesExcluded a name filter defining exclusions
  : @return child nodes matching the name filter and not matching the name filter defining exclusions
  :)
-declare function f:node-child($contextNodes as node()*,
-                              $nameKind as xs:string?,   (: name | lname | jname :)
-                              $names as xs:string?,
-                              $namesExcluded as xs:string?,
-                              $ignoreCase as xs:boolean?
-)
+declare function f:nodeChild(
+                       $contextNodes as node()*,
+                       $nameKind as xs:string?,   (: name | lname | jname :)
+                       $names as xs:string?,
+                       $namesExcluded as xs:string?,
+                       $ignoreCase as xs:boolean?)
         as node()* {
     let $cnameFilter := $names ! util:compileNameFilter(., $ignoreCase)        
     let $cnameFilterExclude := $namesExcluded ! util:compileNameFilter(., $ignoreCase)
@@ -594,6 +602,46 @@ declare function f:node-child($contextNodes as node()*,
         default return error()
     return
         $contextNodes/*[$fn_name(.) ! 
+            util:matchesNameFilter(., $cnameFilter) and (
+                not($namesExcluded) or util:matchesNameFilter(., $cnameFilterExclude))]
+};
+
+(:~
+ : Returns selected descendant elements of a given sequence of nodes. Selected elements
+ : have a name matching a given name filter and not matching an optional name filter 
+ : defining exclusions. 
+ :
+ : Depending on $nameKind, the local name ('lname'), the JSON name ('jname') or
+ : the lexical name 'name') is considered when matching.
+ :
+ : When $ignoreCase is true, matching is performed ignoring character case.
+ :
+ : A name filter is a whitespace separated list of names or name patterns. Name
+ : patterns can use wildcards * and ?. Example: "foo bar* *foobar"
+ :
+ : @param context the context node
+ : @param names a name filter
+ : @param namesExcluded a name filter defining exclusions
+ : @return child nodes matching the name filter and not matching the name filter defining exclusions
+ :)
+declare function f:nodeDescendant(
+                       $contextNodes as node()*,
+                       $nameKind as xs:string?,   (: name | lname | jname :)
+                       $names as xs:string?,
+                       $namesExcluded as xs:string?,
+                       $ignoreCase as xs:boolean?
+)
+        as node()* {
+    let $cnameFilter := $names ! util:compileNameFilter(., $ignoreCase)        
+    let $cnameFilterExclude := $namesExcluded ! util:compileNameFilter(., $ignoreCase)
+    let $fn_name := 
+        switch($nameKind)
+        case 'lname' return function($node) {$node/local-name(.)}
+        case 'jname' return function($node) {$node/local-name(.) ! convert:decode-key(.)}
+        case 'name' return function($node) {$node/name(.)}
+        default return error()
+    return
+        $contextNodes//*[$fn_name(.) ! 
             util:matchesNameFilter(., $cnameFilter) and (
                 not($namesExcluded) or util:matchesNameFilter(., $cnameFilterExclude))]
 };
@@ -647,11 +695,13 @@ declare function f:jname($nodes as node()*)
  : @return the resolved reference, if the value contains one, or the original value
  :)
 declare function f:jschemaKeywords($values as element()*, 
-                                   $nameFilter as xs:string?)
+                                   $names as xs:string?,
+                                   $namesExcluded as xs:string?)
         as element()* {
-    let $cnameFilter := util:compileNameFilter($nameFilter, true())
+    let $cnameFilter := util:compileNameFilter($names, true())
+    let $cnameFilterExclude := util:compileNameFilter($namesExcluded, true())
     return
-        $values/f:jschemaKeywordsRC(., $cnameFilter)
+        $values/f:jschemaKeywordsRC(., $cnameFilter, $cnameFilterExclude)
 };
 
 (:~
@@ -662,7 +712,8 @@ declare function f:jschemaKeywords($values as element()*,
  : @return the keyword nodes under the input node, including it
  :)
 declare function f:jschemaKeywordsRC($n as node(),
-                                     $nameFilter as map(xs:string, item()*)?)
+                                     $nameFilter as map(xs:string, item()*)?,
+                                     $nameFilterExclude as map(xs:string, item()*)?)
         as node()* {
     let $unfiltered :=        
         typeswitch($n)
@@ -671,18 +722,19 @@ declare function f:jschemaKeywordsRC($n as node(),
         case element(example) return $n
         case element(examples) return $n
         case element(enum) return $n    
-        case element(json) return ($n[parent::*], $n/*/f:jschemaKeywordsRC(., $nameFilter))
-        case element(patternProperties) return ($n, $n/*/*/f:jschemaKeywordsRC(., $nameFilter))    
-        case element(properties) return ($n, $n/*/*/f:jschemaKeywordsRC(., $nameFilter))
-        case element(_) return $n/*/f:jschemaKeywordsRC(., $nameFilter)
+        case element(json) return ($n[parent::*], $n/*/f:jschemaKeywordsRC(., $nameFilter, $nameFilterExclude))
+        case element(patternProperties) return ($n, $n/*/*/f:jschemaKeywordsRC(., $nameFilter, $nameFilterExclude))    
+        case element(properties) return ($n, $n/*/*/f:jschemaKeywordsRC(., $nameFilter, $nameFilterExclude))
+        case element(_) return $n/*/f:jschemaKeywordsRC(., $nameFilter, $nameFilterExclude)
         default return 
             if (starts-with($n/name(), 'x-')) then $n
-            else ($n, $n/*/f:jschemaKeywordsRC(., $nameFilter))
+            else ($n, $n/*/f:jschemaKeywordsRC(., $nameFilter, $nameFilterExclude))
     return
         if (empty($nameFilter)) then $unfiltered else
         for $node in $unfiltered
         let $jname := $node/local-name() ! convert:decode-key(.) ! lower-case(.)
-        where util:matchesNameFilter($jname, $nameFilter)        
+        where util:matchesNameFilter($jname, $nameFilter) and
+            (empty($nameFilterExclude) or not(util:matchesNameFilter($jname, $nameFilterExclude)))        
         return $node
 };        
 
@@ -854,16 +906,17 @@ declare function f:oasKeywordsRC($n as node(),
  : @return the keywords contained by the OpenAPI documents
  :)
 declare function f:oasJschemaKeywords($oasNodes as node()*,
-                                      $namePatterns as xs:string?)
+                                      $names as xs:string?,
+                                      $namesExcluded as xs:string?)
         as element()* {
     let $oasNodes :=
         $oasNodes ! (typeswitch(.) case document-node() return * default return ancestor-or-self::*[last()])
     return
     
     $oasNodes/ancestor-or-self::*[last()]/(
-        definitions/*/*/f:jschemaKeywords(., $namePatterns),
-        components/schemas/*/*/f:jschemaKeywords(., $namePatterns),
-        f:oasMsgSchemas(.)/*/f:jschemaKeywords(., $namePatterns)
+        definitions/*/*/f:jschemaKeywords(., $names, $namesExcluded),
+        components/schemas/*/*/f:jschemaKeywords(., $names, $namesExcluded),
+        f:oasMsgSchemas(.)/*/f:jschemaKeywords(., $names, $namesExcluded)
     )        
 };
 
