@@ -231,22 +231,6 @@ declare function f:foxChild($context as xs:string*,
             [not($names) or util:matchesNameFilter(., $cnameFilter)]
             [not($namesExcluded) or not(util:matchesNameFilter(., $cnameFilterExclude))]
             ! concat($c, '/', .)
-            
-(: _TO_DO_ - remove: $fromSubstring, $toSubstring ---    
-    (
-    if (not($fromSubstring) or not($toSubstring)) then 
-        $names ! i:childUriCollection($context, ., (), ()) ! concat($context, '/', .) 
-    else 
-        for $name in $names
-        let $regex := replace($name, $fromSubstring, $toSubstring, 'i') !
-                      concat('^', ., '$')
-        return
-            for $child in i:childUriCollection($context, (), (), ())
-            let $cname := replace($child, '.*/', '')
-            where matches($cname, $regex, 'i')
-            return concat($context, '/', $child)
-    ) => distinct-values()
- :)    
 };
 
 (:~
@@ -400,15 +384,21 @@ declare function f:foxDescendantOrSelf(
  : @param toSubstring used to map $name to a regex
  : @return sibling URIs matching the name or the derived regex
  :)
-declare function f:fox-sibling($context as xs:string,
-                               $names as xs:string+,
-                               $fromSubstring as xs:string?,
-                               $toSubstring as xs:string?)
+declare function f:foxSibling($context as xs:string,
+                              $names as xs:string*,
+                              $namesExcluded as xs:string*,
+                              $fromSubstring as xs:string?,
+                              $toSubstring as xs:string?)
         as xs:string* {
     (
+    let $names := 
+        let $raw :=if (exists($names)) then $names else file:name($context)
+        return
+            if (empty($fromSubstring) or empty($toSubstring)) then $raw
+            else $raw ! replace(., $fromSubstring, $toSubstring, 'i')
     for $name in $names
     let $parent := i:parentUri($context, ())
-    let $raw := f:foxChild($parent, $name, ())
+    let $raw := f:foxChild($parent, $name, $namesExcluded)
     return $raw[not(. eq $context)]
     ) => distinct-values()
 };
@@ -425,15 +415,15 @@ declare function f:fox-sibling($context as xs:string,
  : @param toSubstring used to map $name to a regex
  : @return sibling URIs matching the name or the derived regex
  :)
-declare function f:fox-parent-sibling($context as xs:string,
-                                      $names as xs:string+,
-                                      $fromSubstring as xs:string?,
-                                      $toSubstring as xs:string?)
+declare function f:foxParentSibling($context as xs:string,
+                                    $names as xs:string*,
+                                    $namesExcluded as xs:string*,                                      
+                                    $fromSubstring as xs:string?,
+                                    $toSubstring as xs:string?)
         as xs:string* {
     (        
-    for $name in $names return
-        i:parentUri($context, ()) 
-        ! f:fox-sibling(., $name, $fromSubstring, $toSubstring)
+    i:parentUri($context, ()) 
+    ! f:foxSibling(., $names, $namesExcluded, $fromSubstring, $toSubstring)
     ) => distinct-values()        
 };
 
@@ -460,21 +450,6 @@ declare function f:foxAncestor($context as xs:string,
                    [not($names) or file:name(.) ! util:matchesNameFilter(., $cnameFilter)]
                    [not($namesExcluded) or file:name(.) ! not(util:matchesNameFilter(., $cnameFilterExclude))]
     ) => distinct-values()
-(:
-    (
-    for $name in $names
-    let $regex :=
-        if (not($fromSubstring) or not($toSubstring)) then 
-            replace($name, '\*', '.*') !
-            replace(., '\?', '.') !
-            concat('^', ., '$')
-        else
-            replace($name, $fromSubstring, $toSubstring, 'i') !
-            concat('^', ., '$')
-    let $uris := i:ancestorUriCollection($context, $regex, false()) 
-    return $uris
-    ) => distinct-values()
-:)    
 };
 
 (:~
@@ -489,23 +464,13 @@ declare function f:foxAncestor($context as xs:string,
  : @param toSubstring used to map $name to a regex
  : @return sibling URIs matching the name or the derived regex
  :)
-declare function f:fox-ancestor-or-self($context as xs:string,                                        
-                                        $names as xs:string+,
-                                        $fromSubstring as xs:string?,
-                                        $toSubstring as xs:string?)
+declare function f:foxAncestorOrSelf($context as xs:string,                                        
+                                     $names as xs:string+,
+                                     $namesExcluded as xs:string*)
         as xs:string* {
     (
-    for $name in $names
-    let $regex :=
-        if (not($fromSubstring) or not($toSubstring)) then 
-            replace($name, '\*', '.*') !
-            replace(., '\?', '.') !
-            concat('^', ., '$')
-        else
-            replace($name, $fromSubstring, $toSubstring, 'i') !
-            concat('^', ., '$')
-    let $uris := i:ancestorUriCollection($context, $regex, true()) 
-    return $uris
+    f:foxAncestor($context, $names, $namesExcluded),
+    f:foxSelf($context, $names, $namesExcluded)
     ) => distinct-values()
 };
 
@@ -1684,7 +1649,7 @@ declare function f:parent-name($node as node(),
 declare function f:leftValueOnly($leftValue as item()*,
                                  $rightValue as item()*)
     as item()* {
-    $leftValue[not(. = $rightValue)]
+    $leftValue[not(. = $rightValue)] => distinct-values()
 };
 
 (:~
@@ -1765,7 +1730,7 @@ declare function f:pathContent($context as node()*,
             
     let $descendants := (
         if ($nameKind eq 'jname') then $context/descendant::*
-        else $context/descendant::*/(., @*)
+        else $context/(@*, descendant::*/(., @*))
     )[$alsoInnerNodes or not(*)]
     
     let $includedNamesRegex :=
@@ -1873,7 +1838,7 @@ declare function f:remove-prefix($name as xs:string?)
 declare function f:rightValueOnly($leftValue as item()*,
                                   $rightValue as item()*)
     as item()* {
-    $rightValue[not(. = $leftValue)]
+    $rightValue[not(. = $leftValue)]  => distinct-values()
 };
 
 (:~
@@ -2027,7 +1992,7 @@ declare function f:resolveJsonRefRC(
     let $withFragment := contains($reference, '#')
     let $resource := 
         if ($withFragment) then substring-before($reference, '#') else $reference
-    let $path := 
+    let $path :=
         if ($withFragment) then replace($reference, '.*?#/', '') else ()
     let $context :=
         if (not($resource)) then $doc else

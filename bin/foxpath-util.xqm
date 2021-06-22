@@ -273,6 +273,21 @@ declare function f:booleanValue($s as xs:anyAtomicType?, $default as xs:boolean?
 };
 
 (:~
+ : Transforms a glob pattern into a regex.
+ :
+ : @param pattern a glob pattern
+ : @return the equivalent regex
+ :)
+declare function f:glob2regex($pattern as xs:string)
+        as xs:string {
+    replace($pattern, '\.', '\\.')
+    ! replace(., '\*', '.*') 
+    ! replace(., '\?', '.')
+    ! replace(., '[()\[\]{}^$]', '\\$0')
+    ! concat('^', ., '$')
+};   
+
+(:~
  : Creates a copy of a node with all "whitespace only" text nodes
  : which are element siblings removed. 
  :)

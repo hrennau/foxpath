@@ -468,115 +468,78 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `fox-ancestor` 
            ====================== :)
         else if ($fname eq 'fox-ancestor') then
-            let $contextURIs :=
-                if (count($call/*) eq 1) then $context
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $names :=
-                let $index :=
-                    if (count($call/*) eq 1) then 1 else 2
-                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $namesExcluded := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:foxAncestor($context, $names, $namesExcluded)
 
         (: function `fox-ancestor-or-self` 
            =============================== :)
         else if ($fname eq 'fox-ancestor-or-self') then
-            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $fromSubstring := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $toSubstring := 
-                if (not($fromSubstring)) then () else
-                    $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $namesExcluded := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:fox-ancestor-or-self($context, $name, $fromSubstring, $toSubstring)
+                foxf:foxAncestorOrSelf($context, $names, $namesExcluded)
                 
         (: function `fox-child` 
            ==================== :)
         else if ($fname = ('fox-child', 'fchild')) then
-            let $contextURIs :=
-                if (count($call/*) eq 1) then $context
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $names :=
-                let $index :=
-                    if (count($call/*) eq 1) then 1 else 2
-                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $namesExcluded := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:foxChild($context, $names, $namesExcluded)
 
         (: function `fox-descendant` 
            ========================= :)
         else if ($fname = ('fox-descendant', 'fdescendant')) then
-            let $contextURIs :=
-                if (count($call/*) eq 1) then $context
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $names :=
-                let $index := if (count($call/*) eq 1) then 1 else 2
-                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $namesExcluded := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:foxDescendant($contextURIs, $names, $namesExcluded)
+                foxf:foxDescendant($context, $names, $namesExcluded)
 
         (: function `fox-descendant-or-self` 
            ================================= :)
         else if ($fname = ('fox-descendant-or-self', 'fdescendant-or-self')) then
-            let $contextURIs :=
-                if (count($call/*) eq 1) then $context
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $names :=
-                let $index := if (count($call/*) eq 1) then 1 else 2
-                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $namesExcluded := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:foxDescendantOrSelf($contextURIs, $names, $namesExcluded)
+                foxf:foxDescendantOrSelf($context, $names, $namesExcluded)
 
         (: function `fox-parent` 
            =================== :)
         else if ($fname = ('fox-parent', 'fparent')) then
-            let $contextURIs :=
-                if (count($call/*) le 1) then $context
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $names :=
-                let $index := if (count($call/*) eq 1) then 1 else 2
-                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $namesExcluded := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:foxParent($contextURIs, $names, $namesExcluded)
+                foxf:foxParent($context, $names, $namesExcluded)
                 
         (: function `fox-parent-sibling` 
            ============================= :)
         else if ($fname eq 'fox-parent-sibling') then
-            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $fromSubstring := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $toSubstring := 
-                if (not($fromSubstring)) then () else
-                    $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $namesExcluded:= $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $from := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $to := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
-                foxf:fox-parent-sibling($context, $name, $fromSubstring, $toSubstring)
+                foxf:foxParentSibling($context, $names, $namesExcluded, $from, $to)
 
         (: function `fox-self` 
            =================== :)
         else if ($fname = ('fox-self', 'fself')) then
-            let $contextURIs :=
-                if (count($call/*) eq 1) then $context
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $names :=
-                let $index := if (count($call/*) eq 1) then 1 else 2
-                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $namesExcluded := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:foxSelf($contextURIs, $names, $namesExcluded)
+                foxf:foxSelf($context, $names, $namesExcluded)
 
         (: function `fox-sibling` 
            ====================== :)
-        else if ($fname eq 'fox-sibling') then
-            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $fromSubstring := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $toSubstring := 
-                if (not($fromSubstring)) then () else
-                    $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+        else if ($fname = ('fox-sibling', 'fsibling')) then
+            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $namesExcluded:= $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $from := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $to := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
-                foxf:fox-sibling($context, $name, $fromSubstring, $toSubstring)
+                foxf:foxSibling($context, $names, $namesExcluded, $from, $to)
 
         (: function `frequencies` 
            ====================== :)
