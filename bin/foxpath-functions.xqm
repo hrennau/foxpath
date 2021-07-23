@@ -391,7 +391,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 
         (: function `file-ext` 
            ================== :)
-        else if ($fname eq 'file-ext') then
+        else if ($fname = ('file-ext', 'fext')) then
             let $uri :=
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
                 return
@@ -403,7 +403,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             
         (: function `file-info` 
            ==================== :)
-        else if ($fname eq 'file-info') then
+        else if ($fname = ('file-info', 'finfo')) then
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             let $arg2 := 
                 let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)

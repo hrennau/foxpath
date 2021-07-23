@@ -1277,6 +1277,10 @@ declare function f:xwrap($items as item()*,
                 else
                     let $additionalAttNames := $additionalAtts ! node-name(.)
                     return $item/@*[not(node-name() = $additionalAttNames)]
+            let $namespaces :=
+                if (not($item/self::element())) then () else
+                    for $prefix in in-scope-prefixes($item)[string()] return
+                        namespace {$prefix} {namespace-uri-for-prefix($prefix, $item)}
             return
                 (: Flags aA - attribute item is turned into an element :)
                 if (contains($flags, 'a') or contains($flags, 'A')) then    
@@ -1285,18 +1289,18 @@ declare function f:xwrap($items as item()*,
                         let $elemName := $item/../(
                             if (contains($flags, 'A')) then local-name(.)
                             else QName(namespace-uri(.), local-name(.)))
-                        return element {$elemName} {$additionalAtts, $item}
+                        return element {$elemName} {$namespaces, $additionalAtts, $item}
                         
                 (: Flag f - discard child nodes :)
                 else if (contains($flags, 'f')) then
-                    element {node-name($item)} {$additionalAtts, $atts}
+                    element {node-name($item)} {$namespaces, $additionalAtts, $atts}
                     
                 (: With additional attributes :)
                 else if (not($additionalAtts)) then $item
                 
                 (: Plain copy :)
                 else
-                    $item/element {node-name(.)} {$additionalAtts, $atts, node()}
+                    $item/element {node-name(.)} {$namespaces, $additionalAtts, $atts, node()}
                 
         (: item a URI, flag 'd' => parse document at that URI :)
         default return
@@ -2194,7 +2198,7 @@ declare function f:extractNamespaceNodes($elems as element()*)
         let $nspair := $prefixes ! concat(., '#', namespace-uri-for-prefix(., $elem))
         return $nspair 
     ) => distinct-values()
-    
+
     for $nspair in $nspairs
     group by $nsuri := substring-after($nspair, '#')
     where 1 eq ($nspair => distinct-values() => count())
