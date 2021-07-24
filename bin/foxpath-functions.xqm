@@ -1759,6 +1759,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname eq 'false') then
             false()
             
+        (: function `in-scope-prefixes` 
+           ============================ :)
+        else if ($fname eq 'in-scope-prefixes') then
+            let $arg := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            let $arg := if ($arg instance of xs:anyAtomicType) then i:fox-doc($arg, $options)/* else $arg                 
+            return
+                in-scope-prefixes($arg)
+                
         (: function `last` 
            =============== :)
         else if ($fname eq 'last') then
