@@ -1338,14 +1338,16 @@ declare function f:xwrap($items as item()*,
             else $item
             
     (: Write wrapper :)            
-    let $namespaces := 
+    let $namespaces :=  
         for $nn in f:extractNamespaceNodes($val[. instance of element()])
         group by $prefix := name($nn)
-        return $nn[1]
+        let $nn1:= $nn[1]
+        where $prefix ne 'xml' and $nn1
+        return $nn1
     return
         element {$name} {
+            $namespaces,        
             attribute countItems {count($val)},
-            $namespaces,
             $val
         }
 };
@@ -1450,7 +1452,8 @@ declare function f:child-names($nodes as node()*,
                                $concat as xs:boolean?, 
                                $nameKind as xs:string?,   (: name | lname | jname :)
                                $namePatterns as xs:string?,
-                               $excludedNamePatterns as xs:string?)
+                               $excludedNamePatterns as xs:string?,
+                               $nosort as xs:boolean?)
         as xs:string* {
     let $nameRegexes := $namePatterns 
                       ! tokenize(.)
@@ -1472,10 +1475,11 @@ declare function f:child-names($nodes as node()*,
             matches(local-name(.), $excludedNameRegex, 'i'))]
     let $names := 
         if ($nameKind eq 'lname') then 
-            ($items/local-name(.)) => distinct-values() => sort()
+            ($items/local-name(.)) => distinct-values()
         else if ($nameKind eq 'jname') then 
-            ($items/convert:decode-key(local-name(.))) => distinct-values() => sort()
-        else ($items/name(.)) => distinct-values() => sort()
+            ($items/convert:decode-key(local-name(.))) => distinct-values()
+        else ($items/name(.)) => distinct-values()
+    let $names := if ($nosort) then $names else $names => sort()        
     let $path :=        
         if (exists($separator)) then string-join($names, $separator)
         else $names
@@ -1642,6 +1646,26 @@ declare function f:parent-name($node as node(),
     return
         $name
 };        
+
+(:~
+ : Returns the median value of a set of numeric values
+ :
+ : @param values the values
+ : @return the median value
+ :)
+declare function f:median($values as xs:decimal*)
+        as xs:decimal {
+    let $count := count($values)
+    return
+        if ($count eq 1) then $values else
+        
+        let $sorted := $values => sort()
+        let $half := $count div 2
+        return
+            if ($half eq ceiling($half)) then 
+                0.5 * ($sorted[$half] + $sorted[$half + 1])
+            else $sorted[ceiling($half)]            
+};
 
 (:~
  : Returns those atomic items which are in the left value, but not in the right one. 

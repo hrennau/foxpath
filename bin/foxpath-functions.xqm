@@ -126,9 +126,10 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $node := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return if (exists($explicit)) then $explicit else $context
-            let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
-            return foxf:child-names($node, true(), 'jname', $namePattern, $excludedNamePattern)            
+            let $nosort := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) ! xs:boolean(.)                
+            let $namePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNamePattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)    
+            return foxf:child-names($node, true(), 'jname', $namePattern, $excludedNamePattern, $nosort)            
 
         (: function `child-lnames` 
            ====================== :)
@@ -136,9 +137,10 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $node := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return if (exists($explicit)) then $explicit else $context
-            let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
-            return foxf:child-names($node, true(), 'lname', $namePattern, $excludedNamePattern)            
+            let $nosort := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) ! xs:boolean(.)                
+            let $namePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNamePattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:child-names($node, true(), 'lname', $namePattern, $excludedNamePattern, $nosort)            
 
         (: function `child-names` 
            ===================== :)
@@ -146,9 +148,10 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $node := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return if (exists($explicit)) then $explicit else $context
-            let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
-            return foxf:child-names($node, true(), 'name', $namePattern, $excludedNamePattern)            
+            let $nosort := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) ! xs:boolean(.)                
+            let $namePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedNamePattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
+            return foxf:child-names($node, true(), 'name', $namePattern, $excludedNamePattern, $nosort)            
 
         (: function `content-deep-equal` 
            ============================= :)
@@ -1028,6 +1031,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 boolean(i:xquery($xpath, map{'':$xpathContextNode})[1])
     
+        (: function `median` 
+           ================= :)
+        else if ($fname eq 'median') then
+            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            return foxf:median($arg)
+            
         (: function `name-path` 
            ==================== :)
         else if ($fname = ('name-path', 'npath', 'np')) then
@@ -1584,6 +1593,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (count($arg) gt 1) then boolean($arg[1])
                 else boolean($arg)
             
+        (: function `ceiling` 
+           ================== :)
+        else if ($fname eq 'ceiling') then
+            let $arg := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                ceiling($arg)
+                
         (: function `concat` 
            ================= :)
         else if ($fname eq 'concat') then
@@ -1759,6 +1777,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname eq 'false') then
             false()
             
+        (: function `floor` 
+           ================ :)
+        else if ($fname eq 'floor') then
+            let $arg := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                floor($arg)
+                
         (: function `in-scope-prefixes` 
            ============================ :)
         else if ($fname eq 'in-scope-prefixes') then
