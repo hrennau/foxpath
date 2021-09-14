@@ -1653,8 +1653,8 @@ declare function f:parent-name($node as node(),
  : @param values the values
  : @return the median value
  :)
-declare function f:median($values as xs:decimal*)
-        as xs:decimal {
+declare function f:median($values as xs:anyAtomicType*)
+        as xs:anyAtomicType {
     let $count := count($values)
     return
         if ($count eq 1) then $values else
