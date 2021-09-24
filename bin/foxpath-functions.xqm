@@ -1194,6 +1194,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:pathContent($c, 'name', $alsoInnerNodes, $includedNames, $excludedNames, $excludedNodes)
 
+        (: function `percent` 
+           ================== :)
+        else if ($fname = ('percent')) then           
+            let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $value2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $fractionDigits := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            return
+                foxf:percent($values, $value2, $fractionDigits)
+
         (: function `pfrequencies` 
            ======================= :)
         else if ($fname = ('pfrequencies', 'pf', 'pfreq')) then
@@ -1786,6 +1795,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 floor($arg)
                 
+        (: function `head` 
+           =============== :)
+        else if ($fname eq 'head') then
+            let $arg := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                head($arg)
+                
         (: function `in-scope-prefixes` 
            ============================ :)
         else if ($fname eq 'in-scope-prefixes') then
@@ -2086,6 +2104,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 sum($arg)
                 
+        (: function `tail` 
+           =============== :)
+        else if ($fname eq 'tail') then
+            let $arg := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                tail($arg)
+                
         (: function `time` 
            ============== :)
         else if ($fname eq 'time') then
@@ -2096,7 +2123,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `tokenize` 
            =================== :)
         else if ($fname eq 'tokenize') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg1 :=
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
             let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return

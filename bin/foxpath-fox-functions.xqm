@@ -1812,6 +1812,26 @@ declare function f:pathContent($context as node()*,
 };        
 
 (:~
+ : Returns the percent value of a fraction
+ :
+ : The nominator is the first item of $values.
+ : The denominator is $value2, if not empty, or the second item of $values, otherwise.
+ :
+ : @param values either one or several values
+ : @param value2 the denominator
+ : @param fractionDigits number of fraction digits
+ : @return the quotient as percent value
+ :)
+declare function f:percent($values as xs:numeric*, $value2 as xs:numeric?, $fractionDigits as xs:integer?)
+        as xs:numeric? {
+    let $fd := ($fractionDigits, 1) [1]
+    let $value1 := $values[1]
+    let $value2 := ($value2, $values[2])[1]
+    let $percent := ($value1 div $value2 * 100) => round($fd)
+    return $percent
+};
+
+(:~
  : Returns the parent name of a node. If $localNames is true, the local name is returned, 
  : otherwise the lexical names. 
  :
