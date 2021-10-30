@@ -189,6 +189,20 @@ declare function f:content-deep-equal($items as item()*)
 };      
 
 (:~
+ : Returns the number of occurrences of a character in a string
+ :
+ : @param s a string
+ : @param char a character
+ : @return the number of times the character occurs in the string
+ :)
+declare function f:countChars($s as xs:string?, $char as xs:string?)
+        as xs:integer? {
+    let $char := replace($char, '[\^\-(){}\[\]]', '\\$0')
+    let $s2 := replace($s, $char, '')        
+    return string-length($s) - string-length($s2)        
+};
+
+(:~
  : Returns the text content of a file resource.
  :
  : @param uri the file URI
@@ -220,17 +234,18 @@ declare function f:file-content($uri as xs:string?,
  : @return selected child URIs
  :)
 declare function f:foxChild($context as xs:string*,
-                            $names as xs:string?,
-                            $namesExcluded as xs:string?)
+                            $names as xs:string*,
+                            $namesExcluded as xs:string*)
         as xs:string* {
     let $cnameFilter := util:compileNameFilter($names, true())        
     let $cnameFilterExclude := util:compileNameFilter($namesExcluded, true())    
-    return
+    return (
         for $c in $context return
             i:childUriCollection($c, (), (), ()) 
-            [not($names) or util:matchesNameFilter(., $cnameFilter)]
-            [not($namesExcluded) or not(util:matchesNameFilter(., $cnameFilterExclude))]
+            [empty($names) or util:matchesNameFilter(., $cnameFilter)]
+            [empty($namesExcluded) or not(util:matchesNameFilter(., $cnameFilterExclude))]
             ! concat($c, '/', .)
+        ) => distinct-values()
 };
 
 (:~
@@ -289,17 +304,18 @@ declare function f:jchildren($context as node()*,
  : @param namesExcluded names or name paterns of URIs to be excluded, whitespace separated
  : @return selected parent URIs
 :)
-declare function f:foxParent($context as xs:string,
-                             $names as xs:string?,
-                             $namesExcluded as xs:string?)
+declare function f:foxParent($context as xs:string*,
+                             $names as xs:string*,
+                             $namesExcluded as xs:string*)
         as xs:string? {
     let $cnameFilter := util:compileNameFilter($names, true())        
     let $cnameFilterExclude := util:compileNameFilter($namesExcluded, true())    
-    return
+    return (
         for $c in $context return
             i:parentUri($c, ()) 
-            [not($names) or util:matchesNameFilter(., $cnameFilter)]
-            [not($namesExcluded) or not(util:matchesNameFilter(., $cnameFilterExclude))]
+            [empty($names) or util:matchesNameFilter(., $cnameFilter)]
+            [empty($namesExcluded) or not(util:matchesNameFilter(., $cnameFilterExclude))]
+        ) => distinct-values()
 };
 
 (:~
@@ -313,16 +329,17 @@ declare function f:foxParent($context as xs:string,
  : @return selected descendant or self URIs
  :)
 declare function f:foxSelf($context as xs:string*,
-                           $names as xs:string?,
-                           $namesExcluded as xs:string?)
+                           $names as xs:string*,
+                           $namesExcluded as xs:string*)
         as xs:string* {
     let $cnameFilter := util:compileNameFilter($names, true())        
-    let $cnameFilterExclude := util:compileNameFilter($namesExcluded, true())    
-    return
-        $context
-        [not($names) or file:name(.) ! util:matchesNameFilter(., $cnameFilter)]
-        [not($namesExcluded) or file:name(.) ! not(util:matchesNameFilter(., $cnameFilterExclude))]
-        => distinct-values()        
+    let $cnameFilterExclude := util:compileNameFilter($namesExcluded, true())
+    return (    
+        for $c in $context return
+        $c
+        [empty($names) or file:name(.) ! util:matchesNameFilter(., $cnameFilter)]
+        [empty($namesExcluded) or file:name(.) ! not(util:matchesNameFilter(., $cnameFilterExclude))]
+    ) => distinct-values()        
 };
 
 (:~
@@ -337,16 +354,16 @@ declare function f:foxSelf($context as xs:string*,
  :)
 declare function f:foxDescendant(
                          $context as xs:string*,
-                         $names as xs:string?,
-                         $namesExcluded as xs:string?)
+                         $names as xs:string*,
+                         $namesExcluded as xs:string*)
         as xs:string* {
     let $cnameFilter := util:compileNameFilter($names, true())        
     let $cnameFilterExclude := util:compileNameFilter($namesExcluded, true())
     return (
         for $c in $context 
             return i:descendantUriCollection($c, (), (), ()) 
-                   [not($names) or file:name(.) ! util:matchesNameFilter(., $cnameFilter)]
-                   [not($namesExcluded) or file:name(.) ! not(util:matchesNameFilter(., $cnameFilterExclude))]
+                   [empty($names) or file:name(.) ! util:matchesNameFilter(., $cnameFilter)]
+                   [empty($namesExcluded) or file:name(.) ! not(util:matchesNameFilter(., $cnameFilterExclude))]
                    ! concat($c, '/', .)
     ) => distinct-values()
 };
@@ -363,13 +380,14 @@ declare function f:foxDescendant(
  :)
 declare function f:foxDescendantOrSelf(
                              $context as xs:string*,
-                             $names as xs:string?,
-                             $namesExcluded as xs:string?)
+                             $names as xs:string*,
+                             $namesExcluded as xs:string*)
         as xs:string* {
     (
+        for $c in $context return (
         f:foxDescendant($context, $names, $namesExcluded),
         f:foxSelf($context, $names, $namesExcluded)
-    ) => distinct-values() => sort()
+    )) => distinct-values() => sort()
 };
 
 (:~
@@ -384,22 +402,23 @@ declare function f:foxDescendantOrSelf(
  : @param toSubstring used to map $name to a regex
  : @return sibling URIs matching the name or the derived regex
  :)
-declare function f:foxSibling($context as xs:string,
+declare function f:foxSibling($context as xs:string*,
                               $names as xs:string*,
                               $namesExcluded as xs:string*,
                               $fromSubstring as xs:string?,
                               $toSubstring as xs:string?)
         as xs:string* {
     (
+    for $c in $context
     let $names := 
-        let $raw :=if (exists($names)) then $names else file:name($context)
+        let $raw :=if (exists($names)) then $names else file:name($c)
         return
             if (empty($fromSubstring) or empty($toSubstring)) then $raw
             else $raw ! replace(., $fromSubstring, $toSubstring, 'i')
     for $name in $names
-    let $parent := i:parentUri($context, ())
+    let $parent := i:parentUri($c, ())
     let $raw := f:foxChild($parent, $name, $namesExcluded)
-    return $raw[not(. eq $context)]
+    return $raw[not(. eq $c)]
     ) => distinct-values()
 };
 
@@ -415,15 +434,16 @@ declare function f:foxSibling($context as xs:string,
  : @param toSubstring used to map $name to a regex
  : @return sibling URIs matching the name or the derived regex
  :)
-declare function f:foxParentSibling($context as xs:string,
+declare function f:foxParentSibling($context as xs:string*,
                                     $names as xs:string*,
                                     $namesExcluded as xs:string*,                                      
                                     $fromSubstring as xs:string?,
                                     $toSubstring as xs:string?)
         as xs:string* {
-    (        
-    i:parentUri($context, ()) 
-    ! f:foxSibling(., $names, $namesExcluded, $fromSubstring, $toSubstring)
+    (
+    for $c in $context return
+        i:parentUri($c, ()) 
+        ! f:foxSibling(., $names, $namesExcluded, $fromSubstring, $toSubstring)
     ) => distinct-values()        
 };
 
@@ -437,9 +457,9 @@ declare function f:foxParentSibling($context as xs:string,
  : @param namesExcluded names or name paterns of URIs to be excluded, whitespace separated
  : @return selected child URIs
  :)
-declare function f:foxAncestor($context as xs:string,                                        
-                               $names as xs:string?,
-                               $namesExcluded as xs:string?)
+declare function f:foxAncestor($context as xs:string*,                                        
+                               $names as xs:string*,
+                               $namesExcluded as xs:string*)
         as xs:string* {
 
     let $cnameFilter := util:compileNameFilter($names, true())        
@@ -447,8 +467,8 @@ declare function f:foxAncestor($context as xs:string,
     return (
         for $c in $context 
             return i:ancestorUriCollection($c, (), ()) 
-                   [not($names) or file:name(.) ! util:matchesNameFilter(., $cnameFilter)]
-                   [not($namesExcluded) or file:name(.) ! not(util:matchesNameFilter(., $cnameFilterExclude))]
+                   [empty($names) or file:name(.) ! util:matchesNameFilter(., $cnameFilter)]
+                   [empty($namesExcluded) or file:name(.) ! not(util:matchesNameFilter(., $cnameFilterExclude))]
     ) => distinct-values()
 };
 
@@ -464,14 +484,15 @@ declare function f:foxAncestor($context as xs:string,
  : @param toSubstring used to map $name to a regex
  : @return sibling URIs matching the name or the derived regex
  :)
-declare function f:foxAncestorOrSelf($context as xs:string,                                        
+declare function f:foxAncestorOrSelf($context as xs:string*,                                        
                                      $names as xs:string+,
                                      $namesExcluded as xs:string*)
         as xs:string* {
     (
+    for $c in $context return (
     f:foxAncestor($context, $names, $namesExcluded),
     f:foxSelf($context, $names, $namesExcluded)
-    ) => distinct-values()
+    )) => distinct-values()
 };
 
 (:~

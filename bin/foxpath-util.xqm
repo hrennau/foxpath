@@ -27,10 +27,10 @@ declare variable $f:PREDECLARED_NAMESPACES := (
  : @param ignoreCase if true, the filter ignores case 
  : @return a map with entries 'names', 'regexes' and 'flags' 
  :)
-declare function f:compileNameFilter($patterns as xs:string?, 
+declare function f:compileNameFilter($patterns as xs:string*, 
                                      $ignoreCase as xs:boolean?)
         as map(xs:string, item()*)? {
-    if (not($patterns)) then () else
+    if (empty($patterns)) then () else
     
     let $items := $patterns ! normalize-space(.) ! tokenize(.)
     let $names := 

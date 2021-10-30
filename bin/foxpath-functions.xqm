@@ -159,6 +159,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $args := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return foxf:content-deep-equal($args) 
 
+        (: function `count-chars` 
+           ====================== :)
+        else if ($fname eq 'count-chars') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $s := if ($arg2) then $arg1 else $context
+            let $char := ($arg2, $arg1)[1]
+            return
+                foxf:countChars($s, $char)
+
         (: function `create-dir` 
            ====================== :)
         else if ($fname eq 'create-dir') then
