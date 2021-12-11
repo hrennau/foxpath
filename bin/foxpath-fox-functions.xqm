@@ -1921,6 +1921,10 @@ declare function f:truncate($string as xs:string?, $len as xs:integer, $flag as 
     $string ! substring($string, 1, $len) || ' ...'[string-length($string) gt $len]
 };        
 
+(:~
+ : Concatenates the arguments into a string, using an "improbable"
+ : separator (codepoint 30000)
+ :)
 declare function f:hlistEntry($items as item()*)
         as xs:string {
     let $sep := codepoints-to-string(30000)
@@ -2240,6 +2244,16 @@ declare function f:resolveJsonOneOf($oneOf as element())
     return
         if ($subschema/_oneOf) then $subschema/oneOf/f:resolveJsonOneOf(.)
         else $subschema
+};
+
+(:~
+ : Transforms a sequence of values into a table. Each value is a concatenated 
+ : list of items, created using function hlistEntry().
+ :)
+declare function f:table($values as xs:string*, 
+                         $headers as xs:string*)
+        as xs:string {
+    error(QName((), 'NOT_YET_IMPLEMENTED'), 'Function "table" not yet implemented')
 };
 
 (:~

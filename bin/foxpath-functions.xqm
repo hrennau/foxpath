@@ -684,7 +684,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `hlist-entry` 
            ====================== :)
-        else if ($fname = ('hierarchical-list-entry', 'hier-list-entry', 'hlist-entry', 'hentry')) then
+        else if ($fname = ('hierarchical-list-entry', 'hier-list-entry', 'hlist-entry', 'hentry', 'table-entry', 'tentry')) then
             let $items := $call/* ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:hlistEntry($items)
@@ -1352,6 +1352,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $nodes := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 $nodes/serialize(.)
+
+        (: function `table` 
+           ================ :)
+        else if ($fname = ('table')) then
+            let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $headers := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                            (: ! normalize-space(.) ! tokenize(.) :)
+            return
+                foxf:table($values, $headers)
 
         (: function `truncate` 
            =================== :)
