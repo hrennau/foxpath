@@ -139,6 +139,38 @@ declare function f:baseUriDirectories($item as item(), $distance as xs:integer?)
     else ()            
 };
 
+(:~
+ : Returns the base URI relative to a context.
+ :
+ : This is an early version where the context can only be
+ : specified by a name pattern identifying the name of
+ : the context step. 
+ :
+ : @param item a node or a URI
+ : @param context as xs:string*
+ : @return relative URI
+ :)
+declare function f:baseUriRelative($item as item(), $contextName as xs:string)
+        as xs:string* {
+    let $regex := util:glob2regex($contextName)        
+    let $baseUri := 
+        (if ($item instance of node()) then $item else i:fox-doc($item, ()))
+         ! base-uri(.) ! replace(., '\\', '/')        
+    let $steps := tokenize($baseUri, '/')
+    let $countSteps := count($steps)
+    let $lastMatchingStep := (for $i in 1 to $countSteps return $steps[$i][matches(., $regex, 'i')] ! $i)[last()]
+    return
+        if (empty($lastMatchingStep)) then $baseUri
+        else if ($lastMatchingStep eq $countSteps) then '.'
+        else string-join($steps[position() gt $lastMatchingStep], '/')
+};
+
+(:~
+ : Extracts from a base URI the name of the containing directory.
+ :
+ : @param item a node or a URI
+ : @return the name of the containing directory 
+ :)
 declare function f:baseUriDirectory($item as item())
         as xs:string {
     (if ($item instance of node()) then $item else i:fox-doc($item, ()))
@@ -292,6 +324,97 @@ declare function f:jchildren($context as node()*,
         as item()* {
     let $cnameFilter := util:compileNameFilter($nameFilter, $ignoreCase)        
     return $context/*[convert:decode-key(local-name()) ! util:matchesNameFilter(., $cnameFilter)]
+};
+
+(:~
+ : Returns a string describing a resource identified by a URI.
+ :
+ : The structure of the info string is configured by $content.
+ : The value is a whitespace-separated list of display components.
+ : A display component specifies the kind of information item (first character)
+ : and the format of its display (following characters).
+ : Item kind:
+ :  * p - URI
+ :  * n - file name
+ :  * s - file size
+ :  * d - file date
+ : Display:
+ :  * number... - right-pad to this length; padding character is the character following the number 
+ :  * -number... - left-pad to this length; padding character is the character following the number
+ :  () - put value into parentheses
+ :
+ : @param URI the resource URI
+ : @param content format of info line
+ :)
+declare function f:fileInfo($uri as xs:string?, $content as xs:string?, $options as map(*)?)
+        as xs:string? {
+    let $content :=
+        if (not($content)) then 'p60. s-10_ d'
+        else if ($content eq '#nsd') then 'p60. s-10_ d'
+        else if ($content eq '#dn') then 'd28 p'
+        else if ($content eq '#dns') then 'd28 p s()'        
+        else $content
+    let $items := tokenize(normalize-space($content), ' ')
+    let $line := string-join((
+        for $item in $items
+        let $kind := substring($item, 1, 1)
+        let $format := substring($item, 2)[string()]
+        let $parentheses := $format eq '()'
+        let $pad :=
+            if (not($format)) then ()
+            else if ($parentheses) then ()
+            else map{
+                'padWidth': $format ! replace(., '\D', '') ! xs:integer(.),
+                'padSide': if (starts-with($format, '-')) then 'l' else 'r',
+                'fillChar': if (empty($format)) then () else (replace($format, '^-?\d+', '')[string()], ' ')[1]
+            }
+        let $isDir := i:fox-is-dir($uri, $options)            
+        let $value :=
+            if ($kind eq 'p') then $uri
+            else if ($kind eq 'n') then f:fileName($uri)
+            else if ($kind eq 's') then 
+                if (i:fox-is-dir($uri, $options)) then '/' else i:fox-file-size($uri, $options)
+            else if ($kind eq 'd') then i:fox-file-date($uri, $options)
+            else if ($kind eq 'r') then
+                let $doc := i:fox-doc($uri, $options)
+                return
+                    if (not($doc)) then '-' 
+                    else $doc/*/local-name(.)
+            else if ($kind eq 't') then
+                let $doc := i:fox-doc($uri, $options)
+                return
+                    if (not($doc)) then '-'
+                    else $doc/*/concat(local-name(.), ' / ', 
+                        string-join(sort(distinct-values(*/local-name()), lower-case#1), ' '))
+            else if ($kind eq 'e') then
+                let $doc := i:fox-doc($uri, $options)
+                return
+                    if (not($doc)) then '-'
+                    else $doc/*/concat(local-name(.), ' / ', 
+                        string-join(sort(distinct-values(.//*/local-name()), lower-case#1), ' '))
+            else if ($kind eq 'a') then
+                let $doc := i:fox-doc($uri, $options)
+                return
+                    if (not($doc)) then '-'
+                    else $doc/string-join(sort(distinct-values(
+                        .//@*/local-name()), lower-case#1), ' ')
+            else ()
+        return
+            if (exists($pad)) then
+                if ($kind eq 's' and $isDir) then f:rpad('/', $pad?padWidth, ' ')  
+                else if ($pad?padSide eq 'l') then f:lpad($value, $pad?padWidth, $pad?fillChar)
+                else f:rpad($value, $pad?padWidth, $pad?fillChar)
+            else if ($parentheses) then '('||$value||')'
+            else $value
+        ), ' ')            
+    return
+        $line
+};
+
+(: Extracts from a URI the file name. :)
+declare function f:fileName($uri as xs:string?)
+        as xs:string? {
+    $uri ! replace(., '.*/', '')
 };
 
 (:~
@@ -558,7 +681,7 @@ declare function f:frequencies($values as item()*,
         let $c := count($value)        
         let $f := $fn_count2freq($c, $nvalues)
         where (empty($min) or not($c) or $c ge $min) and (empty($max) or not($max) or $c le $max)
-        return <term text="{$s}" f="{$f}"/>
+        return <value text="{$s}" f="{$f}"/>
 
     let $items :=
         switch($orderBy)
@@ -581,7 +704,7 @@ declare function f:frequencies($values as item()*,
             let $min := $items/@f/number(.) => min()
             let $max := $items/@f/number(.) => max()
             return
-                <terms>{
+                <values>{
                     if ($kind eq 'percent') then (
                         attribute minPercent {$min},
                         attribute maxPercent {$max}
@@ -592,8 +715,8 @@ declare function f:frequencies($values as item()*,
                         attribute minCount {$min},
                         attribute maxCount {$max}
                     ),
-                    $items/<item text="{@text}">{attribute {$freqAttName} {@f}}</item>
-            }</terms>
+                    $items/<value text="{@text}">{attribute {$freqAttName} {@f}}</value>
+            }</values>
         case 'json' return ('{', $items/$fn_itemText(@text, @f) ! concat('  ', .), '}') => string-join('&#xA;')
         case 'csv' return $items/$fn_itemText(@text, @f) => string-join('&#xA;')
         case 'text' return $items/$fn_itemText(@text, @f) => string-join('&#xA;')
@@ -772,6 +895,20 @@ declare function f:jschemaKeywordsRC($n as node(),
         where util:matchesPlusMinusNameFilters($jname, $nameFilter, $nameFilterExclude)
         return $node
 };        
+
+(: Pads a string on the lefthand side.
+ :)
+declare function f:lpad($s as xs:anyAtomicType?, $width as xs:integer, $char as xs:string?)
+        as xs:string? {
+    let $s := string($s)    
+    let $len := string-length($s) 
+    return
+        if ($len ge $width) then $s else    
+            let $char := ($char, ' ')[1]
+            let $pad := concat(string-join(for $i in 1 to $width - $len - 1 return $char, ''), ' ')
+            return
+                concat($pad, $s)
+};
 
 (:~
  : Returns the items in $value which are not distinct, that is, which
@@ -1028,6 +1165,21 @@ declare function f:repeat($string as xs:string?, $count as xs:integer?)
         as xs:string {
     string-join(for $i in 1 to $count return $string, '')
 };      
+
+(:~
+ : Pads a string on the righthand side.
+ :)
+declare function f:rpad($s as xs:anyAtomicType?, $width as xs:integer, $char as xs:string?)
+        as xs:string? {
+    let $s := string($s)
+    let $len := string-length($s) 
+    return
+        if ($len ge $width) then $s else    
+            let $char := ($char, ' ')[1]
+            let $pad := concat(' ', string-join(for $i in 1 to $width - $len - 1 return $char, ''), '')
+            return
+                concat($s, $pad)
+};
 
 (:~
  : Writes a collection of files into a folder.
@@ -1564,10 +1716,12 @@ declare function f:descendant-names(
  : @param localName if true, the local name is returned, otherwise the lexical name
  : @return the parent name
  :)
-declare function f:fileCopy($fileUri as xs:string,
+declare function f:fileCopy($fileUris as xs:string+,
                             $targetUri as xs:string,
                             $options as map(xs:string, item()*)?)
         as empty-sequence() {
+    for $fileUri in $fileUris return
+    
     let $fileUriDomain := i:uriDomain($fileUri, ())
     return
         if (not($fileUriDomain eq 'FILE_SYSTEM')) then 

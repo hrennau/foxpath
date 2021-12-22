@@ -110,6 +110,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 $argNode/base-uri(.) ! replace(., '.*[/\\]', '')
 :)
+        (: function `base-uri-relative` 
+           ============================ :)
+        else if ($fname = ('base-uri-relative', 'buri-relative', 'burirel')) then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            return foxf:baseUriRelative($context, $arg1)
+            
         (: function `bslash` 
            ================= :)
         else if ($fname eq 'back-slash' or $fname eq 'bslash') then
@@ -417,13 +423,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `file-info` 
            ==================== :)
         else if ($fname = ('file-info', 'finfo')) then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
-            let $arg2 := 
-                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return
-                    ($explicit, $context)[1]                   
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                f:fileInfo($arg1, $arg2, $options)
+                foxf:fileInfo($context, $arg1, $options)
 
        (: function `file-lines` 
           ===================== :)
@@ -1006,7 +1008,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $fillChar := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $fillChar := ($fillChar, ' ')[1]
             return
-                f:lpad($string, $width, $fillChar)
+                foxf:lpad($string, $width, $fillChar)
 
         (: function `lpath-compare` 
            ======================= :)
@@ -1147,15 +1149,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
                         if (not($width) or string-length($value) ge $width) then concat($value, ' ') 
                         else
                             let $flags := trace(replace($widthItem, '\d', '') , 'FLAGS: ')
-                            let $func := trace(if (substring($flags, 1, 1) eq 'l') then f:lpad#3 else f:rpad#3 , 'FUNC: ')
+                            let $func := trace(if (substring($flags, 1, 1) eq 'l') then foxf:lpad#3 else foxf:rpad#3 , 'FUNC: ')
                             let $side := if (substring($flags, 1, 1) eq 'l') then 'l' else 'r'                            
                             let $fill := substring($flags, 2, 1)
                             return 
                             (:
                                 $func($value, $width, $fill)
                                 :)
-                                if ($side eq 'l') then f:lpad($value, $width, $fill)
-                                else f:rpad($value, $width, $fill)
+                                if ($side eq 'l') then foxf:lpad($value, $width, $fill)
+                                else foxf:rpad($value, $width, $fill)
                 , '')
 
         (: function `parent-jname` 
@@ -1344,7 +1346,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $fillChar := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $fillChar := ($fillChar, ' ')[1]
             return
-                f:rpad($string, $width, $fillChar)
+                foxf:rpad($string, $width, $fillChar)
 
         (: function `serialize` 
            ==================== :)
@@ -2050,10 +2052,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
             let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
-            return
+            let $arg4 := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $sorted :=
                 if (exists($arg3)) then sort($arg1, $arg2, $arg3)
                 else if (exists($arg2)) then sort($arg1, $arg2)                
                 else sort($arg1)
+            return
+                if (not($arg4 = ('d', 'descending'))) then $sorted else reverse($sorted)
 
         (: function `starts-with` 
            ====================== :)
@@ -2089,6 +2094,20 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 string-length(string($arg))
+                
+        (: function `subsequence` 
+           ====================== :)
+        else if ($fname eq 'subsequence') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := 
+                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return
+                    if ($explicit lt 0) then count($arg1) + $explicit
+            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                if (exists($arg3)) then subsequence($arg1, $arg2, $arg3)
+                else if (exists($arg2)) then subsequence($arg1, $arg2)
+                else $arg1
                 
         (: function `substring` 
            ==================== :)
@@ -2254,109 +2273,3 @@ declare function f:resolveStaticFunctionCall($call as element(),
         , 'function', concat('FUNCTION_CALL; FNAME=', $fname, ' : '))
         
 };
-
-(: 
- : ===============================================================================
- :
- :     f o x p a t h    e x t e n s i o n    f u n c t i o n s
- :
- : ===============================================================================
- :)
-declare function f:lpad($s as xs:anyAtomicType?, $width as xs:integer, $char as xs:string?)
-        as xs:string? {
-    let $s := string($s)    
-    let $len := string-length($s) 
-    return
-        if ($len ge $width) then $s else    
-            let $char := ($char, ' ')[1]
-            let $pad := concat(string-join(for $i in 1 to $width - $len - 1 return $char, ''), ' ')
-            return
-                concat($pad, $s)
-};
-
-declare function f:rpad($s as xs:anyAtomicType?, $width as xs:integer, $char as xs:string?)
-        as xs:string? {
-    let $s := string($s)
-    let $len := string-length($s) 
-    return
-        if ($len ge $width) then $s else    
-            let $char := ($char, ' ')[1]
-            let $pad := concat(' ', string-join(for $i in 1 to $width - $len - 1 return $char, ''), '')
-            return
-                concat($s, $pad)
-};
-
-(:
-declare function f:fileDate($uri as xs:string?)
-        as xs:dateTime? {
-    $uri ! i:fileLastModified(.)
-};
-:)
-
-declare function f:fileName($uri as xs:string?)
-        as xs:string? {
-    $uri ! replace(., '.*/', '')
-};
-
-(:~
- : Returns a string describing a resource identified by a URI.
- :)
-declare function f:fileInfo($content as xs:string?, $uri as xs:string?, $options as map(*)?)
-        as xs:string? {
-    let $co := ($content, 'p60. s-10_ d')[1]
-    let $items := tokenize(normalize-space($co), ' ')
-    let $line := string-join((
-        for $item in $items
-        let $kind := substring($item, 1, 1)
-        let $format := substring($item, 2)[string()]
-        let $padWidth := $format ! replace($format, '\D', '') ! xs:integer(.)
-        let $padSide := if (starts-with($format, '-')) then 'l' else 'r'
-        let $fillChar := 
-            if (empty($format)) then () else (replace($format, '^-?\d+', '')[string()], ' ')[1]
-        let $isDir := i:fox-is-dir($uri, $options)            
-        let $value :=
-            if ($kind eq 'p') then $uri
-            else if ($kind eq 'n') then f:fileName($uri)
-            else if ($kind eq 's') then 
-                if (i:fox-is-dir($uri, $options)) then '/' else i:fox-file-size($uri, $options)
-            else if ($kind eq 'd') then i:fox-file-date($uri, $options)
-            else if ($kind eq 'r') then
-                let $doc := i:fox-doc($uri, $options)
-                return
-                    if (not($doc)) then '-' 
-                    else $doc/*/local-name(.)
-            else if ($kind eq 't') then
-                let $doc := i:fox-doc($uri, $options)
-                return
-                    if (not($doc)) then '-'
-                    else $doc/*/concat(local-name(.), ' / ', 
-                        string-join(sort(distinct-values(*/local-name()), lower-case#1), ' '))
-            else if ($kind eq 'e') then
-                let $doc := i:fox-doc($uri, $options)
-                return
-                    if (not($doc)) then '-'
-                    else $doc/*/concat(local-name(.), ' / ', 
-                        string-join(sort(distinct-values(.//*/local-name()), lower-case#1), ' '))
-            else if ($kind eq 'a') then
-                let $doc := i:fox-doc($uri, $options)
-                return
-                    if (not($doc)) then '-'
-                    else $doc/string-join(sort(distinct-values(
-                        .//@*/local-name()), lower-case#1), ' ')
-            else ()
-        return            
-            if (empty($padWidth)) then $value
-            else if ($kind eq 's' and $isDir) then f:rpad('/', $padWidth, ' ')            
-            else if ($padSide eq 'l') then f:lpad($value, $padWidth, $fillChar)
-                else f:rpad($value, $padWidth, $fillChar)
-        ), ' ')            
-    return
-        $line
-};
-
-(:
-declare function f:fileSdate($uri as xs:string?)
-        as xs:string? {
-    $uri ! i:fileLastModified(.) ! string()
-};
-:)                
