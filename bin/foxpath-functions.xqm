@@ -163,7 +163,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ============================= :)
         else if ($fname eq 'content-deep-equal') then
             let $args := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:content-deep-equal($args) 
+            let $scope := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:content-deep-equal($args, $scope) 
 
         (: function `count-chars` 
            ====================== :)
@@ -429,7 +430,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
        (: function `file-lines` 
           ===================== :)
-        else if ($fname = 'file-lines') then
+        else if ($fname = ('file-lines', 'flines')) then
             let $line1 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $line2 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             let $pattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -2102,7 +2103,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg2 := 
                 let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return
-                    if ($explicit lt 0) then count($arg1) + $explicit
+                    if ($explicit lt 0) then 1 + count($arg1) + $explicit else $explicit
             let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 if (exists($arg3)) then subsequence($arg1, $arg2, $arg3)

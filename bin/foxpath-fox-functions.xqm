@@ -202,22 +202,40 @@ declare function f:bslash($arg as xs:string?)
  : @param items the items to be checked
  : @return false if there is a pair of items which do not have deep-equal content, true otherwise
  :)
-declare function f:content-deep-equal($items as item()*)
+declare function f:content-deep-equal($items as item()*, $scope as xs:string?)
         as xs:boolean? {
     let $docs :=
         for $item in $items return
             if ($item instance of node()) then $item
             else i:fox-doc($item, ())
     let $count := count($docs)
-    return if ($count le 1) then true() else
+    return if ($count le 1) then () else
     
-    every $i in 1 to $count - 1 satisfies
-        let $item1 := $docs[$i]
-        let $item2 := $docs[$i + 1]
-        let $atts1 := for $a in $item1/@* order by local-name($a), namespace-uri($a), string($a) return $a
-        let $atts2 := for $a in $item2/@* order by local-name($a), namespace-uri($a), string($a) return $a
-        return
-            deep-equal($atts1, $atts2) and deep-equal($item1/node(), $item2/node())
+    let $scope := ($scope, 'c')[1]
+    let $fn_cmp :=
+        switch($scope)
+        case 'c' return
+            function($item1, $item2) {
+                let $atts1 := for $a in $item1/@* order by local-name($a), namespace-uri($a), string($a) return $a
+                let $atts2 := for $a in $item2/@* order by local-name($a), namespace-uri($a), string($a) return $a
+                return deep-equal($atts1, $atts2) and deep-equal($item1/node(), $item2/node())
+            }
+        case 'n' return
+            function($item1, $item2) {deep-equal($item1/node(), $item2/node())}
+        case 'a' return
+            function($item1, $item2) {
+                let $atts1 := for $a in $item1/@* order by local-name($a), namespace-uri($a), string($a) return $a
+                let $atts2 := for $a in $item2/@* order by local-name($a), namespace-uri($a), string($a) return $a
+                return deep-equal($atts1, $atts2)
+            }
+        case 's' return 
+            function($item1, $item2) {deep-equal($item1, $item2)}
+        default return error((), 'Unknown scope: '||$scope||' ; must be one of: c|n|a|s')    
+    return    
+        every $i in 1 to $count - 1 satisfies
+            let $item1 := $docs[$i]
+            let $item2 := $docs[$i + 1]
+            return $fn_cmp($item1, $item2)
 };      
 
 (:~
