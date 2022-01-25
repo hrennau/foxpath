@@ -1724,28 +1724,34 @@ declare function f:descendant-names(
 };        
 
 (:~
- : Copies a file to a target URI. The target URI may be a folder URI or a file URI.
+ : Copies files and/or folders to a target URI. If a source URI is a folder URI, 
+ : the target URI must be a folder URI or a non-existing URI. If all source URIs
+ : are file URIs, the target URI may be a folder URI or a file URI.
  :
- : Options:
- : overwrite ( or o) - copy overwrites existing file
- : create (or c)     - if target folder does not exist, it is created 
+ : Flags:
+ : o - copy overwrites existing file
+ : d - non-existing URI is interpreted as folder URI, and the folder is created;
+ :     non-existing parent folders are also created
+ : c - non-existing URI is interpreted as file URI, and non-existing parent 
+ :     folders are created
  :
- : @param node a node
- : @param localName if true, the local name is returned, otherwise the lexical name
- : @return the parent name
+ : @param sourceUris URIs of files to be copied
+ : @param targetUri target URI, which may be a file or folder URI
+ : @flags flags controlling the copy
+ : @return empty sequence; as a side effect, file copies are performed
  :)
-declare function f:fileCopy($fileUris as xs:string+,
+declare function f:fileCopy($sourceUris as xs:string+,
                             $targetUri as xs:string,
                             $flags as xs:string?)
         as empty-sequence() {
-    for $fileUri in $fileUris return
+    for $sourceUri in $sourceUris return
     
-    let $fileUriDomain := i:uriDomain($fileUri, ())
+    let $sourceUriDomain := i:uriDomain($sourceUri, ())
     return
-        if (not($fileUriDomain eq 'FILE_SYSTEM')) then 
+        if (not($sourceUriDomain eq 'FILE_SYSTEM')) then 
             error(QName((), 'INVALID_CALL'),
                 concat('Function file-copy() expects a source file from the ',
-                  'file system; file URI: ', $fileUri))
+                  'file system; file URI: ', $sourceUri))
             else
 
     let $targetUriDomain := i:uriDomain($targetUri, ())
@@ -1758,15 +1764,20 @@ declare function f:fileCopy($fileUris as xs:string+,
             
     (: Target URI exists :)        
     if (i:fox-file-exists($targetUri, ())) then
-        if (i:fox-is-file($targetUri, ()) and not(contains($flags, 'o'))) then
+        if (i:fox-is-file($targetUri, ()) and i:fox-is-dir($sourceUri, ())) then
+             error(QName((), 'INVALID_CALL'), concat('Cannot copy a folder URI ',
+                 'to a file URI; target URI: ', $targetUri))
+        else if (i:fox-is-file($targetUri, ()) and not(contains($flags, 'o'))) then
              error(QName((), 'INVALID_CALL'), concat('Target file exists; use flag "o" ',
                  'if you want to overwrite existing files; file URI: ', $targetUri))
-        else file:copy($fileUri, $targetUri)
+        else file:copy($sourceUri, $targetUri)
+        
+    (: Target URI non-existing, with flag 'd' :)    
     else if (contains($flags, 'd')) then (
         file:create-dir($targetUri),
-        file:copy($fileUri, $targetUri)
+        file:copy($sourceUri, $targetUri)
     )
-    (: Target URI does not yet exist :)
+    (: Target URI non-existing, without flag 'd' :)
     else
         let $targetParentUri := file:parent($targetUri)
         let $_CREATE_PARENT := 
@@ -1778,7 +1789,7 @@ declare function f:fileCopy($fileUris as xs:string+,
                     'should be interpreted as folder URI; target URI: ', $targetUri))
             else file:create-dir($targetParentUri)
         return
-            file:copy($fileUri, $targetUri)
+            file:copy($sourceUri, $targetUri)
                 
 (:                
                 if (not(i:fox-file-exists(file:parent($targetUri))) then file:copy($
