@@ -1407,13 +1407,13 @@ declare function f:xelement_old($content as item()*,
  :   (2) if flag 'p' is set, a copy enhanced by a @fox:path attribute is created
  :   (3) if flag 'j' is set, a copy enhanced by a @fox:jpath attribute is created
  :   (4) if flag 'f' is set, the copy is "flattened" - child nodes are discarded  
- :   (4) if flag 'a' is set, the item is not modified if it is not an attribute;
+ :   (5) if flag 'a' is set, the item is not modified if it is not an attribute;
  :       if it is an attribute, it is mapped to an element which has a name 
  :       equal to the name of the parent of the attribute, and which contains a 
  :       copy of the attribute 
- :   (5) if flag 'A' is set, treatment as with flag 'a', but the constructed element
+ :   (6) if flag 'A' is set, treatment as with flag 'a', but the constructed element
  :       has no namespace URI 
- :   (6) otherwise, the item is not modified
+ :   (7) otherwise, the item is not modified
 
  : (B) if an item is atomic: 
  :   (1) if flag 'd' is set, the item is interpreted as URI and it is attempted to be
@@ -1736,7 +1736,7 @@ declare function f:descendant-names(
  :)
 declare function f:fileCopy($fileUris as xs:string+,
                             $targetUri as xs:string,
-                            $options as map(xs:string, item()*)?)
+                            $flags as xs:string?)
         as empty-sequence() {
     for $fileUri in $fileUris return
     
@@ -1756,19 +1756,26 @@ declare function f:fileCopy($fileUris as xs:string+,
                   'file system; target dir URI: ', $targetUri))
             else
             
+    (: Target URI exists :)        
     if (i:fox-file-exists($targetUri, ())) then
-        if (i:fox-is-file($targetUri, ()) and not($options?overwrite)) then
-             error(QName((), 'INVALID_CALL'), concat('Target file exists; use option "overwrite" ',
+        if (i:fox-is-file($targetUri, ()) and not(contains($flags, 'o'))) then
+             error(QName((), 'INVALID_CALL'), concat('Target file exists; use flag "o" ',
                  'if you want to overwrite existing files; file URI: ', $targetUri))
         else file:copy($fileUri, $targetUri)
+    else if (contains($flags, 'd')) then (
+        file:create-dir($targetUri),
+        file:copy($fileUri, $targetUri)
+    )
+    (: Target URI does not yet exist :)
     else
-        let $targetParentUri := trace(file:parent($targetUri) , '___TARGET_PARENT_URI: ')
-        let $_CRETE := 
+        let $targetParentUri := file:parent($targetUri)
+        let $_CREATE_PARENT := 
             if (i:fox-file-exists($targetParentUri, ())) then ()
-            else if (not($options?create)) then
-                error(QName((), 'INVALID_CALL'), concat('Target directory does not ',
-                    'exists; use option "create" if you want automatic creation of ',
-                    'a non-existent target dir; target dir URI: ', $targetParentUri))
+            else if (not(contains($flags, 'c'))) then
+                error(QName((), 'INVALID_CALL'), concat('Target URI is a file URI belonging ',
+                    'to a non existent folder; use flag "c" if you want automatic creation of ',
+                    'containing folders; use flag "d" if the target URI ',
+                    'should be interpreted as folder URI; target URI: ', $targetUri))
             else file:create-dir($targetParentUri)
         return
             file:copy($fileUri, $targetUri)

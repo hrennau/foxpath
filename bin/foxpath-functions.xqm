@@ -377,17 +377,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $file := if (count($call/*) gt 1) then $arg1 else $context 
             let $target := if ($countArgs le 1) then $arg1 else
                 $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $options := 
-                let $values := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) ! tokenize(.)
-                return
-                    if (empty($values)) then () else
-                        map:merge((
-                            $values[. = ('create', 'c')] ! map:entry('create', true()),            
-                            $values[. = ('overwrite', 'o')] ! map:entry('overwrite', true()),
-                            ()
-                        ))
+            let $flags := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) ! lower-case(.)
             return
-                foxf:fileCopy($file, $target, $options)
+                foxf:fileCopy($file, $target, $flags)
                 
         (: function `file-date` 
            ==================== :)
