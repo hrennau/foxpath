@@ -1530,7 +1530,8 @@ declare function f:xwrap($items as item()*,
             
     (: Write wrapper :)            
     let $namespaces :=  
-        for $nn in f:extractNamespaceNodes($val[. instance of element()])
+        let $nns := f:extractNamespaceNodes($val[. instance of element()])
+        for $nn in $nns        
         group by $prefix := name($nn)
         let $nn1:= $nn[1]
         where $prefix ne 'xml' and $nn1
@@ -1879,7 +1880,7 @@ declare function f:median($values as xs:anyAtomicType*)
 };
 
 (:~
- : Returns those atomic items which are in the left value, but not in the right one. 
+ : Returns all atomic items occurring in the first value, but not the second. 
  :
  : @param leftValue a value
  : @param rightValue another value 
