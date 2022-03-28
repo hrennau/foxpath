@@ -1200,6 +1200,33 @@ declare function f:rpad($s as xs:anyAtomicType?, $width as xs:integer, $char as 
 };
 
 (:~
+ : Maps a string to a pair of strings, the first containing each character
+ : of the original string, separated by 5 blanks, the second containing
+ : the unicode points, padded to a string of 6 characters. Example:
+ : "'b!" is mapped to:
+ : '     b     !
+ : 39    98    33 
+ :)
+declare function f:textToCodepoints($text as xs:string) as xs:string+ {
+    let $fnPad := function($s, $w) {
+        string($s) ! (. || 
+        (for $i in 1 to $w - string-length(.) return ' ') => string-join())}
+
+    let $fnFoldLeft := function($accum, $item) {
+        let $char := $item||'     '
+        let $codepoint := string-to-codepoints($item) ! $fnPad(., 6) 
+        return (
+            $accum[1]||$char,
+            $accum[2]||$codepoint
+        )
+    }
+    
+    let $len := string-length($text)
+    let $chars := for $i in 1 to $len return substring($text, $i, 1)
+    return fold-left($chars, ('', ''), $fnFoldLeft) 
+};
+
+(:~
  : Writes a collection of files into a folder.
  :
  : @param files the file URIs

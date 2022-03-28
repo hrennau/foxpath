@@ -391,6 +391,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 i:fox-file-date($uri, $options)
             
+        (: function `file-date-string` 
+           =========================== :)
+        else if ($fname eq 'file-date-string' or $fname eq 'fdates') then
+            let $uri := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return
+                    ($explicit, $context)[1]
+            return
+                i:fox-file-date($uri, $options) ! string(.)
+            
        (: function `file-exists` 
           ===================== :)
         else if ($fname eq 'file-exists') then
@@ -1357,6 +1367,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:table($values, $headers)
 
+        (: function `text-to-codepoints` 
+           ============================= :)
+        else if ($fname eq 'text-to-codepoints') then
+            let $text := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                foxf:textToCodepoints($text)
+
         (: function `truncate` 
            =================== :)
         else if ($fname = ('truncate', 'trunc')) then
@@ -1647,9 +1666,24 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             return count($arg)
             
+        (: function `current-date` 
+           ====================== :)
+        else if ($fname eq 'current-date') then
+            current-date()
+                
+        (: function `current-date-string` 
+           ============================== :)
+        else if ($fname eq 'current-date-string') then
+            string(current-date())
+                
         (: function `current-dateTime` 
            ========================== :)
         else if ($fname eq 'current-dateTime') then
+            current-dateTime()
+                
+        (: function `current-dateTime-string` 
+           ================================== :)
+        else if ($fname eq 'current-dateTime-string') then
             string(current-dateTime())
                 
         (: function `current-dir` 
