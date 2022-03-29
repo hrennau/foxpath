@@ -1200,6 +1200,60 @@ declare function f:rpad($s as xs:anyAtomicType?, $width as xs:integer, $char as 
 };
 
 (:~
+ : Compares the item order of two values and reports differences.
+ :
+ : The item order of two values differs if an item in the atomized value of 
+ : $value1 is followed by an item which in the atomized value of $value2
+ : precedes the other item. Note that a difference can only occur if both 
+ : values have at least two items. The return value depends on $reportType:
+ : - $reportType equal boolean – the Boolean value true if there is no 
+ :     difference, false otherwise
+ : - $reportType equal backsteps – for each backstep item in $value1 the 
+ ;     backstep item, preceded by the two items preceding it in $value1, 
+ :     separated by " # ". If the backstep item is the second item of $value1, 
+ :     only two, rather than three items are returned. 
+ : - $reportType equal backstep – like backsteps, but only the first backstep 
+ :     item is considered
+ : 
+ : Examples
+ : Returns true – repetition cannot create a difference of item order.
+ : fox "order-diff((2, 4, 5, 5), 1 to 6, 'boolean')"
+ :
+ : Returns true – if one of the values has a single item, there cannot be a 
+ :   difference.
+ : fox "order-diff(2, 1 to 6, 'boolean')"
+ :
+ : fox "order-diff((2, 1, 5, 4), 1 to 6, 'backsteps')"
+ : =>
+ : 2 # 1
+ : 1 # 5 # 4
+ :
+ : fox "order-diff((
+ :   ('Summary', 'Conclusion', 'Introduction', 'AdditionalDetails', 'Details'),  
+ :   ('Introduction', 'Summary', 'Details', 'AdditionalDetails', 'Conclusion'), 
+ :   'backsteps')
+ : =>
+ : Summary # Conclusion # Introduction
+ :)
+declare function f:orderDiff($value1 as item()*, 
+                             $value2 as item()*, 
+                             $reportType as xs:string?)
+        as item()* {
+    let $reportType := ($reportType, 'backstep1')[1]
+    let $value1b := $value1[. = $value2]
+    let $positions := $value1b ! index-of($value2, .)
+    let $posBeforeBack := (1 to count($positions) - 1)[let $p := . return $positions[$p] > $positions[$p + 1]]
+    return
+        switch($reportType)
+        case 'boolean' return empty($posBeforeBack)
+        case 'backsteps' return for $p in $posBeforeBack return
+            $value1b[position() = ($p - 1, $p, $p + 1)] => string-join(' # ')
+        case 'backstep1' return let $p := $posBeforeBack[1] return
+            $value1b[position() = ($p - 1, $p, $p + 1)] => string-join(' # ')
+        default return error()
+};
+
+(:~
  : Maps a string to a pair of strings, the first containing each character
  : of the original string, separated by 5 blanks, the second containing
  : the unicode points, padded to a string of 6 characters. Example:

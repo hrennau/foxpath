@@ -1135,6 +1135,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 else $context
             return foxf:oasMsgSchemas($nodes)            
 
+        (: function `order-diff` 
+           ===================== :)
+        else if ($fname eq 'order-diff') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:orderDiff($arg1, $arg2, $arg3)
+                
         (: function `pads` 
            =============== :)
         else if ($fname eq 'pads') then
@@ -2250,6 +2259,34 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return ($explicit, $context)[1]
             return
                 upper-case($arg)
+
+        (: function `xsd-validate` 
+           ===================== :)
+        else if ($fname = ('xsd-validate', 'xval')) then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
+            let $reports := 
+                for $doc in $arg1
+                let $r := validate:xsd-report($doc, $arg2)
+                let $docuri := if (not($doc instance of node())) then $doc else base-uri($doc)
+                return <validationReport doc="{$docuri}">{$r/*}</validationReport>
+            let $reports2 :=
+                if (count($reports) gt 1) then 
+                    let $invalid := $reports[status eq 'invalid']
+                    return
+                        <validationReports countDocs="{count($reports)}"
+                                           countInvalid="{count($reports/status[. eq 'invalid'])}">{
+                            if (not($invalid)) then $reports
+                            else (
+                                <invalid count="{count($invalid)}">{$invalid}</invalid>,
+                                <valid>{$reports except $invalid}</valid>
+                            )
+                        }</validationReports>
+                else $reports
+            return
+                copy $reports2_ := $reports2
+                modify delete nodes $reports2_//message/@url
+                return $reports2_
 
         (: function `year-from-date` 
            ========================= :)
