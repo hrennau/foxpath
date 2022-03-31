@@ -75,18 +75,17 @@ declare function f:attNames($nodes as node()*,
         as xs:string* {
     let $cnameFilter := util:compileNameFilter($nameFilter, true())        
     let $cnameFilterExclude := util:compileNameFilter($nameFilterExclude, true())
-       
+    
+    let $fnGetName := 
+        if ($nameKind eq 'name') then function($n) {$n/name()}
+        else if ($nameKind eq 'jname') then function($n) {$n/f:unescape-json-name(local-name(.))}
+        else function($n) {$n/local-name()}
     for $node in $nodes       
     let $items := $node/@*
-       [empty($cnameFilter) or util:matchesNameFilter(local-name(.), $cnameFilter)]
-       [empty($cnameFilterExclude) or not(util:matchesNameFilter(local-name(.), $cnameFilterExclude))] 
+       [empty($cnameFilter) or util:matchesNameFilter($fnGetName(.), $cnameFilter)]
+       [empty($cnameFilterExclude) or not(util:matchesNameFilter($fnGetName(.), $cnameFilterExclude))] 
     let $separator := ', '[$concat]
-    let $names := 
-        if ($nameKind eq 'lname') then 
-            ($items/local-name(.)) => distinct-values() => sort()
-        else if ($nameKind eq 'jname') then 
-            ($items/f:unescape-json-name(local-name(.))) => distinct-values() => sort()
-        else ($items/name(.)) => distinct-values() => sort()
+    let $names := $items/$fnGetName(.) => distinct-values() => sort()
     return
         if (exists($separator)) then string-join($names, $separator)
         else $names
@@ -172,7 +171,7 @@ declare function f:baseUriRelative($item as item(), $contextName as xs:string)
  : @return the name of the containing directory 
  :)
 declare function f:baseUriDirectory($item as item())
-        as xs:string {
+        as xs:string? {
     (if ($item instance of node()) then $item else i:fox-doc($item, ()))
     ! base-uri(.) ! replace(., '.*[/\\](.*)[/\\][^/\\]*$', '$1')
 };
