@@ -635,6 +635,170 @@ declare function f:foxAncestorOrSelf($context as xs:string*,
     )) => distinct-values()
 };
 
+declare function f:fractions($values as item()*, 
+                             $compareWith as item()*, 
+                             $comparison as xs:string, 
+                             $valueFormat as xs:string?,
+                             $compareAs as xs:string?)
+        as item()* {
+    let $countValues := count($values)
+    let $vformat := ($valueFormat, 'count')[1]    
+    let $vformatParts := replace($valueFormat, '(.+?)(col\d*)?$', '$1~$2') ! tokenize(., '~')
+    let $colSpec := $vformatParts[2]
+    let $colWidth := if (not($colSpec)) then () else replace($colSpec, '.*?(\d+)', '$1') ! xs:integer(.)    
+    let $vformat := $vformatParts[1] ! (
+        switch(.)
+        case 'c' return 'count'
+        case 'f' return 'fraction'
+        case 'p' return 'percent'
+        default return .)
+    let $_DEBUG := trace($vformat, '_VFORMAT: ')        
+    let $_DEBUG := trace($vformatParts, '_VFORMATPARTS: ')
+    let $compareAs := ($compareAs, 'decimal')[1] ! concat('xs:', .)
+    let $comparison := replace($comparison, '^be$', 'between')
+    let $fnCast :=
+        switch($compareAs)
+        case 'xs:decimal' return function($v) {xs:decimal($v)}
+        case 'xs:date' return function($v) {xs:date($v)}
+        case 'xs:string' return function($v) {string($v)}
+        default return error()
+    let $fnCastable :=
+        switch($compareAs)
+        case 'xs:decimal' return function($v) {$v castable as xs:decimal}
+        case 'xs:date' return function($v) {$v castable as xs:date}
+        case 'xs:string' return function($v) {$v castable as xs:string}
+        default return error()
+        
+    let $fnFraction :=
+        switch($vformat)
+        case 'count' return
+            function($selected) {count($selected)}
+        case 'fraction' return
+            function($selected) {(count($selected) div $countValues) ! format-number(., '0.00')}
+        case 'percent' return
+            function($selected) {((count($selected) div $countValues) * 100) ! format-number(., '0.0')}
+        default return error()
+        
+    let $cvalues := try {$values ! $fnCast(.)} catch * {()}        
+    return
+        if (count($cvalues) lt $countValues) then
+            let $invalidValues:= $values[not($fnCastable(.))]
+            let $countInvalid := count($invalidValues)
+            return
+                error(QName((), 'INVALID_ARG'), concat($countInvalid, ' value(s) cannot ',
+                  'be cast into ', $compareAs, ', for example'[$countInvalid gt 1],
+                  ': ', $invalidValues[1]))
+        else 
+        
+    let $useCompareWith :=
+        if (count($compareWith) gt 1 
+            or not(matches(string($compareWith[1]), '^(\*|\d.*);(\*|\d.*);[\d.]+'))) then 
+            let $cCompareWith := try {$compareWith ! $fnCast(.)} catch * {()}
+            return
+                if (count($cCompareWith) lt count($compareWith)) then            
+                    let $invalidValues:= $compareWith[not($fnCastable(.))]
+                    let $countInvalid := count($invalidValues)
+                    return
+                        error(QName((), 'INVALID_ARG'), 
+                            concat($countInvalid, ' value(s) with which to compare cannot ',
+                            'be cast into ', $compareAs, ', for example'[$countInvalid gt 1],
+                            ': ', $invalidValues[1]))
+                else $cCompareWith                      
+        else
+            let $parts := tokenize($compareWith, ';\s*')
+            let $n1 := $parts[1]
+            let $n2 := $parts[2]
+            let $step := 
+                if ($compareAs eq 'xs:date') then $parts[3] ! xs:integer(.)
+                else $parts[3] ! $fnCast(.)
+            let $n1 :=
+                if ($n1 ne '*') then $n1 ! $fnCast(.) else
+                    let $min := $cvalues => min() return 
+                        if ($compareAs eq 'xs:date') then $min                            
+                        else $step * floor($min div $step) ! $fnCast(.)
+            let $n2 :=
+                if ($n2 ne '*') then $n2 ! $fnCast(.) else
+                    let $max := $cvalues => max() return 
+                        if ($compareAs eq 'xs:date') then $max
+                        else $step * ceiling($max div $step) ! $fnCast(.)
+            let $nsteps := 
+                if ($compareAs eq 'xs:date') then days-from-duration($n2 - $n1) div $step
+                else 
+                    let $prelim := ($n2 - $n1) div $step
+                    return if ($prelim lt $n2) then $prelim + 1 else $prelim
+            let $_DEBUG := trace($n2, '_N2: ')
+            let $_DEBUG := trace($nsteps, '_NSTEPS: ')                
+            return 
+                if ($compareAs eq 'xs:date') then
+                    for $snr in 0 to xs:integer($nsteps)
+                    let $ndays := $snr * $step
+                    let $interval := xs:dayTimeDuration('P'||$ndays||'D')                    
+                    return $n1 + $interval                
+                else
+                    for $snr in 0 to xs:integer($nsteps) return
+                        ($n1 + ($snr * $step)) ! $fnCast(.)
+                return
+    let $useCompareWith := sort($useCompareWith)     
+    let $countCompareWith := count($useCompareWith)
+    let $rvalues :=
+        for $comp at $pos in $useCompareWith return
+        switch($comparison)
+        case 'lt' return $cvalues[. < $comp] => $fnFraction()
+        case 'le' return $cvalues[. <= $comp] => $fnFraction()
+        case 'gt' return $cvalues[. > $comp] => $fnFraction()
+        case 'ge' return $cvalues[. >= $comp] => $fnFraction()
+        case 'eq' return $cvalues[. = $comp] => $fnFraction()
+        case 'ne' return $cvalues[. != $comp] => $fnFraction()
+        case 'between' return (
+            if ($pos eq 1) then $cvalues[. < $comp] => $fnFraction()
+            else $cvalues[. < $comp][. >= $useCompareWith[$pos - 1]] => $fnFraction(),
+            (: comparison 'between' - append fraction of values greater highest limit :)
+            if ($pos ne count($useCompareWith)) then () else
+                $cvalues[. >= $comp] => $fnFraction()
+        )    
+    default return error()            
+    return
+        if (count($useCompareWith) eq 1) then $rvalues
+        else (: write table :)
+            let $c1ValueWidth := 0 + ($useCompareWith ! string-length()) => max()   
+            let $c2ValueWidth := ($rvalues ! string-length()) => max()
+            let $useLabels :=
+                if ($comparison ne 'between') then 
+                    $useCompareWith ! f:lpad(., $c1ValueWidth, ' ') ! concat($comparison, ' ', .)
+                else
+                    let $padded := $useCompareWith ! f:lpad(., $c1ValueWidth, ' ') 
+                        return (
+                            (if (xs:decimal($rvalues[1]) = 0) then '[  ' else ' < ')||$padded[1],
+                            ($padded => subsequence(2)) ! concat('[) ', .),
+                            '>= '||$padded[last()])
+            let $rvaluesPruned := $rvalues
+            (:
+                if ($comparison ne 'between' or $rvalues[$countCompareWith] gt 0) then $rvalues
+                else subsequence($rvalues, 1, $countCompareWith - 1)
+             :)
+            let $rvaluesMax := if (empty($colWidth)) then () else ($rvalues ! xs:decimal(.)) => max()
+            let $colFrameLine :=
+                let $labelWidth := ($useLabels ! string-length(.)) => max() return
+                if (not($colWidth)) then () else
+                    f:lpad(' ', $labelWidth + $c2ValueWidth + 6, ' ')||'#'||f:repeat('-', $colWidth)||'#'
+            return (
+                $colFrameLine,                    
+                for $c at $pos in $rvaluesPruned 
+                let $cdec := xs:decimal($c)
+                let $rvalue := (
+                    if ($comparison ne 'between' or $pos gt 1 or $cdec gt 0) then $c else ' ')
+                    ! f:lpad(., $c2ValueWidth, ' ')
+                return 
+                    $useLabels[$pos]||'   '||$rvalue||(if (not($colWidth)) then () else 
+                      '   |'
+                    ||f:rpad(f:repeat('*', ($cdec div $rvaluesMax * $colWidth)), $colWidth,  ' ')
+                    ||'|'),                    
+                       (: In case of between, the line "< lower limit" is represented differently
+                          if there are no values < lower limit :)
+                $colFrameLine                                          
+            )                          
+};        
+
 (:~
  : Returns a frequency distribution.
  :
@@ -1178,9 +1342,9 @@ declare function f:oasMsgSchemas($oas as node()*) {
  : @param count the number of repeats
  : @return the result of repeating the string
  :)
-declare function f:repeat($string as xs:string?, $count as xs:integer?)
+declare function f:repeat($string as xs:string?, $count as xs:decimal?)
         as xs:string {
-    string-join(for $i in 1 to $count return $string, '')
+    string-join(for $i in 1 to xs:integer($count + 0.5) return $string, '')
 };      
 
 (:~

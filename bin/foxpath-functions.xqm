@@ -448,7 +448,10 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $lines := i:fox-file-lines($uri, (), $options)
             let $lines := 
                 if (not($line1) and not($line2)) then $lines else
-                    $lines[(empty($line1) or position() ge $line1) and (not($line2) or position() le $line2)]                 
+                    let $l1 := if ($line1 lt 0) then count($lines) + 1 + $line1 else $line1
+                    let $l2 := if ($line2 lt 0) then count($lines) + 1 + $line2 else $line2
+                    return
+                        $lines[(empty($l1) or position() ge $l1) and (not($l2) or position() le $l2)]                 
             let $lines := if (empty($regex)) then $lines else $lines[matches(., $regex, 'i')]
             return
                 $lines 
@@ -558,6 +561,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $to := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
                 foxf:foxSibling($context, $names, $namesExcluded, $from, $to)
+
+        (: function `fractions` 
+           ====================== :)
+        else if ($fname = ('fractions', 'frac')) then
+            let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $compareWith := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
+            let $operator := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $format := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $compareAs := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            return
+                foxf:fractions($values, $compareWith, $operator, $format, $compareAs)
 
         (: function `frequencies` 
            ====================== :)
