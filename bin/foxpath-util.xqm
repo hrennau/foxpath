@@ -38,7 +38,7 @@ declare function f:compileNameFilter($patterns as xs:string*,
         return
             if (not($ignoreCase)) then $raw else $raw ! lower-case(.)
     let $regexes := $items[contains(., '*') or contains(., '?')]
-    ! replace(., '[{}()\[\]]', '\\$0')
+    ! replace(., '[{}()\[\]^$]', '\\$0')
     ! replace(., '\*', '.*')
     ! replace(., '\?', '.')
     ! concat('^', ., '$')

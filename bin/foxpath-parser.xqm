@@ -1376,7 +1376,7 @@ declare function f:parseIntersectExceptExpr($text as xs:string, $context as map(
     let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_INTERSECT_EXCEPT: ')        
     let $instanceOfExprEtc := f:parseInstanceOfExpr($text, $context)
     let $instanceOfExpr := $instanceOfExprEtc[. instance of node()]
-    let $textAfter := f:extractTextAfter($instanceOfExprEtc)    
+    let $textAfter := f:extractTextAfter($instanceOfExprEtc)
     return
         if (not($textAfter)) then $instanceOfExpr
         else f:parseIntersectExceptExprRC($textAfter, $instanceOfExpr, $context)

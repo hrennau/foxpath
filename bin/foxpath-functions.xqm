@@ -41,6 +41,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 else $context
             return foxf:allDescendants($items)
                 
+        (: function `annotate` 
+           =================== :)
+        else if ($fname eq 'annotate') then
+            let $value :=
+                if (count($call/*) eq 1) then $context else
+                    $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $anno :=
+                let $index := if (count($call/*) eq 1) then 1 else 2
+                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return $value||' ('||$anno||')'            
+                
         (: function `att-lnames` 
            ==================== :)
         else if ($fname eq 'att-lnames') then
@@ -51,17 +62,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $nameFilterExclude := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
                 foxf:attNames($nodes, true(), 'lname', $nameFilter, $nameFilterExclude)
-
-        else if ($fname eq 'att-lnamesold') then
-            let $nodes := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return if (exists($explicit)) then $explicit else $context
-            let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                                ! normalize-space(.) ! tokenize(.)
-            let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                                ! normalize-space(.) ! tokenize(.)            
-            return
-                foxf:attNamesOld($nodes, true(), 'lname', $namePattern, $excludedNamePattern)
 
         (: function `att-names` 
            =================== :)
@@ -88,13 +88,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (empty($call/*)) then $context
                 else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return foxf:baseUriDirectory($contextItem)                
-(:            
-            let $argNode :=
-                if ($contextItem instance of node()) then $contextItem
-                else i:fox-doc($contextItem, $options)
-            return
-                $argNode/base-uri(.) ! replace(., '.*[/\\](.*)[/\\][^/\\]*$', '$1')
-:)
 
         (: function `base-file-name` 
            ========================= :)
@@ -103,18 +96,20 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (empty($call/*)) then $context
                 else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return foxf:baseUriFileName($contextItem)
-            (:
-            let $argNode :=
-                if ($contextItem instance of node()) then $contextItem
-                else i:fox-doc($contextItem, $options)
-            return
-                $argNode/base-uri(.) ! replace(., '.*[/\\]', '')
-:)
+            
         (: function `base-uri-relative` 
            ============================ :)
         else if ($fname = ('base-uri-relative', 'buri-relative', 'burirel')) then
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             return foxf:baseUriRelative($context, $arg1)
+            
+       (: function `both-values` 
+          ====================== :)
+        else if ($fname = ('both-values', 'bvalues')) then
+            let $leftValue := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $rightValue := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:bothValues($leftValue, $rightValue)
             
         (: function `bslash` 
            ================= :)
@@ -271,7 +266,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 count(distinct-values($values)) eq count($values)
                             
         (: function `echo` 
-           ==================== :)
+           =============== :)
         else if ($fname eq 'echo') then
             let $val := trace($call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) , 'VAL: ')        
             return
@@ -701,12 +696,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:hlist($values, $headers, $emptyLines)
 
-        (: function `hlist-entry` 
-           ====================== :)
-        else if ($fname = ('hierarchical-list-entry', 'hier-list-entry', 'hlist-entry', 'hentry', 'table-entry', 'tentry')) then
+        (: function `row` 
+           ============== :)
+        else if ($fname = ('row', 'hlist-entry')) then
             let $items := $call/* ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:hlistEntry($items)
+                foxf:row($items)
 
         (: function `html-doc` 
            =================== :)
@@ -854,6 +849,21 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $numFolders := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return foxf:nodesLocationReport($nodes, 'jname', $numFolders)
 
+        (: function `jnode-self` 
+           ====================== :)
+        else if ($fname = ('jnode-self', 'jself')) then
+            let $nodes :=
+                if (count($call/*) eq 1) then $context
+                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $names :=
+                let $index :=
+                    if (count($call/*) eq 1) then 1 else 2
+                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $ignoreCase := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:nodeSelf($nodes, 'jname', $names, $namesExcluded, $ignoreCase)
+
         (: function `jpath-compare` 
            ======================= :)
         else if ($fname = ('jpath-compare', 'jpathcmp')) then           
@@ -977,6 +987,21 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (empty($nodes)) then () else
                     let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                     return foxf:namePath($nodes, 'lname', $numSteps)
+
+        (: function `lnode-ancestor` 
+           ========================= :)
+        else if ($fname = ('lnode-ancestor', 'lancestor')) then
+            let $nodes :=
+                if (count($call/*) eq 1) then $context
+                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $names :=
+                let $index :=
+                    if (count($call/*) eq 1) then 1 else 2
+                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $ignoreCase := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:nodeAncestor($nodes, 'lname', $names, $namesExcluded, $ignoreCase)
 
         (: function `lnode-child` 
            ====================== :)
@@ -1422,6 +1447,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:unescape-json-name($string)
                 
+        (: function `value` 
+           ========================== :)
+        else if ($fname eq 'value') then
+            let $value :=
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                if (exists($value)) then $value else
+                $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                
         (: function `values-distinct` 
            ========================== :)
         else if ($fname eq 'values-distinct') then
@@ -1569,7 +1603,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     ($explicit, $context)[1]
             return
                 i:fox-doc($uri, $options)/*/local-name()                
-                   
+            
+        (: function `xsd-validate` 
+           ===================== :)
+        else if ($fname = ('xsd-validate', 'xval')) then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)  
+            return foxf:xsdValidate($arg1, $arg2)
+            
         (: function `xwrap` 
            ==================== :)
         else if ($fname eq 'xwrap') then
@@ -2110,6 +2151,11 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 if (not($arg4 = ('d', 'descending'))) then $sorted else reverse($sorted)
 
+        (: function `static-base-uri` 
+           ========================== :)
+        else if ($fname eq 'static-base-uri') then
+            static-base-uri()
+                
         (: function `starts-with` 
            ====================== :)
         else if ($fname eq 'starts-with') then
@@ -2273,34 +2319,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return ($explicit, $context)[1]
             return
                 upper-case($arg)
-
-        (: function `xsd-validate` 
-           ===================== :)
-        else if ($fname = ('xsd-validate', 'xval')) then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
-            let $reports := 
-                for $doc in $arg1
-                let $r := validate:xsd-report($doc, $arg2)
-                let $docuri := if (not($doc instance of node())) then $doc else base-uri($doc)
-                return <validationReport doc="{$docuri}">{$r/*}</validationReport>
-            let $reports2 :=
-                if (count($reports) gt 1) then 
-                    let $invalid := $reports[status eq 'invalid']
-                    return
-                        <validationReports countDocs="{count($reports)}"
-                                           countInvalid="{count($reports/status[. eq 'invalid'])}">{
-                            if (not($invalid)) then $reports
-                            else (
-                                <invalid count="{count($invalid)}">{$invalid}</invalid>,
-                                <valid>{$reports except $invalid}</valid>
-                            )
-                        }</validationReports>
-                else $reports
-            return
-                copy $reports2_ := $reports2
-                modify delete nodes $reports2_//message/@url
-                return $reports2_
 
         (: function `year-from-date` 
            ========================= :)

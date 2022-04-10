@@ -183,6 +183,20 @@ declare function f:baseUriFileName($item as item())
 };
 
 (:~
+ : Returns all atomic items occurring in the first value and in the second value. 
+ :
+ : @param leftValue a value
+ : @param rightValue another value 
+ : @return the items occurring in both values
+ :)
+declare function f:bothValues($leftValue as item()*,
+                              $rightValue as item()*)
+    as item()* {
+    $leftValue[. = $rightValue] => distinct-values()
+};
+
+
+(:~
  : Edits a text, replacing forward slashes by back slashes.
  :
  : @param arg text to be edited
@@ -641,9 +655,11 @@ declare function f:fractions($values as item()*,
                              $valueFormat as xs:string?,
                              $compareAs as xs:string?)
         as item()* {
+    if (empty($values)) then () else
+    
     let $countValues := count($values)
     let $vformat := ($valueFormat, 'count')[1]    
-    let $vformatParts := replace($valueFormat, '(.+?)(col\d*)?$', '$1~$2') ! tokenize(., '~')
+    let $vformatParts := replace($vformat, '(.+?)(col\d*)?$', '$1~$2') ! tokenize(., '~')
     let $colSpec := $vformatParts[2]
     let $colWidth := if (not($colSpec)) then () else replace($colSpec, '.*?(\d+)', '$1') ! xs:integer(.)    
     let $vformat := $vformatParts[1] ! (
@@ -652,8 +668,6 @@ declare function f:fractions($values as item()*,
         case 'f' return 'fraction'
         case 'p' return 'percent'
         default return .)
-    let $_DEBUG := trace($vformat, '_VFORMAT: ')        
-    let $_DEBUG := trace($vformatParts, '_VFORMATPARTS: ')
     let $compareAs := ($compareAs, 'decimal')[1] ! concat('xs:', .)
     let $comparison := replace($comparison, '^be$', 'between')
     let $fnCast :=
@@ -820,8 +834,9 @@ declare function f:frequencies($values as item()*,
                                $kind as xs:string?, (: count | relfreq | percent :)
                                $orderBy as xs:string?,
                                $format as xs:string?)
-        as item() {
-        
+        as item()? {
+    if (empty($values)) then () else
+       
     let $width := 
         if (not($format) or $format eq 'text*') then 1 + ($values ! string(.) ! string-length(.)) => max()
         else if (matches($format, '^text\d')) then replace($format, '^text', '')[string()] ! xs:integer(.)
@@ -905,6 +920,44 @@ declare function f:frequencies($values as item()*,
 };      
 
 (:~
+ : Returns selected ancestor elements of a given sequence of nodes. Selected elements 
+ : have a name matching a given name filter and not matching an optional name filter 
+ : defining exclusions. 
+ :
+ : Depending on $nameKind, the local name ('lname'), the JSON name ('jname') or
+ : the lexical name 'name') is considered when matching.
+ :
+ : When $ignoreCase is true, matching is performed ignoring character case.
+ :
+ : A name filter is a whitespace separated list of names or name patterns. Name
+ : patterns can use wildcards * and ?. Example: "foo bar* *foobar"
+ :
+ : @param context the context node
+ : @param names a name filter
+ : @param namesExcluded a name filter defining exclusions
+ : @return child nodes matching the name filter and not matching the name filter defining exclusions
+ :)
+declare function f:nodeAncestor(
+                       $contextNodes as node()*,
+                       $nameKind as xs:string?,   (: name | lname | jname :)
+                       $names as xs:string?,
+                       $namesExcluded as xs:string?,
+                       $ignoreCase as xs:boolean?)
+        as node()* {
+    let $ignoreCase := ($ignoreCase, true())[1]        
+    let $cnameFilter := $names ! util:compileNameFilter(., $ignoreCase)        
+    let $cnameFilterExclude := $namesExcluded ! util:compileNameFilter(., $ignoreCase)
+    let $fn_name := 
+        switch($nameKind)
+        case 'lname' return function($node) {$node/local-name(.)}
+        case 'jname' return function($node) {$node/local-name(.) ! convert:decode-key(.)}
+        case 'name' return function($node) {$node/name(.)}
+        default return error()
+    return
+        $contextNodes/ancestor::*[$fn_name(.) ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
+};
+
+(:~
  : Returns selected child elements of a given sequence of nodes. Selected elements 
  : have a name matching a given name filter and not matching an optional name filter 
  : defining exclusions. 
@@ -939,10 +992,47 @@ declare function f:nodeChild(
         case 'name' return function($node) {$node/name(.)}
         default return error()
     return
-        $contextNodes/*[$fn_name(.) ! 
-            util:matchesNameFilter(., $cnameFilter) and (
-                not($namesExcluded) or util:matchesNameFilter(., $cnameFilterExclude))]
+        $contextNodes/*[$fn_name(.) ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
 };
+
+(:~
+ : Returns selected elements of a given sequence of nodes. Selected elements 
+ : have a name matching a given name filter and not matching an optional name filter 
+ : defining exclusions. 
+ :
+ : Depending on $nameKind, the local name ('lname'), the JSON name ('jname') or
+ : the lexical name 'name') is considered when matching.
+ :
+ : When $ignoreCase is true, matching is performed ignoring character case.
+ :
+ : A name filter is a whitespace separated list of names or name patterns. Name
+ : patterns can use wildcards * and ?. Example: "foo bar* *foobar"
+ :
+ : @param context the context node
+ : @param names a name filter
+ : @param namesExcluded a name filter defining exclusions
+ : @return child nodes matching the name filter and not matching the name filter defining exclusions
+ :)
+declare function f:nodeSelf(
+                       $contextNodes as node()*,
+                       $nameKind as xs:string?,   (: name | lname | jname :)
+                       $names as xs:string?,
+                       $namesExcluded as xs:string?,
+                       $ignoreCase as xs:boolean?)
+        as node()* {
+    let $ignoreCase := ($ignoreCase, true())[1]        
+    let $cnameFilter := $names ! util:compileNameFilter(., $ignoreCase)        
+    let $cnameFilterExclude := $namesExcluded ! util:compileNameFilter(., $ignoreCase)
+    let $fn_name := 
+        switch($nameKind)
+        case 'lname' return function($node) {$node/local-name(.)}
+        case 'jname' return function($node) {$node/local-name(.) ! convert:decode-key(.)}
+        case 'name' return function($node) {$node/name(.)}
+        default return error()
+    return
+        $contextNodes/self::*[$fn_name(.) ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
+};
+
 
 (:~
  : Returns selected descendant elements of a given sequence of nodes. Selected elements
@@ -978,11 +1068,9 @@ declare function f:nodeDescendant(
         case 'lname' return function($node) {$node/local-name(.)}
         case 'jname' return function($node) {$node/local-name(.) ! convert:decode-key(.)}
         case 'name' return function($node) {$node/name(.)}
-        default return error()
+        default return error()       
     return
-        $contextNodes//*[$fn_name(.) ! 
-            util:matchesNameFilter(., $cnameFilter) and (
-                not($namesExcluded) or util:matchesNameFilter(., $cnameFilterExclude))]
+        $contextNodes//*[$fn_name(.) ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)] 
 };
 
 (:~
@@ -1004,7 +1092,7 @@ declare function f:nodesLocationReport($nodes as node()*,
         default return error(QName((), 'INVALID_ARG'), concat('Invalid "nameKind": ', $nameKind))
     return
     
-    $nodes/f:hlistEntry((
+    $nodes/f:row((
         if ($withFolders) then f:baseUriDirectories(., $withFolders) else (),
         f:baseUriFileName(.), 
         $fn_name(.), 
@@ -1985,10 +2073,11 @@ declare function f:descendant-names(
  : @flags flags controlling the copy
  : @return empty sequence; as a side effect, file copies are performed
  :)
-declare function f:fileCopy($sourceUris as xs:string+,
+declare function f:fileCopy($sourceUris as xs:string*,
                             $targetUri as xs:string,
                             $flags as xs:string?)
         as empty-sequence() {
+    if (empty($sourceUris)) then () else        
     for $sourceUri in $sourceUris return
     
     let $sourceUriDomain := i:uriDomain($sourceUri, ())
@@ -2196,7 +2285,7 @@ declare function f:pathCompare($items as item()*,
  : Returns the paths leading from a context node to all descendants. This may be
  : regarded as a representation of the node's content, hence the function name.
  :
- : @param context a node
+ : @param context nodes and or document URIs
  : @param nameKind the kind of name used as path steps: 
  :   jname - JSON names; lname - local names; name - lexical names
  : @param includedNames name patterns of nodes which must be present in the path 
@@ -2204,7 +2293,7 @@ declare function f:pathCompare($items as item()*,
  : @param excludedNodes nodes excluded from the content 
  : @return the parent name
  :)
-declare function f:pathContent($context as node()*, 
+declare function f:pathContent($context as item()*, 
                                $nameKind as xs:string?,
                                $alsoInnerNodes as xs:boolean?,
                                $includedNames as xs:string?,
@@ -2212,6 +2301,10 @@ declare function f:pathContent($context as node()*,
                                $excludedNodes as node()*)
         as xs:string* {
             
+    let $context := (
+        $context[. instance of node()],
+        $context[not(. instance of node())] ! (try {doc(.)} catch * {try {json:doc(.)} catch * {}})
+    )        
     let $descendants := (
         if ($nameKind eq 'jname') then $context/descendant::*
         else $context/(@*, descendant::*/(., @*))
@@ -2360,7 +2453,7 @@ declare function f:truncate($string as xs:string?, $len as xs:integer, $flag as 
  : Concatenates the arguments into a string, using an "improbable"
  : separator (codepoint 30000)
  :)
-declare function f:hlistEntry($items as item()*)
+declare function f:row($items as item()*)
         as xs:string {
     let $sep := codepoints-to-string(30000)
     return
@@ -2390,7 +2483,9 @@ declare function f:hlist($values as xs:string*,
                          $headers as xs:string*,
                          $emptyLines as xs:string?)
         as xs:string {
-    let $sep := codepoints-to-string(30000) (:  ($sep, '#')[1] :)        
+    let $sep := codepoints-to-string(30000) (:  ($sep, '#')[1] :)   
+    let $headers :=
+        if (count($headers) eq 1) then tokenize($headers, ',\s*') else $headers    
     let $values := $values[string(.)] => sort()    
     let $emptyLineFns :=
         if (not($emptyLines)) then ()
@@ -2683,14 +2778,129 @@ declare function f:resolveJsonOneOf($oneOf as element())
 
 (:~
  : Transforms a sequence of values into a table. Each value is a concatenated 
- : list of items, created using function hlistEntry().
+ : list of items, created using function row().
  :)
-declare function f:table($values as xs:string*, 
+declare function f:table($rows as xs:string*, 
                          $headers as xs:string*)
         as xs:string {
-    error(QName((), 'NOT_YET_IMPLEMENTED'), 'Function "table" not yet implemented')
+    let $sep := codepoints-to-string(30000) (:  ($sep, '#')[1] :)
+    let $headers :=
+        if (count($headers) eq 1) then tokenize($headers, ',\s*') else $headers
+    let $rowArrays := $rows ! array {tokenize(., $sep)}
+    let $countCols := $rowArrays[1] ! array:size(.)
+    let $widths :=
+        for $i in 1 to $countCols return
+        ($rowArrays?($i) ! string-length(.)) => max()
+    let $startPos :=
+        for $i in 1 to $countCols
+        let $preColWidth := subsequence($widths, 1, $i - 1) => sum()
+        let $preSepWidth := 2 + 3 * ($i - 1)
+        (:
+        let $_DEBUG := trace($preColWidth||'/'||$preSepWidth, 'PRECOLW/PRESEPW: ')
+        :)
+        return 1 + $preColWidth + $preSepWidth
+    (:
+    let $_DEBUG := trace(($widths ! string()) => string-join(', '), 'WIDTHS: ')
+    let $_DEBUG := trace(($startPos ! string()) => string-join(', '), 'STARTPOS: ')    
+    :)
+    let $rowLines :=        
+        for $rowArray in $rowArrays
+        return concat('| ',
+            string-join(
+                for $i in 1 to $countCols return 
+                    $rowArray($i) ! f:rpad(., $widths[$i], ' ')
+            , ' | '),
+            ' |')
+    let $tableWidth := 4 + sum($widths) + ($countCols - 1) * 3
+    let $frameLine := '#'||f:repeat('-', $tableWidth - 2)||'#'
+    let $headLines :=
+        if (empty($headers)) then () else ( 
+            for $header at $pos in $headers
+            let $prefix := f:repeat(' ', $startPos[$pos] - 3)
+            return $prefix || '| '||$header
+            )
+   
+    return 
+        string-join((            
+            $headLines,
+            $frameLine,
+            $rowLines,
+            $frameLine
+        ), '&#xA;')            
 };
 
+(:~
+ : Validates a set of documents against an XSD.
+ :)
+declare function f:xsdValidate($docs as item()+,
+                               $xsds as item()+)
+        as element() {
+    let $xsdNodes :=
+        for $xsd in $xsds return 
+            if ($xsd instance of node()) then descendant-or-self::xs:schema[1]
+            else doc($xsd)/*
+    let $reports := 
+        for $doc in $docs
+        let $docNode :=
+            if ($doc instance of node()) then descendant-or-self::xs:schema[1]
+            else doc($doc)/*
+        let $uri := $docNode/namespace-uri(.)
+        let $lname := $docNode/local-name(.)
+        let $myxsds := $xsdNodes
+            [if (not($uri)) then not(@targetNamespace) else $uri eq @targetNamespace]
+            [xs:element/@name = $lname]
+        let $result :=
+            if (count($myxsds) gt 1) then <status>xsd_ambiguous</status>
+            else if (not($myxsds)) then <status>xsd_nofind</status>
+            else validate:xsd-report($doc, $myxsds/base-uri(.))
+        let $docuri := if (not($doc instance of node())) then $doc else base-uri($doc)
+        return 
+            <validationReport doc="{$docuri}" xsd="{$myxsds/base-uri(.)}">{
+                if ($result/self::status) then $result
+                else $result/*
+            }</validationReport>
+    let $messagesDistinct :=
+        for $message in $reports//message
+        group by $text := string($message)
+        return
+            <message count="{count($message)}">{$text}</message>
+    let $reports2 :=
+        if (count($reports) gt 1) then 
+            let $invalid := $reports[status eq 'invalid']
+            let $ambiguous := $reports[status eq 'xsd_ambiguous']            
+            let $nofind := $reports[status eq 'xsd_nofind']
+            let $valid := $reports except ($invalid, $ambiguous, $nofind)
+
+            return
+                <validationReports countDocs="{count($reports)}"
+                                   countValid="{count($valid)}"
+                                   countInvalid="{count($invalid)}"
+                                   countNofind="{count($nofind)}"
+                                   coundAmbiguous="{count($ambiguous)}">{
+                    if (not($messagesDistinct)) then () else
+                    <distinctMessages count="{count($messagesDistinct)}">{$messagesDistinct}</distinctMessages>,
+                    if (count($reports) eq 1) then $reports
+                    else (
+                        <invalid count="{count($invalid)}">{$invalid}</invalid>[count($invalid) gt 0],
+                        <valid count="{count($valid)}">{
+                            $valid/@doc ! <doc>{string()}</doc>
+                        }</valid>,
+                        if (empty($nofind)) then () else
+                        <nofind count="{count($nofind)}">{
+                            $nofind/@doc ! <doc>{string()}</doc>
+                        }</nofind>,
+                        <ambiguous count="{count($ambiguous)}">{
+                            $ambiguous/@doc ! <doc>{string()}</doc>
+                        }</ambiguous>
+                    )
+                }</validationReports>
+        else $reports
+    return
+        copy $reports2_ := $reports2
+        modify delete nodes $reports2_//message/@url
+        return $reports2_
+ };
+ 
 (:~
  :
  : ===    U t i l i t i e s ===
