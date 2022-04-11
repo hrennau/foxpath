@@ -1302,7 +1302,27 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     <resource href="{$item}"/>
             return
                 <rcat t="{current-dateTime()}" count="{count($refs)}">{$refs}</rcat>
-                            
+                           
+       (: function `relevant-xsds` 
+          ======================== :)
+        else if ($fname = ('relevant-xsds', 'rxsds')) then
+            let $arg1 := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $docs := if (exists($arg2)) then $arg1 else $context
+            let $xsds := if (exists($arg2)) then $arg2 else $arg1
+            return
+                foxf:relevantXsds($docs, $xsds)
+
+        (: function `rel-path` 
+           =================== :)
+        else if ($fname eq 'rel-path') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                if (empty($arg2)) then foxf:relPath($context, $arg1)
+                else foxf:relPath($arg1, $arg2)
+
+
         (: function `remove-prefix` 
            ======================= :)
         else if ($fname eq 'remove-prefix') then
@@ -1406,6 +1426,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 $nodes/serialize(.)
 
+        (: function `shift-uri` 
+           ==================== :)
+        else if ($fname eq 'shift-uri') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                if (count($call/*) gt 2) then foxf:shiftURI($arg1, $arg2, $arg3)
+                else foxf:shiftURI($context, $arg1, $arg2)
+
         (: function `table` 
            ================ :)
         else if ($fname = ('table')) then
@@ -1427,13 +1457,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `truncate` 
            =================== :)
         else if ($fname = ('truncate', 'trunc')) then
-            let $string := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]
-            let $len :=                
-                let $explicit := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, 80)[1]
-            let $trailer := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $string := if (count($call/*) eq 1) then $context else $arg1
+            let $len := if (count($call/*) eq 1) then $arg1 else $arg2               
+            let $trailer := $arg3
             return
                 foxf:truncate($string, $len, $trailer)
 

@@ -212,6 +212,11 @@ declare function f:bslash($arg as xs:string?)
  : only their content is considered, not their name. Thus elements with different
  : names can have deep-equal content.
  :
+ : scope s - compare the items themselves
+ : scope c - compare attributes and child nodes
+ : scope n - compare child nodes
+ : scope a - compare attributes
+ :
  : @param items the items to be checked
  : @return false if there is a pair of items which do not have deep-equal content, true otherwise
  :)
@@ -224,7 +229,9 @@ declare function f:content-deep-equal($items as item()*, $scope as xs:string?)
     let $count := count($docs)
     return if ($count le 1) then () else
     
-    let $scope := ($scope, 'c')[1]
+    let $scope := ($scope, 's')[1]
+    return if ($scope eq 's' and $count eq 2) then deep-equal($docs[1], $docs[2]) else
+    
     let $fn_cmp :=
         switch($scope)
         case 'c' return
@@ -2439,6 +2446,28 @@ declare function f:rightValueOnly($leftValue as item()*,
 };
 
 (:~
+ : Returns a URI so that the relative paths from $sourceFolder to $uri and
+ : from $targetFolder to the result URI are the same.
+ :
+ : @param uri the URI to be shifted
+ : @param sourceFolder a folder containing the resource with uri $uri
+ : @param targetFolder a folder containing the resource with a URI obtained by
+ :   shifting the URI  
+ : @return the URI under $targetFolder
+ :)
+declare function f:shiftURI($uri as xs:string, $sourceFolder as xs:string, $targetFolder as xs:string)
+    as item()* {
+    let $relPath := f:relPath($sourceFolder, $uri)
+    let $shifted := (
+        switch($relPath)
+        case '.' return $targetFolder
+        case () return ()
+        default  return $targetFolder||'/'||$relPath
+    ) ! f:normalizeURIPath(.)
+    return $shifted[i:fox-file-exists(.,())]
+};
+
+(:~
  : Truncates a string if longer than a maximum length, appending '...'.
  :
  : @param name a lexical QName
@@ -2830,6 +2859,43 @@ declare function f:table($rows as xs:string*,
 };
 
 (:~
+ : Returns the XSDs which can be used for validating given documents.
+ :)
+declare function f:relevantXsds($docs as item()*,
+                                $xsds as item()*)
+        as element() {
+    let $fnNode2Filepath := function($node) {$node ! base-uri(.) ! file:path-to-native(.) ! replace(., '\\', '/')}        
+    let $xsdNodes := map:merge(
+        for $xsd in $xsds 
+        let $xsdNode :=
+            if ($xsd instance of node()) then descendant-or-self::xs:schema[1]
+            else doc($xsd)/*
+        group by $tns := string($xsdNode/@targetNamespace)
+        return map:entry($tns, $xsdNode)
+    )
+    let $docInfos :=
+        for $doc in $docs
+        let $docNode := 
+            if ($doc instance of node()) then descendant-or-self::*[1] else doc($doc)/*    
+        let $uri := $docNode/namespace-uri(.)
+        let $lname := $docNode/local-name(.)
+        let $myxsds := $xsdNodes?($uri)[xs:element/@name =$lname]
+        return
+            <doc uri="{$docNode ! $fnNode2Filepath(.)}" countXsds="{count($myxsds)}">{
+                $myxsds ! <xsd uri="{$fnNode2Filepath(.)}"/>
+            }</doc>
+    let $count1 := $docInfos[count(xsd) eq 1] => count()           
+    let $count0 := $docInfos[not(xsd)] => count()
+    let $count2 := $docInfos[count(xsd) gt 1] => count()
+    return
+        <docs countDocs="{count($docInfos)}"
+              countXsds="{count($xsds)}"
+              countWithXsd="{$count1}" 
+              countWithoutXsd="{$count0}" 
+              countAmbiguousXsd="{$count2}">{$docInfos}</docs>
+ };
+
+(:~
  : Validates a set of documents against an XSD.
  :)
 declare function f:xsdValidate($docs as item()+,
@@ -2906,6 +2972,38 @@ declare function f:xsdValidate($docs as item()+,
  : ===    U t i l i t i e s ===
  :
  :)
+
+(:~
+ : Returns the relative path leading from $uri1 to $uri2.
+ :)
+declare function f:relPath($uri1 as xs:string, $uri2 as xs:string)
+        as xs:string? {
+    if ($uri1 eq $uri2) then '.' else
+    
+    let $uri1Slash := replace($uri1, '[^/]$', '$0/')
+    return
+        if (starts-with($uri2, $uri1Slash)) then substring-after($uri2, $uri1Slash)
+        else if (not(matches($uri1Slash, '/.*/'))) then ()
+        else string-join(
+            let $nextUri1 := (replace($uri1Slash, '^(.*)/.*?/$', '$1')[string()], '/')[1]
+            return ('..', f:relPath($nextUri1, $uri2)[. ne '.'][string()]), '/')       
+};
+
+(:~
+ : Normalizes a URI by removing . and .. steps. No changes are made if the
+ : URI starts with ..
+ :)
+declare function f:normalizeURIPath($uri as xs:string)
+        as xs:string? {
+    let $uri2 := 
+        if (starts-with($uri, '..')) then $uri
+        else if ($uri eq '.') then $uri
+        else if (matches($uri, '^.*/?\.\.')) then replace($uri, '^(.*?/)([^/]+?/\.\./?)(.*)$', '$1$3') ! replace(., '(.+)/$', '$1')
+        else if (matches($uri, '^.*/?\.')) then replace($uri, '^(.*/)?(\./?)(.*)$', '$1$3') ! replace(., '(.+)/$', '$1')
+        else $uri
+    return
+        if ($uri eq $uri2) then $uri else f:normalizeURIPath($uri2)
+};
 
 (:~
  : Returns namespace nodes which apply to all elements in the
