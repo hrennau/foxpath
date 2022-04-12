@@ -991,17 +991,21 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `lnode-ancestor` 
            ========================= :)
         else if ($fname = ('lnode-ancestor', 'lancestor')) then
+            let $narg := count($call/*)
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 0]
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 1]
+            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 2]
+            let $arg4 := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 3]
+            let $arg5 := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 4]
             let $nodes :=
-                if (count($call/*) eq 1) then $context
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $names :=
-                let $index :=
-                    if (count($call/*) eq 1) then 1 else 2
-                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $ignoreCase := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                if ($narg eq 1) then $context else $arg1
+            let $names := if ($narg eq 1) then $arg1 else $arg2
+            let $namesExcluded := $arg3
+            let $pselector := $arg4            
+            let $ignoreCase := $arg5
+
             return
-                foxf:nodeAncestor($nodes, 'lname', $names, $namesExcluded, $ignoreCase)
+                foxf:nodeAncestor($nodes, 'lname', $names, $namesExcluded, $pselector, $ignoreCase)
 
         (: function `lnode-child` 
            ====================== :)

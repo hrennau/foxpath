@@ -626,7 +626,7 @@ declare function f:foxAncestor($context as xs:string*,
     let $cnameFilter := util:compileNameFilter($names, true())        
     let $cnameFilterExclude := util:compileNameFilter($namesExcluded, true())
     return (
-        for $c in $context 
+        for $c in $context
             return i:ancestorUriCollection($c, (), ()) 
                    [empty($names) or file:name(.) ! util:matchesNameFilter(., $cnameFilter)]
                    [empty($namesExcluded) or file:name(.) ! not(util:matchesNameFilter(., $cnameFilterExclude))]
@@ -949,19 +949,26 @@ declare function f:nodeAncestor(
                        $nameKind as xs:string?,   (: name | lname | jname :)
                        $names as xs:string?,
                        $namesExcluded as xs:string?,
-                       $ignoreCase as xs:boolean?)
+                       $pselector as xs:string?,
+                       $ignoreCase as xs:boolean?)                       
         as node()* {
     let $ignoreCase := ($ignoreCase, true())[1]        
     let $cnameFilter := $names ! util:compileNameFilter(., $ignoreCase)        
     let $cnameFilterExclude := $namesExcluded ! util:compileNameFilter(., $ignoreCase)
+    let $pos := if ($pselector ne '#last') then xs:integer($pselector) else ()
     let $fn_name := 
         switch($nameKind)
         case 'lname' return function($node) {$node/local-name(.)}
         case 'jname' return function($node) {$node/local-name(.) ! convert:decode-key(.)}
         case 'name' return function($node) {$node/name(.)}
         default return error()
+    for $n in $contextNodes
+    let $anc := $n/ancestor::*[$fn_name(.) ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
+                => reverse()
     return
-        $contextNodes/ancestor::*[$fn_name(.) ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
+        if (empty($pselector)) then $anc 
+        else if ($pselector eq '#last') then $anc[last()]
+        else $anc[$pos]
 };
 
 (:~
