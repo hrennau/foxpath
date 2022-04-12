@@ -2482,11 +2482,16 @@ declare function f:truncate($string as xs:string?, $len as xs:integer, $flag as 
  : Concatenates the arguments into a string, using an "improbable"
  : separator (codepoint 30000)
  :)
-declare function f:row($items as item()*)
+declare function f:rowXXX($items as item()*)
         as xs:string {
     let $sep := codepoints-to-string(30000)
     return
         string-join($items, $sep)
+};
+
+declare function f:row($items as item()*)
+        as array(*) {
+    array{$items}
 };
 
 (:~
@@ -2508,27 +2513,26 @@ declare function f:row($items as item()*)
  . . len
  . zoo
  :)
-declare function f:hlist($values as xs:string*, 
+declare function f:hlist($values as array(*)*, 
                          $headers as xs:string*,
                          $emptyLines as xs:string?)
         as xs:string {
-    let $sep := codepoints-to-string(30000) (:  ($sep, '#')[1] :)   
     let $headers :=
         if (count($headers) eq 1) then tokenize($headers, ',\s*') else $headers    
-    let $values := $values[string(.)] => sort()    
+    let $values := $values => sort()
     let $emptyLineFns :=
-        if (not($emptyLines)) then ()
-        else
-            map:merge(
-                for $i in 1 to string-length($emptyLines)
-                let $lineCount := substring($emptyLines, $i, 1) ! xs:integer(.)
-                where $lineCount
-                return
-                    map:entry($i - 1, function() {for $j in 1 to $lineCount return ''})
-            )                    
+        if (not($emptyLines)) then () else
+
+        map:merge(
+            for $i in 1 to string-length($emptyLines)
+            let $lineCount := substring($emptyLines, $i, 1) ! xs:integer(.)
+            where $lineCount
+            return
+                map:entry($i - 1, function() {for $j in 1 to $lineCount return ''})
+        )                    
             
     return
-        let $lines := f:hlistRC(0, $values, $sep, $emptyLineFns)
+        let $lines := f:hlistRC(0, $values, $emptyLineFns)
         return (
             if (empty($headers)) then () else 
                 let $maxLen := min(( (($lines ! string-length(.) => max()), 80)[1], 100))
@@ -2545,33 +2549,29 @@ declare function f:hlist($values as xs:string*,
 };
 
 declare function f:hlistRC($level as xs:integer, 
-                           $values as xs:string*, 
-                           $sep as xs:string,
+                           $rows as array(*)*, 
                            $emptyLineFns as map(*)?)
         as xs:string* {
     let $prefix := (for $i in 1 to $level return '.  ') => string-join('')
     return
-        if (not(some $value in $values satisfies contains($value, $sep))) then 
-            for $value in $values
-            group by $v := $value
-            let $suffix := count($value)[. ne 1] ! concat(' (', ., ')')
+        if (not(some $row in $rows satisfies array:size($row) gt 1)) then 
+            for $row in $rows
+            group by $v := $row(1)
+            let $suffix := count($row)[. ne 1] ! concat(' (', ., ')')
             let $parts := tokenize($v, '~~~')
             return 
                 if (count($parts) eq 1) then $prefix || $v || $suffix
-                else
-                    for $part in $parts
-                    return $prefix || $part
+                else for $part in $parts return $prefix || $part
         else
-            for $value in $values
-            (: group by $groupValue := (substring-before($value, $sep)[string()], $value)[1] :)
-            group by $groupValue := replace($value, '(^.*?)' || $sep || '.*', '$1', 's')
-            let $contentValue := $value ! substring-after(., $sep)[string()]           
+            for $row in $rows
+            group by $groupValue := $row(1)
+            let $contentValue := $row ! array:subarray(., 2)           
             order by $groupValue
             let $parts := tokenize($groupValue, '~~~')
             return (
                 if (count($parts) eq 1) then concat($prefix, $groupValue)
                 else for $part in $parts return ($prefix || $part),
-                f:hlistRC($level + 1, $contentValue, $sep, $emptyLineFns),
+                f:hlistRC($level + 1, $contentValue, $emptyLineFns),
                 $emptyLineFns ! map:get(., $level) ! .()
                 (:''[$level eq 0] :)
             )
@@ -2809,17 +2809,23 @@ declare function f:resolveJsonOneOf($oneOf as element())
  : Transforms a sequence of values into a table. Each value is a concatenated 
  : list of items, created using function row().
  :)
-declare function f:table($rows as xs:string*, 
+declare function f:table($rows as item()*, 
                          $headers as xs:string*)
         as xs:string {
     let $sep := codepoints-to-string(30000) (:  ($sep, '#')[1] :)
     let $headers :=
         if (count($headers) eq 1) then tokenize($headers, ',\s*') else $headers
-    let $rowArrays := $rows ! array {tokenize(., $sep)}
-    let $countCols := $rowArrays[1] ! array:size(.)
+    return if (($rows ! array:size(.)) => distinct-values() => count() gt 1) then
+        error(QName((), 'INVALID_ARG'), concat('Invalid call of "table" - ',
+            'all rows must contain the same number of columns; use string(...) ',
+            'in order to enforce a column in case of an empty column value; ',
+            'example: row(string(foo), string(bar))'))
+        else
+
+    let $countCols := $rows[1] ! array:size(.)
     let $widths :=
         for $i in 1 to $countCols return
-        ($rowArrays?($i) ! string-length(.)) => max()
+        ($rows?($i) ! string-length(.)) => max()
     let $startPos :=
         for $i in 1 to $countCols
         let $preColWidth := subsequence($widths, 1, $i - 1) => sum()
@@ -2833,11 +2839,11 @@ declare function f:table($rows as xs:string*,
     let $_DEBUG := trace(($startPos ! string()) => string-join(', '), 'STARTPOS: ')    
     :)
     let $rowLines :=        
-        for $rowArray in $rowArrays
+        for $row in $rows
         return concat('| ',
             string-join(
                 for $i in 1 to $countCols return 
-                    $rowArray($i) ! f:rpad(., $widths[$i], ' ')
+                    $row($i) ! f:rpad(., $widths[$i], ' ')
             , ' | '),
             ' |')
     let $tableWidth := 4 + sum($widths) + ($countCols - 1) * 3
