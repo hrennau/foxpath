@@ -1,4 +1,4 @@
-# foxpath
+# Foxpath
 Reference implementation of Foxpath 3.0, an extended version of XPath 3.0 supporting file system navigation. XPath has been extended by the new Foxpath expression, which allows you to navigate the file system in a way which is very similar to node tree navigation supported by the familiar path expression. For example, the following expression
 <pre>\xsdbase\niem*\\*.xsd[file-size() le 900]</pre>
 returns the file paths of all XSD documents found at any depth under any folder niem* under folder xsdbase, excluding all XSDs with a size greater than 900 bytes.
