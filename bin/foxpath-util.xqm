@@ -30,7 +30,8 @@ declare variable $f:PREDECLARED_NAMESPACES := (
 declare function f:compileNameFilter($patterns as xs:string*, 
                                      $ignoreCase as xs:boolean?)
         as map(xs:string, item()*)? {
-    if (empty($patterns)) then () else
+    let $patterns := $patterns ! normalize-space(.)[string()]
+    return if (empty($patterns)) then () else
     
     let $items := $patterns ! normalize-space(.) ! tokenize(.)
     let $names := 

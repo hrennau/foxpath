@@ -827,25 +827,20 @@ declare function f:ancestorUriCollection($uri as xs:string,
                                          $orSelf as xs:boolean?)
         as xs:string* {
     let $items := tokenize($uri, '/')
-    let $root := concat(head($items), '/')            
-    let $steps := tail($items)[position() lt last()]
+    let $root := concat(head($items), '/')  
+    let $lastStepIndex := count($items) - (if ($orSelf) then 0 else 1)
+    let $steps := tail($items)[position() lt $lastStepIndex]
     let $ancestorsIndices :=
         for $pos in 1 to count($steps)
         where not($nameRegex) or matches($steps[$pos], $nameRegex, 'i')
         return $pos
     let $ancestors := (
-        $root[not($nameRegex) or $nameRegex eq '^.*$'], 
+        $root[not($nameRegex ne '^.*$')], 
         (: the root folder is only considered if there is no, or a wildcard, name test :)
-        for $ai in $ancestorsIndices
-        return
+        for $ai in $ancestorsIndices return
             concat($root, string-join(for $index in 1 to $ai return $steps[$index], '/'))
     )
-    let $uris := (
-         if (not($orSelf)) then () else
-            $uri[not($nameRegex) or matches(replace(., '.*/', ''), $nameRegex, 'i')],
-         $ancestors
-    )
-    return $uris                    
+    return $ancestors                    
 };
         
 (:~

@@ -609,28 +609,50 @@ declare function f:foxParentSibling($context as xs:string*,
 };
 
 (:~
- : Returns for a set of URIs the ancestor URIs with a file name (final step) 
- : matching a name or name pattern from $names, and not matching a name or name 
- : pattern from $namesExcluded. 
+ : For each input URI, ancestor URIs or ancestor-or-self URIs are returned in
+ : reverse file system order. If $names and/or $namesExcluded are specified, only 
+ : ancestors (or ancestor-or-self URIs) with a name matching a name or name pattern 
+ : from $names, and not matching a name or name pattern from $namesExcluded are 
+ : considered. Parameter $pselector selects an individual ancestor by position in
+ : reverse file system order, specified as an integer number or the string #last.
+ :
+ : When there are several input URIs, the result sequence is composed of subsequences, 
+ : each one of which contains the ancestors (or ancestor-or-self URIs) of an input URI
+ : in reverse file system order. In this case, duplicate URIs may occur, and the result 
+ : as a whole may neither be in file system order nor in reverse file system order.
  :
  : @param context the context URIs
  : @param names names or name paterns of URIs to be included, whitespace separated
- : @param namesExcluded names or name paterns of URIs to be excluded, whitespace separated
+ : @param namesExcluded names or name patterns of URIs to be excluded, whitespace separated
+ : @param pselector An integer number or the string '#last'; for each input URI, only
+ :   the ancestor at the corresponding position will be returned.
+ : @param ignoreCase If true, file names are compared with parameter values in
+ :   a case-sensitive way; by default, names are compared in a case-insensitive way 
+ : @param includeSelf If true, the ancestor-or-self URIs are considered, otherwise
+ :   only the ancestor URIs
  : @return selected child URIs
  :)
-declare function f:foxAncestor($context as xs:string*,                                        
-                               $names as xs:string*,
-                               $namesExcluded as xs:string*)
+declare function f:foxAncestor(
+                       $context as xs:string*,
+                       $names as xs:string?,
+                       $namesExcluded as xs:string?,
+                       $pselector as item()?,                       
+                       $ignoreCase as xs:boolean?,
+                       $includeSelf as xs:boolean?)                       
         as xs:string* {
-
-    let $cnameFilter := util:compileNameFilter($names, true())        
-    let $cnameFilterExclude := util:compileNameFilter($namesExcluded, true())
-    return (
-        for $c in $context
-            return i:ancestorUriCollection($c, (), ()) 
-                   [empty($names) or file:name(.) ! util:matchesNameFilter(., $cnameFilter)]
-                   [empty($namesExcluded) or file:name(.) ! not(util:matchesNameFilter(., $cnameFilterExclude))]
-    ) => distinct-values()
+    let $ignoreCase := ($ignoreCase, true())[1]        
+    let $cnameFilter := $names ! util:compileNameFilter(., $ignoreCase)        
+    let $cnameFilterExclude := $namesExcluded ! util:compileNameFilter(., $ignoreCase)
+    let $last := if (not($pselector instance of xs:string)) then () else $pselector = '#last'
+    for $c in $context
+    let $anc := 
+        i:ancestorUriCollection($c, (), $includeSelf)
+        [file:name(.) ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
+        => reverse()
+    return
+        if (empty($pselector)) then $anc 
+        else if ($last) then $anc[last()]
+        else $anc[$pselector]
 };
 
 (:~
@@ -645,16 +667,20 @@ declare function f:foxAncestor($context as xs:string*,
  : @param toSubstring used to map $name to a regex
  : @return sibling URIs matching the name or the derived regex
  :)
+(: 
 declare function f:foxAncestorOrSelf($context as xs:string*,                                        
                                      $names as xs:string+,
-                                     $namesExcluded as xs:string*)
+                                     $namesExcluded as xs:string*,
+                                     $pselector as xs:string?,
+                                     $ignoreCase as xs:boolean?)                                     
         as xs:string* {
     (
     for $c in $context return (
-    f:foxAncestor($context, $names, $namesExcluded),
+    f:foxAncestor($context, $names, $namesExcluded, $pselector, $ignore),
     f:foxSelf($context, $names, $namesExcluded)
     )) => distinct-values()
 };
+:)
 
 declare function f:fractions($values as item()*, 
                              $compareWith as item()*, 

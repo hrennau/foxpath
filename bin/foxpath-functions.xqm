@@ -483,20 +483,25 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `fox-ancestor` 
            ====================== :)
-        else if ($fname eq 'fox-ancestor') then
-            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                foxf:foxAncestor($context, $names, $namesExcluded)
-
         (: function `fox-ancestor-or-self` 
            =============================== :)
-        else if ($fname eq 'fox-ancestor-or-self') then
-            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+        else if ($fname eq 'fox-ancestor' or $fname eq 'fox-ancestor-or-self') then
+            let $narg := count($call/*)
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 0]
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 1]
+            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 2]
+            let $arg4 := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 3]
+            let $arg5 := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 4]
+            let $uris :=
+                if ($narg eq 0) then $context else $arg1
+            let $names := $arg2
+            let $namesExcluded := $arg3
+            let $pselector := $arg4            
+            let $ignoreCase := $arg5
+            let $includeSelf := $fname eq 'fox-ancestor-or-self'
             return
-                foxf:foxAncestorOrSelf($context, $names, $namesExcluded)
-                
+                foxf:foxAncestor($uris, $names, $namesExcluded, $pselector, $ignoreCase, $includeSelf)
+
         (: function `fox-child` 
            ==================== :)
         else if ($fname = ('fox-child', 'fchild')) then
