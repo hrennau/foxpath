@@ -28,6 +28,39 @@ declare variable $f:PREDECLARED_NAMESPACES := (
  : @return a map with entries 'names', 'regexes' and 'flags' 
  :)
 declare function f:compileNameFilter($patterns as xs:string*, 
+                                     $ignoreCase as xs:boolean?,
+                                     $patternIsRegex as xs:boolean?)
+        as map(xs:string, item()*)? {
+    let $patterns := $patterns ! normalize-space(.)[string()]
+    return if (empty($patterns)) then () else
+    
+    let $items := $patterns ! normalize-space(.) ! tokenize(.)
+    let $names := 
+        if ($patternIsRegex) then () else
+        let $raw := $items[not(contains(., '*')) and not(contains(., '?'))]
+        return
+            if (not($ignoreCase)) then $raw else $raw ! lower-case(.)
+    let $regexes := 
+        if ($patternIsRegex) then $items else
+        $items[contains(., '*') or contains(., '?')]
+        ! replace(., '[{}()\[\]^$]', '\\$0')
+        ! replace(., '\*', '.*')
+        ! replace(., '\?', '.')
+        ! concat('^', ., '$')
+    let $flags := if ($ignoreCase) then 'i' else ''     
+    return 
+        map{'names': $names, 'regexes': $regexes, 'empty': empty(($names, $regexes)), 'ignoreCase': $ignoreCase}
+};
+
+(:~
+ : Translates a whitespace-separated list of string patterns
+ : into a list of regular expressions and a list of literal strings.
+ :
+ : @param patterns a list of names and/or patterns, whitespace concatenated
+ : @param ignoreCase if true, the filter ignores case 
+ : @return a map with entries 'names', 'regexes' and 'flags' 
+ :)
+declare function f:compileNameFilter($patterns as xs:string*, 
                                      $ignoreCase as xs:boolean?)
         as map(xs:string, item()*)? {
     let $patterns := $patterns ! normalize-space(.)[string()]

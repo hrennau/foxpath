@@ -953,35 +953,84 @@ declare function f:frequencies($values as item()*,
 };      
 
 (:~
- : Returns selected ancestor elements of a given sequence of nodes. Selected elements 
- : have a name matching a given name filter and not matching an optional name filter 
- : defining exclusions. 
+ : Returns the nodes reached by a step of axis navigation. 
  :
- : Depending on $nameKind, the local name ('lname'), the JSON name ('jname') or
- : the lexical name 'name') is considered when matching.
+ : If $names and/or $namesExcluded are  specified, only nodes with a name matching 
+ : a name or name pattern from $names, and not matching a name or name pattern from 
+ : $namesExcluded are considered. The parameter values of $names and $namesExcluded 
+ : are whitespace-separated lists of name tokens. Per default, the filtering by node 
+ : names refers to local names, treats name tokens as Glob patterns and checks names 
+ : in a case insensitive way.  
  :
- : When $ignoreCase is true, matching is performed ignoring character case.
+ : The filtering behaviour can be modified by parameter $flags. The parameter value 
+ : is a string, each character of which is a flag interpreted as follows: 
+ : - n: when checking node names, the lexical name is considered (including a possible prefix)
+ : - j: when checking node names, the JSON – decoded name is considered
+ : - c: name checking is case-sensitive
+ : - r: name tokens are interpreted as regular expressions (rather than Glob patterns)
  :
- : A name filter is a whitespace separated list of names or name patterns. Name
- : patterns can use wildcards * and ?. Example: "foo bar* *foobar"
+ : When parameter $pselector is not used, all nodes reached along the specified axis
+ : and not discarded because of name filters are returned. When $pselector is a positive 
+ : integer, for each context node only the result node at that position is returned; 
+ : when $pselector is a negative integer, for each context node only the result node 
+ : at position "number-of-result-nodes + 1 + $pselector" is returned. Selection by 
+ : position is performed after selection by node name. Node positions are one-based 
+ : and in document order in case of a forward axis, in reverse document order otherwise.
  :
- : @param context the context node
- : @param names a name filter
+ : For each context node, the related result nodes are returned in document order or
+ : reverse document order, dependent on whether the axis is a forward axis or a reverse
+ : axis. When there are several context nodes, the subsequences obtained for individual
+ : context nodes are contenated. The sequence of subsequences is in document order of
+ : the context nodes for which they have been obtained.
+ : 
+ : Supported navigation axes include:
+ : - classical forward axes: 
+ :     self, child, descendant, descendant-or-self, following-sibling,
+ : - classical reverse axes:
+ :     parent, ancestor, ancestor-or-self, preceding-sibling
+ : - compound axes:
+ : -- all-descendant: all descendant elements and their attributes 
+ : -- all-descendant-or-self: all descentant-or-self nodes and their attributes
+ : -- sibling: the union of following and preceding siblings
+ :
+ : @param contextNodes the context nodes
+ : @axis the navigation axis
+ : @param names a name filter, consiting of whitespace-separated name tokens
  : @param namesExcluded a name filter defining exclusions
- : @return child nodes matching the name filter and not matching the name filter defining exclusions
+ : @param pselector an integer number, defining a positional filter
+ : @param flags flags controling the name filtering behaviour
+ : @return nodes reached by a step of axis navigation, applied to each 
+ :   context node
  :)
-declare function f:nodeAncestor(
+declare function f:nodeNavigation(
                        $contextNodes as node()*,
-                       $nameKind as xs:string?,   (: name | lname | jname :)
+                       $axis as xs:string,
                        $names as xs:string?,
                        $namesExcluded as xs:string?,
-                       $pselector as xs:string?,
-                       $ignoreCase as xs:boolean?)                       
+                       $pselector as xs:integer?,
+                       $flags as xs:string?)                       
         as node()* {
-    let $ignoreCase := ($ignoreCase, true())[1]        
-    let $cnameFilter := $names ! util:compileNameFilter(., $ignoreCase)        
-    let $cnameFilterExclude := $namesExcluded ! util:compileNameFilter(., $ignoreCase)
-    let $pos := if ($pselector ne '#last') then xs:integer($pselector) else ()
+    let $ignoreCase := not(contains($flags, 'c'))
+    let $nameKind := if (contains($flags, 'n')) then 'name' else if (contains($flags, 'j')) then 'jname' else 'lname'
+    let $regex := contains($flags, 'r')
+    let $cnameFilter := $names ! util:compileNameFilter(., $ignoreCase, $regex)        
+    let $cnameFilterExclude := $namesExcluded ! util:compileNameFilter(., $ignoreCase, $regex)
+    let $fn_nodes :=
+        switch($axis)
+        case 'child' return function($c) {$c/*}
+        case 'descendant' return function($c) {$c/descendant::*}
+        case 'descendant-or-self' return function($c) {$c/descendant-or-self::*}
+        case 'self' return function($c) {$c}
+        case 'ancestor' return function ($c) {$c/ancestor::*}
+        case 'ancestor-or-self' return function ($c) {$c/ancestor-or-self::*}
+        case 'parent' return function ($c) {$c/parent::*}
+        case 'following-sibling' return function ($c) {$c/following-sibling::*}
+        case 'preceding-sibling' return function ($c) {$c/preceding-sibling::*}
+        case 'sibling' return function ($c) {$c/(preceding-sibling::*, following-sibling::*)}
+        case 'all-descendant' return function($c) {$c/descendant::*/(., @*)}    
+        case 'all-descendant-or-self' return function($c) {$c/descendant-or-self::*/(., @*)}        
+        default return error()
+    let $reverseAxis := $axis = ('ancestor', 'ancestor-or-self', 'parent')        
     let $fn_name := 
         switch($nameKind)
         case 'lname' return function($node) {$node/local-name(.)}
@@ -989,12 +1038,111 @@ declare function f:nodeAncestor(
         case 'name' return function($node) {$node/name(.)}
         default return error()
     for $n in $contextNodes
-    let $anc := $n/ancestor::*[$fn_name(.) ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
-                => reverse()
+    let $anc := $n/$fn_nodes(.)[$fn_name(.) ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
+    let $anc := if (not($reverseAxis)) then $anc else $anc => reverse()
     return
-        if (empty($pselector)) then $anc 
-        else if ($pselector eq '#last') then $anc[last()]
-        else $anc[$pos]
+        if (empty($pselector)) then $anc
+        else if ($pselector lt 0) then $anc[last() + 1 + $pselector]
+        else $anc[$pselector]
+};
+
+(:~
+ : Returns the resource URIs reached by a step of fox axis navigation. 
+ :
+ : If $names and/or $namesExcluded are  specified, only URIs with a file name matching 
+ : a name or name pattern from $names, and not matching a name or name pattern from 
+ : $namesExcluded are considered. The parameter values of $names and $namesExcluded 
+ : are whitespace-separated lists of name tokens. Per default, the filtering by file 
+ : names  treats name tokens as Glob patterns and checks names in a case insensitive way.  
+ :
+ : The filtering behaviour can be modified by parameter $flags. The parameter value 
+ : is a string, each character of which is a flag interpreted as follows: 
+ : - c: name checking is case-sensitive
+ : - r: name tokens are interpreted as regular expressions (rather than Glob patterns)
+ :
+ : When parameter $pselector is not used, all resource URIs reached along the specified 
+ : axis and not discarded because of name filters are returned. When $pselector is a 
+ : positive integer, for each context URI only the result URI at that position is 
+ : returned; when $pselector is a negative integer, for each context URI only the 
+ : result URI at position "number-of-result-URIs + 1 + $pselector" is returned. 
+ : Selection by position is performed after selection by file name. URI positions are 
+ : one-based and in file-system order in case of a forward axis, in reverse file-system 
+ : order otherwise.
+ :
+ : For each context URI, the related result nodes are returned in file system order or
+ : reverse file system order, dependent on whether the axis is a forward axis or a reverse
+ : axis. When there are several context nodes, the subsequences obtained for individual
+ : context URIs are contenated. The sequence of subsequences is in file system order of
+ : the context nodes for which they have been obtained.
+ : 
+ : Supported navigation axes include:
+ : - classical forward axes: 
+ :     self, child, descendant, descendant-or-self, following-sibling,
+ : - classical reverse axes:
+ :     parent, ancestor, ancestor-or-self, preceding-sibling
+ : - compound axes:
+ : -- sibling: the union of following and preceding siblings
+ :
+ : @param contextUris the context URIs
+ : @axis the navigation axis
+ : @param names a name filter, consiting of whitespace-separated name tokens
+ : @param namesExcluded a name filter defining exclusions
+ : @param pselector an integer number, defining a positional filter
+ : @param flags flags controling the name filtering behaviour
+ : @return resource URIs reached by a step of axis navigation, applied to 
+ :   each context URI
+ :)
+declare function f:foxNavigation(
+                       $contextUris as item()*,
+                       $axis as xs:string,
+                       $names as xs:string?,
+                       $namesExcluded as xs:string?,
+                       $pselector as xs:integer?,
+                       $flags as xs:string?)                       
+        as xs:string* {
+    let $ignoreCase := not(contains($flags, 'c'))
+    let $nameKind := if (contains($flags, 'n')) then 'name' else if (contains($flags, 'j')) then 'jname' else 'lname'
+    let $regex := contains($flags, 'r')
+    let $cnameFilter := $names ! util:compileNameFilter(., $ignoreCase, $regex)        
+    let $cnameFilterExclude := $namesExcluded ! util:compileNameFilter(., $ignoreCase, $regex)
+    let $_DEBUG := trace($axis, '_AXIS: ')
+    let $fn_uris :=
+        switch($axis)
+        case 'child' return function($c) {i:childUriCollection($c, (), (), ()) ! concat($c, '/', .)}
+        case 'descendant' return function($c) {i:descendantUriCollection($c, (), (), ()) ! concat($c, '/', .)}
+        case 'descendant-or-self' return function($c) {$c, i:descendantUriCollection($c, (), (), ()) ! concat($c, '/', .)}
+        case 'self' return function($c) {$c}
+        case 'ancestor' return function ($c) {i:ancestorUriCollection($c, (), ())}
+        case 'ancestor-or-self' return function ($c) {i:ancestorUriCollection($c, (), true())}
+        case 'parent' return function ($c) {i:parentUri($c, ())}
+        case 'following-sibling' return 
+            function ($c) {
+                let $parent := i:parentUri($c, ()) return
+                i:childUriCollection($parent, (), (), ())
+                ! concat($parent, '/', .)
+                [. > $c]}
+        case 'preceding-sibling' return
+            function ($c) {
+                let $parent := i:parentUri($c, ()) return
+                i:childUriCollection($parent, (), (), ())
+                ! concat($parent, '/', .)
+                [. < $c]}
+        case 'sibling' return 
+            function ($c) {
+                let $parent := i:parentUri($c, ()) return
+                i:childUriCollection($parent, (), (), ())
+                ! concat($parent, '/', .)
+                [. ne $c]}
+        default return error()
+    let $reverseAxis := $axis = ('ancestor', 'ancestor-or-self', 'parent', 'preceding-sibling')        
+    let $fn_name := function($uri) {file:name($uri)}
+    for $n in $contextUris
+    let $anc := $n ! $fn_uris(.)[$fn_name(.) ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
+    let $anc := if (not($reverseAxis)) then $anc else $anc => reverse()
+    return
+        if (empty($pselector)) then $anc
+        else if ($pselector lt 0) then $anc[last() + 1 + $pselector]
+        else $anc[$pselector]
 };
 
 (:~

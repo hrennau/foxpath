@@ -502,6 +502,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:foxAncestor($uris, $names, $namesExcluded, $pselector, $ignoreCase, $includeSelf)
 
+(:
         (: function `fox-child` 
            ==================== :)
         else if ($fname = ('fox-child', 'fchild')) then
@@ -525,7 +526,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $namesExcluded := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:foxDescendantOrSelf($context, $names, $namesExcluded)
-
+:)
         (: function `fox-parent` 
            =================== :)
         else if ($fname = ('fox-parent', 'fparent')) then
@@ -554,7 +555,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `fox-sibling` 
            ====================== :)
-        else if ($fname = ('fox-sibling', 'fsibling')) then
+        else if ($fname = ('zzzfox-sibling', 'zzzfsibling')) then
             let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $namesExcluded:= $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $from := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -583,6 +584,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $format := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:frequencies($values, $min, $max, 'count', $order, $format)
+
+        (: function `ft-tokenize` 
+           ====================== :)
+        else if ($fname = ('ft-tokenize', 'fttok')) then  
+            let $narg := count($call/*)
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $text := if ($narg lt 1) then $context else $arg1 
+            let $_DEBUG := trace($text, '_TEXT: ')
+            return
+                ft:tokenize($text)
 
        (: function `grep` 
           =============== :)
@@ -993,6 +1004,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                     return foxf:namePath($nodes, 'lname', $numSteps)
 
+(:
         (: function `lnode-ancestor` 
            ========================= :)
         else if ($fname = ('lnode-ancestor', 'lancestor')) then
@@ -1011,6 +1023,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
             return
                 foxf:nodeAncestor($nodes, 'lname', $names, $namesExcluded, $pselector, $ignoreCase)
+:)
 
         (: function `lnode-child` 
            ====================== :)
@@ -1125,6 +1138,67 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $ignoreCase := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:nodeChild($nodes, 'name', $names, $namesExcluded, $ignoreCase)
+
+        (: functions `axis, exaxis` 
+           ======================== :)
+        else if ($fname = ('ancestor', 'ex-ancestor', 
+                           'ancestor-or-self', 'ex-ancestor-or-self',
+                           'parent', 'ex-parent',
+                           'self', 'ex-self',
+                           'child', 'ex-child',
+                           'descendant', 'ex-descendant',
+                           'descendant-or-self', 'ex-descendant-or-self',
+                           'preceding-sibling', 'ex-preceding-sibling',
+                           'following-sibling', 'ex-following-sibling',
+                           'sibling', 'ex-sibling',
+                           'all-descendant', 'ex-all-descendant',
+                           'all-descendant-or-self', 'ex-all-descendant-or-self')) 
+        then
+            let $da := if (starts-with($fname, 'ex-')) then 1 else 0
+            let $axis := $fname ! replace(., '^ex-', '')
+            let $narg := count($call/*)
+            let $args := $call/([
+               *[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 0],
+               *[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 1],
+               *[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 2],
+               *[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 3],
+               *[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 4]
+            ])
+            let $nodes := if ($da eq 0) then $context else $args(1)
+            return
+                foxf:nodeNavigation($nodes, $axis, $args(1 + $da), $args(2 + $da), $args(3 + $da), $args(4 + $da))
+
+        (: functions `axis, exaxis` 
+           ======================== :)
+        else if ($fname = ('fancestor', 'ex-fancestor', 
+                           'fancestor-or-self', 'ex-fancestor-or-self',
+                           'fparent', 'ex-fparent',
+                           'fself', 'ex-fself',
+                           'fchild', 'ex-fchild',
+                           'fdescendant', 'ex-fdescendant',
+                           'fdescendant-or-self', 'ex-fdescendant-or-self',
+                           'fpreceding-sibling', 'ex-fpreceding-sibling',
+                           'ffollowing-sibling', 'ex-ffollowing-sibling',
+                           'fsibling', 'ex-fsibling',
+                           'fall-descendant', 'ex-fall-descendant',
+                           'fall-descendant-or-self', 'ex-fall-descendant-or-self')) 
+        then
+            let $da := if (starts-with($fname, 'ex-')) then 1 else 0
+            let $axis := $fname ! replace(., '^f|ex-f', '')
+            let $narg := count($call/*)
+            let $args := $call/([
+               *[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 0],
+               *[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 1],
+               *[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 2],
+               *[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 3],
+               *[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 4]
+            ])
+            let $uris := if ($da eq 0) then $context else $args(1)
+            return
+                foxf:foxNavigation($uris, $axis, $args(1 + $da), $args(2 + $da), $args(3 + $da), $args(4 + $da))
+
+
+
 
         (: function `node-location` 
            ======================== :)
