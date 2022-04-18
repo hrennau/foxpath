@@ -53,6 +53,42 @@ declare function f:compileNameFilter($patterns as xs:string*,
 };
 
 (:~
+ : Translates patterns into regular expressions.
+ :
+ : @param patterns a list of patterns or regular expressions
+ : @param addAnchors if true, anchors representing the start and end of the string are added 
+ : @param ignoreCase if true, the filter ignores case 
+ : @param patternIsRegex if true, the patterns are treated as regular expressions
+ : @return a map with entries 'names', 'regexes' and 'flags' 
+ :)
+declare function f:compilePatternFilter($patterns as xs:string*, 
+                                        $addAnchors as xs:boolean?,
+                                        $ignoreCase as xs:boolean?,
+                                        $patternIsRegex as xs:boolean?)
+        as map(xs:string, item()*)? {
+    if (empty($patterns)) then () else
+    
+    let $strings := 
+        let $raw := $patterns[not(contains(., '*')) and not(contains(., '?'))]
+        return
+            if (not($ignoreCase)) then $raw else $raw ! lower-case(.)
+    let $regexes := 
+        if ($patternIsRegex) then $patterns else
+        $patterns[contains(., '*') or contains(., '?')]
+        ! replace(., '[{}()\[\]^$]', '\\$0')
+        ! replace(., '\*', '.*')
+        ! replace(., '\?', '.')
+    let $regexes := if (not($addAnchors)) then $regexes else $regexes ! concat('^', ., '$')
+    let $flags := if ($ignoreCase) then 'i' else ''     
+    return map{
+        'empty': empty(($strings, $regexes)),
+        'ignoreCase': $ignoreCase,
+        'substrings': $strings[not($addAnchors)],
+        'names': $strings[$addAnchors],
+        'regexes': $regexes}
+};
+
+(:~
  : Translates a whitespace-separated list of string patterns
  : into a list of regular expressions and a list of literal strings.
  :
@@ -96,6 +132,7 @@ declare function f:matchesNameFilter($string as xs:string,
     return
         $nameFilter?empty
         or exists($nameFilter?names) and $string = $nameFilter?names
+        or exists($nameFilter?substrings) and (some $sstr in $nameFilter?substrings satisfies contains($string, $sstr))
         or exists($nameFilter?regexes) and (some $r in $nameFilter?regexes satisfies matches($string, $r, $flags))
 };
 
