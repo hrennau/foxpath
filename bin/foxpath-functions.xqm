@@ -335,7 +335,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                *[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 3],
                *[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 4]
             ])
-            let $uris := if ($narg eq 0) then $context else $args(1)
+            let $uris := if ($da eq 0) then $context else $args(1)
             return
                 foxf:foxNavigation($uris, $axis, $args(1 + $da), $args(2 + $da), $args(3 + $da), $args(4 + $da))
                 
@@ -1224,7 +1224,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname eq 'text-to-codepoints') then
             let $text := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]
+                return if (exists($explicit)) then $explicit else $context
             return
                 foxf:textToCodepoints($text)
 

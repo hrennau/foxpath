@@ -561,11 +561,9 @@ declare function f:fileName($uri as xs:string?)
  : one-based and in file-system order in case of a forward axis, in reverse file-system 
  : order otherwise.
  :
- : For each context URI, the related result nodes are returned in file system order or
- : reverse file system order, dependent on whether the axis is a forward axis or a reverse
- : axis. When there are several context nodes, the subsequences obtained for individual
- : context URIs are contenated. The sequence of subsequences is in file system order of
- : the context nodes for which they have been obtained.
+ : The function returns the sequence of URIs obtained from the merged results obtained 
+ : for individual context URIs by removing duplicate URIs and ordering in file system
+ : order.
  : 
  : Supported navigation axes include:
  : - classical forward axes: 
@@ -592,6 +590,10 @@ declare function f:foxNavigation(
                        $pselector as xs:integer?,
                        $flags as xs:string?)                       
         as xs:string* {
+    if ($axis eq 'parent-sibling') then f:foxNavigation(
+        $contextUris ! i:parentUri(., ()), 'sibling',
+        $names, $namesExcluded, $pselector, $flags) else
+        
     let $ignoreCase := not(contains($flags, 'c'))
     let $nameKind := if (contains($flags, 'n')) then 'name' else if (contains($flags, 'j')) then 'jname' else 'lname'
     let $regex := contains($flags, 'r')
@@ -625,16 +627,30 @@ declare function f:foxNavigation(
                 i:childUriCollection($parent, (), (), ())
                 ! concat($parent, '/', .)
                 [. ne $c]}
+        case 'preceding-sibling' return
+            function ($c) {
+                let $parent := i:parentUri($c, ()) return
+                i:childUriCollection($parent, (), (), ())
+                ! concat($parent, '/', .)
+                [. < $c]}
+        case 'sibling' return 
+            function ($c) {
+                let $parent := i:parentUri($c, ()) return
+                i:childUriCollection($parent, (), (), ())
+                ! concat($parent, '/', .)
+                [. ne $c]}
         default return error()
     let $reverseAxis := $axis = ('ancestor', 'ancestor-or-self', 'parent', 'preceding-sibling')        
     let $fn_name := function($uri) {file:name($uri)}
-    for $n in $contextUris
-    let $anc := $n ! $fn_uris(.)[$fn_name(.) ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
-    let $anc := if (not($reverseAxis)) then $anc else $anc => reverse()
-    return
-        if (empty($pselector)) then $anc
-        else if ($pselector lt 0) then $anc[last() + 1 + $pselector]
-        else $anc[$pselector]
+    let $result :=
+        for $n in $contextUris
+        let $anc := $n ! $fn_uris(.)[$fn_name(.) ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
+        let $anc := if (not($reverseAxis)) then $anc else $anc => reverse()
+        return
+            if (empty($pselector)) then $anc
+            else if ($pselector lt 0) then $anc[last() + 1 + $pselector]
+            else $anc[$pselector]
+    return $result => sort() => distinct-values()            
 };
 
 declare function f:fractions($values as item()*, 
@@ -906,6 +922,37 @@ declare function f:frequencies($values as item()*,
         case 'text' return $items/$fn_itemText(@text, @f) => string-join('&#xA;')
         default return $items => string-join('&#xA;')
 };      
+
+(:~
+ :
+ : Flags:
+ : a - anchors are added, for start and end of string
+ : c - matching is case-sensitive
+ : r - the pattern is interpreted as regular expression
+ : n - return the number of matches, not the matching lines
+ :)
+declare function f:grep($uris as xs:string*,
+                        $pattern as xs:string?,
+                        $patternExcluded as xs:string?,
+                        $flags as xs:string?)
+        as item()* {   
+    let $ignoreCase := not(contains($flags, 'c'))
+    let $regex := contains($flags, 'r')
+    let $addAnchors := contains($flags, 'a')
+    let $filter := $pattern ! util:compilePatternFilter(., $addAnchors, $ignoreCase, $regex)
+    let $filterExclude := $patternExcluded ! util:compilePatternFilter(., $addAnchors, $ignoreCase, $regex)
+    let $_DEBUG := trace($filter, '_FILTER: ')
+    for $uri in $uris
+    where i:fox-is-file($uri, ())
+    let $matchLines :=
+        i:fox-unparsed-text-lines($uri, (), ())
+        [util:matchesPlusMinusNameFilters(., $filter, $filterExclude)]
+    return
+        if (contains($flags, 'n')) then count($matchLines)
+        else
+            if (empty($matchLines)) then () else
+                string-join((concat('##### ', $uri, ' #####'), $matchLines, '----------'), '&#xA;')
+};
 
 (:~
  : Transforms a sequence of value into an indented list. Each value is a concatenated 
@@ -1261,8 +1308,8 @@ declare function f:nodesLocationReport($nodes as node()*,
  : a name or name pattern from $names, and not matching a name or name pattern from 
  : $namesExcluded are considered. The parameter values of $names and $namesExcluded 
  : are whitespace-separated lists of name tokens. Per default, the filtering by node 
- : names refers to local names, treats name tokens as Glob patterns and checks names 
- : in a case insensitive way.  
+ : names refers to local names, treats the name tokens contained by parameter values
+ : as Glob patterns and checks names in a case insensitive way.  
  :
  : The filtering behaviour can be modified by parameter $flags. The parameter value 
  : is a string, each character of which is a flag interpreted as follows: 
@@ -1279,11 +1326,8 @@ declare function f:nodesLocationReport($nodes as node()*,
  : position is performed after selection by node name. Node positions are one-based 
  : and in document order in case of a forward axis, in reverse document order otherwise.
  :
- : For each context node, the related result nodes are returned in document order or
- : reverse document order, dependent on whether the axis is a forward axis or a reverse
- : axis. When there are several context nodes, the subsequences obtained for individual
- : context nodes are contenated. The sequence of subsequences is in document order of
- : the context nodes for which they have been obtained.
+ : The function returns the sequence of nodes obtained from the merged results obtained 
+ : for individual context nodes by removing duplicate nodes and ordering in document order.
  : 
  : Supported navigation axes include:
  : - classical forward axes: 
@@ -1339,13 +1383,15 @@ declare function f:nodeNavigation(
         case 'jname' return function($node) {$node/local-name(.) ! convert:decode-key(.)}
         case 'name' return function($node) {$node/name(.)}
         default return error()
-    for $n in $contextNodes
-    let $anc := $n/$fn_nodes(.)[$fn_name(.) ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
-    let $anc := if (not($reverseAxis)) then $anc else $anc => reverse()
-    return
-        if (empty($pselector)) then $anc
-        else if ($pselector lt 0) then $anc[last() + 1 + $pselector]
-        else $anc[$pselector]
+    let $result :=        
+        for $n in $contextNodes
+        let $anc := $n/$fn_nodes(.)[$fn_name(.) ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
+        let $anc := if (not($reverseAxis)) then $anc else $anc => reverse()
+        return
+            if (empty($pselector)) then $anc
+            else if ($pselector lt 0) then $anc[last() + 1 + $pselector]
+            else $anc[$pselector]
+    return $result/.            
 };
 
 (:~
@@ -2216,14 +2262,15 @@ declare function f:table($rows as item()*,
 };
 
 (:~
- : Maps a string to a pair of strings, the first containing each character
- : of the original string, separated by 5 blanks, the second containing
- : the unicode points, padded to a string of 6 characters. Example:
+ : Maps each item of the input value to a pair of strings, the first 
+ : containing each character of the original string, separated by 5 
+ : blanks, the second containing the unicode codepoints, padded to a 
+ : string of 6 characters. Example:
  : "'b!" is mapped to:
  : '     b     !
  : 39    98    33 
  :)
-declare function f:textToCodepoints($text as xs:string) as xs:string+ {
+declare function f:textToCodepoints($text as xs:string*) as xs:string+ {
     let $fnPad := function($s, $w) {
         string($s) ! (. || 
         (for $i in 1 to $w - string-length(.) return ' ') => string-join())}
@@ -2237,8 +2284,10 @@ declare function f:textToCodepoints($text as xs:string) as xs:string+ {
         )
     }
     
-    let $len := string-length($text)
-    let $chars := for $i in 1 to $len return substring($text, $i, 1)
+    for $line in $text
+    let $_DEBUG := trace($line, '_LINE: ')
+    let $len := string-length($line)
+    let $chars := for $i in 1 to $len return substring($line, $i, 1)
     return fold-left($chars, ('', ''), $fnFoldLeft) 
 };
 
