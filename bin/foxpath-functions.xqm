@@ -176,6 +176,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $excludedNamePattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
             return foxf:childNames($node, true(), 'name', $namePattern, $excludedNamePattern, $nosort)            
 
+        (: function `contains-text` 
+           ======================== :)
+        else if ($fname eq 'contains-text') then
+            let $text :=
+                if (count($call/*) eq 1) then $context else
+                    $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $selections :=
+                let $index := if (count($call/*) eq 1) then 1 else 2
+                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:containsText($text, $selections)            
+                
         (: function `content-deep-equal` 
            ============================= :)
         else if ($fname eq 'content-deep-equal') then
@@ -530,6 +541,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 i:fox-file-size($uri, $options)
 
+        (: function `fn-contains-text` 
+           =========================== :)
+        else if ($fname eq 'fn-contains-text') then
+            let $selections := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $toplevelOr := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:fnContainsText($selections, $toplevelOr)            
+                
         (: function `fractions` 
            ====================== :)
         else if ($fname = ('fractions', 'frac')) then
@@ -556,11 +574,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ====================== :)
         else if ($fname = ('ft-tokenize', 'fttok')) then  
             let $narg := count($call/*)
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $text := if ($narg lt 1) then $context else $arg1 
-            let $_DEBUG := trace($text, '_TEXT: ')
+            let $text := 
+                if ($narg eq 0) then $context
+                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                ft:tokenize($text)
+                foxf:ftTokenize($text, $options)
 
        (: function `grep` 
           =============== :)
@@ -1236,9 +1255,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $string := if (count($call/*) eq 1) then $context else $arg1
             let $len := if (count($call/*) eq 1) then $arg1 else $arg2               
-            let $trailer := $arg3
+            let $flags := $arg3
             return
-                foxf:truncate($string, $len, $trailer)
+                foxf:truncate($string, $len, $flags)
 
         (: function `unescape-json-name` 
            ============================= :)
@@ -1793,6 +1812,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 ceiling($arg)
                 
+        (: function `codepoints-to-string` 
+           =============================== :)
+        else if ($fname = ('codepoints-to-string', 'c2s')) then
+            let $arg := 
+                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $context
+            return codepoints-to-string($arg)
+                
         (: function `concat` 
            ================= :)
         else if ($fname eq 'concat') then
@@ -2275,6 +2302,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 string-length(string($arg))
+                
+        (: function `string-to-codepoints` 
+           =============================== :)
+        else if ($fname = ('string-to-codepoints', 's2c')) then
+            let $arg := 
+                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $context
+            return string-to-codepoints($arg)
                 
         (: function `subsequence` 
            ====================== :)

@@ -924,6 +924,42 @@ declare function f:frequencies($values as item()*,
 };      
 
 (:~
+ : Perform full text tokenization.
+ :
+ : @param text text item(s) to be tokenized
+ : @param options options controlling the tokenization:
+ :   M do not merge adjacent text nodes
+ :   s* with stemming
+ :   s-... with stemming, language ... (e.g. s-de) 
+ :   d diacritics sensitive
+ :   c case sensitive
+ : @return the tokens
+ :)
+declare function f:ftTokenize($text as item()*, 
+                              $options as xs:string?)
+        as xs:string* {
+    let $opts := tokenize($options)        
+    let $mergeTextnodes := $opts = 'M'        
+    let $useText :=
+       if ($mergeTextnodes) then $text => string-join(' ')
+       else if (empty($text[. instance of element() or . instance of document-node()])) then $text => string-join(' ')        
+       else (
+           for $t in $text return typeswitch($t)
+           case document-node() | element() return $t//text() => string-join(' ')
+           default return $t
+       ) => string-join(' ')
+    let $stemming := exists($opts[starts-with(., 's')])
+    let $lang := $opts[starts-with(., 's-')] ! replace(., '^s-', '')       
+    let $options := map:merge((
+        map:entry('stemming', true())[$stemming],
+        map:entry('language', $lang)[$lang],        
+        map:entry('diacritics', 'sensitive')[$opts = 'd'],
+        map:entry('case', 'sensitive')[$opts = 'c']        
+    ))
+    return ft:tokenize($useText, $options)
+};        
+
+(:~
  :
  : Flags:
  : a - anchors are added, for start and end of string
@@ -2294,12 +2330,23 @@ declare function f:textToCodepoints($text as xs:string*) as xs:string+ {
 (:~
  : Truncates a string if longer than a maximum length, appending '...'.
  :
+ : By default, a truncated string consists of the first $len characters,
+ : followed by ' ...'. If option 'e' is used, the substring contains
+ : ($len - 4) characters, so that the truncated string including the
+ : indication of truncation has length $len.
+ :
  : @param name a lexical QName
  : @return the name with the prefix removed
  :)
-declare function f:truncate($string as xs:string?, $len as xs:integer, $flag as xs:string?)
+declare function f:truncate($string as xs:string?, $len as xs:integer, $flags as xs:string?)
         as xs:string? {
-    $string ! substring($string, 1, $len) || ' ...'[string-length($string) gt $len]
+    let $evenLength := $flags = 'e'
+    let $actlen := string-length($string)
+    return
+        if ($actlen le $len) then $string
+        else
+            let $cutlen := if ($evenLength) then $len - 4 else $len
+            return substring($string, 1, $cutlen) ||' ...'
 };        
 
 (:~
@@ -3262,6 +3309,199 @@ declare function f:foxAncestorOrSelf($context as xs:string*,
     )) => distinct-values()
 };
 :)
+
+
+(: =====================================================================================
+ :
+ :     F u l l    T e x t    S e a r c h
+ :
+ : ===================================================================================== :)
+declare function f:containsText($text as xs:string, $selections as xs:string+)
+        as xs:boolean {
+    f:fnContainsText($selections, ()) ! .($text)
+};    
+
+(:~
+ : Returns a function checking whether a given text matches a given full text
+ : search.
+ :)
+declare function f:fnContainsText($selections as xs:string+, $toplevelOr as xs:boolean?)
+        as map(*) {
+    let $toplevelBool := if ($toplevelOr) then 'ftor' else 'ftand'        
+    let $osep := ';'        
+    let $sels :=
+        for $selection in $selections
+        let $partSep := (
+            '|'[contains($selection, '|')],
+            '&amp;'[contains($selection, '&amp;')])
+        return
+            if (count($partSep) gt 1) then error()
+            else if (count($partSep) eq 1) then
+                let $partSepRegex := if ($partSep eq '|') then '\|' else $partSep
+                let $partOperand := if ($partSep eq '|') then 'ftor' else 'ftand'
+                let $tokenTextParts  := 
+                    $selection
+                    ! replace(., '#.*', '') 
+                    ! normalize-space(.)
+                    ! tokenize(., '\s*'||$partSepRegex||'\s*')
+                let $globalOptions := 
+                    $selection[contains(., '#')]
+                    ! replace(., '^.*#', '') 
+                    ! normalize-space(.)
+                    
+                let $selectionParts := $tokenTextParts ! f:parseSelection(., '@', ';')
+                let $globalOptionsParsed := f:parseOptions((), $globalOptions, ';')
+                let $selectionPartsJoined := string-join(
+                    for $selectionPart in $selectionParts return 
+                        '('||$selectionPart||')', ' '||$partOperand||' ')
+                return
+                    if ($globalOptionsParsed) then
+                        '('||$selectionPartsJoined||') '||$globalOptionsParsed 
+                    else $selectionPartsJoined
+                    
+            else
+                f:parseSelection($selection, '#', ';')
+    let $expr := 
+        if (count($sels) eq 1) then $sels
+        else ($sels ! concat('(', ., ')')) => string-join(' '||$toplevelBool||' ') 
+    let $funcText := 'function($text) {$text contains text '||$expr||'}'
+    let $func := xquery:eval($funcText)
+    return $func
+    (:
+    return map{'function': $func, 'expression': $expr}
+    :)
+};
+
+declare function f:parseSelection($selection as xs:string, $sep1 as xs:string, $sep2 as xs:string)
+        as xs:string {
+    let $words := replace($selection, $sep1||'.*', '') ! normalize-space(.)
+    let $optionsConcat := replace($selection, '^.*?'||$sep1||'\s*', '')[contains($selection, $sep1)]
+    (:
+    let $options := $optionsConcat[string()] ! tokenize(., '\s*'||$sep2||'\s*')
+    let $usingWildcards := 'using wildcards'[contains($words, '.')]
+     :)
+    let $wordsAndOptions := f:parseOptions($words, $optionsConcat, $sep2)
+    return $wordsAndOptions[string()] => reverse() => string-join(' ')
+};
+
+(:~
+ : Parses an options string and returns the part of the containsText
+ : expression text representing these options (e.g. 'using stemming
+ : at start'). If also a tokens text is received, the edited tokens
+ : text is also returned. Note that some options may be inferred from 
+ : the tokens text (at start, at end, entire content) and that the 
+ : returned tokens text is cleansed from characters representing those 
+ : options (^ at the start, $ at the end).
+ :)
+declare function f:parseOptions($tokensText as xs:string?, 
+                                $optionsText as xs:string?, 
+                                $optionsSep as xs:string)
+        as xs:string* {
+    let $options := tokenize($optionsText, '\s*'||$optionsSep||'\s*')        
+    let $usingWildcards := 'using wildcards'[contains($tokensText, '.')]
+    
+    (: Evaluate anchors :)
+    let $entire := $tokensText ! (matches(., '^\^\^') and matches(., '\$\$$'))
+    let $atStart := $tokensText ! (not($entire) and matches(., '^\^'))
+    let $atEnd := $tokensText ! (not($entire) and matches(., '\$$'))
+    let $tokensText := (
+        if (not($tokensText)) then ()
+        else if (not($atStart) and not($atEnd) and not($entire)) then $tokensText
+        else replace($tokensText, '^\^+\s*|\s*\$+$', '')
+        ) ! concat('"', ., '"')
+        
+    let $omap := map:merge(
+        for $o in $options
+        return
+            if (starts-with($o, 'lang-')) then map:entry('language', substring($o, 6) ! ('"'||.||'"'))
+            else if (starts-with($o, 'stop')) then
+                let $spec := substring($o, 5)
+                return map:entry('stop',
+                    if (starts-with($spec, '@')) then 'at "'||substring($o, 6)||'"'
+                    else if (not($spec)) then 'default'
+                    else if (starts-with($spec, '(')) then '('||((
+                        replace($spec, '^\(\s*|\s*\)\s*$', '') ! tokenize(., ',\s*') ! concat("'", ., "'")
+                        ) => string-join(', '))||')'
+                    else error())
+            else if (starts-with($o, 'occ')) then map:entry('occurs', f:parseFTRange(substring($o, 4), ())||' times')
+            else if (starts-with($o, 'win')) then map:entry('window', f:parseFTWindow($o))
+            else if (starts-with($o, 'dist')) then map:entry('distance', f:parseFTRange(substring($o, 5), true()))
+            else if (starts-with($o, 'phrase')) then
+                let $spec := substring($o, 7) ! replace(., '\s+$', '')
+                return (
+                    map:entry('additional-flags', 'Wo'),
+                    if (matches($spec, '^\d+$')) then map:entry('distance', 'at most '||$spec||' words')
+                    else if (matches($spec, '^\d+win$')) then map:entry('window', replace($spec, '\D+', '')||' words')
+                )
+            else map:entry('flags', $o)
+    )
+    let $flags := $omap?flags||$omap?additional-flags
+    return (
+        string-join((
+            'any word'[contains($flags, 'w')],
+            'all words'[contains($flags, 'W')],
+            $omap?occurs ! ('occurs '||.),
+            $omap?language ! ('using language '||.),
+            $usingWildcards,
+            'using stemming'[contains($flags, 's')],
+            'using case sensitive'[contains($flags, 'c')],
+            'using case insensitive'[contains($flags, 'C')],                
+            'using diacritics sensitive'[contains($flags, 'd')],
+            'using diacritics insensitive'[contains($flags, 'D')],                
+            $omap?stop ! ('using stop words '||.),
+            'ordered'[contains($flags, 'o')],
+            $omap?window ! ('window '||.),
+            $omap?distance ! ('distance '||.),
+            'same sentence'[contains($flags, 'x')],
+            'different sentence'[contains($flags, 'X')],
+            'same paragraph'[contains($flags, 'y')],
+            'different paragraph'[contains($flags, 'Y')],
+            'at start'[$atStart or contains($flags, 'a')],
+            'at end'[$atEnd or contains($flags, 'z')],
+            'entire content'[$entire or contains($flags, 'e')]
+        ), ' '),
+        $tokensText
+    )        
+};
+
+declare function f:parseFTRange($text as xs:string, $withUnit as xs:boolean?) 
+        as xs:string {
+    let $ftUnit := 
+        if (not($withUnit)) then () else 
+            ' '||f:parseFTUnit(replace($text, '\D+$', '$0')[. ne $text])
+    let $useText :=
+        if (not($withUnit)) then $text else replace($text, '\D+$', '')
+    return (
+        if (starts-with($useText, '..')) then 'at most '||substring($useText, 3)
+        else
+            let $parts := 
+                replace($useText, '\s*(\d+)((\.\.)(\d+)?)?\s*$', '$1~$3~$4')[not(. eq $useText)] 
+                ! tokenize(., '~')
+            return
+                if (empty($parts)) then error()
+                else if (not($parts[2])) then 'exactly '||$parts[1]
+                else if (not($parts[3])) then 'at least '||$parts[1]
+                else 'from '||$parts[1]||' to '||$parts[3]
+    )||$ftUnit                
+};
+        
+declare function f:parseFTUnit($text as xs:string?) as xs:string? {
+    if (not($text)) then 'words'
+    else switch($text) 
+         case 'w' return 'words' 
+         case 's' return 'sentences' 
+         case 'p' return 'paragraphs' 
+         default return error()
+};
+
+declare function f:parseFTWindow($text as xs:string) as xs:string {
+    let $parts := replace($text, '^win(\d+)(.*)?', '$1~$2')[. ne $text] ! tokenize(., '~')
+    return
+        if (empty($parts)) then error()
+        else 
+            let $unit := f:parseFTUnit($parts[2])
+            return $parts[1]||' '||$unit
+};
 
 
 
