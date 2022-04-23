@@ -20,6 +20,7 @@ set UTREE_DIRS=
 set UGRAPH_ENDPOINTS=
 set GITHUB_TOKEN=/git/token
 set DEBUG_TIME=0
+set CONSERVE_WS=
 
 :NEXTPAR
 set name="%~1"
@@ -39,6 +40,8 @@ if "%name%"=="-p" (
    set PARSE=Y
 ) else if "%name%"=="-f" (
    set ISFILE=Y
+ ) else if "%name%"=="-w" (
+   set CONSERVE_WS=Y   
  ) else if "%name%"=="-b" (
    set SEP=\   
  ) else if "%name%"=="-D" (
@@ -63,7 +66,7 @@ if "%name%"=="-p" (
 ) else (
    echo Unknown option: %name%
    echo Supported options: 
-   echo    -b -c -f -g -t -v -D
+   echo    -b -c -f -g -t -v -D -w
    echo Aborted.
    exit /b
 )
@@ -73,7 +76,7 @@ set foxpath=%name%
 if %foxpath%=="?" echo NO else (echo YES)
 
 if %FOXPATH%=="?" (
-    echo Usage: fox [-f] [-p] [-b] [-c] [-t utree-dirs] [-g ugraph-endpoints] [-h github-token] [-D] [-v name=value]* foxpath
+    echo Usage: fox [-f] [-p] [-b] [-c] [-w] [-t utree-dirs] [-g ugraph-endpoints] [-h github-token] [-D] [-v name=value]* foxpath
     echo foxpath : a foxpath expression, or a file containing a foxpath expression
     echo.
     echo -f      : the foxpath parameter is not a foxpath expression, but the path or URI of 
@@ -101,6 +104,7 @@ if %FOXPATH%=="?" (
     echo           using the option: path operator = / , foxpath operator = \
     echo           without option:   path operator = \ , foxpath operator = /
     echo -c      : foxpath operator = / , path operator = %%
+    echo -w      : parsing documents, consserve whitespace
     echo -h github-token : 
     echo           a text file containing the github API token obtained from here:
     echo             https://github.com/settings/tokens    
@@ -128,11 +132,13 @@ set OPT_UTREE_DIRS=
 set OPT_UGRAPH_ENDPOINTS=
 set OPT_CONTEXT_ITEM=
 set OPT_DEBUG_TIME=
-
+set OPT_CONSERVE_WS=
 if not "%UTREE_DIRS%"=="" (set OPT_UTREE_DIRS=-b "utreeDirs=%UTREE_DIRS%")
 if not "%UGRAPH_ENDPOINTS%"=="" (set OPT_UGRAPH_ENDPOINTS=-b "ugraphEndpoints=%UGRAPH_ENDPOINTS%")
 set OPT_GITHUB_TOKEN=-b "{http://www.ttools.org/xquery-functions}githubToken=%GITHUB_TOKEN%"
 if not "%CONTEXT_ITEM%"=="" (set OPT_CONTEXT_ITEM=-b "context=%CONTEXT_ITEM%")
 if "%DEBUG_TIME%"=="1" (set OPT_DEBUG_TIME=-b debugtime=1)
+if not "%CONSERVE_WS%"=="" (set OPT_CONSERVE_WS=-w)
 rem echo HERE=%HERE%
-basex -b isFile=%ISFILE% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% %OPT_CONTEXT_ITEM% %OPT_DEBUG_TIME% -b "vars=%VARS%" %HERE%/fox.xq
+if not "%CONSERVE_WS%"=="" (echo CONSERVE WHITESPACE)
+basex %OPT_CONSERVE_WS% -b isFile=%ISFILE% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% %OPT_CONTEXT_ITEM% %OPT_DEBUG_TIME% -b "vars=%VARS%" %HERE%/fox.xq

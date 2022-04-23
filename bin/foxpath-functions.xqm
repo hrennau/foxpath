@@ -6,7 +6,10 @@ at "foxpath-processorDependent.xqm",
    
 import module namespace util="http://www.ttools.org/xquery-functions/util" 
 at  "foxpath-util.xqm";
-  
+
+import module namespace ft="http://www.foxpath.org/ns/fulltext" 
+at  "foxpath-fulltext.xqm";
+
 import module namespace foxf="http://www.foxpath.org/ns/fox-functions" 
 at "foxpath-fox-functions.xqm";
     
@@ -185,7 +188,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $selections :=
                 let $index := if (count($call/*) eq 1) then 1 else 2
                 return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:containsText($text, $selections)            
+            return ft:containsText($text, $selections, ())            
                 
         (: function `content-deep-equal` 
            ============================= :)
@@ -546,7 +549,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname eq 'fn-contains-text') then
             let $selections := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $toplevelOr := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:fnContainsText($selections, $toplevelOr)            
+            return ft:fnContainsText($selections, $toplevelOr, ())            
                 
         (: function `fractions` 
            ====================== :)
@@ -2038,6 +2041,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 in-scope-prefixes($arg)
                 
+        (: function `innermost` 
+           ==================== :)
+        else if ($fname eq 'innermost') then
+            let $nodes := 
+                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $context
+            return
+                innermost($nodes)
+                
         (: function `last` 
            =============== :)
         else if ($fname eq 'last') then
@@ -2172,6 +2184,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 $arg ! number(.)
 
+        (: function `outermost` 
+           ==================== :)
+        else if ($fname eq 'outermost') then
+            let $nodes := 
+                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $context
+            return
+                outermost($nodes)
+                
         (: function `position` 
            =================== :)
         else if ($fname eq 'position') then
