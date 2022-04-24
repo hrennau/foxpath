@@ -40,7 +40,7 @@ declare function f:fnContainsText($selections as xs:string+,
             ! normalize-space(.)
             
         return
-            if (not(matches($selection, '[()|&amp;>~]'))) then
+            if (not(matches($selection, '[()|/&amp;>~]'))) then
                 f:parseFtSelection($selection, '#', true())
             else            
                 let $selOptions := 
@@ -365,6 +365,7 @@ declare function f:parseFtOr($text as xs:string?)
         switch($char1)
         case '|' return (<ftor/>, f:parseFtOr($remainder ! substring(., 2)))
         case '&amp;' return (<ftand/>, f:parseFtOr($remainder ! substring(., 2)))
+        case '/' return (<ftand/>, f:parseFtOr($remainder ! substring(., 2)))        
         case '>' return (<notin/>, f:parseFtOr($remainder ! substring(., 2)))
         default return $remainder
     )        
@@ -377,7 +378,7 @@ declare function f:parseFtPrim($text as xs:string?)
         as item()* {
     if (not($text)) then () else
     
-    let $before := replace($text, '^(.*?)[()|&amp;>~].*', '$1')
+    let $before := replace($text, '^(.*?)[()|/&amp;>~].*', '$1')
     let $len := string-length($before)
     return (
         ($before ! normalize-space(.))[string()] ! <words>{.}</words>,
