@@ -182,12 +182,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `contains-text` 
            ======================== :)
         else if ($fname eq 'contains-text') then
-            let $text :=
-                if (count($call/*) eq 1) then $context else
-                    $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $selections :=
                 let $index := if (count($call/*) eq 1) then 1 else 2
                 return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $text :=
+                if (count($call/*) eq 1) then $context 
+                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return ft:containsText($text, $selections, ())            
                 
         (: function `content-deep-equal` 
