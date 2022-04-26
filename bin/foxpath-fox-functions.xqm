@@ -49,7 +49,7 @@ declare function f:atts($context as item(), $flags as xs:string)
     if (contains($flags, 'j')) then
         if (not($context instance of node())) then ()
         else
-            let $jpath := f:namePath($context, 'jname', ())
+            let $jpath := f:namePath($context, 'jname', (), ())
             return attribute jpath {$jpath}
 };
 
@@ -1050,14 +1050,16 @@ declare function f:hlistRC($level as xs:integer,
         as xs:string* {
     let $prefix := (for $i in 1 to $level return '.  ') => string-join('')
     return
-        if (not(some $row in $rows satisfies array:size($row) gt 1)) then 
-            for $row in $rows
+        (: All rows with at most one member :)
+        if (not(some $row in $rows satisfies array:size($row) gt 1)) then
+            for $row in $rows[array:size(.) gt 0]
             group by $v := $row(1)
             let $suffix := count($row)[. ne 1] ! concat(' (', ., ')')
             let $parts := tokenize($v, '~~~')
             return 
                 if (count($parts) eq 1) then $prefix || $v || $suffix
                 else for $part in $parts return $prefix || $part
+        (: Some rows with more than one member :)                
         else
             for $row in $rows
             group by $groupValue := $row(1)
@@ -1284,7 +1286,8 @@ declare function f:median($values as xs:anyAtomicType*)
  :)
 declare function f:namePath($nodes as node()*, 
                             $nameKind as xs:string?,   (: name | lname | jname :) 
-                            $numSteps as xs:integer?)
+                            $numSteps as xs:integer?,
+                            $flags as xs:string?)
         as xs:string* {
     for $node in $nodes return
     
@@ -1311,14 +1314,24 @@ declare function f:namePath($nodes as node()*,
 (:~
  : Creates an Item Location Report for a sequence of given nodes.
  :
- : @param nodes a sequence of JSON nodes
- : @param withFolders the location report should include the folder containing the documents
+ : @param nodes A sequence of JSON nodes
+ : @param nameKind Identifies the kind of name - lexical name (name), local name (lname), JSON name (jname)
+ : @param flags If contains 'v' - output also the distinct values of attributes and simple elements;
+ :   if contains 'f', optionally followed by an integer number (e.g. 'f', 'f2') - the number of
+ :   file system names to be included; f1 - file name; f2 - folder name and file name; etc.
  : @return a location report
  :)
 declare function f:nodesLocationReport($nodes as node()*,
                                        $nameKind as xs:string?,   (: name | lname | jname :)
-                                       $withFolders as xs:integer?)
-        as xs:string {        
+                                       $flags as xs:string?)
+        as xs:string {
+    let $withValues := contains($flags, 'v')        
+    let $numberFsLevels := 
+        let $spec := $flags ! lower-case(.) ! replace(., '^.*?(f\d*).*', '$1')
+        return if (not(contains($spec, 'f'))) then () else 
+            (substring($spec, 2)[string()] ! xs:integer(.), 1)[1]
+    let $withFileName := $numberFsLevels gt 0
+    let $numberOfFolders := $numberFsLevels - 1
     let $fn_name := 
         switch($nameKind)
         case 'name' return name#1
@@ -1328,13 +1341,14 @@ declare function f:nodesLocationReport($nodes as node()*,
     return
     
     $nodes/f:row((
-        if ($withFolders) then f:baseUriDirectories(., $withFolders) else (),
-        f:baseUriFileName(.), 
+        if ($numberOfFolders) then f:baseUriDirectories(., $numberOfFolders) else (),
+        f:baseUriFileName(.)[$withFileName], 
         $fn_name(.), 
-        f:namePath(., 'jname', ()),
-        .[self::attribute(), text()]/concat('value: ', .)
+        f:namePath(., $nameKind, (), $flags),
+        .[self::attribute(), text()][$withValues]/concat('value: ', .)
         ))
-        => f:hlist((for $i in 1 to $withFolders return 'Folder', 'File', 'Name', 'Path', 'Value'), ())
+        => f:hlist((for $i in 1 to $numberOfFolders return 'Folder', 
+            'File'[$withFileName], 'Name', 'Path', 'Value'[$withValues]), ())
 };
 
 (:~
@@ -1746,13 +1760,13 @@ declare function f:pathCompare($items as item()*,
     
     let $pathArrays := 
         for $doc at $pos in $docs
-        let $paths := $doc/f:allDescendants(.)/f:namePath(., $nameKind, ()) => distinct-values() => sort()
+        let $paths := $doc/f:allDescendants(.)/f:namePath(., $nameKind, (), ()) => distinct-values() => sort()
         return array{$paths}
         
     let $commonPaths := util:atomIntersection($pathArrays)
     let $pathsMap := map:merge(
         for $doc at $pos in $docs
-        let $paths := $doc/f:allDescendants(.)/f:namePath(., $nameKind, ()) => distinct-values() => sort()
+        let $paths := $doc/f:allDescendants(.)/f:namePath(., $nameKind, (), ()) => distinct-values() => sort()
         return map:entry($pos, $paths)
     )
     let $deviations :=    
@@ -2602,9 +2616,9 @@ declare function f:xwrap($items as item()*,
                 if (not(contains($flags, 'b'))) then () else
                     attribute xml:base {$item/base-uri(.)},
                 if (not(contains($flags, 'p'))) then () else
-                    attribute path {$item/f:namePath(., 'name', ())},
+                    attribute path {$item/f:namePath(., 'name', (), ())},
                 if (not(contains($flags, 'j'))) then () else
-                    attribute jpath {$item/f:namePath(., 'jname', ())}
+                    attribute jpath {$item/f:namePath(., 'jname', (), ())}
             )
             let $atts :=
                 if (empty($additionalAtts) or empty($item/@*)) then $item/@*

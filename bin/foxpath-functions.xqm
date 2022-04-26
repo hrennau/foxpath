@@ -693,26 +693,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 i:fox-doc-available($uri, $options)
             
-        (: function `jname-path` 
-           ==================== :)
-        else if ($fname = ('jname-path', 'jnpath', 'jnp')) then           
-            let $nodes := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return if ($explicit) then $explicit else $context
-            return
-                if (empty($nodes)) then () else
-                    let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                    return foxf:namePath($nodes, 'jname', $numSteps)
-
-        (: function `jnode-location` 
-           ========================= :)
-        else if ($fname = ('jnode-location', 'jlocation')) then
-            let $nodes :=
-                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                else $context
-            let $numFolders := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:nodesLocationReport($nodes, 'jname', $numFolders)
-
         (: function `jpath-compare` 
            ======================= :)
         else if ($fname = ('jpath-compare', 'jpathcmp')) then           
@@ -826,26 +806,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 $lines 
 
-        (: function `lname-path` 
-           ==================== :)
-        else if ($fname = ('lname-path', 'lnpath', 'lnp')) then
-            let $nodes := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return if ($explicit) then $explicit else $context
-            return
-                if (empty($nodes)) then () else
-                    let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                    return foxf:namePath($nodes, 'lname', $numSteps)
-
-        (: function `lnode-location` 
-           ========================= :)
-        else if ($fname = ('lnode-location', 'llocation')) then
-            let $nodes :=
-                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                else $context
-            let $numFolders := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:nodesLocationReport($nodes, 'lname', $numFolders)
-
         (: function `lpad` 
            =============== :)
         else if ($fname eq 'lpad') then
@@ -894,26 +854,43 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname eq 'median') then
             let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             return foxf:median($arg)
-            
-        (: function `name-path` 
-           ==================== :)
-        else if ($fname = ('name-path', 'npath', 'np')) then
-            let $nodes :=
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return if (exists($explicit)) then $explicit else $context
-            return
-                if (empty($nodes)) then () else
-                    let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                    return foxf:namePath($nodes, 'name', $numSteps)
 
+        (: function `name-path` 
+           =================== :)
+        else if ($fname = ('name-path', 'npath', 'np', 
+                           'jname-path', 'jnpath', 'jnp', 
+                           'lname-path', 'lnpath', 'lnp')) then  
+            let $nodes :=
+                if ($call/*) then 
+                    $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $context
+            let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
+            let $flags := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $nameKind := 
+                if (starts-with($fname, 'j')) then 'jname' 
+                else if (starts-with($fname, 'l')) then 'lname' 
+                else 'name' 
+            return
+                if (empty($nodes)) then () else 
+                    foxf:namePath($nodes, $nameKind, $numSteps, $flags)
+                    
         (: function `node-location` 
            ======================== :)
-        else if ($fname = ('node-location', 'nlocation')) then
+        else if ($fname = ('node-location', 'nlocation',
+                           'lnode-location', 'lnlocation',
+                           'jnode-location', 'jnlocation')) then
             let $nodes :=
-                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                if ($call/*) then 
+                    $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 else $context
-            let $numFolders := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:nodesLocationReport($nodes, 'name', $numFolders)
+            let $flags := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $nameKind := 
+                if (starts-with($fname, 'j')) then 'jname' 
+                else if (starts-with($fname, 'l')) then 'lname' 
+                else 'name'
+            return 
+                if (empty($nodes)) then () else 
+                    foxf:nodesLocationReport($nodes, $nameKind, $flags)
 
         (: function `non-distinct-file-names` 
            ================================== :)
