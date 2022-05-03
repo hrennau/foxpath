@@ -1910,7 +1910,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname eq 'deep-equal') then
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return deep-equal($arg2, $arg2) 
+            return deep-equal($arg1, $arg2) 
 
         (: function `distinct-values` 
            ========================== :)
