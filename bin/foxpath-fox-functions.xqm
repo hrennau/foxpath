@@ -599,7 +599,6 @@ declare function f:foxNavigation(
     let $regex := contains($flags, 'r')
     let $cnameFilter := $names ! util:compileNameFilter(., $ignoreCase, $regex)        
     let $cnameFilterExclude := $namesExcluded ! util:compileNameFilter(., $ignoreCase, $regex)
-    let $_DEBUG := trace($axis, '_AXIS: ')
     let $fn_uris :=
         switch($axis)
         case 'child' return function($c) {i:childUriCollection($c, (), (), ()) ! concat($c, '/', .)}
@@ -744,8 +743,10 @@ declare function f:fractions($values as item()*,
                 else 
                     let $prelim := ($n2 - $n1) div $step
                     return if ($prelim lt $n2) then $prelim + 1 else $prelim
+            (:
             let $_DEBUG := trace($n2, '_N2: ')
-            let $_DEBUG := trace($nsteps, '_NSTEPS: ')                
+            let $_DEBUG := trace($nsteps, '_NSTEPS: ')
+             :)
             return 
                 if ($compareAs eq 'xs:date') then
                     for $snr in 0 to xs:integer($nsteps)
@@ -977,7 +978,7 @@ declare function f:grep($uris as xs:string*,
     let $addAnchors := contains($flags, 'a')
     let $filter := $pattern ! util:compilePatternFilter(., $addAnchors, $ignoreCase, $regex)
     let $filterExclude := $patternExcluded ! util:compilePatternFilter(., $addAnchors, $ignoreCase, $regex)
-    let $_DEBUG := trace($filter, '_FILTER: ')
+    (: let $_DEBUG := trace($filter, '_FILTER: ')  :)
     for $uri in $uris
     where i:fox-is-file($uri, ())
     let $matchLines :=
@@ -1053,7 +1054,7 @@ declare function f:hlistRC($level as xs:integer,
         (: All rows with at most one member :)
         if (not(some $row in $rows satisfies array:size($row) gt 1)) then
             for $row in $rows[array:size(.) gt 0]
-            group by $v := $row(1)
+            group by $v := $row(1) ! string()
             let $suffix := count($row)[. ne 1] ! concat(' (', ., ')')
             let $parts := tokenize($v, '~~~')
             return 
@@ -1289,6 +1290,9 @@ declare function f:namePath($nodes as node()*,
                             $numSteps as xs:integer?,
                             $flags as xs:string?)
         as xs:string* {
+    let $options := map:merge((
+        map:entry('noconcat', true())[contains($flags, 'N')]
+    ))
     for $node in $nodes return
     
     (: _TO_DO_ Remove hack when BaseX Bug is removed; return to: let $nodes := $node/ancestor-or-self::node() :)        
@@ -1308,7 +1312,9 @@ declare function f:namePath($nodes as node()*,
         else 
             $ancos/concat(self::attribute()/'@', name(.))
     let $steps := if (empty($numSteps)) then $steps else subsequence($steps, count($steps) + 1 - $numSteps)
-    return string-join($steps, '/')
+    return 
+        if ($options?noconcat) then $steps[string()]
+        else string-join($steps, '/')
 };        
 
 (:~
@@ -1325,6 +1331,7 @@ declare function f:nodesLocationReport($nodes as node()*,
                                        $nameKind as xs:string?,   (: name | lname | jname :)
                                        $flags as xs:string?)
         as xs:string {
+    let $namePathFlags := string-join(('N'[contains($flags, 'a')]), '')
     let $withValues := contains($flags, 'v')        
     let $numberFsLevels := 
         let $spec := $flags ! lower-case(.) ! replace(., '^.*?(f\d*).*', '$1')
@@ -1344,7 +1351,9 @@ declare function f:nodesLocationReport($nodes as node()*,
         if ($numberOfFolders) then f:baseUriDirectories(., $numberOfFolders) else (),
         f:baseUriFileName(.)[$withFileName], 
         $fn_name(.), 
-        f:namePath(., $nameKind, (), $flags),
+        let $steps := f:namePath(., $nameKind, (), $namePathFlags)
+        return if (contains($namePathFlags, 'N')) then ('/'||$steps[1], subsequence($steps, 2))
+               else $steps,
         .[self::attribute(), text()][$withValues]/concat('value: ', .)
         ))
         => f:hlist((for $i in 1 to $numberOfFolders return 'Folder', 

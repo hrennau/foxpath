@@ -8,7 +8,7 @@ import module namespace util="http://www.ttools.org/xquery-functions/util"
 at  "foxpath-util.xqm";
 
 import module namespace ft="http://www.foxpath.org/ns/fulltext" 
-at  "foxpath-fulltext.xqm";
+at  "foxpath-fulltext2.xqm";
 
 import module namespace foxf="http://www.foxpath.org/ns/fox-functions" 
 at "foxpath-fox-functions.xqm";
