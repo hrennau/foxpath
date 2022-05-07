@@ -1350,7 +1350,7 @@ declare function f:nodesLocationReport($nodes as node()*,
     $nodes/f:row((
         if ($numberOfFolders) then f:baseUriDirectories(., $numberOfFolders) else (),
         f:baseUriFileName(.)[$withFileName], 
-        $fn_name(.), 
+        'Name: '||$fn_name(.), 
         let $steps := f:namePath(., $nameKind, (), $namePathFlags)
         return if (contains($namePathFlags, 'N')) then ('/'||$steps[1], subsequence($steps, 2))
                else $steps,
