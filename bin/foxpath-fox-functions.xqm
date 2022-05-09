@@ -2860,6 +2860,112 @@ declare function f:extractNamespaceNodes($elems as element()*)
                
 };
 
+(:~
+ :
+ : ===    f t r e e ===
+ :
+ :)
+
+(:~
+ : Creates a file system tree document.
+ :)
+declare function f:ftree($folders as xs:string*, $options as map(*)) as element(ftree)? {
+    let $filePropertiesMap :=
+        let $fileProperties := $options?fileProperties
+        return
+            if (empty($fileProperties)) then () else
+                let $entries :=
+                    for $fp in $fileProperties
+                    let $fnameAndPname := replace($fp, '^(.+?)\s*=.*', '$1') ! normalize-space(.)
+                    let $withFname := matches($fnameAndPname, '\s')
+                    let $fname := (
+                        if (not($withFname)) then '*' 
+                        else replace($fnameAndPname, '^(.*)\s.*', '$1')
+                        ) ! util:compileNameFilter(., true())
+                    let $pname := 
+                        if (not($withFname)) then $fnameAndPname 
+                        else replace($fnameAndPname, '.*\s', '')
+                    let $isAtt := starts-with($pname, '@')
+                    let $pname := if ($isAtt) then substring($pname, 2) else $pname
+                    let $expr := replace($fp, '^.+?=\s*', '')
+                    return
+                        map:entry($pname, map{'isAtt': $isAtt, 'expr': $expr, 'fileName': $fname})
+                let $entriesA := $entries[?(map:keys(.))?isAtt]                
+                let $entriesE := $entries[not(?(map:keys(.))?isAtt)]
+                return
+                    array {$entriesA, $entriesE}
+            
+    let $useOptions := map:merge((
+        $options,
+        $options?skipdir ! map:entry('_skipdir-regex', tokenize(.) ! util:pattern2Regex(.)),
+        $filePropertiesMap ! map:entry('_file-properties', $filePropertiesMap)
+    ))
+    let $ftrees :=
+        for $folder in $folders
+        let $content := $folder ! f:ftreeREC(., $useOptions)
+        let $rootAttributes := f:getFtreeAttributes($folder, $content, $options)
+        return <ftree>{$rootAttributes, $content}</ftree>
+    return
+        if (count($ftrees) le 1) then $ftrees
+        else <ftrees count="{count($ftrees)}">{$ftrees}</ftrees>
+};
+
+(:~
+ : RECursive helper function of `f:ftree`.
+ :)
+declare function f:ftreeREC($folder as xs:string, $options as map(*)) as element()? {
+    if ($folder ! util:fileName(.) ! util:multiMatches(., $options?_skipdir-regex, ())) then () else
+    
+    (: let $members := file:children($folder) :)
+    let $members := i:childUriCollection($folder, (), (), ()) ! concat($folder, '/', .)
+    let $subfolders := $members[i:fox-is-dir(., ())] ! f:ftreeREC(., $options)
+    let $filePropertiesMap := $options?_file-properties
+    let $files := $members[i:fox-is-file(., ())] !
+        <fi name="{util:fileName(.)}">{            
+            if (empty($filePropertiesMap)) then () else
+                for $p in array:flatten($filePropertiesMap)
+                let $pname := map:keys($p)
+                let $pmap := $p($pname)
+                let $fileNameFilter := $pmap?fileName
+                return
+                    if (not(util:matchesNameFilter(util:fileName(.), $fileNameFilter))) then ()
+                    else
+                        let $pvalue := i:resolveFoxpath($pmap?expr, false(), ., (), ())
+                        return 
+                            if ($pmap?isAtt) then attribute {$pname} {$pvalue}
+                            else element {$pname} {$pvalue}
+        }</fi>
+    return
+        <fo name="{util:fileName($folder)}">{$subfolders, $files}</fo>
+};
+
+(:~
+ : Returns the info attributes of the ftree report root element.
+ :
+ : @param folder the folder to be reported
+ : @param content the content of the folder element
+ : @param options the options representing user options
+ : @return attributes describing the report invocation
+ :)
+declare function f:getFtreeAttributes($folder as xs:string, 
+                                      $content as element()*, 
+                                      $options as map(*))
+        as attribute()* {
+    attribute context {$folder ! i:parentUri(., ())},
+    attribute countFo {count($content//fo) + 1},
+    attribute countFi {count($content//fi)},
+    f:getUserInputAttributes($options)
+};
+
+(:~
+ : Returns attributes representing all options with a key name
+ : which does not start with an underscore.
+ :)
+declare function f:getUserInputAttributes($options as map(*)) as attribute()* {
+    map:keys($options)[not(starts-with(., '_'))] ! attribute {.} {$options(.)}
+};
+
+
 (:
 ##################################################################################################
  :)

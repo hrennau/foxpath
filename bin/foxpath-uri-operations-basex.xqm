@@ -223,7 +223,7 @@ declare function f:childUriCollection_basex($uri as xs:string,
     let $children :=
         (: no db => list data bases :)
         if (not($dbPath[1])) then db:list()[not($kindFilter eq 'file')]
-        else        
+        else (       
         
             (: $completePaths - paths within the database 
                                 (a name, optionally preceded by steps) :)
@@ -231,7 +231,7 @@ declare function f:childUriCollection_basex($uri as xs:string,
             (: $relPaths - paths relative to the input URI :)
             let $relPaths := 
                 if (not($dbPath[2])) then $completePaths else 
-                    $completePaths ! substring(., 2 + string-length($dbPath[2]))   
+                    $completePaths ! substring(., 2 + string-length($dbPath[2]))
             let $fileChildren := $relPaths[not(contains(., '/'))]
             return (
                 if ($kindFilter eq 'file') then $fileChildren
@@ -241,6 +241,7 @@ declare function f:childUriCollection_basex($uri as xs:string,
                         if ($kindFilter eq 'dir') then $folderChildren
                         else ($fileChildren, $folderChildren)
             ) [string()]
+        ) => distinct-values()
     let $matchName :=
         if (not($pattern)) then $children else
             $children[matches(replace(replace(., '/$', ''), '.*/', ''), $pattern, 'i')]

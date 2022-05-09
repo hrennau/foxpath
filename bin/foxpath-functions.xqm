@@ -573,6 +573,22 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:frequencies($values, $min, $max, 'count', $order, $format)
 
+        else if ($fname = ('ftree')) then
+            let $narg := count($call/*)
+            let $rootFolder := 
+                if ($narg eq 0) then $context
+                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $skipdir := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fileProperties := subsequence($call/*, 3)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            (: let $flags := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) :)            
+                        
+            let $options := map:merge((
+                $skipdir ! map:entry('skipdir', .),
+                if (empty($fileProperties)) then () else map:entry('fileProperties', $fileProperties)
+                (: $flags ! map:entry('flags', .) :)
+            ))
+            return foxf:ftree($rootFolder, $options)
+
         (: function `ft-tokenize` 
            ====================== :)
         else if ($fname = ('ft-tokenize', 'fttok')) then  
@@ -1382,11 +1398,11 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $lname_regex :=
                 if (empty($name)) then () else
                     let $pattern := substring-before(concat($name, ' '), ' ') 
-                    return f:pattern2Regex($pattern)
+                    return util:pattern2Regex($pattern)
             let $ns_regex := 
                 if (empty($name) or not(contains($name, ' '))) then () else
                     let $pattern := substring-after($name, ' ') 
-                    return f:pattern2Regex($pattern)
+                    return util:pattern2Regex($pattern)
             let $xpath :=
                 let $itemSelector := concat(
                     concat('[matches(local-name(.), "', $lname_regex, '", "i")]')[$lname_regex],
@@ -1611,11 +1627,11 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $lname :=
                 if (empty($name)) then () else
                     let $pattern := substring-before(concat($name, ' '), ' ') 
-                    return f:pattern2Regex($pattern)
+                    return util:pattern2Regex($pattern)
             let $ns := 
                 if (empty($name) or not(contains($name, ' '))) then () else
                     let $pattern := substring-after($name, ' ') 
-                    return f:pattern2Regex($pattern)
+                    return util:pattern2Regex($pattern)
             let $elemLname :=
                 if (empty($elemName)) then () else
                     let $pattern := substring-before(concat($elemName, ' '), ' ') return
@@ -1624,7 +1640,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (empty($elemName) or not(contains($elemName, ' '))) then () else
                     let $pattern := substring-after($elemName, ' ') return
                         concat('^', replace(replace($pattern, '\.', '\\.'), '\*', '.*'), '$')
-            let $val := $val ! f:pattern2Regex(.)
+            let $val := $val ! util:pattern2Regex(.)
 
             let $xpath :=
                 let $elemSelector :=
@@ -1664,12 +1680,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $lname :=
                 if (empty($name)) then () else
                     let $pattern := substring-before(concat($name, ' '), ' ') 
-                    return f:pattern2Regex($pattern)
+                    return util:pattern2Regex($pattern)
             let $ns := 
                 if (empty($name) or not(contains($name, ' '))) then () else
                     let $pattern := substring-after($name, ' ') 
-                    return f:pattern2Regex($pattern)
-            let $val := $val ! f:pattern2Regex(.)
+                    return util:pattern2Regex($pattern)
+            let $val := $val ! util:pattern2Regex(.)
             let $xpath :=
                 let $itemSelector := concat(
                     concat('[matches(local-name(.), "', $lname, '", "i")]')[$lname],

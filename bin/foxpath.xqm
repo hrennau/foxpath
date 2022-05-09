@@ -2068,13 +2068,6 @@ declare function f:getEbv($value as item()*)
     boolean($value[1])        
 };
 
-declare function f:pattern2Regex($pattern as xs:string)
-        as xs:string {
-    concat('^', 
-           replace(replace($pattern, '\.', '\\.'), '\*', '.*'), 
-           '$')        
-};
-
 (:~
  : Edits the initial context.
  :

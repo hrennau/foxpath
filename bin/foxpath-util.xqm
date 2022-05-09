@@ -344,6 +344,22 @@ declare function f:booleanValue($s as xs:anyAtomicType?, $default as xs:boolean?
 };
 
 (:~
+ : Extracts the file name from a file path. Note that function file:name
+ : cannot always be used for paths which are not file system paths.
+ :)
+declare function f:fileName($path as xs:string) as xs:string {
+    $path ! replace(., '^.*/', '')
+};
+
+(:~
+ : Maps a relative or absolute file path to a normalized representation.
+ :)
+declare function f:fpath($path as xs:string) as xs:string {
+    file:resolve-path($path) ! file:path-to-uri(.) ! 
+    replace(., '^file:/+((.:/.*)|(/[^/].*))', '$1')
+};
+
+(:~
  : Transforms a glob pattern into a regex.
  :
  : @param pattern a glob pattern
@@ -357,6 +373,29 @@ declare function f:glob2regex($pattern as xs:string)
     ! replace(., '[()\[\]{}^$]', '\\$0')
     ! concat('^', ., '$')
 };   
+
+(:~
+ : Returns true if a string matches at least one of the
+ : regular expressions supplied.
+ :)
+declare function f:multiMatches($string as xs:string, 
+                                $patterns as xs:string*, 
+                                $flags as xs:string?)
+        as xs:boolean {
+    some $p in $patterns satisfies matches($string, $p, string($flags))        
+};
+
+(:~
+ : Maps a pattern string to a regular expression.
+ :)
+declare function f:pattern2Regex($pattern as xs:string?) 
+        as xs:string? {
+    $pattern
+    ! replace(., '[.\\(){}\[\]\^$]', '\\$0')    
+    ! replace(., '\*', '.*')
+    ! replace(., '\?', '.')
+    ! concat('^', ., '$')
+};
 
 (:~
  : Creates a copy of a node with all "whitespace only" text nodes
