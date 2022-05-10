@@ -574,12 +574,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 foxf:frequencies($values, $min, $max, 'count', $order, $format)
 
         else if ($fname = ('ftree')) then
-            let $narg := count($call/*)
+            let $args := $call/*[not(@ignore eq 'true')]        
+            let $narg := count($args)
+            let $exprTrees := $call/_parsed        
             let $rootFolder := 
                 if ($narg eq 0) then $context
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $skipdir := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $fileProperties := subsequence($call/*, 3)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $skipdir := $args[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fileProperties := subsequence($args, 3)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             (: let $flags := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) :)            
                         
             let $options := map:merge((
@@ -587,7 +589,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (empty($fileProperties)) then () else map:entry('fileProperties', $fileProperties)
                 (: $flags ! map:entry('flags', .) :)
             ))
-            return foxf:ftree($rootFolder, $options)
+            return foxf:ftree($rootFolder, $exprTrees, $options)
 
         (: function `ft-tokenize` 
            ====================== :)
@@ -1085,6 +1087,18 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 <rcat t="{current-dateTime()}" count="{count($refs)}">{$refs}</rcat>
                            
+        (: function `resolve-fox` 
+           ====================== :)
+        else if ($fname eq 'resolve-fox') then
+            let $args := $call/*[not(@ignore eq 'true')]        
+            let $narg := count($args)
+            let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $args[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $exprTree := $call/_parsed/foxpath
+            let $expr := if ($narg le 1) then $arg1 else $arg2
+            let $ctxt := if ($narg le 1) then $context else $arg1
+            return foxf:resolveFoxpath($ctxt, (), $exprTree, $options)            
+                
        (: function `relevant-xsds` 
           ======================== :)
         else if ($fname = ('relevant-xsds', 'rxsds')) then
@@ -1381,6 +1395,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
             return
                 foxf:xelement($name, $contents)
+
+        (: function `xitem-elems` 
+           ====================== :)
+        else if ($fname = ('xitem-elems', 'xitems', 'xelems')) then
+            let $items := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $name := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:xitemElems($items, $name)
 
         (: function `xroot-matches` 
            ======================== :)

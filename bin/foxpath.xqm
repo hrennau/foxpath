@@ -514,6 +514,7 @@ declare function f:resolveFoxpathRC($n as node(),
         return
             if ($ebvMode) then f:getEbv($value) else $value
     default return
+        if ($n/@ignore eq 'true') then () else
         error(QName((), 'NOT_YET_IMPLEMENTED'),
             concat('Unexpected foxpath node, name=', local-name($n)))
 };

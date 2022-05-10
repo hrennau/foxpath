@@ -1972,6 +1972,19 @@ declare function f:rightValueOnly($leftValue as item()*,
     $rightValue[not(. = $leftValue)]  => distinct-values()
 };
 
+declare function f:resolveFoxpath($context as item(), $expr as xs:string?, $exprTree as element()?, $options as map(*))
+        as item()* {
+    let $useOptions :=
+        if ($context instance of node()) then $options
+        (: else if ($context?IS_CONTEXT_URI) then $options :)   (: 20200213 - commented out _TO_DO_ must be analyzed :)
+        else map:put($options, 'IS_CONTEXT_URI', true())
+    return
+        if ($exprTree) then
+            let $_DEBUG := trace((), 'FOX FUNC - USE_PARSED_FUNCTIONTEXT') return
+            i:resolveFoxpathRC($exprTree, false(), $context, 1, 1, (), $options)
+        else i:resolveFoxpath($expr, false(), $context, $useOptions, ())
+};
+
 (:~
  : Resolves a JSON Schema allOf group. Returns all subschemas, with schema
  : references recursively resolved and allOf subschemas recursively replaced
@@ -2560,6 +2573,18 @@ declare function f:xelement($name as xs:string, $content as item()*)
 };      
 
 (:~
+ : Wraps items in elements.
+ :
+ : @param items value items (atoms and/or nodes)
+ : @param name the element name
+ : @return the constructed elements
+ :)
+declare function f:xitemElems($items as item()*, $name as xs:string)
+        as element()* {
+    $items ! element {$name} {.}
+};      
+
+(:~
  : Foxpath function `xwrap#3`. Collects the items of $items into an XML document.
  :
  : Sorting:
@@ -2869,7 +2894,9 @@ declare function f:extractNamespaceNodes($elems as element()*)
 (:~
  : Creates a file system tree document.
  :)
-declare function f:ftree($folders as xs:string*, $options as map(*)) as element(ftree)? {
+declare function f:ftree($folders as xs:string*,
+                         $exprTrees as element()*,
+                         $options as map(*)) as element(ftree)? {
     let $filePropertiesMap :=
         let $fileProperties := $options?fileProperties
         return
@@ -2888,8 +2915,9 @@ declare function f:ftree($folders as xs:string*, $options as map(*)) as element(
                     let $isAtt := starts-with($pname, '@')
                     let $pname := if ($isAtt) then substring($pname, 2) else $pname
                     let $expr := replace($fp, '^.+?=\s*', '')
+                    let $exprTree := $exprTrees/*[local-name(.) eq $pname]
                     return
-                        map:entry($pname, map{'isAtt': $isAtt, 'expr': $expr, 'fileName': $fname})
+                        map:entry($pname, map{'isAtt': $isAtt, 'expr': $expr, 'exprTree': $exprTree, 'fileName': $fname})
                 let $entriesA := $entries[?(map:keys(.))?isAtt]                
                 let $entriesE := $entries[not(?(map:keys(.))?isAtt)]
                 return
@@ -2930,10 +2958,15 @@ declare function f:ftreeREC($folder as xs:string, $options as map(*)) as element
                 return
                     if (not(util:matchesNameFilter(util:fileName(.), $fileNameFilter))) then ()
                     else
-                        let $pvalue := i:resolveFoxpath($pmap?expr, false(), ., (), ())
+                        (: Experimental phase - use parsed function code = $pmap?exprTree/* :)
+                        
+                        (: Use of unparsed expression commented out :)
+                        (: let $pvalue := i:resolveFoxpath($pmap?expr, false(), ., (), ()) :)
+                        
+                        let $pvalueP := i:resolveFoxpathRC($pmap?exprTree/*, false(), ., 1, 1, (), $options)
                         return 
-                            if ($pmap?isAtt) then attribute {$pname} {$pvalue}
-                            else element {$pname} {$pvalue}
+                            if ($pmap?isAtt) then attribute {$pname} {$pvalueP}
+                            else element {$pname} {$pvalueP}
         }</fi>
     return
         <fo name="{util:fileName($folder)}">{$subfolders, $files}</fo>

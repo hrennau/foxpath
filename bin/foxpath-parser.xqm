@@ -2532,10 +2532,32 @@ declare function f:parseFunctionCall($text as xs:string, $context as map(*))
     let $argumentsText := f:skipOperator($text, $name)
     let $argumentsEtc := f:parseArgumentList($argumentsText, $context)
     let $arguments := $argumentsEtc[. instance of node()]
+    let $furtherInformation := f:parseNestedFoxpathCall($name, $arguments, $context)
     let $textAfter := f:extractTextAfter($argumentsEtc)
-    let $parsed := <functionCall name="{$name}">{$arguments}</functionCall>
+    let $parsed := <functionCall name="{$name}">{$arguments, $furtherInformation}</functionCall>
     return    
         ($parsed, $textAfter)
+};
+
+declare function f:parseNestedFoxpathCall($functionName as xs:string, 
+                                          $arguments as element()*,
+                                          $context as map(*))
+        as element()* {
+    if ($functionName eq 'resolve-fox') then
+        let $text := $arguments[last()]/string()
+        let $tree := f:parseFoxpath($text, $context)
+        return <_parsed ignore="true">{$tree/*}</_parsed>
+    else if ($functionName eq 'ftree') then
+        let $useArgs := subsequence($arguments, 3)
+        let $trees :=
+            for $arg in $useArgs
+            let $pname := replace($arg, '^.*?([\S]+?)\s*=.*', '$1') ! replace(., '^@', '')
+            let $expr := replace($arg, '^.+?=\s*', '')
+            let $tree := f:parseFoxpath($expr, $context)
+            return element {$pname} {$tree/*}
+        return 
+            if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>            
+    else ()
 };
 
 (:~
