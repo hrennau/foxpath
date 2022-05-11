@@ -2557,6 +2557,16 @@ declare function f:parseNestedFoxpathCall($functionName as xs:string,
             return element {$pname} {$tree/*}
         return 
             if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>            
+    else if ($functionName eq 'ftree-selective') then
+        let $useArgs := subsequence($arguments, 4)
+        let $trees :=
+            for $arg in $useArgs
+            let $pname := replace($arg, '^.*?([\S]+?)\s*=.*', '$1') ! replace(., '^@', '')
+            let $expr := replace($arg, '^.+?=\s*', '')
+            let $tree := f:parseFoxpath($expr, $context)
+            return element {$pname} {$tree/*}
+        return 
+            if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>            
     else ()
 };
 

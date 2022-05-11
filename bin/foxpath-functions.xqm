@@ -591,6 +591,27 @@ declare function f:resolveStaticFunctionCall($call as element(),
             ))
             return foxf:ftree($rootFolder, $exprTrees, $options)
 
+        else if ($fname = ('ftree-selective')) then
+            let $args := $call/*[not(@ignore eq 'true')]        
+            let $narg := count($args)
+            let $exprTrees := $call/_parsed        
+            let $rootFolder := 
+                if ($narg eq 0) then $context
+                else $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $descendantNames := $args[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
+            let $descendantNamesExcluded := $args[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $skipdir := $args[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fileProperties := subsequence($args, 4)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            (: let $flags := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) :)            
+                        
+            let $options := map:merge((
+                $skipdir ! map:entry('skipdir', .),
+                if (empty($fileProperties)) then () else map:entry('fileProperties', $fileProperties)
+                (: $flags ! map:entry('flags', .) :)
+            ))
+            return foxf:ftreeSelective($rootFolder, (), $descendantNames, $descendantNamesExcluded, 
+                                       $exprTrees, $options)
+
         (: function `ft-tokenize` 
            ====================== :)
         else if ($fname = ('ft-tokenize', 'fttok')) then  

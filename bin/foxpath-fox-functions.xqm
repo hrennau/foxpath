@@ -1980,7 +1980,6 @@ declare function f:resolveFoxpath($context as item(), $expr as xs:string?, $expr
         else map:put($options, 'IS_CONTEXT_URI', true())
     return
         if ($exprTree) then
-            let $_DEBUG := trace((), 'FOX FUNC - USE_PARSED_FUNCTIONTEXT') return
             i:resolveFoxpathRC($exprTree, false(), $context, 1, 1, (), $options)
         else i:resolveFoxpath($expr, false(), $context, $useOptions, ())
 };
@@ -2963,13 +2962,120 @@ declare function f:ftreeREC($folder as xs:string, $options as map(*)) as element
                         (: Use of unparsed expression commented out :)
                         (: let $pvalue := i:resolveFoxpath($pmap?expr, false(), ., (), ()) :)
                         
-                        let $pvalueP := i:resolveFoxpathRC($pmap?exprTree/*, false(), ., 1, 1, (), $options)
+                        (: let $pvalueP := i:resolveFoxpathRC($pmap?exprTree/*, false(), ., 1, 1, (), $options) :)
+                        let $pvalueP := f:resolveFoxpath(., (), $pmap?exprTree/*, $options)
                         return 
                             if ($pmap?isAtt) then attribute {$pname} {$pvalueP}
                             else element {$pname} {$pvalueP}
         }</fi>
     return
         <fo name="{util:fileName($folder)}">{$subfolders, $files}</fo>
+};
+
+(:~
+ : Creates a file system tree document.
+ :)
+declare function f:ftreeSelective(
+                         $folders as xs:string*,
+                         $uris as xs:string*,
+                         $descendantNames as xs:string?,
+                         $descendantNamesExcluded as xs:string?,
+                         $exprTrees as element()*,
+                         $options as map(*)) as element(ftree)? {
+    let $filePropertiesMap :=
+        let $fileProperties := $options?fileProperties
+        return
+            if (empty($fileProperties)) then () else
+                let $entries :=
+                    for $fp in $fileProperties
+                    let $fnameAndPname := replace($fp, '^(.+?)\s*=.*', '$1') ! normalize-space(.)
+                    let $withFname := matches($fnameAndPname, '\s')
+                    let $fname := (
+                        if (not($withFname)) then '*' 
+                        else replace($fnameAndPname, '^(.*)\s.*', '$1')
+                        ) ! util:compileNameFilter(., true())
+                    let $pname := 
+                        if (not($withFname)) then $fnameAndPname 
+                        else replace($fnameAndPname, '.*\s', '')
+                    let $isAtt := starts-with($pname, '@')
+                    let $pname := if ($isAtt) then substring($pname, 2) else $pname
+                    let $expr := replace($fp, '^.+?=\s*', '')
+                    let $exprTree := $exprTrees/*[local-name(.) eq $pname]
+                    return
+                        map:entry($pname, map{'isAtt': $isAtt, 'expr': $expr, 'exprTree': $exprTree, 'fileName': $fname})
+                let $entriesA := $entries[?(map:keys(.))?isAtt]                
+                let $entriesE := $entries[not(?(map:keys(.))?isAtt)]
+                return
+                    array {$entriesA, $entriesE}
+            
+    let $cnameFilter := $descendantNames ! util:compileNameFilter(., true(), false())        
+    let $cnameFilterExclude := $descendantNamesExcluded ! util:compileNameFilter(., true(), false())
+    
+    let $useOptions := map:merge((
+        $options,
+        $cnameFilter ! map:entry('descendantNames', .),
+        $cnameFilterExclude ! map:entry('descendantNamesExcluded', .),        
+        $options?skipdir ! map:entry('_skipdir-regex', tokenize(.) ! util:pattern2Regex(.)),
+        $filePropertiesMap ! map:entry('_file-properties', $filePropertiesMap)
+    ))
+    let $ftrees :=
+        for $folder in $folders
+        let $_DEBUG := trace($folder, '_FOLDER: ')
+        let $descendantUris := i:descendantUriCollection($folder, (), (), ()) ! concat($folder, '/', .)
+            [replace(., '.+/', '') ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
+        let $descendants := $descendantUris ! replace(., '^'||$folder||'/', '')
+        let $content := $folder ! f:ftreeSelectiveREC(., $descendants, $useOptions)
+        let $rootAttributes := f:getFtreeAttributes($folder, $content, $options)
+        return <ftree>{$rootAttributes, $content}</ftree>
+    return
+        if (count($ftrees) le 1) then $ftrees
+        else <ftrees count="{count($ftrees)}">{$ftrees}</ftrees>
+};
+
+(:~
+ : RECursive helper function of `f:ftreeSelective`.
+ :)
+declare function f:ftreeSelectiveREC(
+        $folder as xs:string,
+        $descendants as xs:string*,
+        $options as map(*)) as element()? {
+        
+    if ($folder ! util:fileName(.) ! util:multiMatches(., $options?_skipdir-regex, ())) then () else
+    
+    let $filePropertiesMap := $options?_file-properties    
+    let $folderName := replace($folder, '.*/', '')
+    let $subfoldersAndFiles :=
+        for $d in $descendants
+        group by $childName := replace($d, '/.*', '')
+        where $childName
+        return
+            let $childUri := $folder||'/'||$childName return        
+            if (empty($d[contains(., '/')])) then 
+                <fi name="{$childName}">{
+                    if (empty($filePropertiesMap)) then () else
+                        for $p in array:flatten($filePropertiesMap)
+                        let $pname := map:keys($p)
+                        let $pmap := $p($pname)
+                        let $fileNameFilter := $pmap?fileName
+                        return
+                            if (not(util:matchesNameFilter($childName, $fileNameFilter))) then ()
+                            else
+                                let $pvalueP := f:resolveFoxpath($childUri, (), $pmap?exprTree/*, $options)
+                                return 
+                                    if ($pmap?isAtt) then attribute {$pname} {$pvalueP}
+                                    else element {$pname} {$pvalueP}                
+                }</fi>
+            else
+                let $newFolder := $folder||'/'||$childName
+                let $newDescendants := $d ! substring-after(., $childName||'/')                
+                return f:ftreeSelectiveREC($newFolder, $newDescendants, $options)
+    let $files := $subfoldersAndFiles/self::fi => sort((), function($f) {$f/@name})
+    let $folders := $subfoldersAndFiles/self::fo => sort((), function($f) {$f/@name})
+    return
+        <fo name="{$folderName}">{
+            $files,
+            $folders
+        }</fo>
 };
 
 (:~
