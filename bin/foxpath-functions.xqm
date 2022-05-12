@@ -600,8 +600,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 else $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $descendantNames := $args[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
             let $descendantNamesExcluded := $args[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $skipdir := $args[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $fileProperties := subsequence($args, 4)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $skipdir := $args[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fileProperties := subsequence($args, 5)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             (: let $flags := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) :)            
                         
             let $options := map:merge((

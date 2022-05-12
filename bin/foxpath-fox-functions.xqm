@@ -2781,7 +2781,7 @@ declare function f:xsdValidate($docs as item()+,
                                    countValid="{count($valid)}"
                                    countInvalid="{count($invalid)}"
                                    countNofind="{count($nofind)}"
-                                   coundAmbiguous="{count($ambiguous)}">{
+                                   countAmbiguous="{count($ambiguous)}">{
                     if (not($messagesDistinct)) then () else
                     <distinctMessages count="{count($messagesDistinct)}">{$messagesDistinct}</distinctMessages>,
                     if (count($reports) eq 1) then $reports
@@ -2896,32 +2896,7 @@ declare function f:extractNamespaceNodes($elems as element()*)
 declare function f:ftree($folders as xs:string*,
                          $exprTrees as element()*,
                          $options as map(*)) as element(ftree)? {
-    let $filePropertiesMap :=
-        let $fileProperties := $options?fileProperties
-        return
-            if (empty($fileProperties)) then () else
-                let $entries :=
-                    for $fp in $fileProperties
-                    let $fnameAndPname := replace($fp, '^(.+?)\s*=.*', '$1') ! normalize-space(.)
-                    let $withFname := matches($fnameAndPname, '\s')
-                    let $fname := (
-                        if (not($withFname)) then '*' 
-                        else replace($fnameAndPname, '^(.*)\s.*', '$1')
-                        ) ! util:compileNameFilter(., true())
-                    let $pname := 
-                        if (not($withFname)) then $fnameAndPname 
-                        else replace($fnameAndPname, '.*\s', '')
-                    let $isAtt := starts-with($pname, '@')
-                    let $pname := if ($isAtt) then substring($pname, 2) else $pname
-                    let $expr := replace($fp, '^.+?=\s*', '')
-                    let $exprTree := $exprTrees/*[local-name(.) eq $pname]
-                    return
-                        map:entry($pname, map{'isAtt': $isAtt, 'expr': $expr, 'exprTree': $exprTree, 'fileName': $fname})
-                let $entriesA := $entries[?(map:keys(.))?isAtt]                
-                let $entriesE := $entries[not(?(map:keys(.))?isAtt)]
-                return
-                    array {$entriesA, $entriesE}
-            
+    let $filePropertiesMap := f:ftreeUtil_filePropertyMap($exprTrees, $options)
     let $useOptions := map:merge((
         $options,
         $options?skipdir ! map:entry('_skipdir-regex', tokenize(.) ! util:pattern2Regex(.)),
@@ -2982,32 +2957,7 @@ declare function f:ftreeSelective(
                          $descendantNamesExcluded as xs:string?,
                          $exprTrees as element()*,
                          $options as map(*)) as element(ftree)? {
-    let $filePropertiesMap :=
-        let $fileProperties := $options?fileProperties
-        return
-            if (empty($fileProperties)) then () else
-                let $entries :=
-                    for $fp in $fileProperties
-                    let $fnameAndPname := replace($fp, '^(.+?)\s*=.*', '$1') ! normalize-space(.)
-                    let $withFname := matches($fnameAndPname, '\s')
-                    let $fname := (
-                        if (not($withFname)) then '*' 
-                        else replace($fnameAndPname, '^(.*)\s.*', '$1')
-                        ) ! util:compileNameFilter(., true())
-                    let $pname := 
-                        if (not($withFname)) then $fnameAndPname 
-                        else replace($fnameAndPname, '.*\s', '')
-                    let $isAtt := starts-with($pname, '@')
-                    let $pname := if ($isAtt) then substring($pname, 2) else $pname
-                    let $expr := replace($fp, '^.+?=\s*', '')
-                    let $exprTree := $exprTrees/*[local-name(.) eq $pname]
-                    return
-                        map:entry($pname, map{'isAtt': $isAtt, 'expr': $expr, 'exprTree': $exprTree, 'fileName': $fname})
-                let $entriesA := $entries[?(map:keys(.))?isAtt]                
-                let $entriesE := $entries[not(?(map:keys(.))?isAtt)]
-                return
-                    array {$entriesA, $entriesE}
-            
+    let $filePropertiesMap := f:ftreeUtil_filePropertyMap($exprTrees, $options)
     let $cnameFilter := $descendantNames ! util:compileNameFilter(., true(), false())        
     let $cnameFilterExclude := $descendantNamesExcluded ! util:compileNameFilter(., true(), false())
     
@@ -3020,7 +2970,6 @@ declare function f:ftreeSelective(
     ))
     let $ftrees :=
         for $folder in $folders
-        let $_DEBUG := trace($folder, '_FOLDER: ')
         let $descendantUris := i:descendantUriCollection($folder, (), (), ()) ! concat($folder, '/', .)
             [replace(., '.+/', '') ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
         let $descendants := $descendantUris ! replace(., '^'||$folder||'/', '')
@@ -3076,6 +3025,48 @@ declare function f:ftreeSelectiveREC(
             $files,
             $folders
         }</fo>
+};
+
+(:~
+ : Returns an array of maps, each one describing a file property.
+ : A file property is described by a name and a Foxpath expression
+ : returning the property value, as well as an optional file
+ : name filter selecting files for which the property is assigned.
+ :
+ : @param exprTrees parsed expression trees - each child element provides
+ :   the expression tree for the file property named like the element 
+ : @param options the options map received by the ftree* function
+ : @return an array of maps
+ :)
+declare function f:ftreeUtil_filePropertyMap($exprTrees as element()?, $options as map(*))
+        as array(map(*))? {
+    let $fileProperties := $options?fileProperties return
+    if (empty($fileProperties)) then () else
+    
+    let $entries :=
+        for $fp in $fileProperties
+        let $fnameAndPname := replace($fp, '^(.+?)\s*=.*', '$1') ! normalize-space(.)
+        let $withFname := matches($fnameAndPname, '\s')
+        (: File name filter :)
+        let $fname := (
+            if (not($withFname)) then '*' 
+            else replace($fnameAndPname, '^(.*)\s.*', '$1')
+        ) ! util:compileNameFilter(., true())
+        (: Property name :)
+        let $pname := 
+            if (not($withFname)) then $fnameAndPname 
+            else replace($fnameAndPname, '.*\s', '')
+        let $isAtt := starts-with($pname, '@')
+        let $pname := if ($isAtt) then substring($pname, 2) else $pname
+        (: Expression or expression tree :)
+        let $expr := replace($fp, '^.+?=\s*', '')
+        let $exprTree := $exprTrees/*[local-name(.) eq $pname]
+        return
+            map:entry($pname, map{'isAtt': $isAtt, 'expr': $expr, 'exprTree': $exprTree, 'fileName': $fname})
+    let $entriesAtt := $entries[?(map:keys(.))?isAtt]                
+    let $entriesElem := $entries[not(?(map:keys(.))?isAtt)]
+    return
+        array {$entriesAtt, $entriesElem}
 };
 
 (:~
