@@ -1017,6 +1017,34 @@ declare function f:getImageURI($uris as xs:string+,
     return $imagePath[i:fox-file-exists(., ())]
 };
 
+declare function f:getRootUri($uris as xs:string*)
+        as xs:string? {
+    let $schemas :=        
+        for $uri in $uris
+        group by $schema := string(replace($uri, '^(\S+?:/+)(.:/)?.*', '$1$2')[. ne $uri])
+        return $schema
+    return
+        if (count($schemas) ne 1) then () (: No root if no common schema :)
+        else ($schemas ! replace(., '/$', ''))
+             ||f:getRootUriREC('', $uris ! replace(., '^(\S+?:)?/+(.:/)?', ''))
+};
+
+(:~
+ : Recursive helper function of `f:getRootUri`.
+ :)
+declare function f:getRootUriREC($potentialRoot as xs:string, $paths as xs:string*)
+        as xs:string? {
+    if (exists($paths[not(contains(., '/'))])) then $potentialRoot else
+    
+    let $step1 :=
+        for $path in $paths
+        group by $step := string(replace($path, '/.*', '')[. ne $path])
+        return $step
+    return 
+        if (count($step1) gt 1) then ($potentialRoot[string()], '/')[1]
+        else f:getRootUriREC($potentialRoot||'/'||$step1, $paths ! replace(., '^.+?/', ''))
+};        
+
 (:~
  :
  : Flags:
@@ -3017,7 +3045,10 @@ declare function f:ftreeSelective(
     let $filePropertiesMap := f:ftreeUtil_filePropertyMap($exprTrees, $options)
     let $cnameFilter := $descendantNames ! util:compileNameFilter(., true(), false())        
     let $cnameFilterExclude := $descendantNamesExcluded ! util:compileNameFilter(., true(), false())
-    
+    let $folders :=
+        if (exists($folders)) then $folders
+        else if (exists($uris)) then f:getRootUri($uris)
+        else error(QName((), 'INVALID_ARG'), 'Writing ftrees - either root folders or URIs must be specified')
     let $useOptions := map:merge((
         $options,
         $cnameFilter ! map:entry('descendantNames', .),
@@ -3027,8 +3058,11 @@ declare function f:ftreeSelective(
     ))
     let $ftrees :=
         for $folder in $folders
-        let $descendantUris := i:descendantUriCollection($folder, (), (), ()) ! concat($folder, '/', .)
-            [replace(., '.+/', '') ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
+        let $descendantUris := 
+            if (exists($uris)) then $uris
+            else
+                i:descendantUriCollection($folder, (), (), ()) ! concat($folder, '/', .)
+                [replace(., '.+/', '') ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
         let $descendants := $descendantUris ! replace(., '^'||$folder||'/', '')
         let $content := $folder ! f:ftreeSelectiveREC(., $descendants, $useOptions)
         let $rootAttributes := f:getFtreeAttributes($folder, $content, $options)

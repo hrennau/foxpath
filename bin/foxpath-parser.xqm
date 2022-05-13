@@ -1496,16 +1496,19 @@ declare function f:parseArrowExprClauses($text as xs:string, $context as map(*))
         let $name := $nameEtc[. instance of node()]
         return
             if (not($name)) then () else
+            
+                (: Case: function call :)
                 let $textAfterName := f:extractTextAfter($nameEtc)
                 return
                     if (not(starts-with($textAfterName, '('))) then () else
                         let $argumentListEtc := f:parseArgumentList($textAfterName, $context)
                         let $argumentList := $argumentListEtc[. instance of node()]
+                        let $furtherInformation := f:parseNestedFoxpathCall($name/@localName, $argumentList, true(), $context)
                         let $textAfterArgumentList := f:extractTextAfter($argumentListEtc)
                         return (
                             <arrayClause kind="EQName">{
                                 $name,                                
-                                <argumentList>{$argumentList}</argumentList>
+                                <argumentList>{$argumentList, $furtherInformation}</argumentList>
                             }</arrayClause>,
                             $textAfterArgumentList
                         )
@@ -1514,6 +1517,8 @@ declare function f:parseArrowExprClauses($text as xs:string, $context as map(*))
         let $varRef := $varRefEtc[. instance of node()]
         return
             if (not($varRef)) then () else
+            
+                (: Case: variable ref :)
                 let $textAfterVarRef := f:extractTextAfter($varRefEtc)
                 return
                     if (not(starts-with($textAfterVarRef, '('))) then () else
@@ -1532,6 +1537,8 @@ declare function f:parseArrowExprClauses($text as xs:string, $context as map(*))
         let $parenth := $parenthEtc[. instance of node()]
         return
             if (not($parenth)) then () else
+            
+                (: Case: parenthesized expression :)
                 let $textAfterParenth := f:extractTextAfter($parenthEtc)
                 return
                     if (not(starts-with($textAfterParenth, '('))) then () else
@@ -2532,7 +2539,7 @@ declare function f:parseFunctionCall($text as xs:string, $context as map(*))
     let $argumentsText := f:skipOperator($text, $name)
     let $argumentsEtc := f:parseArgumentList($argumentsText, $context)
     let $arguments := $argumentsEtc[. instance of node()]
-    let $furtherInformation := f:parseNestedFoxpathCall($name, $arguments, $context)
+    let $furtherInformation := f:parseNestedFoxpathCall($name, $arguments, false(), $context)
     let $textAfter := f:extractTextAfter($argumentsEtc)
     let $parsed := <functionCall name="{$name}">{$arguments, $furtherInformation}</functionCall>
     return    
@@ -2541,14 +2548,27 @@ declare function f:parseFunctionCall($text as xs:string, $context as map(*))
 
 declare function f:parseNestedFoxpathCall($functionName as xs:string, 
                                           $arguments as element()*,
+                                          $isArrowCall as xs:boolean,
                                           $context as map(*))
         as element()* {
+    let $argShift := if ($isArrowCall) then -1 else 0        
+    return
     if ($functionName eq 'resolve-fox') then
         let $text := $arguments[last()]/string()
         let $tree := f:parseFoxpath($text, $context)
         return <_parsed ignore="true">{$tree/*}</_parsed>
     else if ($functionName eq 'ftree') then
-        let $useArgs := subsequence($arguments, 3)
+        let $useArgs := subsequence($arguments, 3 + $argShift)
+        let $trees :=
+            for $arg in $useArgs
+            let $pname := replace($arg, '^.*?([\S]+?)\s*=.*', '$1') ! replace(., '^@', '')
+            let $expr := replace($arg, '^.+?=\s*', '')
+            let $tree := f:parseFoxpath($expr, $context)
+            return element {$pname} {$tree/*}
+        return trace(
+            if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed> , '_PARSED: ')            
+    else if ($functionName eq 'ftree-selective') then
+        let $useArgs := subsequence($arguments, 5 + $argShift)
         let $trees :=
             for $arg in $useArgs
             let $pname := replace($arg, '^.*?([\S]+?)\s*=.*', '$1') ! replace(., '^@', '')
@@ -2557,8 +2577,8 @@ declare function f:parseNestedFoxpathCall($functionName as xs:string,
             return element {$pname} {$tree/*}
         return 
             if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>            
-    else if ($functionName eq 'ftree-selective') then
-        let $useArgs := subsequence($arguments, 5)
+    else if ($functionName eq 'ftree-view') then
+        let $useArgs := subsequence($arguments, 2 + $argShift)
         let $trees :=
             for $arg in $useArgs
             let $pname := replace($arg, '^.*?([\S]+?)\s*=.*', '$1') ! replace(., '^@', '')
