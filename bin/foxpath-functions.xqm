@@ -544,6 +544,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 i:fox-file-size($uri, $options)
 
+       (: function `filter-regex` 
+          ======================= :)
+        else if ($fname = ('filter-regex', 'fregex')) then
+            let $items := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $regex := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $flags := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return 
+                if (count($regex) le 1) then $items[matches(., $regex, string($flags))]
+                else $items[some $r in $regex satisfies matches(., $r, string($flags))]
+
         (: function `fn-contains-text` 
            =========================== :)
         else if ($fname eq 'fn-contains-text') then
@@ -1299,6 +1309,25 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     ($explicit, $context)[1]
             return
                 foxf:unescapeJsonName($string)
+                
+        (: function `uri-image` 
+           ==================== :)
+        else if ($fname = ('ec-image-axis', 'image-axis')) then
+            let $da := if (starts-with($fname, 'ec-')) then 1 else 0
+            let $narg := count($call/*)
+            let $_DEBUG := trace($narg, '_NARG: ')
+            let $args := $call/([
+               *[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 0],
+               *[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 1],
+               *[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 2],
+               *[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 3],
+               *[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 4]
+            ])
+            let $_DEBUG := trace($args(2), '_ARG2: ')
+            let $_DEBUG := trace($args(3), '_ARG3: ')            
+            let $uris := if ($da eq 0) then $context else $args(1)
+            return
+                foxf:getImageURI($uris, $args(1 + $da), $args(2 + $da), $args(3 + $da), $args(4 + $da))
                 
         (: function `value` 
            ================ :)

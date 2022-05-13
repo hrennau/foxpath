@@ -961,6 +961,63 @@ declare function f:ftTokenize($text as item()*,
 };        
 
 (:~
+ : Maps a URI to the image reflected by a pair of "reflector URIs". 
+ : The result URI is reached from $reflector2URI by the same path 
+ : as the input $uri s reached from $reflector1URI. For example,
+ : if $uri is $reflectorUri1/x/y/z, the result URI is 
+ : $reflectorUri2/x/y/z.
+ :
+ : If $reflectedReplaceSubstring and $reflectedReplaceWith
+ : are specified, the result URI has a file name obtained
+ : by editing the file name of $uri, replacing substring
+ : $reflectedReplaceSubstring with substring $reflectedReplaceWith.
+ :
+ : Constraint: the URI $uri must be a descendant or ancestor or
+ : $reflectorUri1.
+ :
+ : @param uri a URI
+ : @param reflector1URI reflector reflecting the input URI
+ : @param reflector2URI reflector reflecting the output URI
+ : @param reflectedReplaceSubstring resource name editing - replacement from substring 
+ : @param reflectedReplaceWith resource name editing - replacement to substring 
+ : @return the image URI, if the resource exists, an empty sequence otherwise
+ :) 
+declare function f:getImageURI($uris as xs:string+, 
+                               $reflector1URI as xs:string?, 
+                               $reflector2URI as xs:string?,
+                               $reflectedReplaceSubstring as xs:string?,
+                               $reflectedReplaceWith as xs:string?)
+        as xs:string* {    
+    if (not($reflector1URI) or not($reflector2URI)) then () else
+    
+    (: let $_DEBUG := trace($uris, '_URIS: ') :)
+    for $uri in $uris
+    let $pathReflector1ToUri :=
+        if (matches($uri, $reflector1URI||'(/.*)?$')) then
+            substring-after($uri, $reflector1URI||'/')            
+        else if (matches ($reflector1URI, $uri||'(/.*)?$')) then
+            let $countSteps :=
+                (substring-after($reflector1URI, $uri||'/')
+                ! tokenize(., '\s*/\s*')) => count()
+            return (for $i in 1 to $countSteps return '..') => string-join('/')
+        else ()
+    return
+        (: Lefthook which is not ancestor or descendant of $uri not supported :)
+        if (empty($pathReflector1ToUri)) then () else
+        
+    let $pathReflector1ToUriEdited :=
+        if (empty($reflectedReplaceSubstring)) then $pathReflector1ToUri
+        else
+            let $parts := replace($pathReflector1ToUri, '^(.*?)?([^/]+)$', '$1~~~$2')
+            let $path := substring-before($parts, '~~~')
+            let $name := substring-after($parts, '~~~')
+            let $newName := replace($name, $reflectedReplaceSubstring, $reflectedReplaceWith)
+            return concat($path, $newName)
+    let $imagePath := concat($reflector2URI, '/', $pathReflector1ToUriEdited)
+    return $imagePath[i:fox-file-exists(., ())]
+};
+
+(:~
  :
  : Flags:
  : a - anchors are added, for start and end of string
