@@ -2546,6 +2546,27 @@ declare function f:parseFunctionCall($text as xs:string, $context as map(*))
         ($parsed, $textAfter)
 };
 
+(:~
+ : Parses Foxpath expressions passed to an extension function as function
+ : argument(s). Stores the parse tree(s) in an element to be evaluated when 
+ : evaluating the extension function. Which substring of which argument is
+ : to be interpreted as a Foxpath expression depends on the extension function 
+ : identified by the function name.
+ :
+ : When the function is called via arrow operator, the index identifying
+ : an argument is diminuished by one.
+ :
+ : The function is called from two functions: (1) f:parseFunctionCall, 
+ : (2)f:parseArrowExprClauses.
+ :
+ : @param functionName name of the extension function
+ : @param arguments arguments of a function call
+ : @param isArrowCall if true, the function is called via arrow operator
+ : @param context the parsing context
+ : @return if the function has arguments which are nested Foxpath
+ :   expressions - an element contained the parse trees of the
+ :   expression(s); the empty sequence otherwise
+ :) 
 declare function f:parseNestedFoxpathCall($functionName as xs:string, 
                                           $arguments as element()*,
                                           $isArrowCall as xs:boolean,

@@ -164,43 +164,30 @@ declare function f:bslash($arg as xs:string?)
  : @return the names as a sequence, or as a concatenated string
  :)
 declare function f:childNames($nodes as node()*, 
-                              $concat as xs:boolean?, 
                               $nameKind as xs:string?,   (: name | lname | jname :)
-                              $namePatterns as xs:string?,
-                              $excludedNamePatterns as xs:string?,
-                              $nosort as xs:boolean?)
+                              $nameFilter as xs:string?,
+                              $flags as xs:string?)
         as xs:string* {
-    let $nameRegexes := $namePatterns 
-                      ! tokenize(.)
-                      ! replace(., '\*', '.*') ! replace(., '\?', '.') 
-                      ! concat('^', ., '$')        
-    let $excludedNameRegexes := 
-                      $excludedNamePatterns
-                      ! tokenize(.)
-                      ! replace(., '\*', '.*') ! replace(., '\?', '.') 
-                      ! concat('^', ., '$')
-    let $separator := ', '[$concat]
+    let $nosort := contains($flags, 's')        
+    let $caseSensitive := contains($flags, 'c')
+    let $filterIsRegex := contains($flags, 'r')
+    let $cnameFilter := util:compilePlusMinusNameFilter($nameFilter, $caseSensitive, $filterIsRegex)
+    let $_DEBUG := trace($cnameFilter, '_FILTER: ')
+    let $fnName := 
+        switch($nameKind)
+        case 'name' return function($node) {name($node)}
+        case 'jname' return function($node) {convert:decode-key(local-name(.))}
+        default return function($node) {local-name($node)}
+    let $separator := ', '
 
     for $node in $nodes
-    let $items := $node/*
-       [empty($nameRegexes) or (some $nameRegex in $nameRegexes satisfies 
-         matches(local-name(.), $nameRegex, 'i'))]
-       [empty($excludedNameRegexes) or not(
-         some $excludedNameRegex in $excludedNameRegexes satisfies 
-            matches(local-name(.), $excludedNameRegex, 'i'))]
-    let $names := 
-        if ($nameKind eq 'lname') then 
-            ($items/local-name(.)) => distinct-values()
-        else if ($nameKind eq 'jname') then 
-            ($items/convert:decode-key(local-name(.))) => distinct-values()
-        else ($items/name(.)) => distinct-values()
+    let $items := $node/*[$fnName(.) ! util:matchesPlusMinusNameFilter(., $cnameFilter)]
+    let $names := $items/$fnName(.) => distinct-values() 
     let $names := if ($nosort) then $names else $names => sort()        
-    let $path :=        
-        if (exists($separator)) then string-join($names, $separator)
-        else $names
-    order by $path        
+    let $nameseq := string-join($names, $separator)
+    order by $nameseq        
     return
-        $path
+        $nameseq
 };        
 
 (:~

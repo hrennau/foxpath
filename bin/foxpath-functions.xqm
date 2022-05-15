@@ -145,7 +145,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $rightValue := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:bothValues($leftValue, $rightValue)
-            
+(:            
         (: function `child-jnames` 
            ======================= :)
         else if ($fname eq 'child-jnames') then
@@ -167,17 +167,28 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $namePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $excludedNamePattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return foxf:childNames($node, true(), 'lname', $namePattern, $excludedNamePattern, $nosort)            
+:)
 
         (: function `child-names` 
            ===================== :)
-        else if ($fname eq 'child-names') then
-            let $node := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return if (exists($explicit)) then $explicit else $context
-            let $nosort := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) ! xs:boolean(.)                
-            let $namePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNamePattern := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
-            return foxf:childNames($node, true(), 'name', $namePattern, $excludedNamePattern, $nosort)            
+        else if ($fname = ('child-names', 'ec-child-names',
+                           'child-lnames', 'ec-child-lnames',
+                           'child-jnames', 'ec-child-jnames')) then
+            let $da := if (starts-with($fname, 'ec-')) then 1 else 0
+            let $narg := count($call/*)
+            let $args := $call/([
+               *[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 0],
+               *[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 1],
+               *[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 2]
+            ])
+            let $nodes := if (starts-with($fname, 'ec-')) then $args(1) else $context
+            let $nameFilter := $args(1 + $da)
+            let $flags := $args(2 + $da)
+            let $nameKind := 
+                if (contains($fname, '-names')) then 'name' 
+                else if (contains($fname, '-jnames')) then 'jname' 
+                else 'lname'
+            return foxf:childNames($nodes, $nameKind, $nameFilter, $flags)            
 
         (: function `contains-text` 
            ======================== :)
