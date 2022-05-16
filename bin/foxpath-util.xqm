@@ -31,10 +31,26 @@ declare variable $f:PREDECLARED_NAMESPACES := (
  : @param ignoreCase if true, the filter ignores case 
  : @return a map with entries 'names', 'regexes' and 'flags' 
  :)
-declare function f:compilePlusMinusNameFilter($patterns as xs:string*, 
-                                              $ignoreCase as xs:boolean?,
-                                              $patternIsRegex as xs:boolean?)
+declare function f:compilePlusMinusNameFilter($patterns as xs:string*) 
         as map(xs:string, item()*)? {
+    (: To do - check for \# :)        
+    let $flags := ((
+        for $pattern in $patterns return
+            if ($pattern[contains(., '\')]) then f:substringBeforeAfterEscableChar($pattern, 'after', '#')
+            else substring-after($pattern, '#')
+        ) ! normalize-space(.)) => string-join('')
+    let $patterns := (
+        for $pattern in $patterns return
+            if (not(contains($pattern, '#'))) then $pattern
+            else ((
+                if ($pattern[contains(., '\')]) then f:substringBeforeAfterEscableChar($pattern, 'before', '#')
+                else substring-before($pattern, '#'))[string()], $pattern)[1]
+        ) ! normalize-space(.)
+        
+    let $ignoreCase := not(contains($flags, 'c'))
+    let $patternIsRegex := contains($flags, 'r')
+    
+    let $patterns := $patterns ! replace(., '#.*', '')
     let $patterns := $patterns ! normalize-space(.)[string()] ! tokenize(.)
     return if (empty($patterns)) then () else
     
@@ -250,6 +266,40 @@ declare function f:atomIntersection($sequences as array(item()*)*)
             
             return $newAccum})
 };
+
+(:~
+ : Returns the substring preceding or following the first occurrence
+ : of a character ($char) which is not escaped by a preceding backslash,
+ : or the empty sequence if such a character is not found.
+ : 
+ : The substring returned is edited by replacing any pair of consecutive 
+ : backslashes with a single backslash and any occurrence of $char preceded 
+ : by a backslach with the character without preceding backslash. In
+ : other words, any escaping of $char or a backslash is removed.
+ :
+ : @param string the string to be analyzed
+ : @param beforeAfter either 'before' or 'after'
+ : @param char the character delimiting the substring
+ : @return the substring preceding or following the first occurrence
+ :   of $char, with any escaping removed
+ :)
+declare function f:substringBeforeAfterEscableChar(
+                    $string as xs:string, 
+                    $beforeAfter as xs:string, 
+                    $char as xs:string)
+        as xs:string {
+    if (not(contains($string, '\'))) then 
+        if ($beforeAfter eq 'before') then substring-before($string, $char)
+        else substring-after($string, $char)
+    else ( 
+        let $patternBefore := '^((\\\\|\\'||$char||'|[^'||$char||'])*)'
+        return
+            if ($beforeAfter eq 'before') then
+                replace($string, $patternBefore||$char||'.*', '$1')
+            else        
+                replace($string, $patternBefore||$char||'(.*)', '$3')    
+        ) ! replace(., '\\\\', '\\') ! replace(., '\\'||$char, $char)
+};        
 
 (:
 declare variable $f:STDLIB := map{

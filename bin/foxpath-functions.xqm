@@ -49,6 +49,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 
         (: function `att-lnames` 
            ==================== :)
+(:           
         else if ($fname eq 'att-lnames') then
             let $nodes := 
                 if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -57,9 +58,10 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $nameFilterExclude := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
                 foxf:attNames($nodes, true(), 'lname', $nameFilter, $nameFilterExclude)
-
+:)
         (: function `att-names` 
            =================== :)
+(:           
         else if ($fname eq 'att-names') then
             let $nodes := 
                 if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -68,6 +70,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $nameFilterExclude := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
                 foxf:attNames($nodes, true(), 'name', $nameFilter, $nameFilterExclude)
+:)
 
         (: function `atts` 
            =============== :)
@@ -169,11 +172,21 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return foxf:childNames($node, true(), 'lname', $namePattern, $excludedNamePattern, $nosort)            
 :)
 
-        (: function `child-names` 
-           ===================== :)
+        (: function `child-names`, `att-names`, `content-names`, `parent-name`  
+           =================================================================== :)
         else if ($fname = ('child-names', 'ec-child-names',
                            'child-lnames', 'ec-child-lnames',
-                           'child-jnames', 'ec-child-jnames')) then
+                           'child-jnames', 'ec-child-jnames',
+                           'parent-name', 'ec-parent-name',
+                           'parent-lname', 'ec-parent-lname',
+                           'parent-jname', 'ec-parent-jname',
+                           'att-names', 'ec-att-names',
+                           'att-lnames', 'ec-att-lnames',
+                           'att-jnames', 'ec-att-jnames',
+                           'content-names', 'ec-content-names',
+                           'content-lnames', 'ec-content-lnames',
+                           'content-jnames', 'ec-content-jnames'                           
+                           )) then
             let $da := if (starts-with($fname, 'ec-')) then 1 else 0
             let $narg := count($call/*)
             let $args := $call/([
@@ -185,10 +198,11 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $nameFilter := $args(1 + $da)
             let $flags := $args(2 + $da)
             let $nameKind := 
-                if (contains($fname, '-names')) then 'name' 
-                else if (contains($fname, '-jnames')) then 'jname' 
+                if (contains($fname, '-name')) then 'name' 
+                else if (contains($fname, '-jname')) then 'jname' 
                 else 'lname'
-            return foxf:childNames($nodes, $nameKind, $nameFilter, $flags)            
+            let $relationship := replace($fname, '^(ec-)?(.*?)-.*', '$2')                
+            return foxf:relatedNames($nodes, $relationship, $nameKind, $nameFilter, $flags)            
 
         (: function `contains-text` 
            ======================== :)
@@ -764,12 +778,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 i:fox-doc-available($uri, $options)
             
-        (: function `jpath-compare` 
-           ======================= :)
-        else if ($fname = ('jpath-compare', 'jpathcmp')) then           
+        (: function `jpath-multi-compare` 
+           ============================== :)
+        else if ($fname = ('jpath-multi-compare', 'jpathmcmp')) then           
             let $docs := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:pathCompare($docs, 'jname', $options)
+            return foxf:pathMultiCompare($docs, 'jname', $options)
 
         (: function `jpath-content` 
            ======================== :)
@@ -887,12 +901,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:lpad($string, $width, $fillChar)
 
-        (: function `lpath-compare` 
-           ======================= :)
-        else if ($fname = ('lpath-compare', 'lpathcmp')) then           
+        (: function `lpath-multi-compare` 
+           ============================== :)
+        else if ($fname = ('lpath-multi-compare', 'lpathmcmp')) then           
             let $docs := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:pathCompare($docs, 'lname', $options)
+            return foxf:pathMultiCompare($docs, 'lname', $options)
 
         (: function `lpath-content` 
            ======================= :)
@@ -1068,19 +1082,31 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `parent-name` 
            ====================== :)
+        (:
         else if ($fname eq 'parent-name') then
             let $node := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
             return
                 foxf:parentName($node, 'name')            
-
+:)
         (: function `path-compare` 
            ======================= :)
-        else if ($fname = ('path-compare', 'pathcmp')) then           
+        else if ($fname = (
+                'path-compare', 'pathcmp', 
+                'lpath-compare', 'lpathcmp', 
+                'jpath-compare', 'jpathcmp')) then
+            let $nameKind := substring-before($fname, '-')
+            let $doc2 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:pathCompare($context, $doc2, $nameKind, $options)
+
+        (: function `path-multi-compare` 
+           ============================= :)
+        else if ($fname = ('path-multi-compare', 'pathmcmp')) then           
             let $docs := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:pathCompare($docs, 'name', $options)
+            return foxf:pathMultiCompare($docs, 'name', $options)
 
         (: function `path-content` 
            ======================= :)
@@ -1337,7 +1363,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname = ('ec-image-axis', 'image-axis')) then
             let $da := if (starts-with($fname, 'ec-')) then 1 else 0
             let $narg := count($call/*)
-            let $_DEBUG := trace($narg, '_NARG: ')
             let $args := $call/([
                *[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 0],
                *[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 1],
@@ -1345,8 +1370,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
                *[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 3],
                *[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 4]
             ])
-            let $_DEBUG := trace($args(2), '_ARG2: ')
-            let $_DEBUG := trace($args(3), '_ARG3: ')            
             let $uris := if ($da eq 0) then $context else $args(1)
             return
                 foxf:getImageURI($uris, $args(1 + $da), $args(2 + $da), $args(3 + $da), $args(4 + $da))

@@ -6,6 +6,7 @@ at "foxpath-processorDependent.xqm",
 import module namespace util="http://www.ttools.org/xquery-functions/util" 
 at  "foxpath-util.xqm";
 
+(:
 declare function f:attNames($nodes as node()*, 
                             $concat as xs:boolean?, 
                             $nameKind as xs:string?,   (: name | lname | jname :)
@@ -29,6 +30,7 @@ declare function f:attNames($nodes as node()*,
         if (exists($separator)) then string-join($names, $separator)
         else $names
 };        
+:)
 
 (:~
  : Writes a set of standard attributes. Can be useful when working
@@ -145,12 +147,11 @@ declare function f:bslash($arg as xs:string?)
 };      
 
 (:~
- : Returns the child element names of a node. If $concat is true, the sorted names are 
- : concatenated, using ', ' as separator. Otherwise the names are returned
- : as a sequence. Dependent on $nameKind, the local names (lname), the JSON
- : names (jname) or the lexical names (name) are returned. Names are sorted.
+ : Returns the names of nodes structurally related to given nodes. Dependent 
+ : on $nameKind, the local names (lname), the JSON names (jname) or the lexical 
+ : names (name) are returned. Names are sorted.
  :
- : When using $namePattern, only those child elements are considered which have
+ : When using $nameFilter, only those child elements are considered which have
  : a local name matching the pattern.
  :
  : Example: .../foo/child-names(., ', ', false(), '*put')
@@ -163,25 +164,45 @@ declare function f:bslash($arg as xs:string?)
  : @param excludedNamePattern optional name patterns selecting child elements to be ignored
  : @return the names as a sequence, or as a concatenated string
  :)
-declare function f:childNames($nodes as node()*, 
-                              $nameKind as xs:string?,   (: name | lname | jname :)
-                              $nameFilter as xs:string?,
-                              $flags as xs:string?)
+declare function f:relatedNames($nodes as node()*, 
+                            $relationship as xs:string,
+                            $nameKind as xs:string?,   (: name | lname | jname :)
+                            $nameFilter as xs:string?,
+                            $options as xs:string?)
         as xs:string* {
-    let $nosort := contains($flags, 's')        
-    let $caseSensitive := contains($flags, 'c')
-    let $filterIsRegex := contains($flags, 'r')
-    let $cnameFilter := util:compilePlusMinusNameFilter($nameFilter, $caseSensitive, $filterIsRegex)
-    let $_DEBUG := trace($cnameFilter, '_FILTER: ')
+    let $nosort := contains($options, 'nosort') 
+    let $cnameFilter := util:compilePlusMinusNameFilter($nameFilter)
+    (:
+    let $_DEBUG := trace($nameFilter, '_FILTER_STRING: ')    
+    let $_DEBUG := trace($cnameFilter, '_FILTER_ELEM: ')
+     :)
     let $fnName := 
+        if ($relationship = ('content')) then
+        switch($nameKind)
+        case 'name' return function($node) {'@'[$node/self::attribute()]||name($node)}
+        case 'jname' return function($node) {convert:decode-key(local-name(.))}
+        default return function($node) {'@'[$node/self::attribute()]||local-name($node)}
+        
+        else
         switch($nameKind)
         case 'name' return function($node) {name($node)}
         case 'jname' return function($node) {convert:decode-key(local-name(.))}
         default return function($node) {local-name($node)}
+    
     let $separator := ', '
 
     for $node in $nodes
-    let $items := $node/*[$fnName(.) ! util:matchesPlusMinusNameFilter(., $cnameFilter)]
+    let $items :=
+        let $unfiltered :=
+            switch($relationship)
+            case 'child' return $node/*
+            case 'parent' return $node/..
+            case 'att' return $node/@*
+            case 'content' return $node/(@*, *)
+            default return error(QName((), 'INVALID_ARG'), 'Unknown structure relationship: '||$relationship)
+        return 
+            if (empty($cnameFilter)) then $unfiltered
+            else $unfiltered[$fnName(.) ! replace(., '^@', '') ! util:matchesPlusMinusNameFilter(., $cnameFilter)]
     let $names := $items/$fnName(.) => distinct-values() 
     let $names := if ($nosort) then $names else $names => sort()        
     let $nameseq := string-join($names, $separator)
@@ -1816,6 +1837,93 @@ declare function f:parentName($node as node(),
 };        
 
 (:~
+ : Compares two documents with respect to their data paths.
+ :
+ : @param doc1 a document, or its document URI
+ : @param doc2 another document, or its document URI
+ : @param nameKind name, lname, jname for name, local name, JSON name 
+ : @param options a whitespace separated list of options
+ : 
+ : Options:
+ : - path - compares plain paths (without index), report paths not common to
+ :     both documents (default style of comparison) 
+ : - path-count - compare plain paths (without index) and their frequencies,
+ :     report paths not common to both documents or with different
+ :     frequencies in both documents
+ :
+ : @return if no difference, the empty sequence; otherwise a <deviations>
+ :   element with optional child elements <only1> and <only2>, containing
+ :   the paths occurring only in document 1 or 2, respectively
+ :)
+declare function f:pathCompare($doc1 as item(),
+                               $doc2 as item(),
+                               $nameKind as xs:string?,
+                               $options as xs:string?)
+        as item()? {
+    let $options := $options ! tokenize(.) ! lower-case(.)
+    
+    let $nameKind := ($nameKind, 'lname')[1]
+    let $d1 := if ($doc1 instance of node()) then $doc1 else i:fox-doc($doc1, ())
+    let $d2 := if ($doc2 instance of node()) then $doc2 else i:fox-doc($doc2, ())    
+
+    return
+        if ($options = "path-count") then
+            let $paths1 :=
+                for $item in $d1/f:allDescendants(.)
+                group by $path := f:namePath($item, $nameKind, (), ())
+                order by $path
+                return $path||'#'||count($item)
+            let $paths2 :=
+                for $item in $d2/f:allDescendants(.)
+                group by $path := f:namePath($item, $nameKind, (), ())
+                order by $path
+                return $path||'#'||count($item)
+            let $paths1NOC := $paths1 ! replace(., '#\d+$', '')                
+            let $paths2NOC := $paths2 ! replace(., '#\d+$', '')
+            let $only1 := $paths1NOC[not(. = $paths2NOC)]
+            let $only2 := $paths2NOC[not(. = $paths1NOC)]
+            let $countDiff :=
+                for $path in $paths1
+                let $pathNOC := $path ! replace(., '#\d+$', '')
+                where not($pathNOC = $only1)
+                return
+                    let $path2 := $paths2[starts-with(., $pathNOC||'#')]
+                    let $count1 := replace($path, '.+#', '')
+                    let $count2 := replace($path2, '.+#', '')
+                    where $count1 ne $count2
+                    return
+                        <loc path="{$pathNOC}" count1="{$count1}" count2="{$count2}"/>
+            return
+                if (empty(($only1, $only2, $countDiff))) then ()
+                else
+                    <deviations uri1="{$d1/base-uri(.)}"  uri2="{$d2/base-uri(.)}">{                    
+                        if (empty($only1)) then () else
+                        <only1 count="{count($only1)}">{$only1 ! <loc path="{.}"/>}</only1>,
+                        if (empty($only2)) then () else
+                        <only2 count="{count($only2)}">{$only2 ! <loc path="{.}"/>}</only2>,
+                        if (empty($countDiff)) then () else
+                        <pathCountDiff>{
+                            $countDiff
+                        }</pathCountDiff>
+                        
+                    }</deviations>
+                            
+        else
+            let $paths1 := $d1/f:allDescendants(.)/f:namePath(., $nameKind, (), ()) => distinct-values() => sort()
+            let $paths2 := $d2/f:allDescendants(.)/f:namePath(., $nameKind, (), ()) => distinct-values() => sort()
+            let $only1 := $paths1[not(. = $paths2)]
+            let $only2 := $paths2[not(. = $paths1)]
+            return
+                if (empty($only1) and empty($only2)) then () else
+                <deviations uri1="{$d1/base-uri(.)}"  uri2="{$d2/base-uri(.)}">{
+                    if (empty($only1)) then () else
+                    <only1 count="{count($only1)}">{$only1 ! <loc path="{.}"/>}</only1>,
+                    if (empty($only2)) then () else
+                    <only2 count="{count($only2)}">{$only2 ! <loc path="{.}"/>}</only2>
+                }</deviations>
+};
+
+(:~
  : Returns for a sequence of documents for each document those data paths which are not contained
  : in all other documents.
  :
@@ -1824,9 +1932,9 @@ declare function f:parentName($node as node(),
  :   count - do not display paths, only counts
  : @return a structured representation of data paths not used by all documents
  :)
-declare function f:pathCompare($items as item()*,
-                               $nameKind as xs:string?,
-                               $options as xs:string?)
+declare function f:pathMultiCompare($items as item()*,
+                                    $nameKind as xs:string?,
+                                    $options as xs:string?)
         as item()? {
     let $options := $options ! tokenize(.) ! lower-case(.)
     
