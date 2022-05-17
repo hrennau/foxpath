@@ -2578,18 +2578,20 @@ declare function f:parseNestedFoxpathCall($functionName as xs:string,
         let $text := $arguments[last()]/string()
         let $tree := f:parseFoxpath($text, $context)
         return <_parsed ignore="true">{$tree/*}</_parsed>
-    else if ($functionName eq 'ftree') then
-        let $useArgs := subsequence($arguments, 3 + $argShift)
+    else if ($functionName = ('ftree', 'ec-ftree')) then
+        let $ecShift := if (starts-with($functionName, 'ec-')) then 1 else 0
+        let $useArgs := subsequence($arguments, 1 + $argShift + $ecShift)
         let $trees :=
             for $arg in $useArgs
             let $pname := replace($arg, '^.*?([\S]+?)\s*=.*', '$1') ! replace(., '^@', '')
             let $expr := replace($arg, '^.+?=\s*', '')
             let $tree := f:parseFoxpath($expr, $context)
             return element {$pname} {$tree/*}
-        return trace(
-            if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed> , '_PARSED: ')            
-    else if ($functionName eq 'ftree-selective') then
-        let $useArgs := subsequence($arguments, 5 + $argShift)
+        return
+            if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>            
+    else if ($functionName = ('ftree-selective', 'ec-ftree-selective')) then
+        let $ecShift := if (starts-with($functionName, 'ec-')) then 1 else 0    
+        let $useArgs := subsequence($arguments, 3 + $argShift + $ecShift)
         let $trees :=
             for $arg in $useArgs
             let $pname := replace($arg, '^.*?([\S]+?)\s*=.*', '$1') ! replace(., '^@', '')
@@ -2598,8 +2600,11 @@ declare function f:parseNestedFoxpathCall($functionName as xs:string,
             return element {$pname} {$tree/*}
         return 
             if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>            
-    else if ($functionName eq 'ftree-view') then
-        let $useArgs := subsequence($arguments, 2 + $argShift)
+    else if ($functionName = ('ftree-view')) then
+        let $_DEBUG := trace(count($arguments), '_CARG: ')
+        let $ecShift := if (starts-with($functionName, 'ec-')) then 1 else 0    
+        let $useArgs := subsequence($arguments, 2 + $argShift + $ecShift)
+        let $_DEBUG := trace($useArgs, '_USE_ARGS: ')
         let $trees :=
             for $arg in $useArgs
             let $pname := replace($arg, '^.*?([\S]+?)\s*=.*', '$1') ! replace(., '^@', '')

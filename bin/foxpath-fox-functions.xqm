@@ -199,6 +199,7 @@ declare function f:relatedNames($nodes as node()*,
             case 'parent' return $node/..
             case 'att' return $node/@*
             case 'content' return $node/(@*, *)
+            case 'descendant' return $node//*
             default return error(QName((), 'INVALID_ARG'), 'Unknown structure relationship: '||$relationship)
         return 
             if (empty($cnameFilter)) then $unfiltered
@@ -2758,9 +2759,14 @@ declare function f:xelement($name as xs:string, $content as item()*)
  : @param name the element name
  : @return the constructed elements
  :)
-declare function f:xitemElems($items as item()*, $name as xs:string)
+declare function f:xitemElems($items as item()*, $name as xs:string?)
         as element()* {
-    $items ! element {$name} {.}
+    if ($name) then $items ! element {$name} {.}
+    else
+        (: Use node name, if possible :)
+        for $item in $items
+        let $name := $item[. instance of node()] ! name() 
+        return element {($name, 'item')[1]} {$item}
 };      
 
 (:~
@@ -3074,18 +3080,16 @@ declare function f:extractNamespaceNodes($elems as element()*)
  : Creates a file system tree document.
  :)
 declare function f:ftree($folders as xs:string*,
-                         $exprTrees as element()*,
-                         $options as map(*)) as element(ftree)? {
-    let $filePropertiesMap := f:ftreeUtil_filePropertyMap($exprTrees, $options)
+                         $fileProperties as xs:string*, 
+                         $exprTrees as element()*) as element(ftree)? {
+    let $filePropertiesMap := f:ftreeUtil_filePropertyMap($fileProperties, $exprTrees)
     let $useOptions := map:merge((
-        $options,
-        $options?skipdir ! map:entry('_skipdir-regex', tokenize(.) ! util:pattern2Regex(.)),
         $filePropertiesMap ! map:entry('_file-properties', $filePropertiesMap)
     ))
     let $ftrees :=
         for $folder in $folders
         let $content := $folder ! f:ftreeREC(., $useOptions)
-        let $rootAttributes := f:getFtreeAttributes($folder, $content, $options)
+        let $rootAttributes := f:getFtreeAttributes($folder, $content, ())
         return <ftree>{$rootAttributes, $content}</ftree>
     return
         if (count($ftrees) le 1) then $ftrees
@@ -3096,9 +3100,6 @@ declare function f:ftree($folders as xs:string*,
  : RECursive helper function of `f:ftree`.
  :)
 declare function f:ftreeREC($folder as xs:string, $options as map(*)) as element()? {
-    if ($folder ! util:fileName(.) ! util:multiMatches(., $options?_skipdir-regex, ())) then () else
-    
-    (: let $members := file:children($folder) :)
     let $members := i:childUriCollection($folder, (), (), ()) ! concat($folder, '/', .)
     let $subfolders := $members[i:fox-is-dir(., ())] ! f:ftreeREC(., $options)
     let $filePropertiesMap := $options?_file-properties
@@ -3110,14 +3111,8 @@ declare function f:ftreeREC($folder as xs:string, $options as map(*)) as element
                 let $pmap := $p($pname)
                 let $fileNameFilter := $pmap?fileName
                 return
-                    if (not(util:matchesNameFilter(util:fileName(.), $fileNameFilter))) then ()
+                    if (not(util:matchesPlusMinusNameFilter(util:fileName(.), $fileNameFilter))) then ()
                     else
-                        (: Experimental phase - use parsed function code = $pmap?exprTree/* :)
-                        
-                        (: Use of unparsed expression commented out :)
-                        (: let $pvalue := i:resolveFoxpath($pmap?expr, false(), ., (), ()) :)
-                        
-                        (: let $pvalueP := i:resolveFoxpathRC($pmap?exprTree/*, false(), ., 1, 1, (), $options) :)
                         let $pvalueP := f:resolveFoxpath(., (), $pmap?exprTree/*, $options)
                         return 
                             if ($pmap?isAtt) then attribute {$pname} {$pvalueP}
@@ -3133,31 +3128,31 @@ declare function f:ftreeREC($folder as xs:string, $options as map(*)) as element
 declare function f:ftreeSelective(
                          $folders as xs:string*,
                          $uris as xs:string*,
-                         $descendantNames as xs:string?,
-                         $descendantNamesExcluded as xs:string?,
-                         $exprTrees as element()*,
-                         $options as map(*)) as element(ftree)? {
-    let $filePropertiesMap := f:ftreeUtil_filePropertyMap($exprTrees, $options)
-    let $cnameFilter := $descendantNames ! util:compileNameFilter(., true(), false())        
-    let $cnameFilterExclude := $descendantNamesExcluded ! util:compileNameFilter(., true(), false())
+                         $descendantNamesFilter as xs:string?,
+                         $folderNamesFilter as xs:string?,
+                         $fileProperties as xs:string*,
+                         $exprTrees as element()?,
+                         $options as map(*)?) as element(ftree)? {
+    let $filePropertiesMap := f:ftreeUtil_filePropertyMap($fileProperties, $exprTrees)
+    let $cdescendantNamesFilter := $descendantNamesFilter ! util:compilePlusMinusNameFilter(.)        
+    let $cfolderNamesFilter := $folderNamesFilter! util:compilePlusMinusNameFilter(.)
     let $folders :=
         if (exists($folders)) then $folders
         else if (exists($uris)) then f:getRootUri($uris)
         else error(QName((), 'INVALID_ARG'), 'Writing ftrees - either root folders or URIs must be specified')
     let $useOptions := map:merge((
         $options,
-        $cnameFilter ! map:entry('descendantNames', .),
-        $cnameFilterExclude ! map:entry('descendantNamesExcluded', .),        
-        $options?skipdir ! map:entry('_skipdir-regex', tokenize(.) ! util:pattern2Regex(.)),
+        $cfolderNamesFilter ! map:entry('_folderNames', .),
         $filePropertiesMap ! map:entry('_file-properties', $filePropertiesMap)
     ))
+    (: let $_DEBUG := trace($useOptions, '_OPTIONS: ') :)
     let $ftrees :=
         for $folder in $folders
         let $descendantUris := 
             if (exists($uris)) then $uris
             else
                 i:descendantUriCollection($folder, (), (), ()) ! concat($folder, '/', .)
-                [replace(., '.+/', '') ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
+                [replace(., '.+/', '') ! util:matchesPlusMinusNameFilter(., $cdescendantNamesFilter)]
         let $descendants := $descendantUris ! replace(., '^'||$folder||'/', '')
         let $content := $folder ! f:ftreeSelectiveREC(., $descendants, $useOptions)
         let $rootAttributes := f:getFtreeAttributes($folder, $content, $options)
@@ -3174,8 +3169,7 @@ declare function f:ftreeSelectiveREC(
         $folder as xs:string,
         $descendants as xs:string*,
         $options as map(*)) as element()? {
-        
-    if ($folder ! util:fileName(.) ! util:multiMatches(., $options?_skipdir-regex, ())) then () else
+    if ($folder ! util:fileName(.) ! (not(util:matchesPlusMinusNameFilter(., $options?_folderNames)))) then () else
     
     let $filePropertiesMap := $options?_file-properties    
     let $folderName := replace($folder, '.*/', '')
@@ -3193,7 +3187,7 @@ declare function f:ftreeSelectiveREC(
                         let $pmap := $p($pname)
                         let $fileNameFilter := $pmap?fileName
                         return
-                            if (not(util:matchesNameFilter($childName, $fileNameFilter))) then ()
+                            if (not(util:matchesPlusMinusNameFilter($childName, $fileNameFilter))) then ()
                             else
                                 let $pvalueP := f:resolveFoxpath($childUri, (), $pmap?exprTree/*, $options)
                                 return 
@@ -3224,9 +3218,8 @@ declare function f:ftreeSelectiveREC(
  : @param options the options map received by the ftree* function
  : @return an array of maps
  :)
-declare function f:ftreeUtil_filePropertyMap($exprTrees as element()?, $options as map(*))
+declare function f:ftreeUtil_filePropertyMap($fileProperties as xs:string*, $exprTrees as element()?)
         as array(map(*))? {
-    let $fileProperties := $options?fileProperties return
     if (empty($fileProperties)) then () else
     
     let $entries :=
@@ -3237,7 +3230,7 @@ declare function f:ftreeUtil_filePropertyMap($exprTrees as element()?, $options 
         let $fname := (
             if (not($withFname)) then '*' 
             else replace($fnameAndPname, '^(.*)\s.*', '$1')
-        ) ! util:compileNameFilter(., true())
+        ) ! util:compilePlusMinusNameFilter(.)
         (: Property name :)
         let $pname := 
             if (not($withFname)) then $fnameAndPname 
@@ -3265,12 +3258,12 @@ declare function f:ftreeUtil_filePropertyMap($exprTrees as element()?, $options 
  :)
 declare function f:getFtreeAttributes($folder as xs:string, 
                                       $content as element()*, 
-                                      $options as map(*))
+                                      $options as map(*)?)
         as attribute()* {
     attribute context {$folder ! i:parentUri(., ())},
     attribute countFo {count($content//fo) + 1},
     attribute countFi {count($content//fi)},
-    f:getUserInputAttributes($options)
+    $options ! f:getUserInputAttributes(.)
 };
 
 (:~

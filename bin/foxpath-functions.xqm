@@ -177,6 +177,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname = ('child-names', 'ec-child-names',
                            'child-lnames', 'ec-child-lnames',
                            'child-jnames', 'ec-child-jnames',
+                           'descendant-names', 'ec-descendant-names',
+                           'descendant-lnames', 'ec-descendant-lnames',
+                           'descendant-jnames', 'ec-descendant-jnames',
                            'parent-name', 'ec-parent-name',
                            'parent-lname', 'ec-parent-lname',
                            'parent-jname', 'ec-parent-jname',
@@ -608,55 +611,39 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:frequencies($values, $min, $max, 'count', $order, $format)
 
-        else if ($fname = ('ftree')) then
+        else if ($fname = ('ftree', 'ec-ftree')) then
             let $args := $call/*[not(@ignore eq 'true')]        
             let $narg := count($args)
-            let $exprTrees := $call/_parsed        
-            let $rootFolder := 
-                if ($narg eq 0) then $context
-                else $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $skipdir := $args[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $fileProperties := subsequence($args, 3)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            (: let $flags := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) :)            
-                        
-            let $options := map:merge((
-                $skipdir ! map:entry('skipdir', .),
-                if (empty($fileProperties)) then () else map:entry('fileProperties', $fileProperties)
-                (: $flags ! map:entry('flags', .) :)
-            ))
-            return foxf:ftree($rootFolder, $exprTrees, $options)
-
-        else if ($fname = ('ftree-selective')) then
+            let $da := if (starts-with($fname, 'ec-')) then 1 else 0
+            let $rootFolders := 
+                if (starts-with($fname, 'ec-')) then $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
+                else $context
+            let $fileProperties := subsequence($args, 1 + $da)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $exprTrees := $call/_parsed
+            return foxf:ftree($rootFolders, $fileProperties, $exprTrees)    
+            
+        else if ($fname = ('ftree-selective', 'ec-ftree-selective')) then
             let $args := $call/*[not(@ignore eq 'true')]        
             let $narg := count($args)
-            let $exprTrees := $call/_parsed        
-            let $rootFolder := 
-                if ($narg eq 0) then $context
-                else $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $descendantNames := $args[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
-            let $descendantNamesExcluded := $args[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $skipdir := $args[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $fileProperties := subsequence($args, 5)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            (: let $flags := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) :)            
-                        
-            let $options := map:merge((
-                $skipdir ! map:entry('skipdir', .),
-                if (empty($fileProperties)) then () else map:entry('fileProperties', $fileProperties)
-                (: $flags ! map:entry('flags', .) :)
-            ))
-            return foxf:ftreeSelective($rootFolder, (), $descendantNames, $descendantNamesExcluded, 
-                                       $exprTrees, $options)
-
-        else if ($fname = ('ftree-view')) then
+            let $da := if (starts-with($fname, 'ec-')) then 1 else 0
+            let $exprTrees := $call/_parsed            
+            let $rootFolders := 
+                if (starts-with($fname, 'ec-')) then $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
+                else $context
+            let $descendantNames := $args[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
+            let $folderNames := $args[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
+            let $fileProperties := subsequence($args, 3 + $da)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:ftreeSelective($rootFolders, (), $descendantNames, $folderNames, $fileProperties, $exprTrees, ())
+            
+        else if ($fname = ('ftree-view', 'ec-ftree-view')) then
             let $args := $call/*[not(@ignore eq 'true')]        
             let $narg := count($args)
+            let $da := if (starts-with($fname, 'ec-')) then 1 else 0            
             let $exprTrees := $call/_parsed        
             let $uris := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $fileProperties := subsequence($args, 2)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $options := map:merge((
-                if (empty($fileProperties)) then () else map:entry('fileProperties', $fileProperties)
-            ))
-            return foxf:ftreeSelective((), $uris, (), (), $exprTrees, $options)
+            let $_DEBUG := trace($fileProperties, '_PROP: ')
+            return foxf:ftreeSelective((), $uris, (), (), $fileProperties, $exprTrees, ())
 
         (: function `ft-tokenize` 
            ====================== :)
