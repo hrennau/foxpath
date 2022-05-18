@@ -774,6 +774,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `jpath-content` 
            ======================== :)
+           (:
         else if ($fname = ('jpath-content', 'jpcontent')) then           
             let $c := $context
             let $alsoInnerNodes := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
@@ -782,7 +783,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $excludedNodes := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
                 foxf:pathContent($c, 'jname', $alsoInnerNodes, $includedNames, $excludedNames, $excludedNodes)
-
+:)
         (: function `jschema-keywords` 
            ========================== :)
         else if ($fname = ('jschema-keywords', 'jskeywords')) then
@@ -897,6 +898,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `lpath-content` 
            ======================= :)
+           (:
         else if ($fname = ('lpath-content', 'lpcontent')) then           
             let $c := $context
             let $alsoInnerNodes := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
@@ -906,7 +908,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $excludedNodes := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
                 foxf:pathContent($c, 'lname', $alsoInnerNodes, $includedNames, $excludedNames, $excludedNodes)
-
+:)
         (: function `matches-xpath` 
            ======================= :)
         else if ($fname eq 'matches-xpath') then
@@ -1097,7 +1099,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `path-content` 
            ======================= :)
-        else if ($fname = ('path-content', 'pcontent')) then           
+(:           
+        else if ($fname = ('path-content', 'pcontent',
+                           'ec-path-content', 'ec-pcontent')) then           
             let $c := $context
             let $alsoInnerNodes := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                                ! xs:boolean(.)            
@@ -1106,6 +1110,23 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $excludedNodes := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
                 foxf:pathContent($c, 'name', $alsoInnerNodes, $includedNames, $excludedNames, $excludedNodes)
+:)
+        (: function `path-content` 
+           ======================= :)
+        else if ($fname = ('path-content', 'ec-path-content',
+                           'lpath-content', 'ec-lpath-content',
+                           'jpath-content', 'ec-jpath-content')) then
+            let $nameKind := 
+                if (contains($fname, 'lpath')) then 'lname' else if (contains($fname, 'jpath')) then 'jname' else 'name'
+            let $args := $call/*        
+            let $narg := count($args)
+            let $da := if (starts-with($fname, 'ec-')) then 1 else 0
+            let $nodes := if ($da eq 0) then $context else $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $leafNamesFilter := $args[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedInnerNamesFilter := $args[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $options := $args[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:pathContentNew($nodes, $nameKind, $leafNamesFilter, $excludedInnerNamesFilter, $options)
 
         (: function `percent` 
            ================== :)

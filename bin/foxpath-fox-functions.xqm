@@ -2059,6 +2059,63 @@ declare function f:pathContent($context as item()*,
     return string-join($steps, '/')
 };        
 
+declare function f:pathContentNew($context as item()*, 
+                               $nameKind as xs:string?,
+                               $leafNamesFilter as xs:string?,
+                               $excludedInnerNamesFilter as xs:string?,
+                               $options as xs:string?)
+        as xs:string* {
+    let $ops := $options ! tokenize(.)        
+    let $alsoInnerNodes := $ops = 'with-inner'
+    let $cLeafNamesFilter := $leafNamesFilter ! util:compilePlusMinusNameFilter(.)    
+    let $cExcludedInnerNamesFilter := $excludedInnerNamesFilter ! util:compilePlusMinusNameFilter(.)
+    
+    let $fnGetName :=
+        switch($nameKind)
+        case 'name' return function($node) {name($node)}
+        case 'lname' return function($node) {local-name($node)}
+        case 'jname' return function($node) {$node ! name() ! convert:decode-key(.)}
+        default return error()
+
+    let $fnGetStepName :=
+        switch($nameKind)
+        case 'name' return function($node) {$node/concat(self::attribute()/'@', name(.))}        
+        case 'lname' return function($node) {$node/concat(self::attribute()/'@', local-name(.))}
+        case 'jname' return function($node) {
+            let $raw := f:unescapeJsonName(local-name(.))
+            return if (not(contains($raw, '/'))) then $raw else concat('"', $raw, '"')}
+        default return error()
+        
+    let $context := (
+        $context[. instance of node()],
+        $context[not(. instance of node())] ! (try {doc(.)} catch * {try {json:doc(.)} catch * {}})
+    ) 
+    
+    for $cnode in $context
+    let $descendants1 := (
+        if (empty($cExcludedInnerNamesFilter)) then    
+            if ($nameKind eq 'jname') then $cnode/descendant::*
+            else $cnode/(@*, descendant::*/(., @*))
+        else
+            let $excluded := $cnode//*[*][util:matchesPlusMinusNameFilter($fnGetName(.), $cExcludedInnerNamesFilter)]
+            let $unfiltered :=
+                if ($nameKind eq 'jname') then $cnode/descendant::*
+                else $cnode/(@*, descendant::*/(., @*))
+            return $unfiltered[not(ancestor::* intersect $excluded)]
+    )[$alsoInnerNodes or not(*)]
+    
+    let $descendants2 :=
+        if (empty($cLeafNamesFilter)) then $descendants1
+        else $descendants1[* or util:matchesPlusMinusNameFilter($fnGetName(.), $cLeafNamesFilter)]
+    
+    for $d in $descendants2 return
+    let $ancos := $d/ancestor-or-self::node()[. >> $cnode]
+    let $steps := $ancos/$fnGetStepName(.)        
+    let $path := string-join($steps, '/')
+    order by $path
+    return $path
+};        
+
 (:~
  : Returns the percent value of a fraction
  :
