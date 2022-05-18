@@ -1984,82 +1984,22 @@ declare function f:pathMultiCompare($items as item()*,
  : Returns the paths leading from a context node to all descendants. This may be
  : regarded as a representation of the node's content, hence the function name.
  :
+ : The paths can be filtered in two ways:
+ : - ignore leaf nodes not matching $leafNamesFilter
+ : - ignore nodes with an ancestor matching $excludedInnerNamesFilter
+ :
+ : Options - currently one option:
+ : with-inner - also the paths of inner nodes are returned
+ :
  : @param context nodes and or document URIs
  : @param nameKind the kind of name used as path steps: 
  :   jname - JSON names; lname - local names; name - lexical names
- : @param includedNames name patterns of nodes which must be present in the path 
- : @param excludedNames name patterns of nodes excluded from the content 
- : @param excludedNodes nodes excluded from the content 
+ : @param leafNamesFilter - leaf nodes not matching this filter are ignored 
+ : @param excludedInnerNamesFilter - all nodes with a matching ancestor are ignored 
+ : @param options paraeters controling the execution 
  : @return the parent name
  :)
 declare function f:pathContent($context as item()*, 
-                               $nameKind as xs:string?,
-                               $alsoInnerNodes as xs:boolean?,
-                               $includedNames as xs:string?,
-                               $excludedNames as xs:string?,
-                               $excludedNodes as node()*)
-        as xs:string* {
-            
-    let $context := (
-        $context[. instance of node()],
-        $context[not(. instance of node())] ! (try {doc(.)} catch * {try {json:doc(.)} catch * {}})
-    )        
-    let $descendants := (
-        if ($nameKind eq 'jname') then $context/descendant::*
-        else $context/(@*, descendant::*/(., @*))
-    )[$alsoInnerNodes or not(*)]
-    
-    let $includedNamesRegex :=
-        $includedNames ! tokenize(.)
-        ! replace(., '\*', '.*')
-        ! replace(., '\?', '.')
-        ! concat('^', ., '$')
-
-    let $excludedNamesRegex :=
-        $excludedNames ! tokenize(.)
-        ! replace(., '\*', '.*')
-        ! replace(., '\?', '.')
-        ! concat('^', ., '$')
-
-    let $includedNodes :=
-        if (empty($includedNamesRegex)) then ()
-        else if ($nameKind eq 'jname') then
-            $descendants[name() ! convert:decode-key(.) ! (some $r in $includedNamesRegex satisfies matches(., $r, 'i'))]
-        else
-            $descendants[local-name(.) ! (some $r in $includedNamesRegex satisfies matches(., $r, 'i'))]
-    
-    let $excludedNodes := (
-        $excludedNodes,
-        
-        if (empty($excludedNamesRegex)) then ()
-        else if ($nameKind eq 'jname') then
-            $descendants[name() ! convert:decode-key(.) ! (some $r in $excludedNamesRegex satisfies matches(., $r, 'i'))]
-        else
-            $descendants[local-name(.) ! (some $r in $excludedNamesRegex satisfies matches(., $r, 'i'))]
-    )
-    let $descendants2 :=
-        if (empty($includedNamesRegex)) then $descendants
-        else $descendants[ancestor-or-self::* intersect $includedNodes]
-        
-    let $descendants3 := 
-        if (empty($excludedNodes)) then $descendants2
-        else $descendants2[not(ancestor-or-self::* intersect $excludedNodes)]
-    
-    for $d in $descendants3 return
-    let $ancos := $d/ancestor-or-self::node()[. >> $context]
-    let $steps :=        
-        if ($nameKind eq 'lname') then 
-            $ancos/concat(self::attribute()/'@', local-name(.))
-        else if ($nameKind eq 'jname') then 
-            $ancos/concat(self::attribute()/'@', 
-                let $raw := f:unescapeJsonName(local-name(.))
-                return if (not(contains($raw, '/'))) then $raw else concat('"', $raw, '"')
-            )
-        else $ancos/concat(self::attribute()/'@', name(.))
-    return string-join($steps, '/')
-};        
-
-declare function f:pathContentNew($context as item()*, 
                                $nameKind as xs:string?,
                                $leafNamesFilter as xs:string?,
                                $excludedInnerNamesFilter as xs:string?,

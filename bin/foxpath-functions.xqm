@@ -1126,7 +1126,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $excludedInnerNamesFilter := $args[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $options := $args[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:pathContentNew($nodes, $nameKind, $leafNamesFilter, $excludedInnerNamesFilter, $options)
+                foxf:pathContent($nodes, $nameKind, $leafNamesFilter, $excludedInnerNamesFilter, $options)
 
         (: function `percent` 
            ================== :)
