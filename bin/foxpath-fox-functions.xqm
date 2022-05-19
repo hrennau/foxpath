@@ -6,32 +6,6 @@ at "foxpath-processorDependent.xqm",
 import module namespace util="http://www.ttools.org/xquery-functions/util" 
 at  "foxpath-util.xqm";
 
-(:
-declare function f:attNames($nodes as node()*, 
-                            $concat as xs:boolean?, 
-                            $nameKind as xs:string?,   (: name | lname | jname :)
-                            $nameFilter as xs:string?,
-                            $nameFilterExclude as xs:string?)
-        as xs:string* {
-    let $cnameFilter := util:compileNameFilter($nameFilter, true())        
-    let $cnameFilterExclude := util:compileNameFilter($nameFilterExclude, true())
-    
-    let $fnGetName := 
-        if ($nameKind eq 'name') then function($n) {$n/name()}
-        else if ($nameKind eq 'jname') then function($n) {$n/f:unescapeJsonName(local-name(.))}
-        else function($n) {$n/local-name()}
-    for $node in $nodes       
-    let $items := $node/@*
-       [empty($cnameFilter) or util:matchesNameFilter($fnGetName(.), $cnameFilter)]
-       [empty($cnameFilterExclude) or not(util:matchesNameFilter($fnGetName(.), $cnameFilterExclude))] 
-    let $separator := ', '[$concat]
-    let $names := $items/$fnGetName(.) => distinct-values() => sort()
-    return
-        if (exists($separator)) then string-join($names, $separator)
-        else $names
-};        
-:)
-
 (:~
  : Writes a set of standard attributes. Can be useful when working
  : with `xelement`.
@@ -322,6 +296,30 @@ declare function f:descendantNames(
 };        
 
 (:~
+ : Compares two or more nodes for deep equality. The nodes can be
+ : supplied as nodes or as document URI.
+ :
+ : @param items nodes and or document URIs
+ : @return true if all nodes are deep-equal, false otherwise
+ :)
+declare function f:nodesDeepEqual($items as item()+)
+        as xs:boolean? {
+    let $count := count($items) return        
+    if ($count lt 2) then () else
+
+    let $nodes := 
+        for $item in $items return 
+            if ($item instance of node()) then $item else i:fox-doc($item, ())
+    return
+        if ($count eq 2) then deep-equal($nodes[1], $nodes[2])
+        else
+            every $result in
+                for $node at $pos in $nodes[position() lt last()]
+                return deep-equal($node, $nodes[$pos + 1])
+            satisfies $result
+};
+
+(:~
  : Returns the text content of a file resource.
  :
  : @param uri the file URI
@@ -550,16 +548,8 @@ declare function f:fileName($uri as xs:string?)
 (:~
  : Returns the resource URIs reached by a step of fox axis navigation. 
  :
- : If $names and/or $namesExcluded are  specified, only URIs with a file name matching 
- : a name or name pattern from $names, and not matching a name or name pattern from 
- : $namesExcluded are considered. The parameter values of $names and $namesExcluded 
- : are whitespace-separated lists of name tokens. Per default, the filtering by file 
- : names  treats name tokens as Glob patterns and checks names in a case insensitive way.  
- :
- : The filtering behaviour can be modified by parameter $flags. The parameter value 
- : is a string, each character of which is a flag interpreted as follows: 
- : - c: name checking is case-sensitive
- : - r: name tokens are interpreted as regular expressions (rather than Glob patterns)
+ : If $namesFilter is specified, only URIs with a file name matching the filter 
+ : are considered. The parameter value is expected to use general filter syntax. 
  :
  : When parameter $pselector is not used, all resource URIs reached along the specified 
  : axis and not discarded because of name filters are returned. When $pselector is a 
@@ -651,13 +641,56 @@ declare function f:foxNavigation(
     let $reverseAxis := $axis = ('ancestor', 'ancestor-or-self', 'parent', 'preceding-sibling')        
     let $fn_name := function($uri) {file:name($uri)}
     let $result :=
-        for $n in $contextUris
-        let $anc := $n ! $fn_uris(.)[$fn_name(.) ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
+        for $curi in $contextUris
+        let $anc := $curi ! $fn_uris(.)[$fn_name(.) 
+                    ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
         let $anc := if (not($reverseAxis)) then $anc else $anc => reverse()
         return
             if (empty($pselector)) then $anc
             else if ($pselector lt 0) then $anc[last() + 1 + $pselector]
             else $anc[$pselector]
+    return $result => sort() => distinct-values()            
+};
+
+declare function f:foxNavigationNew(
+                       $contextUris as item()*,
+                       $axis as xs:string,
+                       $namesFilter as xs:string?,
+                       $pselector as xs:integer?)                       
+        as xs:string* {
+    if ($axis eq 'parent-sibling') then f:foxNavigationNew(
+        $contextUris ! i:parentUri(., ()), 'sibling', $namesFilter, $pselector) else
+        
+    let $cNamesFilter := $namesFilter ! util:compilePlusMinusNameFilter(.)
+    let $fn_uris :=
+        switch($axis)
+        case 'child' return function($c) {i:childUriCollectionAbsolute($c, ())}
+        case 'descendant' return function($c) {i:descendantUriCollectionAbsolute($c, ())}
+        case 'descendant-or-self' return function($c) {$c, i:descendantUriCollectionAbsolute($c, ())}
+        case 'self' return function($c) {$c}
+        case 'ancestor' return function ($c) {i:ancestorUriCollection($c, (), ())}
+        case 'ancestor-or-self' return function ($c) {i:ancestorUriCollection($c, (), true())}
+        case 'parent' return function ($c) {i:parentUri($c, ())}
+        case 'following-sibling' return function ($c) {
+             i:parentUri($c, ()) ! i:childUriCollectionAbsolute(., ())[. > $c]}
+        case 'preceding-sibling' return function ($c) {
+             i:parentUri($c, ()) ! i:childUriCollectionAbsolute(., ())[. < $c]}
+        case 'sibling' return function ($c) {
+             i:parentUri($c, ()) ! i:childUriCollectionAbsolute(., ())[. ne $c]}
+        default return error()
+        
+    let $fn_name := function($uri) {replace($uri, '.+/', '')}
+    let $result :=
+        for $curi in $contextUris
+        let $related := $curi ! $fn_uris(.)[$fn_name(.) 
+                        ! util:matchesPlusMinusNameFilter(., $cNamesFilter)]
+        return if (empty($pselector)) then $related else
+
+        let $reverseAxis := $axis = ('ancestor', 'ancestor-or-self', 'parent', 'preceding-sibling')
+        let $related := if (not($reverseAxis)) then $related else $related => reverse()
+        return
+            if ($pselector lt 0) then $related[last() + 1 + $pselector]
+            else $related[$pselector]
     return $result => sort() => distinct-values()            
 };
 
@@ -991,16 +1024,17 @@ declare function f:ftTokenize($text as item()*,
  : @param reflectedReplaceWith resource name editing - replacement to substring 
  : @return the image URI, if the resource exists, an empty sequence otherwise
  :) 
-declare function f:getImageURI($uris as xs:string+, 
-                               $reflector1URI as xs:string?, 
-                               $reflector2URI as xs:string?,
-                               $reflectedReplaceSubstring as xs:string?,
-                               $reflectedReplaceWith as xs:string?)
+declare function f:getMirroredURI($uris as xs:string+, 
+                                  $reflector1URI as xs:string?, 
+                                  $reflector2URI as xs:string?,
+                                  $reflectedReplaceSubstring as xs:string?,
+                                  $reflectedReplaceWith as xs:string?)
         as xs:string* {    
-    if (not($reflector1URI) or not($reflector2URI)) then () else
+    if (not($reflector2URI)) then () else
     
-    (: let $_DEBUG := trace($uris, '_URIS: ') :)
     for $uri in $uris
+    let $reflector1URI := 
+        if ($reflector1URI) then $reflector1URI else $uri ! i:parentUri(., ())    
     let $pathReflector1ToUri :=
         if (matches($uri, $reflector1URI||'(/.*)?$')) then
             substring-after($uri, $reflector1URI||'/')            
@@ -1022,8 +1056,8 @@ declare function f:getImageURI($uris as xs:string+,
             let $name := substring-after($parts, '~~~')
             let $newName := replace($name, $reflectedReplaceSubstring, $reflectedReplaceWith)
             return concat($path, $newName)
-    let $imagePath := concat($reflector2URI, '/', $pathReflector1ToUriEdited)
-    return $imagePath[i:fox-file-exists(., ())]
+    let $mirroredPath := concat($reflector2URI, '/', $pathReflector1ToUriEdited)
+    return $mirroredPath[i:fox-file-exists(., ())]
 };
 
 declare function f:getRootUri($uris as xs:string*)
@@ -1372,11 +1406,15 @@ declare function f:median($values as xs:anyAtomicType*)
 };
 
 (:~
- : Returns the parent name of a node. If $localNames is true, the local name is returned, 
- : otherwise the lexical names. 
+ : Returns for given nodes their plain name paths.
  :
- : @param node a node
- : @param localName if true, the local name is returned, otherwise the lexical name
+ : @param nodes a set of nodes
+ : @param nameKind identifies the kind of names to be used in the path -
+ :        name|lname|jname for lexical name, local name, JSON name
+ : @param numSteps truncate path to this number of steps by removing
+ :        leading steps
+ : @param options options controlling the evaluation;
+ :        noconcat - do not concatenate the path steps
  : @return the parent name
  :)
 declare function f:namePath($nodes as node()*, 
@@ -1410,6 +1448,57 @@ declare function f:namePath($nodes as node()*,
         if ($options?noconcat) then $steps[string()]
         else string-join($steps, '/')
 };        
+
+(:~
+ : Returns for given nodes their indexed name paths.
+ :
+ : @param nodes a set of nodes
+ : @param nameKind identifies the kind of names to be used in the path -
+ :        name|lname|jname for lexical name, local name, JSON name
+ : @param numSteps truncate path to this number of steps by removing
+ :        leading steps
+ : @param options options controlling the evaluation;
+ :        noconcat - do not concatenate the path steps
+ : @return the parent name
+ :)
+declare function f:indexedNamePath(
+                            $nodes as node()*, 
+                            $nameKind as xs:string?,   (: name | lname | jname :) 
+                            $numSteps as xs:integer?,                            
+                            $flags as xs:string?)
+        as xs:string* {
+    let $options := map:merge((
+        map:entry('noconcat', true())[contains($flags, 'N')]
+    ))
+    let $fnGetName :=
+        switch($nameKind)
+        case 'name' return function($node) {name($node)}
+        case 'lname' return function($node) {local-name($node)}
+        case 'jname' return function($node) {$node ! name() ! convert:decode-key(.)}
+        default return error()
+        
+    for $node in $nodes return
+    
+    (: _TO_DO_ Remove hack when BaseX Bug is removed; return to: let $nodes := $node/ancestor-or-self::node() :)        
+    (:
+    let $ancos := 
+        let $all := $node/ancestor-or-self::node()
+        let $dnode := $all[. instance of document-node()]
+        return ($dnode, $all except $dnode)
+     :)
+    let $ancos := $node/ancestor-or-self::node()
+    let $steps := 
+        for $n in $ancos
+        let $index := $n/self::*/(
+            '['|| (1 + count($n/preceding-sibling::*[node-name() eq node-name($n)])) ||']'
+        )
+        return $n/self::attribute()/'@'||$n/$fnGetName(.)||$index
+    let $steps := if (empty($numSteps)) then $steps else subsequence($steps, count($steps) + 1 - $numSteps)        
+    return 
+        if ($options?noconcat) then $steps[string()]
+        else string-join($steps, '/')
+};        
+
 
 (:~
  : Creates an Item Location Report for a sequence of given nodes.
@@ -1838,37 +1927,41 @@ declare function f:parentName($node as node(),
 };        
 
 (:~
- : Compares two documents with respect to their data paths.
+ : Compares two documents with respect to their data paths. The paths
+ : use node names as specified by $nameKind. The comparison is defined 
+ : by the comparison type ($cmpType). Supported types:
+ :
+ : - plain - compares plain paths (without index), report paths not common to
+ :     both documents (default style of comparison) 
+ : - plain-count - compare plain paths (without index) and their frequencies,
+ :     report paths not common to both documents or with different
+ :     frequencies in both documents
+ : - indexed - compares indexed paths (without index), containing for each
+ :     element step the index of the respective element (e.g. /a[1]/b[2]/c[1]/@d.
+ : - indexed-value - compares indexed paths (without index), accompanied (in
+ :     case of attributes or elements with text children) by their string value
  :
  : @param doc1 a document, or its document URI
  : @param doc2 another document, or its document URI
  : @param nameKind name, lname, jname for name, local name, JSON name 
- : @param options a whitespace separated list of options
- : 
- : Options:
- : - path - compares plain paths (without index), report paths not common to
- :     both documents (default style of comparison) 
- : - path-count - compare plain paths (without index) and their frequencies,
- :     report paths not common to both documents or with different
- :     frequencies in both documents
- :
+ : @param cmpType defines the type of comparison
  : @return if no difference, the empty sequence; otherwise a <deviations>
  :   element with optional child elements <only1> and <only2>, containing
  :   the paths occurring only in document 1 or 2, respectively
+ : 
  :)
 declare function f:pathCompare($doc1 as item(),
                                $doc2 as item(),
                                $nameKind as xs:string?,
-                               $options as xs:string?)
+                               $cmpType as xs:string?)
         as item()? {
-    let $options := $options ! tokenize(.) ! lower-case(.)
-    
     let $nameKind := ($nameKind, 'lname')[1]
     let $d1 := if ($doc1 instance of node()) then $doc1 else i:fox-doc($doc1, ())
-    let $d2 := if ($doc2 instance of node()) then $doc2 else i:fox-doc($doc2, ())    
-
-    return
-        if ($options = "path-count") then
+    let $d2 := if ($doc2 instance of node()) then $doc2 else i:fox-doc($doc2, ())
+    return if (deep-equal($d1, $d2)) then () else
+    
+        switch($cmpType)
+        case "plain-count" return
             let $paths1 :=
                 for $item in $d1/f:allDescendants(.)
                 group by $path := f:namePath($item, $nameKind, (), ())
@@ -1879,39 +1972,79 @@ declare function f:pathCompare($doc1 as item(),
                 group by $path := f:namePath($item, $nameKind, (), ())
                 order by $path
                 return $path||'#'||count($item)
-            let $paths1NOC := $paths1 ! replace(., '#\d+$', '')                
-            let $paths2NOC := $paths2 ! replace(., '#\d+$', '')
-            let $only1 := $paths1NOC[not(. = $paths2NOC)]
-            let $only2 := $paths2NOC[not(. = $paths1NOC)]
-            let $countDiff :=
+            let $paths1NA := $paths1 ! replace(., '#\d+$', '')                
+            let $paths2NA := $paths2 ! replace(., '#\d+$', '')
+            let $only1 := $paths1NA[not(. = $paths2NA)]
+            let $only2 := $paths2NA[not(. = $paths1NA)]
+            let $annoDiff :=
                 for $path in $paths1
-                let $pathNOC := $path ! replace(., '#\d+$', '')
-                where not($pathNOC = $only1)
+                let $pathNA := $path ! replace(., '#\d+$', '')
+                where not($pathNA = $only1)
                 return
-                    let $path2 := $paths2[starts-with(., $pathNOC||'#')]
-                    let $count1 := replace($path, '.+#', '')
-                    let $count2 := replace($path2, '.+#', '')
-                    where $count1 ne $count2
+                    let $path2 := $paths2[starts-with(., $pathNA||'#')]
+                    let $anno1 := replace($path, '.+#', '')
+                    let $anno2 := replace($path2, '.+#', '')
+                    where $anno1 ne $anno2
                     return
-                        <loc path="{$pathNOC}" count1="{$count1}" count2="{$count2}"/>
+                        <loc path="{$pathNA}" count1="{$anno1}" count2="{$anno2}"/>
             return
-                if (empty(($only1, $only2, $countDiff))) then ()
+                if (empty(($only1, $only2, $annoDiff))) then ()
                 else
                     <deviations uri1="{$d1/base-uri(.)}"  uri2="{$d2/base-uri(.)}">{                    
                         if (empty($only1)) then () else
                         <only1 count="{count($only1)}">{$only1 ! <loc path="{.}"/>}</only1>,
                         if (empty($only2)) then () else
                         <only2 count="{count($only2)}">{$only2 ! <loc path="{.}"/>}</only2>,
-                        if (empty($countDiff)) then () else
+                        if (empty($annoDiff)) then () else
                         <pathCountDiff>{
-                            $countDiff
+                            $annoDiff
                         }</pathCountDiff>
                         
                     }</deviations>
-                            
-        else
-            let $paths1 := $d1/f:allDescendants(.)/f:namePath(., $nameKind, (), ()) => distinct-values() => sort()
-            let $paths2 := $d2/f:allDescendants(.)/f:namePath(., $nameKind, (), ()) => distinct-values() => sort()
+
+        case "indexed-value" return
+            let $paths1 :=
+                for $item in $d1/f:allDescendants(.)
+                let $path := f:indexedNamePath($item, $nameKind, (), ())
+                return $path||$item[self::attribute() or text()]/concat('#', .)
+            let $paths2 :=
+                for $item in $d2/f:allDescendants(.)
+                let $path := f:indexedNamePath($item, $nameKind, (), ())
+                return $path||$item[self::attribute() or text()]/concat('#', .)
+            let $paths1NA := $paths1 ! replace(., '^(.*?)#.*', '$1', 's')                
+            let $paths2NA := $paths2 ! replace(., '^(.*?)#.*', '$1', 's')
+            let $only1 := $paths1NA[not(. = $paths2NA)]
+            let $only2 := $paths2NA[not(. = $paths1NA)]
+            let $annoDiff :=
+                for $path in $paths1
+                let $pathNA := $path ! replace(., '^(.*?)#.*', '$1', 's')
+                where not($pathNA = $only1)
+                return
+                    let $path2 := $paths2[starts-with(., $pathNA||'#')]
+                    let $anno1 := replace($path, '^.*?#', '', 's')
+                    let $anno2 := replace($path2, '^.*?#', '', 's')
+                    where ($path||$path2) ! contains(., '#') and $anno1 ne $anno2
+                    return
+                        <loc path="{$pathNA}" value1="{$anno1}" value2="{$anno2}"/>
+            return
+                if (empty(($only1, $only2, $annoDiff))) then ()
+                else
+                    <deviations uri1="{$d1/base-uri(.)}"  uri2="{$d2/base-uri(.)}">{                    
+                        if (empty($only1)) then () else
+                        <only1 count="{count($only1)}">{$only1 ! <loc path="{.}"/>}</only1>,
+                        if (empty($only2)) then () else
+                        <only2 count="{count($only2)}">{$only2 ! <loc path="{.}"/>}</only2>,
+                        if (empty($annoDiff)) then () else
+                        <pathValueDiff>{
+                            $annoDiff
+                        }</pathValueDiff>
+                        
+                    }</deviations>
+
+        default return
+            let $fnNamePath := if ($cmpType eq 'indexed') then f:indexedNamePath#4 else f:namePath#4
+            let $paths1 := $d1/f:allDescendants(.)/$fnNamePath(., $nameKind, (), ()) => distinct-values() => sort()
+            let $paths2 := $d2/f:allDescendants(.)/$fnNamePath(., $nameKind, (), ()) => distinct-values() => sort()
             let $only1 := $paths1[not(. = $paths2)]
             let $only2 := $paths2[not(. = $paths1)]
             return
@@ -1925,8 +2058,8 @@ declare function f:pathCompare($doc1 as item(),
 };
 
 (:~
- : Returns for a sequence of documents for each document those data paths which are not contained
- : in all other documents.
+ : Returns for a sequence of documents for each document those data paths 
+ : which are not contained in all other documents.
  :
  : @param docs a sequence of documents or document URIs
  : @param counts a whitespace separated list of options;
@@ -1937,6 +2070,9 @@ declare function f:pathMultiCompare($items as item()*,
                                     $nameKind as xs:string?,
                                     $options as xs:string?)
         as item()? {
+    let $count := count($items)
+    return if ($count lt 2) then () else
+    
     let $options := $options ! tokenize(.) ! lower-case(.)
     
     let $nameKind := ($nameKind, 'lname')[1]
@@ -1944,9 +2080,6 @@ declare function f:pathMultiCompare($items as item()*,
         for $item in $items return
             if ($item instance of node()) then $item
             else i:fox-doc($item, ())
-    let $count := count($docs)
-    return
-        if ($count lt 2) then () else
     
     let $pathArrays := 
         for $doc at $pos in $docs
@@ -1975,9 +2108,7 @@ declare function f:pathMultiCompare($items as item()*,
     return
         if (empty($deviations)) then ()
         else
-            <deviations>{
-                $deviations
-            }</deviations>
+            <deviations>{$deviations}</deviations>
 };
 
 (:~

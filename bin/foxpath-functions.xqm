@@ -369,17 +369,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
         then
             let $da := if (starts-with($fname, 'ec-')) then 1 else 0
             let $axis := $fname ! replace(., '^f|ec-f', '')
-            let $narg := count($call/*)
-            let $args := $call/([
-               *[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 0],
-               *[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 1],
-               *[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 2],
-               *[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 3],
-               *[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 4]
-            ])
-            let $uris := if ($da eq 0) then $context else $args(1)
+            let $uris := if ($da eq 0) then $context else 
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $namesFilter := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $pselector := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:foxNavigation($uris, $axis, $args(1 + $da), $args(2 + $da), $args(3 + $da), $args(4 + $da))
+                foxf:foxNavigationNew($uris, $axis, $namesFilter, $pselector)
                 
         (: function `file-append-text` 
            =========================== :)
@@ -948,6 +943,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (empty($nodes)) then () else 
                     foxf:namePath($nodes, $nameKind, $numSteps, $flags)
                     
+        (: function `node-deep-equal` 
+           ========================= :)
+        else if ($fname = ('node-deep-equal', 'ec-node-deep-equal')) then
+            let $da := if (starts-with($fname, 'ec-')) then 1 else 0    
+            let $items1 := if ($da eq 0) then $context else
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $items2 :=
+                $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:nodesDeepEqual(($items1, $items2))
+                            
         (: function `node-location` 
            ======================== :)
         else if ($fname = ('node-location', 'nlocation',
@@ -1082,13 +1088,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `path-compare` 
            ======================= :)
         else if ($fname = (
-                'path-compare', 'pathcmp', 
-                'lpath-compare', 'lpathcmp', 
-                'jpath-compare', 'jpathcmp')) then
-            let $nameKind := substring-before($fname, '-')
-            let $doc2 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:pathCompare($context, $doc2, $nameKind, $options)
+                'path-compare', 'pathcmp', 'ec-path-compare', 
+                'lpath-compare', 'lpathcmp', 'ec-lpath-compare', 
+                'jpath-compare', 'jpathcmp', 'ec-jpath-compare')) then
+            let $nameKind := replace($fname, '^ec-', '') ! substring-before(., '-') ! replace(., 'path', 'name')                
+            let $da := if (starts-with($fname, 'ec-')) then 1 else 0                
+            let $item1 := if ($da eq 0) then $context else
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $item2 := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $cmpType:= $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:pathCompare($item1, $item2, $nameKind, $cmpType)
 
         (: function `path-multi-compare` 
            ============================= :)
@@ -1366,21 +1375,19 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:unescapeJsonName($string)
                 
-        (: function `uri-image` 
+        (: function `fmirrored` 
            ==================== :)
-        else if ($fname = ('ec-image-axis', 'image-axis')) then
+        else if ($fname = ('fmirrored', 'ec-fmirrored')) then
             let $da := if (starts-with($fname, 'ec-')) then 1 else 0
-            let $narg := count($call/*)
-            let $args := $call/([
-               *[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 0],
-               *[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 1],
-               *[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 2],
-               *[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 3],
-               *[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 4]
-            ])
-            let $uris := if ($da eq 0) then $context else $args(1)
-            return
-                foxf:getImageURI($uris, $args(1 + $da), $args(2 + $da), $args(3 + $da), $args(4 + $da))
+            let $contextUris := if ($da eq 0) then $context else
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $reflector1 := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $reflector2 := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            (:
+            let $_DEBUG := trace($reflector1, '_R1: ')
+            let $_DEBUG := trace($reflector2, '_R2: ')
+             :)
+            return foxf:getMirroredURI($contextUris, $reflector1, $reflector2, (), ())
                 
         (: function `value` 
            ================ :)

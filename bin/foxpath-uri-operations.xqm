@@ -842,7 +842,25 @@ declare function f:ancestorUriCollection($uri as xs:string,
     )
     return $ancestors                    
 };
-        
+
+(:~
+ : Returns the child URIs of a given URI, as absolute URI.
+ : The input URI is expected to be an absolute URI.
+ :)
+declare function f:childUriCollectionAbsolute($uri as xs:string, $options as map(*)?)
+        as xs:string* {
+    f:childUriCollection($uri, (), (), $options) ! concat($uri, '/', .)        
+};
+
+(:~
+ : Returns the child URIs of a given URI, relative to the input URI.
+ : The input URI is expected to be an absolute URI.
+ :)
+declare function f:childUriCollection($uri as xs:string, $options as map(*)?)
+        as xs:string* {
+    f:childUriCollection($uri, (), (), $options)        
+};
+
 (:~
  : Returns the child URIs of a given URI, matching an optional name pattern
  : and matching an optional kind test (file or folder).
@@ -901,6 +919,25 @@ declare function f:childUriCollection($uri as xs:string,
                 else
                     error(QName((), 'PROGRAM_ERROR'), concat('Unexpected kind filter: ', $kindFilter))
 };
+
+(:~
+ : Returns the descendant URIs of a given URI, as absolute URI.
+ : The input URI is expected to be an absolute URI.
+ :)
+declare function f:descendantUriCollectionAbsolute($uri as xs:string, $options as map(*)?)
+        as xs:string* {
+    f:descendantUriCollection($uri, (), (), $options) ! concat($uri, '/', .)        
+};
+
+(:~
+ : Returns the descendant URIs of a given URI, relative to the input URI.
+ : The input URI is expected to be an absolute URI.
+ :)
+declare function f:descendantUriCollection($uri as xs:string, $options as map(*)?)
+        as xs:string* {
+    f:descendantUriCollection($uri, (), (), $options)        
+};
+
 
 (:~
  : Returns the descendant URIs of a given URI, matching an optional name pattern
