@@ -1281,6 +1281,18 @@ declare function f:jname($nodes as node()*)
 };
 
 (:~
+ : Returns the lexical names of nodes. In case of attribute nodes
+ : the name is preceded by a '@' character.
+ :
+ : @param nodes nodes
+ : @return the node names
+ :)
+declare function f:nname($nodes as node()*)
+        as xs:string* {
+    $nodes ! (self::attribute()/'@' || name())        
+};
+
+(:~
  : Returns the JSON Schema keywords found at and under a set of nodes from a 
  : JSON Schema document.
  :
@@ -1633,6 +1645,55 @@ declare function f:nodeNavigation(
             if (empty($pselector)) then $anc
             else if ($pselector lt 0) then $anc[last() + 1 + $pselector]
             else $anc[$pselector]
+    return $result/.            
+};
+
+declare function f:nodeNavigationNew(
+                       $contextItems as item()*,
+                       $axis as xs:string,
+                       $nameKind as xs:string,
+                       $namesFilter as xs:string?,
+                       $pselector as xs:integer?,
+                       $options as xs:string?)                       
+        as node()* {
+    let $contextNodes :=
+        for $item in $contextItems return
+            if ($item instance of node()) then $item else 
+                i:fox-doc($item, ())
+    let $cNamesFilter := $namesFilter ! util:compilePlusMinusNameFilter(.)
+    let $ops := $options ! tokenize(.)    
+    let $fn_nodes :=
+        switch($axis)
+        case 'child' return function($c) {$c/*}
+        case 'descendant' return function($c) {$c/descendant::*}
+        case 'descendant-or-self' return function($c) {$c/descendant-or-self::*}
+        case 'self' return function($c) {$c}
+        case 'ancestor' return function ($c) {$c/ancestor::*}
+        case 'ancestor-or-self' return function ($c) {$c/ancestor-or-self::*}
+        case 'parent' return function ($c) {$c/parent::*}
+        case 'following-sibling' return function ($c) {$c/following-sibling::*}
+        case 'preceding-sibling' return function ($c) {$c/preceding-sibling::*}
+        case 'sibling' return function ($c) {$c/(preceding-sibling::*, following-sibling::*)}
+        case 'all-descendant' return function($c) {$c/descendant::*/(., @*)}    
+        case 'all-descendant-or-self' return function($c) {$c/descendant-or-self::*/(., @*)}        
+        default return error()
+        
+    let $fn_name := 
+        if ($ops = 'name') then function($node) {$node/name(.)}
+        else if ($ops = 'jname') then function($node) {$node/local-name(.) ! convert:decode-key(.)}
+        else function($node) {$node/local-name(.)}
+
+    let $result :=
+        for $node in $contextNodes
+        let $related := $node ! $fn_nodes(.)[$fn_name(.) 
+                        ! util:matchesPlusMinusNameFilter(., $cNamesFilter)]
+        return if (empty($pselector)) then $related else
+
+        let $reverseAxis := $axis = ('ancestor', 'ancestor-or-self', 'parent', 'preceding-sibling')
+        let $related := if (not($reverseAxis)) then $related else $related => reverse()
+        return
+            if ($pselector lt 0) then $related[last() + 1 + $pselector]
+            else $related[$pselector]
     return $result/.            
 };
 
@@ -2887,14 +2948,22 @@ declare function f:xelement($name as xs:string, $content as item()*)
  : @param name the element name
  : @return the constructed elements
  :)
-declare function f:xitemElems($items as item()*, $name as xs:string?)
+declare function f:xitemElems($items as item()*, 
+                              $name as xs:string?,
+                              $options as xs:string?)
         as element()* {
-    if ($name) then $items ! element {$name} {.}
+    let $ops := $options ! tokenize(.)        
+    let $fnContent :=
+        if ($ops = 'string') then function($item) {string($item)}
+        else function($item) {$item}
+    return
+    
+    if ($name) then $items ! element {$name} {$fnContent(.)}
     else
         (: Use node name, if possible :)
         for $item in $items
         let $name := $item[. instance of node()] ! name() 
-        return element {($name, 'item')[1]} {$item}
+        return element {($name, 'item')[1]} {$fnContent($item)}
 };      
 
 (:~
@@ -3205,11 +3274,12 @@ declare function f:extractNamespaceNodes($elems as element()*)
  :)
 
 (:~
- : Creates a file system tree document.
+ : Creates a file system tree document. Return an <ftree> or
+ : an <ftrees> document.
  :)
 declare function f:ftree($folders as xs:string*,
                          $fileProperties as xs:string*, 
-                         $exprTrees as element()*) as element(ftree)? {
+                         $exprTrees as element()*) as element(*)? {
     let $filePropertiesMap := f:ftreeUtil_filePropertyMap($fileProperties, $exprTrees)
     let $useOptions := map:merge((
         $filePropertiesMap ! map:entry('_file-properties', $filePropertiesMap)
