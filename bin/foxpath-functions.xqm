@@ -79,37 +79,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:atts($context, $flags)
 
-        (: functions `axis, ec-axis` 
-           ========================= :)
-(:           
-        else if ($fname = ('ancestor', 'ec-ancestor', 
-                           'ancestor-or-self', 'ec-ancestor-or-self',
-                           'parent', 'ec-parent',
-                           'self', 'ec-self',
-                           'child', 'ec-child',
-                           'descendant', 'ec-descendant',
-                           'descendant-or-self', 'ec-descendant-or-self',
-                           'sibling', 'ec-sibling',                           
-                           'preceding-sibling', 'ec-preceding-sibling',
-                           'following-sibling', 'ec-following-sibling',
-                           'parent-sibling', 'ec-parent-sibling',                           
-                           'all-descendant', 'ec-all-descendant',
-                           'all-descendant-or-self', 'ec-all-descendant-or-self')) 
-        then
-            let $da := if (starts-with($fname, 'ec-')) then 1 else 0
-            let $axis := $fname ! replace(., '^ec-', '')
-            let $narg := count($call/*)
-            let $args := $call/([
-               *[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 0],
-               *[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 1],
-               *[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 2],
-               *[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 3],
-               *[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 4]
-            ])
-
-            return
-                foxf:nodeNavigation($nodes, $axis, $args(1 + $da), $args(2 + $da), $args(3 + $da), $args(4 + $da))
-:)
         else if ($fname = ('ancestor', 'ec-ancestor', 
                            'ancestor-or-self', 'ec-ancestor-or-self',
                            'parent', 'ec-parent',
@@ -132,7 +101,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $pselector := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $foptions := $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:nodeNavigationNew($contextNodes, $axis, $contextNodes, $namesFilter, $pselector, $foptions)
+                foxf:nodeNavigation($contextNodes, $axis, $contextNodes, $namesFilter, $pselector, $foptions)
 
         (: function `back-slash` 
            ===================== :)

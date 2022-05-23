@@ -1558,19 +1558,9 @@ declare function f:nodesLocationReport($nodes as node()*,
 (:~
  : Returns the nodes reached by a step of axis navigation. 
  :
- : If $names and/or $namesExcluded are  specified, only nodes with a name matching 
- : a name or name pattern from $names, and not matching a name or name pattern from 
- : $namesExcluded are considered. The parameter values of $names and $namesExcluded 
- : are whitespace-separated lists of name tokens. Per default, the filtering by node 
- : names refers to local names, treats the name tokens contained by parameter values
- : as Glob patterns and checks names in a case insensitive way.  
- :
- : The filtering behaviour can be modified by parameter $flags. The parameter value 
- : is a string, each character of which is a flag interpreted as follows: 
- : - n: when checking node names, the lexical name is considered (including a possible prefix)
- : - j: when checking node names, the JSON – decoded name is considered
- : - c: name checking is case-sensitive
- : - r: name tokens are interpreted as regular expressions (rather than Glob patterns)
+ : If $namesFilter is specified, only nodes with a name matching the name filter are
+ : considered. Per default, the filtering by node names refers to local names. Use
+ : $options value 'name' or 'jname' to filter by lexical node names or JSON names.
  :
  : When parameter $pselector is not used, all nodes reached along the specified axis
  : and not discarded because of name filters are returned. When $pselector is a positive 
@@ -1603,52 +1593,6 @@ declare function f:nodesLocationReport($nodes as node()*,
  :   context node
  :)
 declare function f:nodeNavigation(
-                       $contextNodes as node()*,
-                       $axis as xs:string,
-                       $names as xs:string?,
-                       $namesExcluded as xs:string?,
-                       $pselector as xs:integer?,
-                       $flags as xs:string?)                       
-        as node()* {
-    let $ignoreCase := not(contains($flags, 'c'))
-    let $nameKind := if (contains($flags, 'n')) then 'name' else if (contains($flags, 'j')) then 'jname' else 'lname'
-    let $regex := contains($flags, 'r')
-    let $cnameFilter := $names ! util:compileNameFilter(., $ignoreCase, $regex)        
-    let $cnameFilterExclude := $namesExcluded ! util:compileNameFilter(., $ignoreCase, $regex)
-    let $fn_nodes :=
-        switch($axis)
-        case 'child' return function($c) {$c/*}
-        case 'descendant' return function($c) {$c/descendant::*}
-        case 'descendant-or-self' return function($c) {$c/descendant-or-self::*}
-        case 'self' return function($c) {$c}
-        case 'ancestor' return function ($c) {$c/ancestor::*}
-        case 'ancestor-or-self' return function ($c) {$c/ancestor-or-self::*}
-        case 'parent' return function ($c) {$c/parent::*}
-        case 'following-sibling' return function ($c) {$c/following-sibling::*}
-        case 'preceding-sibling' return function ($c) {$c/preceding-sibling::*}
-        case 'sibling' return function ($c) {$c/(preceding-sibling::*, following-sibling::*)}
-        case 'all-descendant' return function($c) {$c/descendant::*/(., @*)}    
-        case 'all-descendant-or-self' return function($c) {$c/descendant-or-self::*/(., @*)}        
-        default return error()
-    let $reverseAxis := $axis = ('ancestor', 'ancestor-or-self', 'parent')        
-    let $fn_name := 
-        switch($nameKind)
-        case 'lname' return function($node) {$node/local-name(.)}
-        case 'jname' return function($node) {$node/local-name(.) ! convert:decode-key(.)}
-        case 'name' return function($node) {$node/name(.)}
-        default return error()
-    let $result :=        
-        for $n in $contextNodes
-        let $anc := $n/$fn_nodes(.)[$fn_name(.) ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
-        let $anc := if (not($reverseAxis)) then $anc else $anc => reverse()
-        return
-            if (empty($pselector)) then $anc
-            else if ($pselector lt 0) then $anc[last() + 1 + $pselector]
-            else $anc[$pselector]
-    return $result/.            
-};
-
-declare function f:nodeNavigationNew(
                        $contextItems as item()*,
                        $axis as xs:string,
                        $nameKind as xs:string,
