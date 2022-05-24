@@ -70,8 +70,8 @@ declare function f:serializeFt($tree as element())
     case element(words) return 
         let $expr := $tree/string-join(("'"||.||"'", $options), ' ')
         return
-            if ($tree/(@atStart, @atEnd, @entire)) 
-            then '('||$expr||')'
+            if (not($tree/..)) then $expr
+            else if ($tree/(@atStart, @atEnd, @entire)) then '('||$expr||')'
             else $expr
     case element(ftor) return 'ftor'
     case element(ftand) return 'ftand'
@@ -115,7 +115,7 @@ declare function f:serializeFtOptions($node as element())
     $node ! (
     @mode, 
     @occurs,
-    @wildscards,
+    @wildcards,
     @case,
     @diacritics,
     @language,

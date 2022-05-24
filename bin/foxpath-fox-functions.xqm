@@ -30,6 +30,36 @@ declare function f:atts($context as item(), $flags as xs:string)
 };
 
 (:~
+ : Returns the annotated local names of nodes. In case of attributes
+ : the annotated local name is the local name preceded by an '@'
+ : character. In case of elements the annotated local name is equal
+ : to the local name.
+ :
+ : @param nodes nodes
+ : @return the node names
+ :)
+declare function f:alname($nodes as node()*)
+        as xs:string* {
+    $nodes ! (self::attribute()/'@' || local-name())        
+};
+
+(:~
+ : Returns the annotated lexical names of nodes. In case of attributes
+ : the annotated lexical name is the lexical name preceded by an '@'
+ : character. In case of elements the annotated lexical name is equal
+ : to the lexical name. The lexical name is the name returned by
+ : the standared function name(). It consists of the local name,
+ : optionally preceded by name prefix and a colon.
+ :
+ : @param nodes nodes
+ : @return the node names
+ :)
+declare function f:aname($nodes as node()*)
+        as xs:string* {
+    $nodes ! (self::attribute()/'@' || name())        
+};
+
+(:~
  : Returns the names of folders containing a resource identified by $item. Parameter
  : $distance specifies the number of containing folders ($distance ge 1). A value
  : of 1, 2, 3, ... selects the closest, the two closest, the three closest folders,
@@ -1278,18 +1308,6 @@ declare function f:jchild($context as node()*,
 declare function f:jname($nodes as node()*)
         as xs:string* {
     $nodes ! local-name(.) ! convert:decode-key(.)        
-};
-
-(:~
- : Returns the lexical names of nodes. In case of attribute nodes
- : the name is preceded by a '@' character.
- :
- : @param nodes nodes
- : @return the node names
- :)
-declare function f:nname($nodes as node()*)
-        as xs:string* {
-    $nodes ! (self::attribute()/'@' || name())        
 };
 
 (:~
