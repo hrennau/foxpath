@@ -322,6 +322,23 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 i:xquery($xpath, map{'':$xpathContextNode})
 
+        (: function `fancestor-shifted` 
+           ============================ :)
+        else if ($fname = ('fancestor-shifted', 'ec-fancestor-shifted')) then
+            let $da := if (starts-with($fname, 'ec-')) then 1 else 0
+            let $contextUris := if ($da eq 0) then $context else
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $ancestor := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $shiftedAncestor := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $nameReplaceSubstring := $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $nameReplaceWith := $call/*[4 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            (:
+            let $_DEBUG := trace($ancestor, '_EXT_ANCESTOR: ')
+            let $_DEBUG := trace($shiftedAncestor, '_EXT_SHIFTED_ANCESTOR: ')
+             :)
+            return foxf:foxAncestorShifted($contextUris, $ancestor, $shiftedAncestor, $nameReplaceSubstring, $nameReplaceWith, $options)
+                
+
         (: functions `faxis, ec-faxis` 
            =========================== :)
         else if ($fname = ('fancestor', 'ec-fancestor', 
@@ -343,7 +360,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $namesFilter := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $pselector := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:foxNavigationNew($uris, $axis, $namesFilter, $pselector)
+                foxf:foxNavigation($uris, $axis, $namesFilter, $pselector)
                 
         (: function `file-append-text` 
            =========================== :)

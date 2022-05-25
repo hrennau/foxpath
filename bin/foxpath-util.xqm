@@ -518,6 +518,25 @@ declare function f:pattern2Regex($pattern as xs:string?)
 };
 
 (:~
+ : Returns the expression contained by a string, or the empty sequence if the
+ : string does not contain an expression. The string contains an expression if
+ : it starts with character { and ends with character }, ignoring leading or
+ : trailing whitespace. The expression is the content between the curly braces, 
+ : with leading and trailing whitespace removed.
+ :
+ : @param string a string
+ : @return the expression contained, or the empty sequence,
+ :   if the string does not contain an expression
+ :)
+declare function f:extractExpr($string as xs:string?)
+        as xs:string? {
+    if (not($string)) then ()        
+    else if (matches($string, '^\s*\{.*\}\s*$')) then
+        replace($string, '^\s*\{\s*|\s*\}\s*$', '')
+    else ()        
+};
+
+(:~
  : Creates a copy of a node with all "whitespace only" text nodes
  : which are element siblings removed. 
  :)

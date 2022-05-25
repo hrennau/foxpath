@@ -576,6 +576,81 @@ declare function f:fileName($uri as xs:string?)
 };
 
 (:~
+ : Maps a URI to the URI resulting from a shift of a given ancestor folder. 
+ : The result URI is reached from the ancestor specified by $shiftedAncestor 
+ : by the same path as the input $uri s reached from the ancestor specified
+ : by $ancestor.
+ :
+ : If $nameReplaceSubstring is specified, the result URI has a file name 
+ : obtained by editing the file name of $uris, replacing substring 
+ : $nameReplaceSubstring with substring nameReplaceWith.
+ :
+ : @param uris the URIs to be mapped
+ : @param ancestor specifies an ancestor; if the parameter value is delimited
+ :   by curly braces, the value is interpreted as a Foxpath expression as
+ :   contained by the curly braces; otherwise the value is interpreted as a 
+ :   name filter; when interpreted as an expression, the expression is 
+ :   evaluated in the context of the URI to be mapped
+ : @param shiftedAncestor specifies the shifted ancestor; if the parameter value
+ :   is delimited by curly braces, the value is interpreted as a Foxpath
+ :   expression as contained by the curly braces; otherwise the value is
+ :   interpreted as a URI; when interpreted as an expression, the expression
+ :   is evaluated in the context of the ancestor URI specified by $ancestor,
+ :   not in the context of the URI to be mapped
+ : @param nameReplaceSubstring when editing the file name of the mapped URIs,
+ :   this substring is replaced by the string specified by $nameReplaceWith 
+ : @return the mapped URIs for which a resource exists at that URI
+ :) 
+declare function f:foxAncestorShifted(
+                                  $uris as xs:string+, 
+                                  $ancestor as xs:string?, 
+                                  $shiftedAncestor as xs:string?,
+                                  $nameReplaceSubstring as xs:string?,
+                                  $nameReplaceWith as xs:string?,
+                                  $processingOptions as map(*))
+        as xs:string* {    
+    if (not($shiftedAncestor)) then () else
+    
+    for $uri in $uris
+    let $ancestorURI := 
+        if (not($ancestor)) then $uri ! i:parentUri(., ())
+        else
+            let $expr := util:extractExpr($ancestor)
+            return
+                if ($expr) then f:resolveFoxpath($uri, $expr, (), $processingOptions)
+                else f:foxNavigation($uri, 'ancestor', $ancestor, 1) 
+    let $shiftedAncestorURI := 
+        let $expr := util:extractExpr($shiftedAncestor)
+        (: let $_DEBUG := trace($expr, '_EXPR: ') :)
+        return
+            if ($expr) then f:resolveFoxpath($ancestorURI, $expr, (), $processingOptions)
+            else $shiftedAncestor
+    let $pathAncestorToUri :=
+        if (matches($uri, $ancestorURI||'(/.*)?$')) then
+            substring-after($uri, $ancestorURI||'/')            
+        else if (matches ($ancestorURI, $uri||'(/.*)?$')) then
+            let $countSteps :=
+                (substring-after($ancestorURI, $uri||'/')
+                ! tokenize(., '\s*/\s*')) => count()
+            return (for $i in 1 to $countSteps return '..') => string-join('/')
+        else ()
+    return
+        (: Lefthook which is not ancestor or descendant of $uri not supported :)
+        if (empty($pathAncestorToUri)) then () else
+        
+    let $shiftedPathAncestorToUri :=
+        if (empty($nameReplaceSubstring)) then $pathAncestorToUri
+        else
+            let $parts := replace($pathAncestorToUri, '^(.*?)?([^/]+)$', '$1~~~$2')
+            let $path := substring-before($parts, '~~~')
+            let $name := substring-after($parts, '~~~')
+            let $newName := replace($name, $nameReplaceSubstring, $nameReplaceWith)
+            return concat($path, $newName)
+    let $mirroredPath := concat($shiftedAncestorURI, '/', $shiftedPathAncestorToUri)
+    return $mirroredPath[i:fox-file-exists(., ())]
+};
+
+(:~
  : Returns the resource URIs reached by a step of fox axis navigation. 
  :
  : If $namesFilter is specified, only URIs with a file name matching the filter 
@@ -611,7 +686,8 @@ declare function f:fileName($uri as xs:string?)
  : @return resource URIs reached by a step of axis navigation, applied to 
  :   each context URI
  :)
-declare function f:foxNavigation(
+(:
+declare function f:foxNavigationObsolete(
                        $contextUris as item()*,
                        $axis as xs:string,
                        $names as xs:string?,
@@ -619,7 +695,7 @@ declare function f:foxNavigation(
                        $pselector as xs:integer?,
                        $flags as xs:string?)                       
         as xs:string* {
-    if ($axis eq 'parent-sibling') then f:foxNavigation(
+    if ($axis eq 'parent-sibling') then f:foxNavigationObsolete(
         $contextUris ! i:parentUri(., ()), 'sibling',
         $names, $namesExcluded, $pselector, $flags) else
         
@@ -681,14 +757,15 @@ declare function f:foxNavigation(
             else $anc[$pselector]
     return $result => sort() => distinct-values()            
 };
+:)
 
-declare function f:foxNavigationNew(
+declare function f:foxNavigation(
                        $contextUris as item()*,
                        $axis as xs:string,
                        $namesFilter as xs:string?,
                        $pselector as xs:integer?)                       
         as xs:string* {
-    if ($axis eq 'parent-sibling') then f:foxNavigationNew(
+    if ($axis eq 'parent-sibling') then f:foxNavigation(
         $contextUris ! i:parentUri(., ()), 'sibling', $namesFilter, $pselector) else
         
     let $cNamesFilter := $namesFilter ! util:compilePlusMinusNameFilter(.)
