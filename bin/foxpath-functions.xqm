@@ -332,12 +332,20 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $shiftedAncestor := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $nameReplaceSubstring := $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $nameReplaceWith := $call/*[4 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            (:
-            let $_DEBUG := trace($ancestor, '_EXT_ANCESTOR: ')
-            let $_DEBUG := trace($shiftedAncestor, '_EXT_SHIFTED_ANCESTOR: ')
-             :)
             return foxf:foxAncestorShifted($contextUris, $ancestor, $shiftedAncestor, $nameReplaceSubstring, $nameReplaceWith, $options)
-                
+
+        (: function `fparent-shifted` 
+           ========================== :)
+        else if ($fname = ('fparent-shifted', 'ec-fparent-shifted')) then
+            let $da := if (starts-with($fname, 'ec-')) then 1 else 0
+            let $contextUris := if ($da eq 0) then $context else
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $ancestor := ()
+            let $shiftedAncestor := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $nameReplaceSubstring := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $nameReplaceWith := $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:foxAncestorShifted($contextUris, $ancestor, $shiftedAncestor, $nameReplaceSubstring, $nameReplaceWith, $options)
+
 
         (: functions `faxis, ec-faxis` 
            =========================== :)
@@ -367,20 +375,24 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname = ('file-append-text')) then
             let $file := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             let $data :=
-                if (count($call/*) le 1) then $context else $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                if (count($call/*) le 1) then $context 
+                else $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $encoding := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                if ($encoding) then file:append-text($file, $data, $encoding) else file:append-text($file, $data)
+                if ($encoding) then file:append-text($file, $data, $encoding) 
+                else $data ! file:append-text($file, .)
                 
         (: function `file-append-text-lines` 
            ================================= :)
         else if ($fname = ('file-append-text-lines')) then
             let $file := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             let $data :=
-                if (count($call/*) le 1) then $context else $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                if (count($call/*) le 1) then $context 
+                else $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $encoding := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
             return
-                if ($encoding) then file:append-text-lines($file, $data, $encoding) else file:append-text-lines($file, $data)
+                if ($encoding) then file:append-text-lines($file, $data, $encoding) 
+                else file:append-text-lines($file, $data)
                 
         (: function `file-basename` 
            ======================== :)
@@ -1081,20 +1093,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `path-content` 
            ======================= :)
-(:           
-        else if ($fname = ('path-content', 'pcontent',
-                           'ec-path-content', 'ec-pcontent')) then           
-            let $c := $context
-            let $alsoInnerNodes := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                               ! xs:boolean(.)            
-            let $includedNames := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNames := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNodes := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
-            return
-                foxf:pathContent($c, 'name', $alsoInnerNodes, $includedNames, $excludedNames, $excludedNodes)
-:)
-        (: function `path-content` 
-           ======================= :)
         else if ($fname = ('path-content', 'ec-path-content',
                            'lpath-content', 'ec-lpath-content',
                            'jpath-content', 'ec-jpath-content')) then
@@ -1308,6 +1306,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (count($call/*) gt 2) then foxf:shiftURI($arg1, $arg2, $arg3)
                 else foxf:shiftURI($context, $arg1, $arg2)
 
+        (: function `subset-fraction` 
+           ========================== :)
+        else if ($fname = ('subset-fraction')) then
+            let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $filterExpr := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
+            let $format := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:subsetFraction($values, $filterExpr, $format, $options)
+
         (: function `table` 
            ================ :)
         else if ($fname = ('table')) then
@@ -1350,6 +1357,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 
         (: function `fmirrored` 
            ==================== :)
+        (:
         else if ($fname = ('fmirrored', 'ec-fmirrored')) then
             let $da := if (starts-with($fname, 'ec-')) then 1 else 0
             let $contextUris := if ($da eq 0) then $context else
@@ -1361,7 +1369,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $_DEBUG := trace($reflector2, '_R2: ')
              :)
             return foxf:getMirroredURI($contextUris, $reflector1, $reflector2, (), ())
-                
+        :)
+        
         (: function `value` 
            ================ :)
         else if ($fname eq 'value') then

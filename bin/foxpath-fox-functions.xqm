@@ -618,13 +618,21 @@ declare function f:foxAncestorShifted(
             let $expr := util:extractExpr($ancestor)
             return
                 if ($expr) then f:resolveFoxpath($uri, $expr, (), $processingOptions)
-                else f:foxNavigation($uri, 'ancestor', $ancestor, 1) 
+                else f:foxNavigation($uri, 'ancestor', $ancestor, 1)
+    return if (not(i:fox-file-exists($ancestorURI, ()))) then
+        error(QName((), 'INVALID_ARG'), concat('No resource at ancestor URI: ', $ancestorURI)) 
+        else
     let $shiftedAncestorURI := 
         let $expr := util:extractExpr($shiftedAncestor)
         (: let $_DEBUG := trace($expr, '_EXPR: ') :)
         return
             if ($expr) then f:resolveFoxpath($ancestorURI, $expr, (), $processingOptions)
             else $shiftedAncestor
+    return if (not($shiftedAncestorURI)) then
+        error(QName((), 'INVALID_ARG'), concat('Shifted ancestor cannot be resolved to a URI: ', $shiftedAncestor)) 
+        else if (not(i:fox-file-exists($shiftedAncestorURI, ()))) then
+        error(QName((), 'INVALID_ARG'), concat('No resource at shifted ancestor URI: ', $shiftedAncestorURI)) 
+        else
     let $pathAncestorToUri :=
         if (matches($uri, $ancestorURI||'(/.*)?$')) then
             substring-after($uri, $ancestorURI||'/')            
@@ -686,79 +694,6 @@ declare function f:foxAncestorShifted(
  : @return resource URIs reached by a step of axis navigation, applied to 
  :   each context URI
  :)
-(:
-declare function f:foxNavigationObsolete(
-                       $contextUris as item()*,
-                       $axis as xs:string,
-                       $names as xs:string?,
-                       $namesExcluded as xs:string?,
-                       $pselector as xs:integer?,
-                       $flags as xs:string?)                       
-        as xs:string* {
-    if ($axis eq 'parent-sibling') then f:foxNavigationObsolete(
-        $contextUris ! i:parentUri(., ()), 'sibling',
-        $names, $namesExcluded, $pselector, $flags) else
-        
-    let $ignoreCase := not(contains($flags, 'c'))
-    let $nameKind := if (contains($flags, 'n')) then 'name' else if (contains($flags, 'j')) then 'jname' else 'lname'
-    let $regex := contains($flags, 'r')
-    let $cnameFilter := $names ! util:compileNameFilter(., $ignoreCase, $regex)        
-    let $cnameFilterExclude := $namesExcluded ! util:compileNameFilter(., $ignoreCase, $regex)
-    let $fn_uris :=
-        switch($axis)
-        case 'child' return function($c) {i:childUriCollection($c, (), (), ()) ! concat($c, '/', .)}
-        case 'descendant' return function($c) {i:descendantUriCollection($c, (), (), ()) ! concat($c, '/', .)}
-        case 'descendant-or-self' return function($c) {$c, i:descendantUriCollection($c, (), (), ()) ! concat($c, '/', .)}
-        case 'self' return function($c) {$c}
-        case 'ancestor' return function ($c) {i:ancestorUriCollection($c, (), ())}
-        case 'ancestor-or-self' return function ($c) {i:ancestorUriCollection($c, (), true())}
-        case 'parent' return function ($c) {i:parentUri($c, ())}
-        case 'following-sibling' return 
-            function ($c) {
-                let $parent := i:parentUri($c, ()) return
-                i:childUriCollection($parent, (), (), ())
-                ! concat($parent, '/', .)
-                [. > $c]}
-        case 'preceding-sibling' return
-            function ($c) {
-                let $parent := i:parentUri($c, ()) return
-                i:childUriCollection($parent, (), (), ())
-                ! concat($parent, '/', .)
-                [. < $c]}
-        case 'sibling' return 
-            function ($c) {
-                let $parent := i:parentUri($c, ()) return
-                i:childUriCollection($parent, (), (), ())
-                ! concat($parent, '/', .)
-                [. ne $c]}
-        case 'preceding-sibling' return
-            function ($c) {
-                let $parent := i:parentUri($c, ()) return
-                i:childUriCollection($parent, (), (), ())
-                ! concat($parent, '/', .)
-                [. < $c]}
-        case 'sibling' return 
-            function ($c) {
-                let $parent := i:parentUri($c, ()) return
-                i:childUriCollection($parent, (), (), ())
-                ! concat($parent, '/', .)
-                [. ne $c]}
-        default return error()
-    let $reverseAxis := $axis = ('ancestor', 'ancestor-or-self', 'parent', 'preceding-sibling')        
-    let $fn_name := function($uri) {file:name($uri)}
-    let $result :=
-        for $curi in $contextUris
-        let $anc := $curi ! $fn_uris(.)[$fn_name(.) 
-                    ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
-        let $anc := if (not($reverseAxis)) then $anc else $anc => reverse()
-        return
-            if (empty($pselector)) then $anc
-            else if ($pselector lt 0) then $anc[last() + 1 + $pselector]
-            else $anc[$pselector]
-    return $result => sort() => distinct-values()            
-};
-:)
-
 declare function f:foxNavigation(
                        $contextUris as item()*,
                        $axis as xs:string,
@@ -1108,64 +1043,6 @@ declare function f:ftTokenize($text as item()*,
     ))
     return ft:tokenize($useText, $options)
 };        
-
-(:~
- : Maps a URI to the image reflected by a pair of "reflector URIs". 
- : The result URI is reached from $reflector2URI by the same path 
- : as the input $uri s reached from $reflector1URI. For example,
- : if $uri is $reflectorUri1/x/y/z, the result URI is 
- : $reflectorUri2/x/y/z.
- :
- : If $reflectedReplaceSubstring and $reflectedReplaceWith
- : are specified, the result URI has a file name obtained
- : by editing the file name of $uri, replacing substring
- : $reflectedReplaceSubstring with substring $reflectedReplaceWith.
- :
- : Constraint: the URI $uri must be a descendant or ancestor or
- : $reflectorUri1.
- :
- : @param uri a URI
- : @param reflector1URI reflector reflecting the input URI
- : @param reflector2URI reflector reflecting the output URI
- : @param reflectedReplaceSubstring resource name editing - replacement from substring 
- : @param reflectedReplaceWith resource name editing - replacement to substring 
- : @return the image URI, if the resource exists, an empty sequence otherwise
- :) 
-declare function f:getMirroredURI($uris as xs:string+, 
-                                  $reflector1URI as xs:string?, 
-                                  $reflector2URI as xs:string?,
-                                  $reflectedReplaceSubstring as xs:string?,
-                                  $reflectedReplaceWith as xs:string?)
-        as xs:string* {    
-    if (not($reflector2URI)) then () else
-    
-    for $uri in $uris
-    let $reflector1URI := 
-        if ($reflector1URI) then $reflector1URI else $uri ! i:parentUri(., ())    
-    let $pathReflector1ToUri :=
-        if (matches($uri, $reflector1URI||'(/.*)?$')) then
-            substring-after($uri, $reflector1URI||'/')            
-        else if (matches ($reflector1URI, $uri||'(/.*)?$')) then
-            let $countSteps :=
-                (substring-after($reflector1URI, $uri||'/')
-                ! tokenize(., '\s*/\s*')) => count()
-            return (for $i in 1 to $countSteps return '..') => string-join('/')
-        else ()
-    return
-        (: Lefthook which is not ancestor or descendant of $uri not supported :)
-        if (empty($pathReflector1ToUri)) then () else
-        
-    let $pathReflector1ToUriEdited :=
-        if (empty($reflectedReplaceSubstring)) then $pathReflector1ToUri
-        else
-            let $parts := replace($pathReflector1ToUri, '^(.*?)?([^/]+)$', '$1~~~$2')
-            let $path := substring-before($parts, '~~~')
-            let $name := substring-after($parts, '~~~')
-            let $newName := replace($name, $reflectedReplaceSubstring, $reflectedReplaceWith)
-            return concat($path, $newName)
-    let $mirroredPath := concat($reflector2URI, '/', $pathReflector1ToUriEdited)
-    return $mirroredPath[i:fox-file-exists(., ())]
-};
 
 declare function f:getRootUri($uris as xs:string*)
         as xs:string? {
@@ -2681,6 +2558,37 @@ declare function f:shiftURI($uri as xs:string, $sourceFolder as xs:string, $targ
     ) ! f:normalizeURIPath(.)
     return $shifted[i:fox-file-exists(.,())]
 };
+
+(:~
+ : Returns the size of a subset of values. The subset
+ : consists of those items in a given value for which
+ : a filter expression has a true effective boolean value.
+ :
+ : @param values the set a subset of which is measured
+ : @param filterExpr a Foxpath expression defining the subset
+ : @param valueFormat the format expressing the subset size;
+ :     f, p, c for fraction, percent or count
+ : @return the subset size
+ :)
+declare function f:subsetFraction(
+                             $values as item()*, 
+                             $filterExpr as xs:string, 
+                             $valueFormat as xs:string?,
+                             $processingOptions as map(*))
+        as item()? {
+    if (empty($values)) then () else
+
+    let $valueFormat := ($valueFormat, 'f')[1]
+    let $countValues := count($values)
+    let $filteredValues := $values[f:resolveFoxpath(., $filterExpr, (), $processingOptions)]
+    let $countFilteredValues := count($filteredValues)
+    let $result :=
+        if ($valueFormat = ('c', 'count')) then $countFilteredValues
+        else if ($valueFormat = ('f', 'fraction')) then ($countFilteredValues div $countValues) ! format-number(., '0.00')
+        else if ($valueFormat = ('p', 'precent')) then ($countFilteredValues div $countValues * 100) ! format-number(., '0.0')
+        else error()
+    return $result
+};        
 
 (:~
  : Transforms a sequence of values into a table. Each value is a concatenated 
