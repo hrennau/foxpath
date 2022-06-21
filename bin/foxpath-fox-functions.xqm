@@ -350,6 +350,48 @@ declare function f:nodesDeepEqual($items as item()+)
 };
 
 (:~
+ : Returns true if the file identified by a URI or file path
+ : contains a pattern. The pattern is interpreted as a 
+ : pattern-or-regex string - a Glob pattern or regex text, followed
+ : by optional flags preceded by '#'. 
+ :
+ : If the pattern is a Glob pattern, characters \ and # must be escaped 
+ : by a preceding slash. 
+ :
+ : Flags:
+ : r - pattern is a regular expression
+ : c - matching case-sensitive
+ :
+ : Example patterns:
+ : 'Kap*'         # glob pattern
+ : 'Kap*#c        # glob pattern, case-sensitive
+ : 'Kap.*#r'      # regex
+ : 'Kap.*l#cr'    # regex, case-sensitive 
+ : '5|Kap*'       # glob pattern; | character is literal 
+ : '5|Kap.*#r'    # regex; | character is regex operator (or)
+ : 'x\#y'         # glob pattern containing a literal # character
+ : 'x\#y#c'       # as before, case-sensitive
+ :
+ : @param uri the file URI
+ : @param pattern the string pattern
+ : @param encoding an encoding
+ : @param globolOptions for future use
+ : @return true or false
+ :)
+declare function f:fileContains($uri as xs:string,
+                                $pattern as xs:string,
+                                $encoding as xs:string?,
+                                $globalOptions as map(*)?)
+        as xs:boolean {
+    let $text := i:fox-unparsed-text($uri, $encoding, $globalOptions)
+    let $regexAndFlags := util:glob2regex($pattern, false(), true())
+        (: anchors false; dot-all true :)
+    let $regex := $regexAndFlags[1]
+    let $flags := $regexAndFlags[2]
+    return matches($text, $regex, string($flags))
+};      
+
+(:~
  : Returns the text content of a file resource.
  :
  : @param uri the file URI

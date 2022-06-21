@@ -12,7 +12,10 @@ at  "foxpath-fulltext2.xqm";
 
 import module namespace foxf="http://www.foxpath.org/ns/fox-functions" 
 at "foxpath-fox-functions.xqm";
-    
+
+import module namespace urim="http://www.foxpath.org/ns/urithmetic" 
+at "foxpath-urithmetic.xqm";
+
 (: 
  : ===============================================================================
  :
@@ -398,29 +401,26 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ======================== :)
         else if ($fname = ('file-basename', 'file-bname', 'fbname')) then
             let $uri := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]
-            return
-                replace($uri[1], '.*[/\\]', '') ! replace(., '\.[^.]+$', '')
+                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $context
+            return $uri ! urim:fileBaseName(.)
             
         (: function `file-contains` 
            ======================= :)
         else if ($fname eq 'file-contains') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $pattern :=
-                if ($call/*[2]) then
-                    $call/*[2]
-                    /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                else if ($call/*) then
-                    $call/*[1]
-                    /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                if ($call/*[2]) then $arg2
+                else if ($call/*) then $arg1
                 else 
                     error(QName((), 'INVALID_CALL'), 
                         'Function "file-contains" requires at least one parameter.')
-            let $uri :=
-                if ($call/*[2]) then
-                    $call/*[1]
-                    /f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                else $context
+            let $uri := if ($call/*[2]) then $arg1 else $context
+            let $encoding := $arg3
+            return foxf:fileContains($uri, $pattern, $encoding, $options)
+(:            
             let $text :=
                 try {i:fox-unparsed-text($uri, (), $options)} catch * {()}
             return
@@ -428,7 +428,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 let $regex := replace($pattern, '\*', '.*')
                 return
                     matches($text, $regex, 'si')
-            
+:)            
         (: function `file-content` 
            ======================= :)
         else if ($fname = ('file-content', 'fcontent')) then

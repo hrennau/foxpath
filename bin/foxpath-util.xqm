@@ -90,7 +90,7 @@ declare function f:compileNameFilter($patterns as xs:string*,
     let $regexes := 
         if ($patternIsRegex) then $items else
         $items[contains(., '*') or contains(., '?')]
-        ! replace(., '[{}()\[\]^$]', '\\$0')
+        ! replace(., '[.+|\\(){}\[\]\^$]', '\\$0')        
         ! replace(., '\*', '.*')
         ! replace(., '\?', '.')
         ! concat('^', ., '$')
@@ -492,6 +492,57 @@ declare function f:glob2regex($pattern as xs:string)
     ! replace(., '\?', '.')
     ! replace(., '[()\[\]{}^$]', '\\$0')
     ! concat('^', ., '$')
+};   
+
+(:~
+ : Transforms a pattern-or-regex into a regex and flags. The pattern-or-regex
+ : consists of a pattern text, optionally followed by an unescaped # character
+ : and a flags string. Literal \ and # characters must be escaped by a 
+ : preceding \. Flags:
+ : - r - the pattern text is a regular expression
+ : - c - perform case-sensitive matching (flags without 'i')
+ :
+ : Example patterns:
+ : 'Kap*'         # glob pattern
+ : 'Kap*#c        # glob pattern, case-sensitive
+ : 'Kap.*#r'      # regex
+ : 'Kap.*l#cr'    # regex, case-sensitive 
+ : '5|Kap*'       # glob pattern; | character is literal 
+ : '5|Kap.*#r'    # regex; | character is regex operator (or)
+ : 'x\#y'         # glob pattern containing a literal # character
+ : 'x\#y#c'       # as before, case-sensitive
+ :
+ : @param pattern a glob pattern
+ : @param withAnchors if true, use anchors ^ and $
+ : @return the equivalent regex
+ :)
+declare function f:glob2regex($pattern as xs:string,
+                              $withAnchors as xs:boolean,
+                              $withDotAll as xs:boolean)
+        as xs:string+ {
+    let $flags := ((
+        if ($pattern[contains(., '\')]) then f:substringBeforeAfterEscableChar($pattern, 'after', '#')
+        else substring-after($pattern, '#')
+    ) ! normalize-space(.)) => string-join('')
+    let $patternText :=
+        if (not(contains($pattern, '#'))) then $pattern
+        else if ($pattern[contains(., '\#')]) then 
+            f:substringBeforeAfterEscableChar($pattern, 'before', '#')
+        else 
+            (substring-before($pattern, '#')[string()], $pattern)[1]
+
+    let $patternIsRegex := contains($flags, 'r')
+    let $ignoreCase := not(contains($flags, 'c'))
+    let $regexFlags := 'i'[$ignoreCase]||'s'[$withDotAll]    
+    let $regexText :=        
+        if ($patternIsRegex) then $patternText else
+
+        $patternText
+        ! replace(., '[.+|\\(){}\[\]\^$]', '\\$0')    
+        ! replace(., '\*', '.*')
+        ! replace(., '\?', '.')
+    let $regex := if ($withAnchors) then concat('^', $regexText, '$') else $regexText
+    return ($regex, $regexFlags)
 };   
 
 (:~
