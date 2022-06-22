@@ -1115,11 +1115,9 @@ declare function f:getRootUriREC($potentialRoot as xs:string, $paths as xs:strin
 };        
 
 (:~
+ : Add description.
  :
  : Flags:
- : a - anchors are added, for start and end of string
- : c - matching is case-sensitive
- : r - the pattern is interpreted as regular expression
  : n - return the number of matches, not the matching lines
  :)
 declare function f:grep($uris as xs:string*,
@@ -1609,7 +1607,6 @@ declare function f:nodesLocationReport($nodes as node()*,
 declare function f:nodeNavigation(
                        $contextItems as item()*,
                        $axis as xs:string,
-                       $nameKind as xs:string,
                        $namesFilter as xs:string?,
                        $pselector as xs:integer?,
                        $options as xs:string?)                       
@@ -1653,6 +1650,80 @@ declare function f:nodeNavigation(
             if ($pselector lt 0) then $related[last() + 1 + $pselector]
             else $related[$pselector]
     return $result/.            
+};
+
+declare function f:nodeNames(
+                       $contextItems as item()*,
+                       $namesFilter as xs:string?,
+                       $flags as xs:string?,
+                       $options as xs:string?)                       
+        as xs:string* {
+    let $contextNodes :=
+        for $item in $contextItems return
+            if ($item instance of node()) then $item 
+            else i:fox-doc($item, ())
+    let $cNamesFilter := $namesFilter ! util:compilePlusMinusNameFilter(.)
+    let $ops := tokenize($options)
+    let $_DEBUG := trace($ops, '_OPS: ')
+    let $flags := lower-case($flags)
+    let $withAtts := contains($flags, 'a')
+    let $withChildren := contains($flags, 'c')
+    let $withParent := contains($flags, 'p')
+    let $sepline := 
+        if (not($withAtts) and not($withChildren) and not($withParent)) then () else
+        '------------------------------------------'
+    let $fn_name := 
+        if ($ops = 'name') then function($node) {$node/name(.)}
+        else if ($ops = 'jname') then function($node) {$node/local-name(.) ! convert:decode-key(.)}
+        else function($node) {$node/local-name(.)}
+    let $nodes :=
+        for $contextNode in $contextNodes
+        return
+            $contextNode/descendant-or-self::*/(., @*)
+                [$fn_name(.) ! util:matchesPlusMinusNameFilter(., $cNamesFilter)]
+
+    let $results :=
+        for $node in $nodes
+        group by $name := $node/self::attribute()/'@'||$fn_name($node)
+        let $countNodes := count($node)
+        
+        let $parentInfo := if (not($withParent)) then () else      
+            let $rnodeNames :=
+                for $rnode in $node/parent::*
+                group by $rnodeName := $rnode/$fn_name(.)
+                let $count := count($rnode)
+                order by $rnodeName
+                return $rnodeName||' ('||$count||')'
+            return '  P: '||string-join($rnodeNames, ', ')
+        let $attInfo := 
+            if (not($withAtts) or starts-with($name, '@')) then () else            
+                let $rnodeNames :=
+                    for $rnode in $node/@*
+                    let $rnodeName := $rnode/$fn_name(.)
+                    group by $rnodeName
+                    let $count := count($rnode)
+                    order by $rnodeName
+                    return $rnodeName||' ('||$count||')'
+                return '  @: '||string-join($rnodeNames, ', ')
+        let $childInfo := 
+            if (not($withChildren) or starts-with($name, '@')) then () else            
+                let $rnodeNames :=
+                    for $rnode in $node/*
+                    let $rnodeName := $rnode/$fn_name(.)
+                    group by $rnodeName
+                    let $count := count($rnode)
+                    order by $rnodeName
+                    return $rnodeName||' ('||$count||')'
+                return '  C: '||string-join($rnodeNames, ', ')
+        order by $name
+        return (
+            $name||' ('||$countNodes||')',
+            $parentInfo,
+            $attInfo,
+            $childInfo,
+            $sepline
+        )
+    return $results        
 };
 
 (:~

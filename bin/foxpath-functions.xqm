@@ -102,7 +102,21 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $pselector := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $controlOptions := $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:nodeNavigation($contextNodes, $axis, $contextNodes, $namesFilter, $pselector, $controlOptions)
+                foxf:nodeNavigation($contextNodes, $axis, $namesFilter, $pselector, $controlOptions)
+
+        (: function `node-names` 
+           ===================== :)
+        else if ($fname = ('node-names', 'ec-node-names')) 
+        then
+            let $da := if (starts-with($fname, 'ec-')) then 1 else 0
+            let $contextNodes := if ($da eq 0) then $context else 
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $namesFilter := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $flags := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $controlOptions := $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:nodeNames($contextNodes, $namesFilter, $flags, $controlOptions)
+
 
         (: function `back-slash` 
            ===================== :)
