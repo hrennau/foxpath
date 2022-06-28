@@ -350,6 +350,61 @@ declare function f:nodesDeepEqual($items as item()+)
 };
 
 (:~
+ : Compares two or more nodes for deep similarity. The nodes can be
+ : supplied as nodes or as document URI.
+ :
+ : Deep similarity means that after removing nodes selected by
+ : supplied expressions, the compared nodes are deep-equal.
+ :
+ : @param items nodes and or document URIs
+ : @param excludeExprs expressions excluding nodes
+ : @return true if all nodes are deep-similar, false otherwise
+ :)
+declare function f:nodesDeepSimilar($items as item()+,
+                                    $excludeExprs as xs:string*,
+                                    $processingOptions as map(*))
+        as xs:boolean? {
+    let $count := count($items) return        
+    if ($count lt 2) then () else
+
+    let $nodes := 
+        for $item in $items return 
+            if ($item instance of node()) then $item else i:fox-doc($item, ())
+    return
+        if ($count eq 2) then f:nodePairDeepSimilar($nodes[1], $nodes[2], $excludeExprs, $processingOptions)
+        else
+            every $result in
+                for $node at $pos in $nodes[position() lt last()]
+                return f:nodePairDeepSimilar($node, $nodes[$pos + 1], $excludeExprs, $processingOptions)
+            satisfies $result
+};
+
+declare function f:nodePairDeepSimilar($node1 as node(), 
+                                       $node2 as node(), 
+                                       $excludeExprs as xs:string*,
+                                       $processingOptions as map(*))
+        as xs:boolean {
+    if (empty($excludeExprs)) then deep-equal($node1, $node2) else
+    
+    let $fnPrune := function($node) {
+        copy $node_ := $node
+        modify
+            let $delNodes :=
+                for $expr in $excludeExprs return 
+                    f:resolveFoxpath($node_, $expr, (), $processingOptions)
+                    [. instance of node()]
+            (: let $_DEBUG := trace($delNodes, '_DEL_NODES: ') :)
+            return 
+                if (empty($delNodes))then () else
+                    delete nodes $delNodes
+        return $node_
+    }
+    let $n1 := $fnPrune($node1)
+    let $n2 := $fnPrune($node2)
+    return deep-equal($n1, $n2)                    
+};
+
+(:~
  : Returns true if the file identified by a URI or file path
  : contains a pattern. The pattern is interpreted as a 
  : pattern-or-regex string - a Glob pattern or regex text, followed
@@ -1652,19 +1707,17 @@ declare function f:nodeNavigation(
     return $result/.            
 };
 
-declare function f:nodeNames(
+declare function f:nameContent(
                        $contextItems as item()*,
+                       $nameKind as xs:string,
                        $namesFilter as xs:string?,
-                       $flags as xs:string?,
-                       $options as xs:string?)                       
+                       $flags as xs:string?)                       
         as xs:string* {
     let $contextNodes :=
         for $item in $contextItems return
             if ($item instance of node()) then $item 
             else i:fox-doc($item, ())
     let $cNamesFilter := $namesFilter ! util:compilePlusMinusNameFilter(.)
-    let $ops := tokenize($options)
-    let $_DEBUG := trace($ops, '_OPS: ')
     let $flags := lower-case($flags)
     let $withAtts := contains($flags, 'a')
     let $withChildren := contains($flags, 'c')
@@ -1673,15 +1726,15 @@ declare function f:nodeNames(
         if (not($withAtts) and not($withChildren) and not($withParent)) then () else
         '------------------------------------------'
     let $fn_name := 
-        if ($ops = 'name') then function($node) {$node/name(.)}
-        else if ($ops = 'jname') then function($node) {$node/local-name(.) ! convert:decode-key(.)}
+        if ($nameKind = 'name') then function($node) {$node/name(.)}
+        else if ($nameKind = 'jname') then function($node) {$node/local-name(.) ! convert:decode-key(.)}
         else function($node) {$node/local-name(.)}
     let $nodes :=
         for $contextNode in $contextNodes
         return
             $contextNode/descendant-or-self::*/(., @*)
                 [$fn_name(.) ! util:matchesPlusMinusNameFilter(., $cNamesFilter)]
-
+                
     let $results :=
         for $node in $nodes
         group by $name := $node/self::attribute()/'@'||$fn_name($node)
@@ -1723,7 +1776,12 @@ declare function f:nodeNames(
             $childInfo,
             $sepline
         )
-    return $results        
+    return (
+        '=== name-content ===============================',
+        $results,
+        '================================================',
+        ''
+    )        
 };
 
 (:~

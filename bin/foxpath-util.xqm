@@ -301,6 +301,39 @@ declare function f:substringBeforeAfterEscableChar(
         ) ! replace(., '\\\\', '\\') ! replace(., '\\'||$char, $char)
 };        
 
+(:~
+ : Returns the substrings preceding and following the first occurrence
+ : of a character ($char) which is not escaped by a preceding backslash.
+ : If the string does not contain the character without preceding backslash,
+ : the original string and a zero-length string are returned.
+ : 
+ : The substring returned is edited by replacing any pair of consecutive 
+ : backslashes with a single backslash and any occurrence of $char preceded 
+ : by a backslach with the character without preceding backslash. In
+ : other words, any escaping of $char or a backslash is removed.
+ :
+ : @param string the string to be analyzed
+ : @param char the character delimiting the substring
+ : @return the strings preceding and following the character
+ :)
+declare function f:splitStringAtBackslashEscapableChar(
+                    $string as xs:string, 
+                    $char as xs:string)
+        as xs:string+ {
+    if (not(contains($string, $char))) then (
+        $string ! replace(., '\\\\', '\\'), '')        
+    else if (not(contains($string, '\'))) then (
+            substring-before($string, $char), substring-after($string, $char))
+    else (
+        let $patternBefore := '^(\\\\|\\'||$char||'|[^'||$char||'])+'
+        return 
+            let $substringBefore := replace($string, '('||$patternBefore||').*', '$1')
+            return (
+                $substringBefore,
+                substring($string, string-length($substringBefore) + 2))
+    ) ! replace(., '\\\\', '\\') ! replace(., '\\'||$char, $char)
+};        
+
 (:
 declare variable $f:STDLIB := map{
     'lower-case#1' : map{'funcItem' : lower-case#1, 'args' : ['xs:string?'], 'result' : 'xs:string'}
@@ -545,6 +578,69 @@ declare function f:glob2regex($pattern as xs:string,
     return ($regex, $regexFlags)
 };   
 
+(: EXPERIMENTAL NEW GENERATION OF STRING MATCHER :)
+
+(:~
+ : Translates a whitespace-separated list of string patterns
+ : into a map describing string matching. The string patterns may
+ : be followed by a '#' character followed by flags. Flags:
+ : c - case sensitive
+ : r - patterns are regular expressions
+ :
+ : Escaping rules: in the patterns, # and \ must be escaped by
+ : a preceding \.
+ :
+ : @param patterns a list of strings and/or patterns, whitespace concatenated
+ : @param ignoreCase if true, the filter ignores case 
+ : @return a map with entries 'names', 'regexes' and 'flags' 
+ :)
+declare function f:compileStringFilter($patterns as xs:string)
+        as map(xs:string, item()*)? {
+    let $patternTextAndFlags := f:splitStringAtBackslashEscapableChar($patterns, '#')
+    let $items := ($patternTextAndFlags[1] ! tokenize(.))[string()]
+    return if (empty($items)) then () else
+    
+    let $flags := $patternTextAndFlags[2] ! normalize-space(.)
+    let $isRegex := contains($flags, 'r')
+    let $ignoreCase := not(contains($flags, 'c'))
+    let $strings := if ($isRegex) then () else
+        let $raw := $items[not(contains(., '*')) and not(contains(., '?'))]
+        return
+            if (not($ignoreCase)) then $raw else $raw ! lower-case(.)
+    let $regexes := if ($isRegex) then $items else    
+    $items[contains(., '*') or contains(., '?')]
+    ! replace(., '[.+|\\(){}\[\]\^$]', '\\$0')    
+    ! replace(., '\*', '.*')
+    ! replace(., '\?', '.')
+    ! concat('^', ., '$')
+    let $regexFlags := if ($ignoreCase) then 'i' else ''     
+    return 
+        map{'strings': $strings, 
+            'regexes': $regexes, 
+            'empty': empty(($strings, $regexes)), 
+            'flags': $regexFlags}
+};
+
+(:~
+ : Matches a string against a name filter constructed by `patternsToNameFilter()`.
+ :
+ : @param string the string to match
+ : @param nameFilter the name filter 
+ : @return true if the name filter is matched, false otherwise
+ :)
+declare function f:matchesStringFilter($string as xs:string, 
+                                       $stringFilter as map(xs:string, item()*)?)
+        as xs:boolean {
+    let $flags := $stringFilter?flags
+    let $string := if ($stringFilter?ignoreCase) then lower-case($string) else $string 
+    return
+        $stringFilter?empty
+        or exists($stringFilter?strings) and $string = $stringFilter?strings
+        or exists($stringFilter?substrings) and (some $sstr in $stringFilter?substrings satisfies contains($string, $sstr))
+        or exists($stringFilter?regexes) and (some $r in $stringFilter?regexes satisfies matches($string, $r, $flags))
+};
+
+(: ============================================= :)
 (:~
  : Returns true if a string matches at least one of the
  : regular expressions supplied.
