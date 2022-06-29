@@ -6,6 +6,9 @@ at "foxpath-processorDependent.xqm",
 import module namespace util="http://www.ttools.org/xquery-functions/util" 
 at  "foxpath-util.xqm";
 
+import module namespace sf="http://www.foxpath.org/ns/string-filter" 
+at  "foxpath-string-filter.xqm";
+
 (:~
  : Writes a set of standard attributes. Can be useful when working
  : with `xelement`.
@@ -1655,7 +1658,8 @@ declare function f:nodesLocationReport($nodes as node()*,
  : @param names a name filter, consiting of whitespace-separated name tokens
  : @param namesExcluded a name filter defining exclusions
  : @param pselector an integer number, defining a positional filter
- : @param flags flags controling the name filtering behaviour
+ : @param options options controling the name filtering behaviour;
+ :   possible values: name, jname, lname
  : @return nodes reached by a step of axis navigation, applied to each 
  :   context node
  :)
@@ -1666,11 +1670,14 @@ declare function f:nodeNavigation(
                        $pselector as xs:integer?,
                        $options as xs:string?)                       
         as node()* {
+    let $USE_OLD_FILTER := 1        
     let $contextNodes :=
         for $item in $contextItems return
             if ($item instance of node()) then $item else 
                 i:fox-doc($item, ())
-    let $cNamesFilter := $namesFilter ! util:compilePlusMinusNameFilter(.)
+    let $cNamesFilter := 
+        if ($USE_OLD_FILTER) then $namesFilter ! util:compilePlusMinusNameFilter(.)
+        else $namesFilter ! sf:compileComplexStringFilter(., true())
     let $ops := $options ! tokenize(.)    
     let $fn_nodes :=
         switch($axis)
@@ -1696,7 +1703,8 @@ declare function f:nodeNavigation(
     let $result :=
         for $node in $contextNodes
         let $related := $node ! $fn_nodes(.)[$fn_name(.) 
-                        ! util:matchesPlusMinusNameFilter(., $cNamesFilter)]
+                        ! (if ($USE_OLD_FILTER) then util:matchesPlusMinusNameFilter(., $cNamesFilter)
+                           else sf:matchesComplexStringFilter(., $cNamesFilter))]
         return if (empty($pselector)) then $related else
 
         let $reverseAxis := $axis = ('ancestor', 'ancestor-or-self', 'parent', 'preceding-sibling')

@@ -8,7 +8,7 @@ import module namespace util="http://www.ttools.org/xquery-functions/util"
 at  "foxpath-util.xqm";
 
 import module namespace ft="http://www.foxpath.org/ns/fulltext" 
-at  "foxpath-fulltext2.xqm";
+at  "foxpath-fulltext.xqm";
 
 import module namespace foxf="http://www.foxpath.org/ns/fox-functions" 
 at "foxpath-fox-functions.xqm";
@@ -188,7 +188,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $text :=
                 if (count($call/*) eq 1) then $context 
                 else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return ft:containsText($text, $selections, ())            
+            let $flags := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                 
+            return ft:containsText($text, $selections, $flags)            
                 
         (: function `content-deep-equal` 
            ============================= :)
@@ -573,7 +574,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname eq 'fn-contains-text') then
             let $selections := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $toplevelOr := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return ft:fnContainsText($selections, $toplevelOr, ())            
+            return ft:fnContainsText($selections, (), $toplevelOr, ())            
                 
         (: function `fractions` 
            ====================== :)

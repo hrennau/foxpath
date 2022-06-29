@@ -12,51 +12,50 @@ declare function f:containsText($text as item()*,
                                 $selections as xs:string+, 
                                 $flags as xs:string?)
         as xs:boolean {
-    f:fnContainsText($selections, (), $flags)($text)
+    f:fnContainsText($selections, (), (), $flags)($text)
 };    
 
 (:~
  : Returns a function applying full-text selection to text items.
  :
+ : WARNING: Parameter $externalOptions has different semantics in
+ : the cases 'empty sequence' or 'zero-length string'. If empty sequence,
+ : the $selections strings are parsed into query and options (seperated
+ : by #); otherwise (also if a zero-length string), the $selections 
+ : strings are NOT parsed, and the options are set to the value of 
+ : $externalOptions. 
+ :
  : @param selections full-text selections (will be ANDed)
+ : @param externalOptions if this parameter is not the empty sequence,
+ :        it is assumed to contain all options, and the selections
+ :        are assumed to consist only of a query string - they are
+ :        not parsed for options, appended and separated by a # char
  : @param toplevelOr selections are ORed, rather than ANDed
- : @param flags flag characters: M - merge consecutive text nodes; T - test mode
+ : @param flags flag characters: M - merge consecutive text nodes; T - test mode;
+ :                               P - return parse tree
  : @return function item implementing the selections
  :)
 declare function f:fnContainsText($selections as xs:string+, 
+                                  $externalOptions as xs:string?,
                                   $toplevelOr as xs:boolean?, 
                                   $flags as xs:string?)
         as item() {
     let $TESTMODUS := contains($flags, 'T')
+    let $TRACE := contains($flags, 'R')
     let $mergeTextnodes := contains($flags, 'M') 
     let $toplevelBool := if ($toplevelOr) then 'ftor' else 'ftand'        
-    let $osep := ';'        
     let $sels :=
         for $selection in $selections
-        
-        let $selCore := 
-            $selection
-            ! replace(., '#.*', '') 
-            ! normalize-space(.)
-            
+        let $itemAndOptions := 
+            if (exists($externalOptions)) then ($selection, $externalOptions)
+            else f:splitStringIntoItemAndOptions($selection)
+        (: let $_DEBUG := trace($itemAndOptions, '_ITEM_AND_OPTIONS: ') :)
+        let $item := $itemAndOptions[1]        
+        let $options := $itemAndOptions[2]   
         return
-            if (not(matches($selection, '[()|/&amp;>~]'))) then
-                f:parseFtSelection($selection, '#', true())
-            else            
-                let $selOptions := 
-                    $selection[contains(., '#')]
-                    ! replace(., '^.*#', '') 
-                    ! normalize-space(.)
-                let $wordsAndOptions := f:parseFtOptions($selCore, $selOptions, false()) 
-                let $selOptionsMap := $wordsAndOptions[. instance of map(*)]
-                let $selCore := $wordsAndOptions[. instance of xs:string]
-                
-                let $selCoreTree := f:parseFt($selCore)
-                let $selCoreParsed := f:serializeFt($selCoreTree)
-                let $selOptionsParsed := f:serializeFtOptions($selOptionsMap)                
-                return
-                    if ($selOptionsParsed) then '('||$selCoreParsed||') '||$selOptionsParsed 
-                    else $selCoreParsed
+            f:parseFt($item, $options) ! f:serializeFt(.)
+    let $_DEBUG := 
+        trace($sels, '_FULLTEXT_EXPR: ')[$TRACE]            
     let $expr := 
         if (count($sels) eq 1) then $sels
         else ($sels ! concat('(', ., ')')) => string-join(' '||$toplevelBool||' ') 
@@ -68,88 +67,282 @@ declare function f:fnContainsText($selections as xs:string+,
             let $useText :=
                 if (not($text instance of element() or $text instance of document-node())) then $text        
                 else $text//text() => string-join(" ")
-            return $useText contains text '||$expr
-        ||'}'
-
+            return $useText contains text '||$expr ||'}'
     let $func := xquery:eval($funcText)
     return 
         if ($TESTMODUS) then map{'function': $func, 'expression': $expr}
         else $func
 };
 
-(:~
- : Parses a full-text selection, which is a string consisting of words
- : (FTWords), optionally followed by options. Words and options are separated 
- : by $sep1, individual options are separated by $sep2. Note that the input 
- : selection is not composed of parts (e.g. separated by | signs) - it is a 
- : simple unit consisting of words and optonal options.
- :
- : The function separates words and options and launches the 
- : parsing of the options. 
- :
- : @param selection the description of a full-text selection
- : @param opsep separator between words and options
- : @topLevel if true, the selection is the top-level selection
- : @return the full-text expression represented by the selection
+(:
+ :    S e r i a l i z e    p a r s e    t r e e
+ :    =========================================
  :)
-declare function f:parseFtSelection($selection as xs:string, 
-                                    $opsep as xs:string, 
-                                    $topLevel as xs:boolean?)
+ 
+(:~
+ : Serializes an FT tree, created by 'parseFt'.
+ :
+ : @param tree FT tree
+ : @return FT expression
+ :)
+declare function f:serializeFt($tree as element())
         as xs:string {
-    let $words := replace($selection, $opsep||'.*', '') ! normalize-space(.)
-    let $optionsConcat := replace($selection, '^.*?'||$opsep||'\s*', '')[contains($selection, $opsep)]
-    let $isTargetFtwords := not($topLevel) or not(matches($words, '[()|&amp;]'))
-    let $wordsAndOptions := f:parseFtOptions($words, $optionsConcat, $isTargetFtwords)
-    let $words := $wordsAndOptions[. instance of xs:string] ! concat('"', ., '"')
-    let $optionsMap := $wordsAndOptions[. instance of map(*)]
-    (: let $_DEBUG := trace($optionsMap, '__OPTIONS_MAP2: ') :)
-    let $optionsParsed := f:serializeFtOptions($optionsMap)
-    let $sel := ($words, $optionsParsed) => string-join(' ')
-    return
-        if ($topLevel) then $sel
-        else '('||$sel||')'
+
+    let $options := ($tree ! f:serializeFtOptions(.))[string()] return
+    
+    typeswitch($tree)
+    case element(words) return 
+        let $expr := $tree/string-join(("'"||.||"'", $options), ' ')
+        return
+            if (not($tree/..)) then $expr
+            else if ($tree/(@atStart, @atEnd, @entire)) then '('||$expr||')'
+            else $expr
+    case element(ftor) return 'ftor'
+    case element(ftand) return 'ftand'
+    case element(notin) return 'not in'
+    default return (
+        let $content :=
+            let $ops := $tree/*        
+            for $op at $pos in $ops
+            let $addedFtand := 'ftand'
+                [$pos gt 1 
+                 and $op/name() = ('words', 'parex', 'ftnot')
+                 and $ops[$pos - 1]/name() =  ('words', 'parex', 'ftnot')]
+            return ($addedFtand, $op/f:serializeFt(.))
+        return
+            if ($tree/self::parex) then 
+                string-join(('('||string-join($content, ' ')||')', $options), ' ')
+            else if ($tree/self::ftnot) then ('ftnot', $content)
+            else if ($tree/self::ft) then 
+                let $query := ($content  ! replace(., '\(\s+', '(') ! replace(., '\s+\)', ')')) => string-join(' ') 
+                return
+                    if (not($options)) then $query 
+                    else if ($tree/parex and count($tree/*) eq 1) then $query||' '||$options 
+                    else '('||$query||') '||$options
+            else error()
+    ) => string-join(' ')        
 };
 
 (:~
- : Parses an options string and returns the part of the containsText
- : expression text representing these options (e.g. 'using stemming
- : at start'). If also a tokens text is received, the edited tokens
- : text is also returned. (Editing means the removal of any anchors.)
- : Note that some options may be inferred from the tokens text (at start, 
- : at end, entire content).
+ : Serializes the FT options stored in the attributes of
+ : a FT parse tree. Each attribute contains the text
+ : of a FT option (e.g. "using stemming").
  :
- : - ^ at the begin of $tokensText: at start
- : - $ at the end of $tokensText: at end  
- : - ^^ at the begin and $$ at the end of $tokensText: entire content 
- : - lang-foo  - language: foo
- : - wild-foo  - token "foo" will be treated as wildcard token (using stop('foo'))
- : - stop      - stop: default
- : - stop@foo  - stop: at "foo"
- : - stop(foo, bar) - stop: ("foo", "bar")
- : - occ9      - occ: exactly 9 
- : - occ9..    - occ: at least 9
- : - occ..9    - occ: at most 9 
- : - occ8..9   - occ: from 8 to 9
- : - dist1w    - distance: exactly 1 word ("w"; alternative units: s, p)
- : - dist1..w  - distance: at least 1 word ("w"; alternative units: s, p)
- : - dist..2w  - distance: at most 2 words ("w"; alternative units: s, p) 
- : - dist1..2w - occ: from 1 to 2 ("w"; alternative units: s, p)
- : - win5w
- : - win5s
- : - win5p
- : - s         - stemming
- : - s-foo     - stemming, language "foo"
+ : Note that the order of options is constrained to
+ : conform to the syntax rules.
+ :
+ : @param node a node from the FT parse tree
+ : @return the concatenated text of all options
+ :) 
+declare function f:serializeFtOptions($node as element())
+        as xs:string {
+    $node ! (
+    @mode, 
+    @occurs,
+    @wildcards,
+    @case,
+    @diacritics,
+    @language,
+    @stemming,
+    @stemming-and-language,    
+    @stop,
+    @fuzzy,    
+    @ordered,
+    @distance,
+    @window,
+    @sentence,
+    @paragraph,
+    @atStart,
+    @atEnd, 
+    @entire
+    ) => string-join(' ')        
+};
+
+(:
+ :    P a r s e
+ :    =========
  :)
-declare function f:parseFtOptions($tokensText as xs:string?, 
-                                  $optionsText as xs:string?,
-                                  $isTargetFtwords as xs:boolean?)
+
+(:~
+ : Parses a full-text selection.
+ :)
+declare function f:parseFt($text as xs:string?, $options as xs:string?) 
+        as element()* {
+    if (not($text)) then () else
+(:
+    let $sep := '#'
+    let $textNOOP := $text ! replace(., $sep||'.*', '') ! normalize-space(.)
+    let $optionsText := $text[contains(., $sep)] ! replace(., '^.*?'||$sep, '') ! normalize-space(.)
+:)
+    let $textNOOP := $text
+    let $optionsText := $options
+    
+    let $tar := f:parseFtOr($textNOOP)
+    let $tree := $tar[. instance of node()]
+    let $rest := $tar[not(. instance of node())]
+    return
+        if ($rest) then error(QName((), 'SYNTAX_ERROR'), 
+            concat('Full text syntax error - unexpected rest: ', $rest))
+        else
+        
+    let $isFtWords := count($tree) eq 1 and $tree/self::words     
+    let $optionsAtts :=
+        $optionsText
+        ! f:parseFtOptions(., $isFtWords, false(), ())
+        ! f:optionsAtts(.)
+    return
+        if (not($isFtWords)) then <ft text="{$text}">{$optionsAtts, $tree}</ft>
+        else
+            let $treeAtts := $tree/@*
+            let $treeAttNames := $treeAtts/name()
+            return
+                <words text="{$text}">{
+                    $treeAtts,
+                    $optionsAtts[not(name() = $treeAttNames)],
+                    $tree/string()
+                }</words>
+};
+
+(:~
+ : Parses an FtWords expression.
+ :)
+declare function f:parseFtWords($text as xs:string?)
         as item()* {
-    (: The options string uses whitespace as separator. With
-     : one exception: a stop(...) clause may contain whitespace.
-     : For this reason, the text is partioned into a part
-     : preceding stop(...), the stop part and a part following
-     : stop(...).
-     :)
+    if (not($text)) then () else
+
+    let $textBefore := f:textBeforeOperator($text)
+    let $rest:= substring($text, 1 + string-length($textBefore))
+    return if (not(normalize-space($textBefore))) then $rest else
+        
+    let $sep := '@'    
+    let $words := $textBefore ! replace(., $sep||'.*', '') ! normalize-space(.)
+    let $optionsText := $textBefore[contains(., $sep)] ! replace(., '^.*?'||$sep, '') ! normalize-space(.)
+    let $anchors := (
+        replace($words, '^(\^+).*', '$1'),
+        replace($words, '.*?(\$+)$', '$1')
+        )[. ne $words]
+    let $wordsCleansed := replace($words, '^\^+|\$+$', '')
+    let $usingWildcards := contains($wordsCleansed, '.')
+    let $optionsMap := f:parseFtOptions($optionsText, true(), $usingWildcards, $anchors)
+    let $optionsAtts := f:optionsAtts($optionsMap)
+    let $tree := <words>{$optionsAtts, $wordsCleansed}</words>
+    return ($tree, $rest)    
+};
+
+(:~
+ : Parses an FtOr expression. An FtOr expression is a sequence
+ : of primary expressions separated by one of the operators
+ : {/|>}, or adjacent without separator, which means separated
+ : by an implicit <ftand/>. A primary expression is an FTWords
+ : expression or a not expression.
+ :)
+declare function f:parseFtOr($text as xs:string?) 
+        as item()* {
+    if (not($text)) then () else
+
+    let $primTreeAndRest := f:parseFtPrim($text)
+    let $primTree := $primTreeAndRest[. instance of node()]
+    let $primRest := $primTreeAndRest[not(. instance of node())]
+    return (
+        $primTree,
+        if (not($primRest)) then () else
+        
+        let $char1 := substring($primRest, 1, 1) return
+        switch($char1)
+        case '|' return (<ftor/>, f:parseFtOr($primRest ! f:removeChar(.)))
+        case '&amp;' return (<ftand/>, f:parseFtOr($primRest ! f:removeChar(.)))
+        case '/' return (<ftand/>, f:parseFtOr($primRest ! f:removeChar(.)))
+        case '>' return (<notin/>, f:parseFtOr($primRest ! f:removeChar(.)))
+        case ')' return $primRest
+        default return (<ftand/>, f:parseFtOr($primRest))
+    )        
+};
+
+(:~
+ : Parses a primary expression. It is one of the following
+ : expressions: 
+ :   FtWords, parenthesized expressions, FtNot expression.
+ :)
+declare function f:parseFtPrim($text as xs:string?) 
+        as item()* {
+    if (not($text)) then () else
+    
+    let $ftWordsTreeAndRest := f:parseFtWords($text)
+    let $ftWordsTree := $ftWordsTreeAndRest[. instance of node()]
+    return
+        if ($ftWordsTree) then $ftWordsTreeAndRest else
+        
+    let $text := $ftWordsTreeAndRest
+    let $char1 := substring($text, 1, 1)
+    return if (not($char1)) then () else
+        
+    switch($char1)
+    case '(' return f:parseFtParex($text)
+    case '~' return f:parseFtNotex($text)
+    default return $text
+};
+
+(:~
+ : Parses a parenthesized expression.
+ :)
+declare function f:parseFtParex($text as xs:string?)
+        as item()* {
+    if (not(substring($text, 1, 1) eq'(')) then $text else
+    
+    let $text := f:removeChar($text)
+    let $ftorTreeAndRest := f:parseFtOr($text)
+    let $ftorTree := $ftorTreeAndRest[. instance of node()]
+    let $ftorRest := $ftorTreeAndRest[not(. instance of node())]
+    return
+        if (not(substring($ftorRest, 1, 1) eq ')')) then 
+            error(QName((), 'SYNTAX_ERROR'), 'Invalid syntax - missing )')
+        else
+            let $rest := f:removeChar($ftorRest)   
+            let $optionsText :=
+                if (not(substring($rest, 1, 1) eq '{')) then ''
+                else replace($rest, '^(\{.*?\}).*', '$1')
+            let $newRest := 
+                if (not($optionsText)) then $rest
+                else f:removeChars($rest, string-length($optionsText))
+            let $optionsAtts :=
+                let $optionsText := replace($optionsText, '\{\s*|\s*\}', '')
+                let $optionsMap := f:parseFtOptions($optionsText, false(), false(), ())
+                return f:optionsAtts($optionsMap)
+            return (
+                <parex>{$optionsAtts, $ftorTree}</parex>,
+                $newRest
+            )
+};    
+
+(:~
+ : Parses an FtNot expression.
+ :)
+declare function f:parseFtNotex($text as xs:string?)
+        as item()* {
+    let $content := substring($text, 2)
+    let $petc := f:parseFtPrim($content)
+    return (
+        <ftnot>{$petc[. instance of node()]}</ftnot>,
+        $petc[not(. instance of node())][string()]
+    )        
+};
+
+(:
+ :    P a r s e    o p t i o n s
+ :    ==========================
+ :)
+ 
+(:~
+ : Parses a string containing FT options in the syntax
+ : expected by the contains-text function.
+ :)
+declare function f:parseFtOptions($optionsText as xs:string?,
+                                  $isTargetFtwords as xs:boolean?,
+                                  $withWildcard as xs:boolean?,
+                                  $anchors as xs:string*)
+        as map(*)? {
+    if (not($optionsText) and not($withWildcard) and empty($anchors)) then map{} else
+    
     let $options :=
         if (matches($optionsText, 'stop\(.*\)')) then
             let $sep := codepoints-to-string(30000) return
@@ -158,96 +351,110 @@ declare function f:parseFtOptions($tokensText as xs:string?,
                 ! tokenize(., $sep)
             return (tokenize($items[1]), $items[2], tokenize($items[3]))
         else tokenize($optionsText)            
-    (: let $_DEBUG := trace($options, '_OPTIONS: ') :)            
-(:            
-    let $options := tokenize($optionsText, '\s*'||$optionsSep||'\s*')
-:)    
+    
+    (: The pseudo option 'fulltext' is removed; it may appear as a flag
+       when the query string is interpreted in an environment where it may,
+       but need not, have fulltext semantics.
+     :)
+    let $options := $options[not(. = ('fulltext', 'ftext', 'ft'))]
+    (: let $_DEBUG := trace($options, '_OPTIONS: ') :)
+    
     (: Evaluate anchors :)
-    let $entire := $tokensText ! (matches(., '^\^\^') and matches(., '\$\$$'))
-    let $atStart := $tokensText ! (not($entire) and matches(., '^\^'))
-    let $atEnd := $tokensText ! (not($entire) and matches(., '\$$'))
-    let $cleansedTokensText := (
-        if (not($tokensText)) then ()
-        else if (not($atStart) and not($atEnd) and not($entire)) then $tokensText
-        else replace($tokensText, '^\^+\s*|\s*\$+$', '')
-        ) ! . (: concat('"', ., '"') :)
-        
+    let $anchors := $anchors ! normalize-space(.)
+    let $entire := $anchors = '^' and $anchors = '$'
+    let $atStart := not ($entire) and $anchors = '^'
+    let $atEnd := not ($entire) and $anchors = '$'
+    
     let $omap := map:merge(
         for $o in $options
         return
-            if 
-                    (starts-with($o, 'lang-')) then map:entry('language', substring($o, 6) ! ('"'||.||'"'))
-            else if (starts-with($o, 's-')) then map:entry('stemming-and-language', substring($o, 3) ! ('"'||.||'"'))
-            else if (starts-with($o, 'wild-')) then map:entry('stop', substring($o, 6) ! ('("'||.||'")'))            
-            else if (starts-with($o, 'f')) then map:entry('fuzzy', substring($o, 2) ! (.||' errors'))
+            if (starts-with($o, 'lang-')) then 
+                map:entry('language', 'using language '||substring($o, 6) ! ('"'||.||'"'))
+            else if (starts-with($o, 's-')) then 
+                map:entry('stemming-and-language', 'using stemming using language '||substring($o, 3) ! ('"'||.||'"'))
+            else if (starts-with($o, 'wild-')) then 
+                map:entry('stop', 'using stop words '||substring($o, 6) ! ('("'||.||'")'))            
+            else if (starts-with($o, 'f')) then 
+                map:entry('fuzzy', 'using fuzzy '||(substring($o, 2)[string()], '1')[1] ! (.||' errors'))
             else if (starts-with($o, 'stop')) then
                 let $spec := substring($o, 5)
                 return map:entry('stop',
-                    if (starts-with($spec, '@')) then 'at "'||substring($o, 6)||'"'
-                    else if (not($spec)) then 'default'
-                    else if (starts-with($spec, '(')) then '('||((
+                    if (starts-with($spec, '@')) then 'using stop words at "'||substring($o, 6)||'"'
+                    else if (not($spec)) then 'using stop words default'
+                    else if (starts-with($spec, '(')) then 'using stop words ('||((
                         replace($spec, '^\(\s*|\s*\)\s*$', '') ! tokenize(., ',\s*') ! concat("'", ., "'")
                         ) => string-join(', '))||')'
                     else error())
-            else if (starts-with($o, 'occ')) then map:entry('occurs', f:parseFtRange(substring($o, 4), ())||' times')
-            else if (starts-with($o, 'win')) then map:entry('window', f:parseFtWindow($o))
-            else if (starts-with($o, 'dist')) then map:entry('distance', f:parseFtRange(substring($o, 5), true()))
+            else if (starts-with($o, 'occ')) then 
+                map:entry('occurs', 'occurs '||f:parseFtRange(substring($o, 4), ())||' times')
+            else if (starts-with($o, 'win')) then 
+                map:entry('window', f:parseFtWindow($o))
+            else if (starts-with($o, 'dist')) then 
+                map:entry('distance', 'distance '||f:parseFtRange(substring($o, 5), true()))
             else if (starts-with($o, 'phrase')) then
                 let $spec := substring($o, 7) ! replace(., '\s+$', '')
                 return (
                     map:entry('additional-flags', 'W'[$isTargetFtwords]||'o'),
-                    if (matches($spec, '^\d+$')) then map:entry('distance', 'at most '||$spec||' words')
-                    else if (matches($spec, '^\d+win$')) then map:entry('window', replace($spec, '\D+', '')||' words')
+                    if (matches($spec, '^\d+$')) then map:entry('distance', 'distance at most '||$spec||' words')
+                    else if (matches($spec, '^\d+win$')) then map:entry('window', 'window '||replace($spec, '\D+', '')||' words')
                     else ()
                 )
             else map:entry('flags', $o)
     )
-    let $usingWildcards := 'using wildcards'[contains($tokensText, '.')]    
     let $flags := $omap?flags||$omap?additional-flags
                   ||('a'[$atStart])
                   ||('z'[$atEnd])
                   ||('e'[$entire])
-                  ||('Q'[$usingWildcards])
+                  ||('Q'[$withWildcard])
     let $omap :=
-        if (not($flags)) then $omap else map:put($omap, 'flags', $flags)
+        if (not($flags)) then $omap else map:merge((
+        $omap,
+        
+        if (not(matches($flags, '[wW]'))) then () else
+        map:entry('mode', if (contains($flags, 'w')) then 'any word' else 'all words'),
+
+        map:entry('wildcards', 'using wildcards')[contains($flags, 'Q')],
+        map:entry('stemming', 'using stemming')[contains($flags, 's')][not($omap?stemming-and-language)],
+
+        if (not(matches($flags, '[cC]'))) then () else
+        map:entry('case', 'using case '||(if (contains($flags, 'c')) then 'sensitive' else 'insensitive')),
+            
+        if (not(matches($flags, '[dD]'))) then () else
+        map:entry('diacritics', 'using diacritics '||(if (contains($flags, 'd')) then 'sensitive' else 'insensitive')),
+            
+        map:entry('ordered', 'ordered')[contains($flags, 'o')],
+        
+        if (not(matches($flags, '[xX]'))) then () else
+        map:entry('sentence', if (contains($flags, 'x')) then 'same sentence' else 'different sentence'),
+
+        if (not(matches($flags, '[yY]'))) then () else
+        map:entry('paragraph', if (contains($flags, 'y')) then 'same paragraph' else 'different paragraph'),
+
+        map:entry('atStart', 'at start')[contains($flags, 'a')],
+        map:entry('atEnd', 'at end')[contains($flags, 'z')],
+        map:entry('entire', 'entire content')[contains($flags, 'e')]
+    )) ! map:remove(., 'flags')
+    
     (: let $_DEBUG := trace($omap, '_OMAP: ') :)
-    return ($cleansedTokensText, $omap)
+    return map:remove($omap, 'additional-flags')
 };
 
 (:~
- : Serializes a set of full-text options.
+ : Transforms a map of options into a sequence of attributes.
  :)
-declare function f:serializeFtOptions($omap as map(*)) as xs:string {
-    let $flags := $omap?flags return
-    
-    string-join((
-        'any word'[contains($flags, 'w')],
-        'all words'[contains($flags, 'W')],
-        $omap?occurs ! ('occurs '||.),
-        $omap[not(?stemming-and-language)]?language ! ('using language '||.),
-        $omap?fuzzy ! ('using fuzzy '||.),      
-        $omap?stemming-and-language ! ('using stemming using language '||.),
-        'using wildcards'[contains($flags, 'Q')],
-        'using stemming'[contains($flags, 's')][not($omap?stemming-and-language)],
-        'using case sensitive'[contains($flags, 'c')],
-        'using case insensitive'[contains($flags, 'C')],                
-        'using diacritics sensitive'[contains($flags, 'd')],
-        'using diacritics insensitive'[contains($flags, 'D')],
-        'using fuzzy 1 errors'[contains($flags, 'f')][not($omap?fuzzy)],
-        $omap?stop ! ('using stop words '||.),
-        'ordered'[contains($flags, 'o')],
-        $omap?window ! ('window '||.),
-        $omap?distance ! ('distance '||.),
-        'same sentence'[contains($flags, 'x')],
-        'different sentence'[contains($flags, 'X')],
-        'same paragraph'[contains($flags, 'y')],
-        'different paragraph'[contains($flags, 'Y')],
-        'at start'[contains($flags, 'a')],
-        'at end'[contains($flags, 'z')],
-        'entire content'[contains($flags, 'e')]
-    ), ' ')
+declare function f:optionsAtts($options as map(*)?) as attribute()* {
+    if (empty($options)) then () else
+    for $key in map:keys($options) return attribute {$key} {$options($key)}
 };
 
+(:
+ :    P a r s e    u t i l i t i e s
+ :    ==============================
+ :)
+ 
+(:~
+ : Parses a range specification.
+ :)
 declare function f:parseFtRange($text as xs:string, $withUnit as xs:boolean?) 
         as xs:string {
     let $ftUnit := 
@@ -298,155 +505,75 @@ declare function f:parseFtWindow($text as xs:string) as xs:string {
             return $parts[1]||' '||$unit
 };
 
+(:
+ :    U t i l i t y    f u n c t i o n s
+ :    ==================================
+ :)
+
+(: Removes the first character and any whitespace characters
+ : immediately following it.
+ :)
+declare function f:removeChar($text as xs:string) as xs:string? {
+    substring($text, 2) ! replace(., '^\s+', '')
+};
+
+(: Removes leading characters and any whitespace characters
+ : immediately following them.
+ :)
+declare function f:removeChars($text as xs:string, 
+                               $numChars as xs:integer) as xs:string? {
+    substring($text, 1 + $numChars) ! replace(., '^\s+', '')
+};
+
 (:~
- : Serializes an FT tree, created by 'parseFt'.
+ : Returns the substring preceding the first occurrence of an
+ : operator character.
+ :)
+declare function f:textBeforeOperator($text as xs:string?)
+        as xs:string? {
+    replace($text, '^(.*?)[()|/&amp;>~].*', '$1')        
+};
+
+(:~
+ : Returns true if a given string is an FtWords expression.
+ :)
+declare function f:isFtWords($query as xs:string) as xs:boolean {
+    not(matches($query, '[()|/&amp;>~]'))
+};
+
+declare function f:splitStringIntoItemAndOptions($string as xs:string) 
+        as xs:string+ {
+    let $concatAndFlags := f:splitStringAtDoubleEscapableChar($string, '#')        
+    let $concat := $concatAndFlags[1]
+    let $flags := $concatAndFlags[2]
+    return ($concat, $flags)
+};
+
+(:~
+ : Returns the substrings preceding and following the first occurrence
+ : of a character ($char) which is not escaped by repeating it.
+ : If the string does not contain the character in single form
+ : (or repeated an uneven number of times), the original string and a 
+ : zero-length string are returned.
+ : 
+ : The substring returned is edited by replacing any doubled occurrence 
+ : of the character with a single occurrence.
  :
- : @param tree FT tree
- : @return FT expression
+ : @param string the string to be analyzed
+ : @param char the character delimiting the substring
+ : @return the strings preceding and following the character
  :)
-declare function f:serializeFt($tree as element())
-        as xs:string {
-
-    typeswitch($tree)
-    case element(words) return f:parseFtSelection($tree, '@', false())
-    case element(ftor) return 'ftor'
-    case element(ftand) return 'ftand'
-    case element(notin) return 'not in'
-    default return (
-        let $content :=
-            let $ops := $tree/*        
-            for $op at $pos in $ops
-            let $addedFtand := 'ftand'
-                [$pos gt 1 
-                 and $op/name() = ('words', 'parex', 'ftnot')
-                 and $ops[$pos - 1]/name() =  ('words', 'parex', 'ftnot')]
-            return ($addedFtand, $op/f:serializeFt(.))
-        return
-            if ($tree/self::parex) then ('(', $content, ')')
-            else if ($tree/self::ftnot) then ('ftnot', $content)
-            else if ($tree/self::ft) then $content  ! replace(., '\(\s+', '(') ! replace(., '\s+\)', ')')
-            else error()
-    ) => string-join(' ')        
-};
-
-declare function f:parseFt($text) as element()? {
-    normalize-space($text) ! <ft text="{.}">{f:parseFtSel(.)}</ft>
-};
-
-(:~
- : Parses a full-text selection.
- :)
-declare function f:parseFtSel($text as xs:string?) 
-        as element()* {
-    if (not($text)) then () else
-
-    let $petc := f:parseFtOr($text)
-    return (
-        $petc[. instance of node()],
-        $petc[not(. instance of node())][string()] ! f:parseFtSel(.)
-    )
-};
-
-(:~
- : Parses an FtOr expression.
- :)
-declare function f:parseFtOr($text as xs:string?) 
-        as item()* {
-    if (not($text)) then () else
-
-    let $petc := f:parseFtPrim($text)
-    let $primTree := $petc[. instance of node()]
-    let $remainder := $petc[not(. instance of node())]
-    return (
-        $primTree,
-        if (not($remainder)) then () else
-        
-        let $char1 := substring($remainder, 1, 1) return
-        switch($char1)
-        case '|' return (<ftor/>, f:parseFtOr($remainder ! substring(., 2)))
-        case '&amp;' return (<ftand/>, f:parseFtOr($remainder ! substring(., 2)))
-        case '/' return (<ftand/>, f:parseFtOr($remainder ! substring(., 2)))        
-        case '>' return (<notin/>, f:parseFtOr($remainder ! substring(., 2)))
-        default return $remainder
-    )        
-};
-
-(:~
- : Parses a primary expression.
- :)
-declare function f:parseFtPrim($text as xs:string?) 
-        as item()* {
-    if (not($text)) then () else
-    
-    let $before := replace($text, '^(.*?)[()|/&amp;>~].*', '$1')
-    let $len := string-length($before)
-    return (
-        ($before ! normalize-space(.))[string()] ! <words>{.}</words>,
-        if ($before[string()]) then substring($text, $len + 1) else
-        
-        let $nextChar := substring($text, $len + 1, 1)
-        return if (not($nextChar)) then () else
-        
-        switch($nextChar)
-        case '(' return
-            let $petc := f:parseFtParex(substring($text, $len + 1))
-            return (
-                $petc[. instance of node()],
-                $petc[not(. instance of node())][string()]
-            )
-        case '~' return (
-            let $petc := f:parseFtNotex(substring($text, $len + 1))
-            return (
-                $petc[. instance of node()],
-                $petc[not(. instance of node())][string()]
-            )
-        )
-        default return substring($text, $len + 1) ! replace(., '\s+', '')
-    )        
-};
-
-declare function f:parseFtParex($text as xs:string?)
-        as item()* {
-    let $content := substring($text, 2)
-    let $petc := f:parseFtParexRC($content)
-    return (
-        <parex>{
-            $petc[. instance of node()]
-        }</parex>,
-        $petc[not(. instance of node())][string()]
-    )        
-};
-
-declare function f:parseFtParexRC($text as xs:string?)
-        as item()* {
-    let $before := replace($text, '^(.*?)[()].*', '$1')
-    let $len := string-length($before)
-    let $nextChar := substring($text, $len + 1, 1)
-    return (
-        $before[string()] ! f:parseFtSel(.),
-        switch($nextChar)
-        case ')' return (
-            substring($text, $len + 2) ! replace(., '^\s+', ''))
-        case '(' return
-            let $petc := f:parseFtParex(substring($text, $len + 1))
-            return (
-                $petc[. instance of node()],
-                $petc[not(. instance of node())][string()] ! f:parseFtParexRC(.)
-            )
-
-        default return error()
-    )
-};
-
-declare function f:parseFtNotex($text as xs:string?)
-        as item()* {
-    let $content := substring($text, 2)
-    let $petc := f:parseFtPrim($content)
-    return (
-        <ftnot>{
-            $petc[. instance of node()]
-        }</ftnot>,
-        $petc[not(. instance of node())][string()]
-    )        
-};
-
+declare function f:splitStringAtDoubleEscapableChar(
+                    $string as xs:string, 
+                    $char as xs:string)
+        as xs:string+ {
+    if (not(contains($string, $char))) then ($string, '')
+    else if (not(contains($string, $char||$char))) then (
+            substring-before($string, $char), substring-after($string, $char))
+    else (        
+        let $patternBefore := '^('||$char||$char||'|[^'||$char||'])+'
+        return 
+            let $before := replace($string, '('||$patternBefore||').*', '$1')
+            return ($before, substring($string, string-length($before) + 2))
+    ) ! replace(., $char||$char, $char)
+};        
