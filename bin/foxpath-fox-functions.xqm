@@ -1179,6 +1179,23 @@ declare function f:getRootUriREC($potentialRoot as xs:string, $paths as xs:strin
  : n - return the number of matches, not the matching lines
  :)
 declare function f:grep($uris as xs:string*,
+                        $textFilter as xs:string?,
+                        $flags as xs:string?)
+        as item()* {                        
+    let $ctextFilter := sf:compileComplexStringFilter($textFilter, false())
+    for $uri in $uris
+    where i:fox-is-file($uri, ())
+    let $matchLines :=
+        i:fox-unparsed-text-lines($uri, (), ())
+        [sf:matchesComplexStringFilter(., $ctextFilter)]
+    return
+        if (contains($flags, 'n')) then count($matchLines)
+        else
+            if (empty($matchLines)) then () else
+                string-join((concat('##### ', $uri, ' #####'), $matchLines, '----------'), '&#xA;')
+};
+ 
+declare function f:grepObsolete($uris as xs:string*,
                         $pattern as xs:string?,
                         $patternExcluded as xs:string?,
                         $flags as xs:string?)

@@ -651,12 +651,10 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $args := $call/([
                *[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 0],
                *[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 1],
-               *[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 2],
-               *[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 3]
+               *[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 2]
             ])
             let $uris := if ($narg eq 1) then $context else $args(1)
-            return
-                foxf:grep($uris, $args(1 + $da), $args(2 + $da), $args(3 + $da))
+            return foxf:grep($uris, $args(1 + $da), $args(2 + $da))
                 
         (: function `hlist` 
            ================ :)
