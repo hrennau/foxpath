@@ -1078,6 +1078,14 @@ declare function f:frequencies($values as item()*,
             for $item in $itemsUnordered 
             order by $item/@f/number(.) descending, $item/@text/lower-case(.) 
             return $item
+        case 'n' return 
+            for $item in $itemsUnordered 
+            order by $item/@text/number(.) ascending 
+            return $item
+        case 'N' return 
+            for $item in $itemsUnordered 
+            order by $item/@text/number(.) descending 
+            return $item
         default return 
             for $item in $itemsUnordered 
             order by $item/@text/lower-case(.) 
@@ -3163,6 +3171,7 @@ declare function f:xwrap($items as item()*,
     let $sortRule := if (contains($flags, 's')) then 's' else if (contains($flags, 'S')) then 'S' else ()        
     let $val :=
         for $item in $items 
+        let $_DEBUG := trace($item, '_ITEM: ')
         order by if ($sortRule eq 's') then $item else if ($sortRule eq 'S') then lower-case($item) else ()
         return 
 
@@ -3244,6 +3253,8 @@ declare function f:xwrap($items as item()*,
             
             else $item
             
+    let $_DEBUG := trace($val, '_VAL: ')
+    let $_DEBUG := trace(count($val), '_COUNT: ')
     (: Write wrapper :)            
     let $namespaces :=  
         let $nns := f:extractNamespaceNodes($val[. instance of element()])

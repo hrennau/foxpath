@@ -454,6 +454,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:fileCopy($file, $target, $flags)
                 
+        (: function `file-create-dir` 
+           ========================== :)
+        else if ($fname eq 'file-create-dir') then
+            let $dirs := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return $dirs ! file:create-dir(.)
+            
         (: function `file-date` 
            ==================== :)
         else if ($fname eq 'file-date' or $fname eq 'fdate') then
@@ -1587,14 +1593,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
          : p a r t  1 b:    o b s o l e t e    f u n c t i o n s
          :)
          
-        (: function `zzz-all-descendants` 
-           ========================== :)
-        else if ($fname eq 'zzz-all-descendants') then
-            let $items := 
-                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                else $context
-            return foxf:allDescendants($items)
-
         (: function `zzz-fox-ancestor` 
            ====================== :)
         (: function `zzz-fox-ancestor-or-self` 
