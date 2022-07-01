@@ -1695,14 +1695,11 @@ declare function f:nodeNavigation(
                        $pselector as xs:integer?,
                        $options as xs:string?)                       
         as node()* {
-    let $USE_OLD_FILTER := 1        
     let $contextNodes :=
         for $item in $contextItems return
             if ($item instance of node()) then $item else 
                 i:fox-doc($item, ())
-    let $cNamesFilter := 
-        if ($USE_OLD_FILTER) then $namesFilter ! util:compilePlusMinusNameFilter(.)
-        else $namesFilter ! sf:compileComplexStringFilter(., true())
+    let $cNamesFilter := $namesFilter ! sf:compileComplexStringFilter(., true())
     let $ops := $options ! tokenize(.)    
     let $fn_nodes :=
         switch($axis)
@@ -1728,8 +1725,7 @@ declare function f:nodeNavigation(
     let $result :=
         for $node in $contextNodes
         let $related := $node ! $fn_nodes(.)[$fn_name(.) 
-                        ! (if ($USE_OLD_FILTER) then util:matchesPlusMinusNameFilter(., $cNamesFilter)
-                           else sf:matchesComplexStringFilter(., $cNamesFilter))]
+                        ! sf:matchesComplexStringFilter(., $cNamesFilter)]
         return if (empty($pselector)) then $related else
 
         let $reverseAxis := $axis = ('ancestor', 'ancestor-or-self', 'parent', 'preceding-sibling')
