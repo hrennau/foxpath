@@ -676,6 +676,21 @@ declare function f:fileName($uri as xs:string?)
 };
 
 (:~
+ : Filters a sequence of items, retaining those with a string value 
+ : matching a unified string pattern.
+ :
+ : @param items the items to be filtered
+ : @param pattern a unified string pattern
+ : @return true or false
+ :)
+declare function f:filterItems($items as item()*, 
+                               $pattern as xs:string)
+        as item()* {
+    let $cpattern := $pattern ! sf:compileComplexStringFilter(., true())
+    return $items[sf:matchesComplexStringFilter(string(.), $cpattern)]
+};
+
+(:~
  : Maps a URI to the URI resulting from a shift of a given ancestor folder. 
  : The result URI is reached from the ancestor specified by $shiftedAncestor 
  : by the same path as the input $uri s reached from the ancestor specified
@@ -1490,6 +1505,22 @@ declare function f:lpad($s as xs:anyAtomicType?, $width as xs:integer, $char as 
             let $pad := concat(string-join(for $i in 1 to $width - $len - 1 return $char, ''), ' ')
             return
                 concat($pad, $s)
+};
+
+(:~
+ : Returns true if an item matches a complex string filter, false otherwise.
+ :
+ : @param item the item to check
+ : @param pattern a complex string filter
+ : @return true or false
+ :)
+declare function f:matchesPattern($item as item(), 
+                                  $pattern as xs:string)
+        as xs:boolean {
+    let $cpattern := $pattern ! sf:compileComplexStringFilter(., true())
+    let $item :=
+        if ($item instance of xs:anyAtomicType) then string($item) else $item
+    return sf:matchesComplexStringFilter($item, $cpattern)
 };
 
 (:~
@@ -2810,7 +2841,7 @@ declare function f:table($rows as item()*,
     let $countCols := $rows[1] ! array:size(.)
     let $widths :=
         for $i in 1 to $countCols return
-        ($rows?($i) ! string-length(.)) => max()
+        ($rows?($i) ! string() ! string-length(.)) => max()
     let $startPos :=
         for $i in 1 to $countCols
         let $preColWidth := subsequence($widths, 1, $i - 1) => sum()

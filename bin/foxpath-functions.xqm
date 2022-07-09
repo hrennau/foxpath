@@ -565,6 +565,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 i:fox-file-size($uri, $options)
 
+        (: function `filter-items` 
+           ========================= :)
+        else if ($fname eq 'filter-items') then
+            let $items:= $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $pattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:filterItems($items, $pattern)
+
        (: function `filter-regex` 
           ======================= :)
         else if ($fname = ('filter-regex', 'fregex')) then
@@ -874,6 +882,20 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $docs := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return foxf:pathMultiCompare($docs, 'lname', $options)
+
+        (: function `matches-pattern` 
+           ========================= :)
+        else if ($fname eq 'matches-pattern') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $countArgs := count($call/*)
+            let $item :=
+                if (1 lt $countArgs) then $arg1 else $context 
+            let $pattern := 
+                if (1 lt $countArgs) then
+                    $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $arg1
+            return
+                foxf:matchesPattern($item, $pattern)
 
         (: function `matches-xpath` 
            ======================= :)
