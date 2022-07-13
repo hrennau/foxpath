@@ -1735,6 +1735,7 @@ declare function f:nodeNavigation(
     let $fn_nodes :=
         switch($axis)
         case 'child' return function($c) {$c/*}
+        case 'attributes' return function($c) {$c/@*}        
         case 'descendant' return function($c) {$c/descendant::*}
         case 'descendant-or-self' return function($c) {$c/descendant-or-self::*}
         case 'self' return function($c) {$c}
