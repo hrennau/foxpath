@@ -80,23 +80,24 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `ancestor`, `child`, `descendant` etc. 
            =============================================== :)
-        else if ($fname = ('ancestor', 'ec-ancestor', 
-                           'ancestor-or-self', 'ec-ancestor-or-self',
-                           'parent', 'ec-parent',
-                           'self', 'ec-self',
-                           'child', 'ec-child',
-                           'attributes', 'ec-attributes',
-                           'descendant', 'ec-descendant',
-                           'descendant-or-self', 'ec-descendant-or-self',
-                           'sibling', 'ec-sibling',                           
-                           'preceding-sibling', 'ec-preceding-sibling',
-                           'following-sibling', 'ec-following-sibling',
-                           'parent-sibling', 'ec-parent-sibling',                           
-                           'all-descendant', 'ec-all-descendant',
-                           'all-descendant-or-self', 'ec-all-descendant-or-self')) 
+        else if ($fname = ('ancestor', 'ec-ancestor', 'ancestor-ec',
+                           'ancestor-or-self', 'ec-ancestor-or-self', 'ancestor-or-self-ec',
+                           'parent', 'ec-parent', 'parent-ec',
+                           'self', 'ec-self', 'self-ec',
+                           'child', 'ec-child', 'child-ec',
+                           'attributes', 'ec-attributes', 'attributes-ec',
+                           'descendant', 'ec-descendant', 'descendant-ec', 
+                           'descendant-or-self', 'ec-descendant-or-self', 'descendant-or-self-ec',
+                           'sibling', 'ec-sibling', 'sibling-ec',                           
+                           'preceding-sibling', 'ec-preceding-sibling', 'preceding-sibling-ec',
+                           'following-sibling', 'ec-following-sibling', 'following-sibling-ec',
+                           'all-descendant', 'ec-all-descendant', 'all-descendant-ec',
+                           'all-descendant-or-self', 'ec-all-descendant-or-self', 'all-descendant-or-self-ec')) 
         then
-            let $da := if (starts-with($fname, 'ec-')) then 1 else 0
-            let $axis := $fname ! replace(., '^ec-', '')
+            let $da := if (starts-with($fname, 'ec-')) then 1 
+                       else if (ends-with($fname, '-ec')) then 1
+                       else 0
+            let $axis := $fname ! replace(., '^ec-|-ec$', '')
             let $contextNodes := if ($da eq 0) then $context else 
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $namesFilter := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
