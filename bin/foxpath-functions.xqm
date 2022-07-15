@@ -1698,62 +1698,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:zzzFoxSibling($context, $names, $namesExcluded, $from, $to)
 
-        (: function `zzz-jchildren` 
-           ======================== :)
-        else if ($fname eq 'zzz-jchildren') then
-            let $nodes :=
-                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                else $context
-            let $nameFilter := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
-            let $ignoreCase := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                foxf:zzzJchildren($context, $nameFilter, $ignoreCase)
-
-        (: function `zzz-jnode-child` 
-           ========================== :)
-        else if ($fname = ('zzz-jnode-child', 'zzz-jchild')) then
-            let $nodes :=
-                if (count($call/*) eq 1) then $context
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $names :=
-                let $index :=
-                    if (count($call/*) eq 1) then 1 else 2
-                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $ignoreCase := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                foxf:zzzNodeChild($nodes, 'jname', $names, $namesExcluded, $ignoreCase)
-
-        (: function `zzz-jnode-descendant` 
-           =============================== :)
-        else if ($fname = ('zzz-jnode-descendant', 'zzz-jdescendant')) then
-            let $nodes :=
-                if (count($call/*) eq 1) then $context
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $names :=
-                let $index :=
-                    if (count($call/*) eq 1) then 1 else 2
-                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $ignoreCase := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                foxf:zzzNodeDescendant($nodes, 'jname', $names, $namesExcluded, $ignoreCase)
-
-        (: function `zzz-jnode-self` 
-           ========================= :)
-        else if ($fname = ('zzz-jnode-self', 'zzz-jself')) then
-            let $nodes :=
-                if (count($call/*) eq 1) then $context
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $names :=
-                let $index :=
-                    if (count($call/*) eq 1) then 1 else 2
-                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $ignoreCase := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                foxf:zzzNodeSelf($nodes, 'jname', $names, $namesExcluded, $ignoreCase)
-
         (: function `zzz-has-xatt` 
            ======================= :)
         else if ($fname eq 'zzz-has-xatt' or $fname eq 'xatt') then
@@ -1841,51 +1785,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return concat('//*', $itemSelector)                       
             return
                 i:xquery($xpath, map{'':$doc})
-
-        (: function `zzz-lnode-child` 
-           ========================== :)
-        else if ($fname = ('zzz-lnode-child', 'lchild')) then
-            let $nodes :=
-                if (count($call/*) eq 1) then $context
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $names :=
-                let $index :=
-                    if (count($call/*) eq 1) then 1 else 2
-                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $ignoreCase := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                foxf:zzzNodeChild($nodes, 'lname', $names, $namesExcluded, $ignoreCase)
-
-        (: function `zzz-lnode-descendant` 
-           =============================== :)
-        else if ($fname = ('zzz-lnode-descendant', 'ldescendant')) then
-            let $nodes :=
-                if (count($call/*) eq 1) then $context
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $names :=
-                let $index :=
-                    if (count($call/*) eq 1) then 1 else 2
-                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $ignoreCase := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                foxf:zzzNodeDescendant($nodes, 'lname', $names, $namesExcluded, $ignoreCase)
-
-        (: function `zzz-node-child` 
-           ========================= :)
-        else if ($fname = ('zzz-node-child', 'zzz-nchild')) then
-            let $nodes :=
-                if (count($call/*) eq 1) then $context
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $names :=
-                let $index :=
-                    if (count($call/*) eq 1) then 1 else 2
-                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $ignoreCase := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                foxf:zzzNodeChild($nodes, 'name', $names, $namesExcluded, $ignoreCase)
 
         (: ################################################################
          : p a r t  2:    s t a n d a r d    f u n c t i o n s
