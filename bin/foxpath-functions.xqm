@@ -2331,7 +2331,25 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 else $context
             return
                 outermost($nodes)
-                
+
+        (: function `parse-html` 
+           ==================== :)
+        else if ($fname eq 'parse-html') then
+            let $text := 
+                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $context
+            return
+                try {html:parse($text)} catch * {<PARSE_ERROR>{$text}</PARSE_ERROR>}
+
+        (: function `parse-xml` 
+           =================== :)
+        else if ($fname eq 'parse-xml') then
+            let $text := 
+                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $context
+            return
+                try {parse-xml($text)} catch * {<PARSE_ERROR>{$text}</PARSE_ERROR>}
+
         (: function `position` 
            =================== :)
         else if ($fname eq 'position') then
