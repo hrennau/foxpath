@@ -80,24 +80,23 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `ancestor`, `child`, `descendant` etc. 
            =============================================== :)
-        else if ($fname = ('ancestor', 'ec-ancestor', 'ancestor-ec',
-                           'ancestor-or-self', 'ec-ancestor-or-self', 'ancestor-or-self-ec',
-                           'parent', 'ec-parent', 'parent-ec',
-                           'self', 'ec-self', 'self-ec',
-                           'child', 'ec-child', 'child-ec',
-                           'attributes', 'ec-attributes', 'attributes-ec',
-                           'descendant', 'ec-descendant', 'descendant-ec', 
-                           'descendant-or-self', 'ec-descendant-or-self', 'descendant-or-self-ec',
-                           'sibling', 'ec-sibling', 'sibling-ec',                           
-                           'preceding-sibling', 'ec-preceding-sibling', 'preceding-sibling-ec',
-                           'following-sibling', 'ec-following-sibling', 'following-sibling-ec',
-                           'all-descendant', 'ec-all-descendant', 'all-descendant-ec',
-                           'all-descendant-or-self', 'ec-all-descendant-or-self', 'all-descendant-or-self-ec')) 
+        else if ($fname = ('ancestor', 'ancestor-ec',
+                           'ancestor-or-self', 'ancestor-or-self-ec',
+                           'parent', 'parent-ec',
+                           'self', 'self-ec',
+                           'child', 'child-ec',
+                           'attributes', 'attributes-ec',
+                           'descendant', 'descendant-ec', 
+                           'descendant-or-self', 'descendant-or-self-ec',
+                           'sibling', 'sibling-ec',                           
+                           'preceding-sibling', 'preceding-sibling-ec',
+                           'following-sibling', 'following-sibling-ec',
+                           'all-descendant', 'all-descendant-ec',
+                           'all-descendant-or-self', 'all-descendant-or-self-ec')) 
         then
-            let $da := if (starts-with($fname, 'ec-')) then 1 
-                       else if (ends-with($fname, '-ec')) then 1
+            let $da := if (ends-with($fname, '-ec')) then 1
                        else 0
-            let $axis := $fname ! replace(., '^ec-|-ec$', '')
+            let $axis := $fname ! replace(., '-ec$', '')
             let $contextNodes := if ($da eq 0) then $context else 
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $namesFilter := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -303,6 +302,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 count(distinct-values($values)) eq count($values)
+                            
+        (: function `docx-doc` 
+           =================== :)
+        else if ($fname eq 'docx-doc') then
+            let $uri := if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                        else $context
+            return foxf:docxDoc($uri)
                             
         (: function `echo` 
            =============== :)

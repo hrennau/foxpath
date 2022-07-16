@@ -154,72 +154,6 @@ declare function f:bslash($arg as xs:string?)
 };      
 
 (:~
- : Returns the names of nodes structurally related to given nodes. Dependent 
- : on $nameKind, the local names (lname), the JSON names (jname) or the lexical 
- : names (name) are returned. Names are sorted.
- :
- : When using $nameFilter, only those child elements are considered which have
- : a local name matching the pattern.
- :
- : Example: .../foo/child-names(., ', ', false(), '*put')
- : Example: .../foo/child-names(., ', ', false(), 'input|output') 
- :
- : @param nodes nodes (only elements contribute to the result)
- : @param concat if true, the names are concatenated
- : @param nameKind one of "name", "lname" or "jname" 
- : @param namePatterns optional name patterns selecting child names to be considered
- : @param excludedNamePattern optional name patterns selecting child elements to be ignored
- : @return the names as a sequence, or as a concatenated string
- :)
-declare function f:relatedNames($nodes as node()*, 
-                            $relationship as xs:string,
-                            $nameKind as xs:string?,   (: name | lname | jname :)
-                            $nameFilter as xs:string?,
-                            $options as xs:string?)
-        as xs:string* {
-    let $nosort := contains($options, 'nosort') 
-    let $cnameFilter := util:compilePlusMinusNameFilter($nameFilter)
-    (:
-    let $_DEBUG := trace($nameFilter, '_FILTER_STRING: ')    
-    let $_DEBUG := trace($cnameFilter, '_FILTER_ELEM: ')
-     :)
-    let $fnName := 
-        if ($relationship = ('content')) then
-        switch($nameKind)
-        case 'name' return function($node) {'@'[$node/self::attribute()]||name($node)}
-        case 'jname' return function($node) {convert:decode-key(local-name(.))}
-        default return function($node) {'@'[$node/self::attribute()]||local-name($node)}
-        
-        else
-        switch($nameKind)
-        case 'name' return function($node) {name($node)}
-        case 'jname' return function($node) {convert:decode-key(local-name(.))}
-        default return function($node) {local-name($node)}
-    
-    let $separator := ', '
-
-    for $node in $nodes
-    let $items :=
-        let $unfiltered :=
-            switch($relationship)
-            case 'child' return $node/*
-            case 'parent' return $node/..
-            case 'att' return $node/@*
-            case 'content' return $node/(@*, *)
-            case 'descendant' return $node//*
-            default return error(QName((), 'INVALID_ARG'), 'Unknown structure relationship: '||$relationship)
-        return 
-            if (empty($cnameFilter)) then $unfiltered
-            else $unfiltered[$fnName(.) ! replace(., '^@', '') ! util:matchesPlusMinusNameFilter(., $cnameFilter)]
-    let $names := $items/$fnName(.) => distinct-values() 
-    let $names := if ($nosort) then $names else $names => sort()        
-    let $nameseq := string-join($names, $separator)
-    order by $nameseq        
-    return
-        $nameseq
-};        
-
-(:~
  : Returns true if all items have deep-equal content. When comparing  the items,
  : only their content is considered, not their name. Thus elements with different
  : names can have deep-equal content.
@@ -327,6 +261,18 @@ declare function f:descendantNames(
         if (exists($separator)) then string-join($names, $separator)
         else $names
 };        
+
+(:~
+ : Returns the XML representation of a docx document.
+ :
+ : @param uri the URI of the .docxfile
+ : @return the XML document
+ :)
+declare function f:docxDoc($uri as xs:string)
+        as document-node()? {
+    archive:extract-text(i:fox-binary($uri, ()), 'word/document.xml')   
+    ! parse-xml(.)
+};
 
 (:~
  : Compares two or more nodes for deep equality. The nodes can be
@@ -2415,6 +2361,72 @@ declare function f:percent($values as xs:numeric*, $value2 as xs:numeric?, $frac
     let $percent := ($value1 div $value2 * 100) => round($fd)
     return $percent
 };
+
+(:~
+ : Returns the names of nodes structurally related to given nodes. Dependent 
+ : on $nameKind, the local names (lname), the JSON names (jname) or the lexical 
+ : names (name) are returned. Names are sorted.
+ :
+ : When using $nameFilter, only those child elements are considered which have
+ : a local name matching the pattern.
+ :
+ : Example: .../foo/child-names(., ', ', false(), '*put')
+ : Example: .../foo/child-names(., ', ', false(), 'input|output') 
+ :
+ : @param nodes nodes (only elements contribute to the result)
+ : @param concat if true, the names are concatenated
+ : @param nameKind one of "name", "lname" or "jname" 
+ : @param namePatterns optional name patterns selecting child names to be considered
+ : @param excludedNamePattern optional name patterns selecting child elements to be ignored
+ : @return the names as a sequence, or as a concatenated string
+ :)
+declare function f:relatedNames($nodes as node()*, 
+                            $relationship as xs:string,
+                            $nameKind as xs:string?,   (: name | lname | jname :)
+                            $nameFilter as xs:string?,
+                            $options as xs:string?)
+        as xs:string* {
+    let $nosort := contains($options, 'nosort') 
+    let $cnameFilter := util:compilePlusMinusNameFilter($nameFilter)
+    (:
+    let $_DEBUG := trace($nameFilter, '_FILTER_STRING: ')    
+    let $_DEBUG := trace($cnameFilter, '_FILTER_ELEM: ')
+     :)
+    let $fnName := 
+        if ($relationship = ('content')) then
+        switch($nameKind)
+        case 'name' return function($node) {'@'[$node/self::attribute()]||name($node)}
+        case 'jname' return function($node) {convert:decode-key(local-name(.))}
+        default return function($node) {'@'[$node/self::attribute()]||local-name($node)}
+        
+        else
+        switch($nameKind)
+        case 'name' return function($node) {name($node)}
+        case 'jname' return function($node) {convert:decode-key(local-name(.))}
+        default return function($node) {local-name($node)}
+    
+    let $separator := ', '
+
+    for $node in $nodes
+    let $items :=
+        let $unfiltered :=
+            switch($relationship)
+            case 'child' return $node/*
+            case 'parent' return $node/..
+            case 'att' return $node/@*
+            case 'content' return $node/(@*, *)
+            case 'descendant' return $node//*
+            default return error(QName((), 'INVALID_ARG'), 'Unknown structure relationship: '||$relationship)
+        return 
+            if (empty($cnameFilter)) then $unfiltered
+            else $unfiltered[$fnName(.) ! replace(., '^@', '') ! util:matchesPlusMinusNameFilter(., $cnameFilter)]
+    let $names := $items/$fnName(.) => distinct-values() 
+    let $names := if ($nosort) then $names else $names => sort()        
+    let $nameseq := string-join($names, $separator)
+    order by $nameseq        
+    return
+        $nameseq
+};        
 
 (:~
  : Returns the XSDs which can be used for validating given documents.
