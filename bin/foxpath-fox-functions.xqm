@@ -764,7 +764,7 @@ declare function f:foxNavigation(
     if ($axis eq 'parent-sibling') then f:foxNavigation(
         $contextUris ! i:parentUri(., ()), 'sibling', $namesFilter, $pselector) else
         
-    let $cNamesFilter := $namesFilter ! util:compilePlusMinusNameFilter(.)
+    let $cNamesFilter := $namesFilter ! sf:compileComplexStringFilter(., true())    
     let $fn_uris :=
         switch($axis)
         case 'child' return function($c) {i:childUriCollectionAbsolute($c, ())}
@@ -782,11 +782,11 @@ declare function f:foxNavigation(
              i:parentUri($c, ()) ! i:childUriCollectionAbsolute(., ())[. ne $c]}
         default return error()
         
-    let $fn_name := function($uri) {replace($uri, '.+/', '')}
+    let $fn_name := function($uri) {replace($uri, '.*/', '')}
     let $result :=
         for $curi in $contextUris
         let $related := $curi ! $fn_uris(.)[$fn_name(.) 
-                        ! util:matchesPlusMinusNameFilter(., $cNamesFilter)]
+                        ! sf:matchesComplexStringFilter(., $cNamesFilter)]
         return if (empty($pselector)) then $related else
 
         let $reverseAxis := $axis = ('ancestor', 'ancestor-or-self', 'parent', 'preceding-sibling')

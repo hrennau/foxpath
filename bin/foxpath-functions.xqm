@@ -361,7 +361,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: functions `faxis, ec-faxis` 
            =========================== :)
-        else if ($fname = ('fancestor', 'ec-fancestor', 
+        else if ($fname = ('fancestor', 'fancestor-ec', 
                            'fancestor-or-self', 'ec-fancestor-or-self',
                            'fparent', 'ec-fparent',
                            'fself', 'ec-fself',
@@ -373,8 +373,10 @@ declare function f:resolveStaticFunctionCall($call as element(),
                            'fsibling', 'ec-fsibling',
                            'fparent-sibling', 'ec-fparent-sibling')) 
         then
-            let $da := if (starts-with($fname, 'ec-')) then 1 else 0
-            let $axis := $fname ! replace(., '^f|ec-f', '')
+            let $da := if (starts-with($fname, 'ec-')) then 1 
+                       else if (ends-with($fname, '-ec')) then 1
+                       else 0
+            let $axis := $fname ! replace(., '^f|ec-f', '') ! replace(., '-ec$', '')
             let $uris := if ($da eq 0) then $context else 
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $namesFilter := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
