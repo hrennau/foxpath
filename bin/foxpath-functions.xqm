@@ -91,6 +91,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
                            'sibling', 'sibling-ec',                           
                            'preceding-sibling', 'preceding-sibling-ec',
                            'following-sibling', 'following-sibling-ec',
+                           'content', 'content-ec',
+                           'content-or-self', 'content-or-self-ec',
+                           (: all-descendant* deprecated - use content* :)
                            'all-descendant', 'all-descendant-ec',
                            'all-descendant-or-self', 'all-descendant-or-self-ec')) 
         then

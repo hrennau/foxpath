@@ -1691,6 +1691,8 @@ declare function f:nodeNavigation(
         case 'following-sibling' return function ($c) {$c/following-sibling::*}
         case 'preceding-sibling' return function ($c) {$c/preceding-sibling::*}
         case 'sibling' return function ($c) {$c/(preceding-sibling::*, following-sibling::*)}
+        case 'content' return function($c) {$c/descendant::*/(., @*)}    
+        case 'content-or-self' return function($c) {$c/descendant-or-self::*/(., @*)}        
         case 'all-descendant' return function($c) {$c/descendant::*/(., @*)}    
         case 'all-descendant-or-self' return function($c) {$c/descendant-or-self::*/(., @*)}        
         default return error()
