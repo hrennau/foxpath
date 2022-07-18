@@ -764,7 +764,7 @@ declare function f:foxNavigation(
     if ($axis eq 'parent-sibling') then f:foxNavigation(
         $contextUris ! i:parentUri(., ()), 'sibling', $namesFilter, $pselector) else
         
-    let $cNamesFilter := $namesFilter ! sf:compileComplexStringFilter(., true())    
+    let $cNamesFilter := $namesFilter ! sf:compileComplexStringFilter(., true()) 
     let $fn_uris :=
         switch($axis)
         case 'child' return function($c) {i:childUriCollectionAbsolute($c, ())}

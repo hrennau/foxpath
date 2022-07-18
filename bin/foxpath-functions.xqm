@@ -2090,6 +2090,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 in-scope-prefixes($arg)
                 
+        (: function `index-of` 
+           =================== :)
+        else if ($fname eq 'index-of') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                index-of($arg1, $arg2)
+                
         (: function `innermost` 
            ==================== :)
         else if ($fname eq 'innermost') then
