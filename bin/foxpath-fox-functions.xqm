@@ -283,6 +283,7 @@ declare function f:docxDoc($uri as xs:string)
  :)
 declare function f:nodesDeepEqual($items as item()+)
         as xs:boolean? {
+    let $_DEBUG := trace(count($items), '_COUNT_ITEMS: ')         
     let $count := count($items) return        
     if ($count lt 2) then () else
 
@@ -333,6 +334,7 @@ declare function f:nodePairDeepSimilar($node1 as node(),
                                        $excludeExprs as xs:string*,
                                        $processingOptions as map(*))
         as xs:boolean {
+        let $_DEBUG := trace($excludeExprs, '_EXCLUDE: ') return
     if (empty($excludeExprs)) then deep-equal($node1, $node2) else
     
     let $fnPrune := function($node) {
@@ -2084,7 +2086,8 @@ declare function f:parentName($node as node(),
 };        
 
 (:~
- : Compares two documents with respect to their data paths. The paths
+ : Compares two documents or nodes with respect to the data paths which
+ : they contain. The paths
  : use node names as specified by $nameKind. The comparison is defined 
  : by the comparison type ($cmpType). Supported types:
  :
@@ -2109,10 +2112,16 @@ declare function f:parentName($node as node(),
  :)
 declare function f:pathCompare($doc1 as item(),
                                $doc2 as item(),
-                               $nameKind as xs:string?,
-                               $cmpType as xs:string?)
+                               $options as xs:string?)
         as item()? {
-    let $nameKind := ($nameKind, 'lname')[1]
+    let $ops := $options ! tokenize(.)        
+    let $fn_name := 
+        if ($ops = 'name') then function($node) {$node/name(.)}
+        else if ($ops = 'jname') then function($node) {$node/local-name(.) ! convert:decode-key(.)}
+        else function($node) {$node/local-name(.)}
+    let $cmpType := $ops[. = ('plain-count', 'indexed-value', 'plain', 'indexed')][1]        
+    let $nameKind := ($ops[. = ('lname', 'name', 'jname')][1], 'lname')[1]
+    
     let $d1 := if ($doc1 instance of node()) then $doc1 else i:fox-doc($doc1, ())
     let $d2 := if ($doc2 instance of node()) then $doc2 else i:fox-doc($doc2, ())
     return if (deep-equal($d1, $d2)) then () else
@@ -2198,7 +2207,9 @@ declare function f:pathCompare($doc1 as item(),
                         
                     }</deviations>
 
+        (: plain | indexed :)
         default return
+            let $_DEBUG := trace($cmpType, '_COMP_TYPE: ')
             let $fnNamePath := if ($cmpType eq 'indexed') then f:indexedNamePath#4 else f:namePath#4
             let $paths1 := $d1/f:allDescendants(.)/$fnNamePath(., $nameKind, (), ()) => distinct-values() => sort()
             let $paths2 := $d2/f:allDescendants(.)/$fnNamePath(., $nameKind, (), ()) => distinct-values() => sort()
@@ -2215,57 +2226,103 @@ declare function f:pathCompare($doc1 as item(),
 };
 
 (:~
- : Returns for a sequence of documents for each document those data paths 
- : which are not contained in all other documents.
- :
- : @param docs a sequence of documents or document URIs
- : @param counts a whitespace separated list of options;
- :   count - do not display paths, only counts
- : @return a structured representation of data paths not used by all documents
+ : Reports the data paths contained in a set of documents or document 
+ : fragments. Input items can be nodes and/or atomic items. Atomic input items
+ : are interpreted as document URI and replaced with the corresponding 
+ : document node. The function reports the data paths "contained" by the input 
+ : nodes, more precisely: the data paths connecting the input nodes and the 
+ : nodes which they contain. 
+ : 
+ : By default, the report comprises the following sections. To request a 
+ : subset, use the corresponding options:
+ : - The document URIs and fragment paths, when appropriate (option docs)
+ : - The data paths contained by all nodes (option common)
+ : - The data paths contained by some, but not all nodes (option uncommon)
+ : - For each input node the paths contained by this, but not every other node (option details)
+
+ : @param items document URIs and/or nodes
+ : @param options a whitespace separated list of options;
+ :   lname - path string uses local names
+ :   name - path string uses lexical names
+ :   jname - path string uses JSON names
+ :   docs - include: document URIs and fragment paths, if appropriate
+ :   common - include: data paths contained by all input nodes
+ :   uncommon - include: data paths not contained by all input nodes
+ :   details - include: for each input node the uncommon paths it contains
+ :   ~docs - exclude: document URIs and fragment paths, if appropriate
+ :   ~common - exclude: data paths contained by all input nodes
+ :   ~uncommon - exclude: data paths not contained by all input nodes
+ :   ~details - exclude: for each input node the uncommon paths it contains
  :)
 declare function f:pathMultiCompare($items as item()*,
-                                    $nameKind as xs:string?,
                                     $options as xs:string?)
         as item()? {
     let $count := count($items)
     return if ($count lt 2) then () else
     
     let $options := $options ! tokenize(.) ! lower-case(.)
+    let $nameKind := ($options[. = ('lname', 'jname', 'name')][1], 'lname')[1]  
+    let $scopeDefault := ('docs', 'common', 'uncommon', 'details')
+    let $scope := $options[. = $scopeDefault]
+    let $scopePlus := if (exists($scope)) then $scope else $scopeDefault
+    let $scopeMinus := $options[starts-with(., '~')] ! substring(., 2)
+    let $scope := $scopePlus[not(. = $scopeMinus)]
     
-    let $nameKind := ($nameKind, 'lname')[1]
-    let $docs :=
-        for $item in $items return
-            if ($item instance of node()) then $item
-            else i:fox-doc($item, ())
+    let $fnFragmentPath := function($doc) {
+        $doc[..]/f:indexedNamePath(., $nameKind, (), ())}
+        
+    let $docs := $items ! 
+        (typeswitch(.) case node() return . default return i:fox-doc(., ()))
     
     let $pathArrays := 
         for $doc at $pos in $docs
-        let $paths := $doc/f:allDescendants(.)/f:namePath(., $nameKind, (), ()) => distinct-values() => sort()
+        let $paths := $doc/f:allDescendants(.)/f:namePath(., $nameKind, (), ()) 
+                      => distinct-values() => sort()
         return array{$paths}
         
     let $commonPaths := util:atomIntersection($pathArrays)
-    let $pathsMap := map:merge(
-        for $doc at $pos in $docs
-        let $paths := $doc/f:allDescendants(.)/f:namePath(., $nameKind, (), ()) => distinct-values() => sort()
-        return map:entry($pos, $paths)
-    )
-    let $deviations :=    
+    
+    let $reportDocs :=
+        <documents count="{count($docs)}">{
+            for $doc in $docs
+            let $uri := $doc/root()/base-uri(.)
+            return $doc/<document uri="{base-uri(.)}">{$fnFragmentPath(.) ! attribute fragmentPath {.}}</document>
+        }</documents>    
+        [$scope = 'docs']
+    let $reportPathsInAll :=
+        <pathsInAll count="{count($commonPaths)}">{
+            $commonPaths ! <path p="{.}"/>
+        }</pathsInAll>   
+        [$scope = 'common']
+    let $reportDocDetails :=    
         for $i in 1 to $count
         let $paths := $pathArrays[$i] ! array:flatten(.)
         let $pathsNotCommon := $paths[not(. = $commonPaths)]
-        return
-            if (empty($pathsNotCommon)) then () else
+        return if (empty($pathsNotCommon)) then () else
             <document nr="{$i}">{
                 $docs[$i]/base-uri(.) ! attribute uri {.},
+                $docs[$i]/$fnFragmentPath(.) ! attribute fragmentPath {.},
                 <pathsNotInAll count="{count($pathsNotCommon)}">{
                     if ($options = 'counts') then () else
                     ($pathsNotCommon => sort()) ! <path p="{.}"/>
                 }</pathsNotInAll>            
-            }</document>
+             }</document>
+    let $reportPathsNotInAll := if (not($reportDocDetails)) then () else
+        let $paths := $reportDocDetails//path/@p => distinct-values()
+        return
+            <pathsNotInAll count="{count($paths)}">{
+                $paths ! <path p="{.}"/>
+            }</pathsNotInAll>
+            [$scope = 'uncommon']
     return
-        if (empty($deviations)) then ()
-        else
-            <deviations>{$deviations}</deviations>
+        <pathMultiCompare scope="{$scope}">{
+            $reportDocs,
+            $reportPathsInAll,
+            $reportPathsNotInAll,
+            <documentDetails count="{count($reportDocDetails)}">{
+                $reportDocDetails
+            }</documentDetails>[$reportDocDetails][$scope = 'details']
+        }</pathMultiCompare>
 };
 
 (:~
