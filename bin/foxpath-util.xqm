@@ -260,10 +260,11 @@ declare function f:atomIntersection($sequences as array(item()*)*)
             let $newAccum := $sofar[. = $newItems]
             
             let $t3 := prof:current-ms()
+            (:
             let $_DEBUG := trace(concat('_NEXT_INTERSECTION; #OLD_ITEMS: ', count($sofar), ' ; #NEW_ITEMS: ', count($newItems)))            
             let $_DEBUG := trace($t2 - $t1, 't(flatten): ')
             let $_DEBUG := trace($t3 - $t2, 't(filter) : ')
-            
+             :)
             return $newAccum})
 };
 

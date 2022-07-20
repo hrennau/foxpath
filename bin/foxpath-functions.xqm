@@ -777,13 +777,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 i:fox-doc-available($uri, $options)
             
-        (: function `jpath-multi-compare` 
-           ============================== :)
-        else if ($fname = ('jpath-multi-compare', 'jpathmcmp')) then           
-            let $docs := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:pathMultiCompare($docs, 'jname', $options)
-
         (: function `jschema-keywords` 
            ========================== :)
         else if ($fname = ('jschema-keywords', 'jskeywords')) then
@@ -889,13 +882,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:lpad($string, $width, $fillChar)
 
-        (: function `lpath-multi-compare` 
-           ============================== :)
-        else if ($fname = ('lpath-multi-compare', 'lpathmcmp')) then           
-            let $docs := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:pathMultiCompare($docs, 'lname', $options)
-
         (: function `matches-pattern` 
            ========================= :)
         else if ($fname eq 'matches-pattern') then
@@ -967,8 +953,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     
         (: function `node-deep-equal` 
            ========================= :)
-        else if ($fname = ('node-deep-equal', 'ec-node-deep-equal')) then
-            let $da := if (starts-with($fname, 'ec-')) then 1 else 0    
+        else if ($fname = ('node-deep-equal', 'node-deep-equal-ec')) then
+            let $da := if (ends-with($fname, 'ec-')) then 1 else 0    
             let $items1 := if ($da eq 0) then $context else
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $items2 :=
@@ -978,8 +964,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
                             
         (: function `node-deep-similar` 
            ============================ :)
-        else if ($fname = ('node-deep-similar', 'ec-node-deep-similar')) then
-            let $da := if (starts-with($fname, 'ec-')) then 1 else 0    
+        else if ($fname = ('node-deep-similar', 'node-deep-similar-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0    
             let $items1 := if ($da eq 0) then $context else
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $items2 :=
@@ -1123,23 +1109,22 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `path-compare` 
            ======================= :)
         else if ($fname = (
-                'path-compare', 'pathcmp', 'ec-path-compare', 
-                'lpath-compare', 'lpathcmp', 'ec-lpath-compare', 
-                'jpath-compare', 'jpathcmp', 'ec-jpath-compare')) then
-            let $nameKind := replace($fname, '^ec-', '') ! substring-before(., '-') ! replace(., 'path', 'name')                
-            let $da := if (starts-with($fname, 'ec-')) then 1 else 0                
+                'path-compare', 'pathcmp', 'path-compare-ec', 'pathcmp-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0                
             let $item1 := if ($da eq 0) then $context else
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $item2 := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $cmpType:= $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:pathCompare($item1, $item2, $nameKind, $cmpType)
+            (: options: name lname jname 
+                        plain indexed plain-count indexed-value :)
+            let $options:= $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:pathCompare($item1, $item2, $options)
 
         (: function `path-multi-compare` 
            ============================= :)
-        else if ($fname = ('path-multi-compare', 'pathmcmp')) then           
+        else if ($fname = 'path-multi-compare') then           
             let $docs := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:pathMultiCompare($docs, 'name', $options)
+            return foxf:pathMultiCompare($docs, $options)
 
         (: function `path-content` 
            ======================= :)
