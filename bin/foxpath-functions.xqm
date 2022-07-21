@@ -197,10 +197,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 
         (: function `content-deep-equal` 
            ============================= :)
-        else if ($fname eq 'content-deep-equal') then
-            let $args := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $scope := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:contentDeepEqual($args, $scope) 
+        else if ($fname = ('content-deep-equal', 'content-deep-equal-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0    
+            let $items := (
+                $context[$da eq 0],
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
+            let $controlOptions := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:contentDeepEqual($items, $controlOptions)
 
         (: function `count-chars` 
            ====================== :)
@@ -954,26 +958,24 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `node-deep-equal` 
            ========================= :)
         else if ($fname = ('node-deep-equal', 'node-deep-equal-ec')) then
-            let $da := if (ends-with($fname, 'ec-')) then 1 else 0    
-            let $items1 := if ($da eq 0) then $context else
-                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $items2 :=
-                $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0    
+            let $items := (
+                $context[$da eq 0],
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
             return
-                foxf:nodesDeepEqual(($items1, $items2))
+                foxf:nodesDeepEqual($items)
                             
         (: function `node-deep-similar` 
            ============================ :)
         else if ($fname = ('node-deep-similar', 'node-deep-similar-ec')) then
             let $da := if (ends-with($fname, '-ec')) then 1 else 0    
-            let $items1 := if ($da eq 0) then $context else
-                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $items2 :=
-                $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $items := (
+                $context[$da eq 0],
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
             let $excludeExprs := 
-                $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:nodesDeepSimilar(($items1, $items2), $excludeExprs, $options)
+                foxf:nodesDeepSimilar($items, $excludeExprs, $options)
                             
         (: function `node-location` 
            ======================== :)

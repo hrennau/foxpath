@@ -154,9 +154,8 @@ declare function f:bslash($arg as xs:string?)
 };      
 
 (:~
- : Returns true if all items have deep-equal content. When comparing  the items,
- : only their content is considered, not their name. Thus elements with different
- : names can have deep-equal content.
+ : Checks if two or more nodes have deep-equal content. The content to be
+ : compared can be restricted by the $scope parameter.
  :
  : scope s - compare the items themselves
  : scope c - compare attributes and child nodes
@@ -164,10 +163,15 @@ declare function f:bslash($arg as xs:string?)
  : scope a - compare attributes
  :
  : @param items the items to be checked
+ : @param scope specifies which part of the content to compare
  : @return false if there is a pair of items which do not have deep-equal content, true otherwise
  :)
 declare function f:contentDeepEqual($items as item()*, $scope as xs:string?)
         as xs:boolean? {
+    (:
+    let $_DEBUG := trace($items, 'ITEMS: ')        
+    let $_DEBUG := trace($scope, 'SCOPE: ')
+    :)
     let $docs :=
         for $item in $items return
             if ($item instance of node()) then $item
@@ -283,7 +287,6 @@ declare function f:docxDoc($uri as xs:string)
  :)
 declare function f:nodesDeepEqual($items as item()+)
         as xs:boolean? {
-    let $_DEBUG := trace(count($items), '_COUNT_ITEMS: ')         
     let $count := count($items) return        
     if ($count lt 2) then () else
 
