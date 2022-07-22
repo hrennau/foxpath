@@ -1123,10 +1123,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `path-multi-compare` 
            ============================= :)
-        else if ($fname = 'path-multi-compare') then           
-            let $docs := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+        else if ($fname = ('path-multi-compare', 'path-multi-compare-ec')) then   
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0    
+            let $items := (
+                $context[$da eq 0],
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
             let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:pathMultiCompare($docs, $options)
+            return foxf:pathMultiCompare($items, $options)
 
         (: function `path-content` 
            ======================= :)
@@ -1190,7 +1193,18 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     <resource href="{$item}"/>
             return
                 <rcat t="{current-dateTime()}" count="{count($refs)}">{$refs}</rcat>
-                           
+                        
+        (: function `reduce-node` 
+           ===================== :)
+        else if ($fname = ('reduce-node', 'reduce-node-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0        
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $doc := if ($da) then $arg1 else $context
+            let $excludeExprs :=
+                if (not($da)) then $arg1 else                
+                $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:reduceNode($doc, $excludeExprs, $options)
+                        
         (: function `resolve-fox` 
            ====================== :)
         else if ($fname eq 'resolve-fox') then

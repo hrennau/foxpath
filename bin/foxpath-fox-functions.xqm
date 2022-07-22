@@ -285,12 +285,12 @@ declare function f:docxDoc($uri as xs:string)
  : @param items nodes and or document URIs
  : @return true if all nodes are deep-equal, false otherwise
  :)
-declare function f:nodesDeepEqual($items as item()+)
+declare function f:nodesDeepEqual($items as item()*)
         as xs:boolean? {
     let $count := count($items) return        
     if ($count lt 2) then () else
 
-    let $nodes := 
+    let $nodes :=
         for $item in $items return 
             if ($item instance of node()) then $item else i:fox-doc($item, ())
     return
@@ -2423,6 +2423,34 @@ declare function f:percent($values as xs:numeric*, $value2 as xs:numeric?, $frac
     let $percent := ($value1 div $value2 * 100) => round($fd)
     return $percent
 };
+
+(:~
+ : Creates a reduced copy of a node. Content nodes selected by the
+ : expressions $excludeExprs are removed.
+ :
+ : @param doc document URI or node
+ : @param excludeExprs expressions excluding nodes
+ : @return a copy of the input doc in which the selected nodes have been removed
+ :)
+declare function f:reduceNode($item as item()?,
+                              $excludeExprs as xs:string*,
+                              $processingOptions as map(*))
+        as node()* {
+    let $node := if ($item instance of node()) then $item else i:fox-doc($item, ())
+    let $resultDoc :=  
+        copy $node_ := $node
+        modify
+            let $delNodes :=
+                for $expr in $excludeExprs return 
+                    f:resolveFoxpath($node_, $expr, (), $processingOptions)
+                    [. instance of node()]
+            (: let $_DEBUG := trace($delNodes, '_DEL_NODES: ') :)
+                return 
+                if (empty($delNodes))then () else
+                    delete nodes $delNodes
+        return $node_
+    return $resultDoc
+ };
 
 (:~
  : Returns the names of nodes structurally related to given nodes. Dependent 
