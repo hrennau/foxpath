@@ -366,7 +366,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return foxf:foxAncestorShifted($contextUris, $ancestor, $shiftedAncestor, $nameReplaceSubstring, $nameReplaceWith, $options)
 
 
-        (: functions `faxis, ec-faxis` 
+        (: functions `faxis, faxis-ec` 
            =========================== :)
         else if ($fname = ('fancestor', 'fancestor-ec', 
                            'fancestor-or-self', 'ec-fancestor-or-self',
@@ -377,19 +377,20 @@ declare function f:resolveStaticFunctionCall($call as element(),
                            'fdescendant-or-self', 'ec-fdescendant-or-self',
                            'fpreceding-sibling', 'ec-fpreceding-sibling',
                            'ffollowing-sibling', 'ec-ffollowing-sibling',
-                           'fsibling', 'ec-fsibling',
-                           'fparent-sibling', 'ec-fparent-sibling')) 
+                           'fsibling', 'fsibling-ec',
+                           'fparent-sibling', 'ec-fparent-sibling',
+                           
+                           'bsibling', 'bsibling-ec')) 
         then
-            let $da := if (starts-with($fname, 'ec-')) then 1 
-                       else if (ends-with($fname, '-ec')) then 1
-                       else 0
-            let $axis := $fname ! replace(., '^f|ec-f', '') ! replace(., '-ec$', '')
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0
+            let $axis := $fname ! replace(., '^.', '') ! replace(., '-ec$', '')
+            let $fnOptions := if (starts-with($fname, 'b')) then 'use-base-uri' else ()
             let $uris := if ($da eq 0) then $context else 
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $namesFilter := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $pselector := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:foxNavigation($uris, $axis, $namesFilter, $pselector)
+                foxf:foxNavigation($uris, $axis, $namesFilter, $pselector, $fnOptions)
                 
         (: function `file-append-text` 
            =========================== :)
@@ -606,6 +607,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $selections := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $toplevelOr := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return ft:fnContainsText($selections, (), $toplevelOr, ())            
+                
+        (: function `map-items` 
+           ==================== :)
+        else if ($fname eq 'map-items') then
+            let $items := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $expr := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:mapItems($items, $expr, $options)            
                 
         (: function `fractions` 
            ====================== :)
@@ -886,6 +894,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:lpad($string, $width, $fillChar)
 
+        (: function `map-items` 
+           ==================== :)
+        else if ($fname eq 'map-items') then
+            let $items := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $expr := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:mapItems($items, $expr, $options)            
+                
         (: function `matches-pattern` 
            ========================= :)
         else if ($fname eq 'matches-pattern') then

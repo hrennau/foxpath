@@ -2079,6 +2079,7 @@ declare function f:editInitialContext($context as item()?) as item()? {
     (: let $_DEBUG := trace($context, '___INITIAL_CONTEXT: ') return :)
     if (empty($context)) then $context
     else if ($context instance of node()) then $context
+    else if (not($context instance of xs:string)) then $context    
     else $context 
          ! ( try {file:path-to-native(.)} catch * {.} ) 
          ! replace(., '\\', '/') 

@@ -684,7 +684,7 @@ declare function f:foxAncestorShifted(
             let $expr := util:extractExpr($ancestor)
             return
                 if ($expr) then f:resolveFoxpath($uri, $expr, (), $processingOptions)
-                else f:foxNavigation($uri, 'ancestor', $ancestor, 1)
+                else f:foxNavigation($uri, 'ancestor', $ancestor, 1, ())
     return if (not(i:fox-file-exists($ancestorURI, ()))) then
         error(QName((), 'INVALID_ARG'), concat('No resource at ancestor URI: ', $ancestorURI)) 
         else
@@ -764,12 +764,18 @@ declare function f:foxNavigation(
                        $contextUris as item()*,
                        $axis as xs:string,
                        $namesFilter as xs:string?,
-                       $pselector as xs:integer?)                       
+                       $pselector as xs:integer?,
+                       $options as xs:string?)                       
         as xs:string* {
     if ($axis eq 'parent-sibling') then f:foxNavigation(
-        $contextUris ! i:parentUri(., ()), 'sibling', $namesFilter, $pselector) else
+        $contextUris ! i:parentUri(., ()), 'sibling', $namesFilter, $pselector, $options) else
         
+    let $ops := $options ! tokenize(.)        
+    let $useBaseUri := $ops = 'use-base-uri'
     let $cNamesFilter := $namesFilter ! sf:compileComplexStringFilter(., true()) 
+    let $contextUris :=
+        if (not($useBaseUri)) then $contextUris else
+            $contextUris ! (if (. instance of node()) then base-uri(.) else .)
     let $fn_uris :=
         switch($axis)
         case 'child' return function($c) {i:childUriCollectionAbsolute($c, ())}
@@ -1459,6 +1465,22 @@ declare function f:lpad($s as xs:anyAtomicType?, $width as xs:integer, $char as 
 };
 
 (:~
+ : Maps each item to the value of an expression evaluated in the
+ : contest of the item. Returns the concatenation of the result
+ : sequences in order.
+ :
+ : @param items the items to be filtered
+ : @param expr a Foxpath expression
+ : @return concatenation of the result sequences
+ :)
+declare function f:mapItems($items as item()*, 
+                            $expr as xs:string,
+                            $processingOptions as map(*)?)
+        as item()* {
+    $items ! f:resolveFoxpath(., $expr, (), $processingOptions)        
+};
+
+(:~
  : Returns true if an item matches a complex string filter, false otherwise.
  :
  : @param item the item to check
@@ -1677,12 +1699,12 @@ declare function f:nodeNavigation(
                        $pselector as xs:integer?,
                        $options as xs:string?)                       
         as node()* {
+    let $ops := $options ! tokenize(.)        
     let $contextNodes :=
         for $item in $contextItems return
             if ($item instance of node()) then $item else 
                 i:fox-doc($item, ())
     let $cNamesFilter := $namesFilter ! sf:compileComplexStringFilter(., true())
-    let $ops := $options ! tokenize(.)    
     let $fn_nodes :=
         switch($axis)
         case 'child' return function($c) {$c/*}
