@@ -1,0 +1,4 @@
+<config>
+  <service>foo-service</service>
+  <endpoint>https://example.com/bar</endpoint>
+</config>

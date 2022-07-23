@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doc xmlns="http://example.org">
+    <a/>
+    <a/>
+    <c/>
+    <x:b xmlns:x="http://example2.org"/>
+    <x:b xmlns:x="http://example2.org"/>
+    <y:d xmlns:y="http://example3.org"/>    
+    <y:b xmlns:y="http://example3.org"/>
+</doc>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service>
+    <serviceName>foo-service</serviceName>
+    <endpoint>https://example.com/foo</endpoint>
+</service>

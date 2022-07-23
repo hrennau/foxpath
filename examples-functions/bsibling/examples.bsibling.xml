@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples function="node-deep-equal">
+    <example>
+        <description>
+            Navigate from a node to the sibling files of the file containing the node.
+        </description>
+        <call>
+            fox "config.xml\\service[1]\bsibling()/file-name()"
+        </call>
+    </example>
+    <example>
+        <description>
+            Navigate from nodes to the sibling files of the files containing the nodes.
+        </description>
+        <call>
+            fox ".//config.xml\\service => bsibling-ec('service-*')"
+        </call>
+    </example>
+    <example>
+        <description>
+            Navigate from a node to content in a sibling file of the file containing the node.
+        </description>
+        <call>
+            fox "config.xml\\service\bsibling('service-'||replace('-service', '.xml'))\\endpoint\string()"
+        </call>
+    </example>
+</examples>

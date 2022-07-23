@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples function="node-deep-equal">
+    <example>
+        <description>
+            Get all sibling file names.
+        </description>
+        <call>
+            fox "config.xml/fsibling()/file-name()"
+        </call>
+    </example>
+    <example>
+        <description>
+            Get the file names of siblings *.xml, excluding tmp* and *scratch*.
+        </description>
+        <call>
+            fox "config.xml/fsibling('*.xml ~tmp* ~*scratch*')/file-name()"
+        </call>
+    </example>
+</examples>

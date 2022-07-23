@@ -1,0 +1,257 @@
+<airports country="Denmark" count="31">
+  <airport id="607" iata="AAR" icao="EKAH" latitude="56.2999992371" longitude="10.619000434899998" href="denmark/airport-aar.xml"/>
+  <airport id="608" iata="BLL" icao="EKBI" latitude="55.7402992249" longitude="9.15178012848" href="denmark/airport-bll.xml"/>
+  <airport id="609" iata="CPH" icao="EKCH" latitude="55.617900848389" longitude="12.656000137329" href="denmark/airport-cph.xml"/>
+  <airport id="610" iata="EBJ" icao="EKEB" latitude="55.525902" longitude="8.5534" href="denmark/airport-ebj.xml"/>
+  <airport id="611" icao="EKGH">
+    <name>Grønholt Hillerød Airport</name>
+    <city>Gronholt</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>55.94139862060547</latitude>
+      <longitude>12.382200241088867</longitude>
+      <altitude>97</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="612" iata="KRP" icao="EKKA" latitude="56.29750061035156" longitude="9.124629974365234" href="denmark/airport-krp.xml"/>
+  <airport id="613" iata="BYR" icao="EKLS" latitude="57.277198791503906" longitude="11.000100135803223" href="denmark/airport-byr.xml"/>
+  <airport id="614" iata="MRW" icao="EKMB" latitude="54.699299" longitude="11.4401" href="denmark/airport-mrw.xml"/>
+  <airport id="615" iata="ODE" icao="EKOD" latitude="55.47669982910156" longitude="10.330900192260742" href="denmark/airport-ode.xml"/>
+  <airport id="616" icao="EKPB">
+    <name>Kruså-Padborg Airport</name>
+    <city>Krusa-padborg</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>54.87030029296875</latitude>
+      <longitude>9.279009819030762</longitude>
+      <altitude>88</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="617" iata="RKE" icao="EKRK" latitude="55.585601806640625" longitude="12.131400108337402" href="denmark/airport-rke.xml"/>
+  <airport id="618" iata="RNN" icao="EKRN" latitude="55.06330108642578" longitude="14.759599685668945" href="denmark/airport-rnn.xml"/>
+  <airport id="619" iata="SGD" icao="EKSB" latitude="54.96440124511719" longitude="9.791729927062988" href="denmark/airport-sgd.xml"/>
+  <airport id="621" iata="SKS" icao="EKSP" latitude="55.221048" longitude="9.26702" href="denmark/airport-sks.xml"/>
+  <airport id="622" iata="SQW" icao="EKSV" latitude="56.550201416015625" longitude="9.172980308532715" href="denmark/airport-sqw.xml"/>
+  <airport id="623" iata="TED" icao="EKTS" latitude="57.06880187988281" longitude="8.705220222473145" href="denmark/airport-ted.xml"/>
+  <airport id="624" icao="EKVD">
+    <name>Kolding Vamdrup Airfield</name>
+    <city>Kolding</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>55.436298</latitude>
+      <longitude>9.33092</longitude>
+      <altitude>143</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="626" icao="EKVH">
+    <name>Vesthimmerlands Flyveplads</name>
+    <city>Vesthimmerland</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>56.846901</latitude>
+      <longitude>9.45861</longitude>
+      <altitude>119</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="627" iata="STA" icao="EKVJ" latitude="55.9901008605957" longitude="8.353910446166992" href="denmark/airport-sta.xml"/>
+  <airport id="628" iata="AAL" icao="EKYT" latitude="57.0927589138" longitude="9.84924316406" href="denmark/airport-aal.xml"/>
+  <airport id="4080" icao="EKSS">
+    <name>Samsø Airport</name>
+    <city>Samsoe</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>55.88949966430664</latitude>
+      <longitude>10.613699913024902</longitude>
+      <altitude>1</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="5579" iata="CNL" icao="EKSN" latitude="57.503502" longitude="10.2294" href="denmark/airport-cnl.xml"/>
+  <airport id="6855" icao="EKKL">
+    <name>Kalundborg Airport</name>
+    <city>Kalundborg</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>55.70029830932617</latitude>
+      <longitude>11.25</longitude>
+      <altitude>1</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="8097" icao="EKTD">
+    <name>Tønder Airport</name>
+    <city>Toender</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>54.9296989440918</latitude>
+      <longitude>8.840570449829102</longitude>
+      <altitude>1</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="9075" icao="EKEL">
+    <name>Endelave Flyveplads</name>
+    <city>Endelage</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>55.7565</latitude>
+      <longitude>10.2485</longitude>
+      <altitude>15</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="9136" icao="EKHG">
+    <name>Herning Airport</name>
+    <city>Herning</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>56.18470001220703</latitude>
+      <longitude>9.044449806213379</longitude>
+      <altitude>167</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="11129" icao="EKNB">
+    <name>Nordborg Flyveplads</name>
+    <city>Nordborg</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>55.07485</latitude>
+      <longitude>9.753379</longitude>
+      <altitude>0</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>\N</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="11719" icao="EKAE">
+    <name>Ærø Airport</name>
+    <city>Aero</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>54.85279846191406</latitude>
+      <longitude>10.456399917602539</longitude>
+      <altitude>3</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>\N</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="12931" icao="SVFT">
+    <name>El Fuentero Airport</name>
+    <city>Svenborg</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>7.099999904632568</latitude>
+      <longitude>-69.58333587646484</longitude>
+      <altitude>420</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>\N</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="13405" icao="EKAT">
+    <name>Anholt Airport</name>
+    <city>Anholt</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>56.698898315399994</latitude>
+      <longitude>11.5558996201</longitude>
+      <altitude>23</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>\N</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="13435" icao="EKAC">
+    <name>Aarhus Seaplne Terminal</name>
+    <city>Aarhus</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>56.151717</latitude>
+      <longitude>10.248428</longitude>
+      <altitude>0</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>\N</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+</airports>

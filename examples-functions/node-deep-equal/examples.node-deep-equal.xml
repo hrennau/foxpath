@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples function="node-deep-equal">
+    <example>
+        <description>
+            Compare two sibling files. The function treats the context item as an input item and the argument as other items with which to compare.
+        </description>
+        <call>
+            fox "msg1.xml/node-deep-equal(../msg2.xml)"
+        </call>
+    </example>
+    <example>
+        <description>
+            Equivalent to the preceding example. The *-ec variant does not include the context item – all input items are taken from the argument, which here is the left-hand operand of the arrow operator.
+        </description>
+        <call>
+            fox "(msg1.xml, msg2.xml) => node-deep-equal-ec()"
+        </call>
+    </example>
+    <example>
+        <description>
+            Check a set of documents for deep equality. The function can compare any number of input items.            
+        </description>
+        <call>
+            fox "msg*.xml => node-deep-equal-ec()"
+        </call>
+    </example>
+    <example>
+        <description>
+            The selection of documents can be made more complex without compromising the simplicity of the expression as a whole – the selection is just an expression to the left of the arrow operator.            
+        </description>
+        <call>
+            fox "(msg*.xml[not(\*\@deprecated)] except msg2.xml) => node-deep-equal-ec()"
+        </call>
+    </example>
+    <example>
+        <description>
+            Compare two elements contained by two documents. Approach: (1) navigate to one of the elements, (2) call the function and supply as argument a navigation to the other element.                        
+        </description>
+        <call>
+            fox  "msg1.xml\\airport[@id = 612]\node-deep-equal(bsibling('msg2.xml')\\airport[@id = 612])"
+        </call>
+    </example>
+    <example>
+        <description>
+            If the elements are retrieved by the same expression, a more elegant alternative is available.            
+        </description>
+        <call>
+            fox  "(msg1.xml, msg2.xml)\\airport[@id = 612] => node-deep-equal-ec()"
+        </call>
+    </example>
+    <example>
+        <description>
+            Compare corresponding elements in a set of documents. The correspondance is established by the expression selecting the elements.            
+        </description>
+        <call>
+            fox  "msg*.xml\\airport[@id = 611] => node-deep-equal-ec()"
+        </call>
+    </example>
+    <example>
+        <description>
+            The selection of documents can be made more complex without compromising the simplicity of the expression as a whole, and the same applies to the selection of an element. The overall structure is stable – (%select-document)\%select-elem => node-deep-equal-ec().            
+        </description>
+        <call>
+            fox  "(.//msgs-*/msg*.xml[not(\@deprecated)] except msg3.xml)\\city[. eq 'Gronholt']\.. => node-deep-equal-ec()"
+        </call>
+    </example>
+    <example>
+        <description>
+            Compare selected files with the corresponding file in a different folder.
+        </description>
+        <call>
+            fox "msgs-a/msg*.xml/node-deep-equal(fparent-shifted(../../msgs-b))"
+        </call>
+    </example>
+</examples>
