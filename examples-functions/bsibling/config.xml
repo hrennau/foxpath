@@ -1,0 +1,4 @@
+<config>
+  <service>foo-service</service>
+  <service>bar-service</service>
+</config>
