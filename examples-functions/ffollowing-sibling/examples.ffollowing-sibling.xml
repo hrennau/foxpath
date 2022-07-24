@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples function="node-deep-equal">
+    <example>
+        <description>
+            Get the following sibling files of the last file with a name containing a date in May.
+        </description>
+        <call>
+            fox "report.202205*[last()]/ffollowing-sibling()"
+        </call>
+    </example>
+    <example>
+        <description>
+            Get the following sibling files matching a name pattern.
+        </description>
+        <call>
+            fox "report.20220501.xml/ffollowing-sibling('*202206*')"
+        </call>
+    </example>
+</examples>
