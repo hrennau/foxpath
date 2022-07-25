@@ -584,12 +584,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 i:fox-file-size($uri, $options)
 
         (: function `filter-items` 
-           ========================= :)
+           ======================= :)
         else if ($fname eq 'filter-items') then
             let $items:= $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $pattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:filterItems($items, $pattern)
+                foxf:filterItems($items, $pattern, $options)
 
        (: function `filter-regex` 
           ======================= :)
@@ -953,22 +953,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `name-path` 
            =================== :)
-        else if ($fname = ('name-path', 'npath', 'np', 
-                           'jname-path', 'jnpath', 'jnp', 
-                           'lname-path', 'lnpath', 'lnp')) then  
+        else if ($fname = ('name-path', 'name-path-ec')) then  
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0
             let $nodes :=
-                if ($call/*) then 
-                    $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                else $context
-            let $numSteps := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
-            let $flags := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $nameKind := 
-                if (starts-with($fname, 'j')) then 'jname' 
-                else if (starts-with($fname, 'l')) then 'lname' 
-                else 'name' 
+                if (not($da)) then $context 
+                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $numSteps := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
+            let $options := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 if (empty($nodes)) then () else 
-                    foxf:namePath($nodes, $nameKind, $numSteps, $flags)
+                    foxf:namePath($nodes, $numSteps, $options)
                     
         (: function `node-deep-equal` 
            ========================= :)
@@ -1123,6 +1117,18 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:parentName($node, 'name')            
 :)
+        (: function `name-compare` 
+           ======================= :)
+        else if ($fname = (
+                'name-compare', 'name-compare-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0
+            let $items := (
+                $context[$da eq 0],
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
+            let $fnOptions := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:nameCompare($items, $fnOptions)
+
+
         (: function `path-compare` 
            ======================= :)
         else if ($fname = (
@@ -1171,6 +1177,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $fractionDigits := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             return
                 foxf:percent($values, $value2, $fractionDigits)
+
+        (: function `pfilter-items` 
+           ========================= :)
+        else if ($fname eq 'pfilter-items') then
+            let $items:= $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $pattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:pfilterItems($items, $pattern)
 
         (: function `pfrequencies` 
            ======================= :)

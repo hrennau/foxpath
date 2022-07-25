@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples function="node-deep-equal">
+    <example>
+        <description>
+            Compare two sibling files.
+        </description>
+        <call>
+            fox "msg1.xml/name-compare(../msg2.xml)"
+        </call>
+    </example>
+    <example>
+        <description>
+            Equivalent to the first example.
+        </description>
+        <call>
+            fox "(msg1.xml, msg2.xml) => name-compare-ec()"
+        </call>
+    </example>
+</examples>

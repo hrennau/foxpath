@@ -28,7 +28,7 @@ declare function f:atts($context as item(), $flags as xs:string)
     if (contains($flags, 'j')) then
         if (not($context instance of node())) then ()
         else
-            let $jpath := f:namePath($context, 'jname', (), ())
+            let $jpath := f:namePath($context, (), 'jname')
             return attribute jpath {$jpath}
 };
 
@@ -627,18 +627,20 @@ declare function f:fileName($uri as xs:string?)
 };
 
 (:~
- : Filters a sequence of items, retaining those with a string value 
- : matching a unified string pattern.
+ : Filters a sequence of items by the value of a Foxpath expression. 
+ : The expression is resolved in the context of each item. Only those
+ : items are retained for which the expression returns an effective 
+ : Boolean true.
  :
  : @param items the items to be filtered
  : @param pattern a unified string pattern
  : @return true or false
  :)
 declare function f:filterItems($items as item()*, 
-                               $pattern as xs:string)
+                               $expr as xs:string,
+                               $processingOptions as map(*)?)
         as item()* {
-    let $cpattern := $pattern ! sf:compileComplexStringFilter(., true())
-    return $items[sf:matchesComplexStringFilter(string(.), $cpattern)]
+    $items [f:resolveFoxpath(., $expr, (), $processingOptions)]        
 };
 
 (:~
@@ -1529,13 +1531,14 @@ declare function f:median($values as xs:anyAtomicType*)
  : @return the parent name
  :)
 declare function f:namePath($nodes as node()*, 
-                            $nameKind as xs:string?,   (: name | lname | jname :) 
                             $numSteps as xs:integer?,
-                            $flags as xs:string?)
+                            $options as xs:string?)
         as xs:string* {
-    let $options := map:merge((
-        map:entry('noconcat', true())[contains($flags, 'N')]
-    ))
+    let $ops := $options ! tokenize(.)        
+    let $nameKind := ($ops[. = ('lname', 'jname', 'name')][1], 'lname')[1]
+    let $noconcat := $ops = 'N'
+    let $options := map:merge((map:entry('noconcat', true())[$noconcat]))
+
     for $node in $nodes return
     
     (: _TO_DO_ Remove hack when BaseX Bug is removed; return to: let $nodes := $node/ancestor-or-self::node() :)        
@@ -1543,8 +1546,7 @@ declare function f:namePath($nodes as node()*,
         let $all := $node/ancestor-or-self::node()
         let $dnode := $all[. instance of document-node()]
         return ($dnode, $all except $dnode)
-    let $steps := 
-        
+    let $steps :=         
         if ($nameKind eq 'lname') then 
             $ancos/concat(self::attribute()/'@', local-name(.))
         else if ($nameKind eq 'jname') then 
@@ -1574,13 +1576,13 @@ declare function f:namePath($nodes as node()*,
  :)
 declare function f:indexedNamePath(
                             $nodes as node()*, 
-                            $nameKind as xs:string?,   (: name | lname | jname :) 
                             $numSteps as xs:integer?,                            
-                            $flags as xs:string?)
+                            $options as xs:string?)
         as xs:string* {
-    let $options := map:merge((
-        map:entry('noconcat', true())[contains($flags, 'N')]
-    ))
+    let $ops := $options ! tokenize(.)        
+    let $nameKind := ($ops[. = ('lname', 'jname', 'name')][1], 'lname')[1]
+    let $noconcat := $ops = 'N'       
+    let $options := map:merge((map:entry('noconcat', true())[$noconcat]))
     let $fnGetName :=
         switch($nameKind)
         case 'name' return function($node) {name($node)}
@@ -1645,7 +1647,8 @@ declare function f:nodesLocationReport($nodes as node()*,
         if ($numberOfFolders) then f:baseUriDirectories(., $numberOfFolders) else (),
         f:baseUriFileName(.)[$withFileName], 
         'Name: '||$fn_name(.), 
-        let $steps := f:namePath(., $nameKind, (), $namePathFlags)
+        let $namePathOptions := string-join(($nameKind, $namePathFlags), ' ')
+        let $steps := f:namePath(., (), $namePathOptions)
         return if (contains($namePathFlags, 'N')) then ('/'||$steps[1], subsequence($steps, 2))
                else $steps,
         .[self::attribute(), text()][$withValues]/concat('value: ', .)
@@ -2111,6 +2114,75 @@ declare function f:parentName($node as node(),
 };        
 
 (:~
+ : Compares two documents or nodes with respect to the names which they contain.
+ :
+ : @param doc1 a document, or its document URI
+ : @param doc2 another document, or its document URI
+ : @param options options controling the comparison 
+ : @return if no difference, the empty sequence; otherwise a report
+ :   describing the differences
+ : 
+ :)
+declare function f:nameCompare($docs as item()*,
+                                $options as xs:string?)
+        as item()? {
+    if (count($docs) gt 2) then error(QName((), 'INVALID_CALL'), 
+        'INVALID_CALL; names-compare cannot compare more than two documents; #documents: '||count($docs))        
+    else
+
+    let $d1 := $docs[1] ! (if (. instance of node()) then . else i:fox-doc(., ()))
+    let $d2 := $docs[2] ! (if (. instance of node()) then . else i:fox-doc(., ()))
+    return if (count(($d1, $d2)) lt 2) then () else
+    
+    let $ops := $options ! tokenize(.) ! lower-case(.)
+    let $fname := $ops = 'fname'
+    let $nameKind := ($ops[. = ('lname', 'jname', 'name')][1], 'lname')[1]  
+    let $scope := 
+        let $raw := $ops[. = ('only1', 'only2', 'common', 'uncommon')]
+        return if (exists($raw)) then $raw else 'uncommon'    
+    let $fn_name := 
+        if ($nameKind eq 'name') then f:aname#1
+        else if ($nameKind eq 'jname') then f:jname#1
+        else f:alname#1    
+    return if (deep-equal($d1, $d2)) then () else
+
+    let $names1 :=
+        for $item in $d1/f:allDescendants(.)
+        group by $name := $item/$fn_name(.)
+        order by $name
+        return $name
+    let $names2 :=
+        for $item in $d2/f:allDescendants(.)
+        group by $name := $item/$fn_name(.)
+        order by $name
+        return $name
+    let $common := $names1[. = $names2]
+    let $only1 := $names1[not(. = $names2)]
+    let $only2 := $names2[not(. = $names1)]
+    
+    let $docids :=
+        let $baseUris := ($d1, $d2)/base-uri(.) return
+            if ($fname) then (
+                $baseUris[1] ! replace(., '.*/', '') ! attribute fileName1 {.},
+                $baseUris[2] ! replace(., '.*/', '') ! attribute fileName2 {.}
+            ) else (
+                $baseUris[1] ! attribute uri1 {.},
+                $baseUris[2] ! attribute uri2 {.}
+            )
+        
+    return
+        <namesCompare scope="{$scope}">{
+            $docids,
+            if (empty($only1) or not($scope = ('only1', 'uncommon'))) then () else
+            <only1 count="{count($only1)}">{$only1 ! <loc name="{.}"/>}</only1>,
+            if (empty($only2) or not($scope = ('only2', 'uncommon'))) then () else
+            <only2 count="{count($only2)}">{$only2 ! <loc name="{.}"/>}</only2>,
+            if (not($scope = 'common')) then () else
+            <common count="{count($common)}">{$common ! <loc name="{.}"/>}</common>
+        }</namesCompare>
+};
+
+(:~
  : Compares two documents or nodes with respect to the data paths which
  : they contain. The paths
  : use node names as specified by $nameKind. The comparison is defined 
@@ -2155,12 +2227,12 @@ declare function f:pathCompare($doc1 as item(),
         case "plain-count" return
             let $paths1 :=
                 for $item in $d1/f:allDescendants(.)
-                group by $path := f:namePath($item, $nameKind, (), ())
+                group by $path := f:namePath($item, (), $nameKind)
                 order by $path
                 return $path||'#'||count($item)
             let $paths2 :=
                 for $item in $d2/f:allDescendants(.)
-                group by $path := f:namePath($item, $nameKind, (), ())
+                group by $path := f:namePath($item, (), $nameKind)
                 order by $path
                 return $path||'#'||count($item)
             let $paths1NA := $paths1 ! replace(., '#\d+$', '')                
@@ -2196,11 +2268,11 @@ declare function f:pathCompare($doc1 as item(),
         case "indexed-value" return
             let $paths1 :=
                 for $item in $d1/f:allDescendants(.)
-                let $path := f:indexedNamePath($item, $nameKind, (), ())
+                let $path := f:indexedNamePath($item, (), $nameKind)
                 return $path||$item[self::attribute() or text()]/concat('#', .)
             let $paths2 :=
                 for $item in $d2/f:allDescendants(.)
-                let $path := f:indexedNamePath($item, $nameKind, (), ())
+                let $path := f:indexedNamePath($item, (), $nameKind)
                 return $path||$item[self::attribute() or text()]/concat('#', .)
             let $paths1NA := $paths1 ! replace(., '^(.*?)#.*', '$1', 's')                
             let $paths2NA := $paths2 ! replace(., '^(.*?)#.*', '$1', 's')
@@ -2235,9 +2307,9 @@ declare function f:pathCompare($doc1 as item(),
         (: plain | indexed :)
         default return
             let $_DEBUG := trace($cmpType, '_COMP_TYPE: ')
-            let $fnNamePath := if ($cmpType eq 'indexed') then f:indexedNamePath#4 else f:namePath#4
-            let $paths1 := $d1/f:allDescendants(.)/$fnNamePath(., $nameKind, (), ()) => distinct-values() => sort()
-            let $paths2 := $d2/f:allDescendants(.)/$fnNamePath(., $nameKind, (), ()) => distinct-values() => sort()
+            let $fnNamePath := if ($cmpType eq 'indexed') then f:indexedNamePath#3 else f:namePath#3
+            let $paths1 := $d1/f:allDescendants(.)/$fnNamePath(., (), $nameKind) => distinct-values() => sort()
+            let $paths2 := $d2/f:allDescendants(.)/$fnNamePath(., (), $nameKind) => distinct-values() => sort()
             let $only1 := $paths1[not(. = $paths2)]
             let $only2 := $paths2[not(. = $paths1)]
             return
@@ -2294,14 +2366,14 @@ declare function f:pathMultiCompare($items as item()*,
     let $scope := $scopePlus[not(. = $scopeMinus)]
     
     let $fnFragmentPath := function($doc) {
-        $doc[..]/f:indexedNamePath(., $nameKind, (), ())}
+        $doc[..]/f:indexedNamePath(., (), $nameKind)}
         
     let $docs := $items ! 
         (typeswitch(.) case node() return . default return i:fox-doc(., ()))
     
     let $pathArrays := 
         for $doc at $pos in $docs
-        let $paths := $doc/f:allDescendants(.)/f:namePath(., $nameKind, (), ()) 
+        let $paths := $doc/f:allDescendants(.)/f:namePath(., (), $nameKind) 
                       => distinct-values() => sort()
         return array{$paths}
         
@@ -2444,6 +2516,21 @@ declare function f:percent($values as xs:numeric*, $value2 as xs:numeric?, $frac
     let $value2 := ($value2, $values[2])[1]
     let $percent := ($value1 div $value2 * 100) => round($fd)
     return $percent
+};
+
+(:~
+ : Filters a sequence of items, retaining those with a string value 
+ : matching a unified string pattern.
+ :
+ : @param items the items to be filtered
+ : @param pattern a unified string pattern
+ : @return true or false
+ :)
+declare function f:pfilterItems($items as item()*, 
+                               $pattern as xs:string)
+        as item()* {
+    let $cpattern := $pattern ! sf:compileComplexStringFilter(., true())
+    return $items[sf:matchesComplexStringFilter(string(.), $cpattern)]
 };
 
 (:~
@@ -3336,9 +3423,9 @@ declare function f:xwrap($items as item()*,
                 if (not(contains($flags, 'b'))) then () else
                     attribute xml:base {$item/base-uri(.)},
                 if (not(contains($flags, 'p'))) then () else
-                    attribute path {$item/f:namePath(., 'name', (), ())},
+                    attribute path {$item/f:namePath(., (), 'name')},
                 if (not(contains($flags, 'j'))) then () else
-                    attribute jpath {$item/f:namePath(., 'jname', (), ())}
+                    attribute jpath {$item/f:namePath(., (), 'jname')}
             )
             let $atts :=
                 if (empty($additionalAtts) or empty($item/@*)) then $item/@*
