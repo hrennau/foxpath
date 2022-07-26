@@ -1249,7 +1249,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $excludeExprs :=
                 if (not($da)) then $arg1 else                
                 $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:reduceDoc($doc, $excludeExprs, $options)
+            let $fnOptions := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
+            return foxf:reduceDoc($doc, $excludeExprs, $fnOptions, $options)
                         
         (: function `resolve-fox` 
            ====================== :)

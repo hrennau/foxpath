@@ -2634,10 +2634,14 @@ declare function f:pfilterItems($items as item()*,
  : @param excludeExprs expressions excluding nodes
  : @return a copy of the input doc in which the selected nodes have been removed
  :)
-declare function f:reduceDoc($item as item()?,
+declare function f:reduceDoc($items as item()*,
                              $excludeExprs as xs:string*,
+                             $options as xs:string?,
                              $processingOptions as map(*))
         as node()* {
+    let $ops := $options ! tokenize(.)
+    let $keepWS := $ops = 'keepws'
+    for $item in $items        
     let $node := if ($item instance of node()) then $item else i:fox-doc($item, ())
     let $resultDoc :=  
         copy $node_ := $node
@@ -2651,6 +2655,7 @@ declare function f:reduceDoc($item as item()?,
                 if (empty($delNodes))then () else
                     delete nodes $delNodes
         return $node_
+    let $resultDoc := if ($keepWS) then $resultDoc else $resultDoc ! util:prettyFoxPrint(.)        
     return $resultDoc
  };
 
@@ -3267,7 +3272,8 @@ declare function f:writeFiles($files as item()*,
                               $processingOptions as map(*)?)
         as empty-sequence() {
     let $ops := $options ! tokenize(.)
-    
+    let $noindent := $ops = 'noindent'
+    let $_DEBUG := trace($noindent, '_NOINDENT: ')
     for $file in $files
     let $fileName := 
         if (not($fileNameExpr)) then
@@ -3276,9 +3282,11 @@ declare function f:writeFiles($files as item()*,
                 'Writing a file with non-node content requires a file name expr')
         else f:resolveFoxpath($file, $fileNameExpr, (), $processingOptions)
     let $dir := ($dir, '.')[1]
+    let $_CREATE := if (file:exists($dir)) then () else file:create-dir($dir) 
     let $path := $dir||'/'||$fileName
+    let $writeOptions := if ($noindent) then () else map{'indent': 'yes'}
     return
-        file:write($path, $file)
+        file:write($path, $file, $writeOptions)
 };
 
 (:~

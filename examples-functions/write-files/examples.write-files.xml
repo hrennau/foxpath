@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples function="write-files">
+    <example>
+        <description>
+            Reduces documents and writes the resulting documents into files.
+        </description>
+        <code>
+            fox "airports-*.xml => reduce-doc-ec('\\airport[*]') => write-files('reduced-copies')"
+        </code>
+    </example>
+    <example>
+        <description>
+            As in the first example, but the result files are renamed.
+        </description>
+        <code>
+            fox "airports-*.xml => reduce-doc-ec('\\airport[*]') => write-files('reduced-copies', 'replace(base-file-name(.), """"\.xml$"""", """"-reduced-copies.xml"""")')"
+        </code>
+    </example>
+</examples>
