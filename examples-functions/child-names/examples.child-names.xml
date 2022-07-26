@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples function="child-names">
+    <example>
+        <description>
+            Check the child element name sets encountered in "table" elements.
+        </description>
+        <code>
+            fox ".//*.dita/descendant('*table*')\child-names() => f()"
+        </code>
+    </example>
+    <example>
+        <description>
+            Check the child element name sequences encountered in "table" elements.
+        </description>
+        <code>
+            fox ".//*.dita/descendant('*table*')\child-names((), 'nosort') => f()"
+        </code>
+    </example>
+</examples>

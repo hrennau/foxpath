@@ -1,0 +1,17 @@
+<airport id="604" iata="SXL" icao="EISG">
+  <name>Sligo Airport</name>
+  <city>Sligo</city>
+  <country>Ireland</country>
+  <geo>
+    <latitude>54.280200958252</latitude>
+    <longitude>-8.5992097854614</longitude>
+    <altitude>11</altitude>
+  </geo>
+  <temporal>
+    <timezone>0</timezone>
+    <tzTimezone>Europe/Dublin</tzTimezone>
+    <dst>E</dst>
+  </temporal>
+  <type>airport</type>
+  <source1>OurAirports</source1>
+</airport>

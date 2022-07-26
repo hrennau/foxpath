@@ -1,0 +1,17 @@
+<airport id="5577" iata="CFN" icao="EIDL">
+  <name>Donegal Airport</name>
+  <city>Dongloe</city>
+  <country>Ireland</country>
+  <geo>
+    <latitude>55.0442008972168</latitude>
+    <longitude>-8.340999603271484</longitude>
+    <altitude>30</altitude>
+  </geo>
+  <temporal>
+    <timezone>0</timezone>
+    <tzTimezone>Europe/Dublin</tzTimezone>
+    <dst>E</dst>
+  </temporal>
+  <type>airport</type>
+  <source1>OurAirports</source1>
+</airport>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples function="parent">
+    <example>
+        <description>
+            List the names and frequencies of parent elements of "image" elements.
+        </description>
+        <code>
+            fox ".//*.dita\\image\parent()\name() => f()"
+        </code>
+    </example>
+</examples>

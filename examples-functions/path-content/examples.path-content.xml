@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples function="node-deep-equal">
+    <example>
+        <description>
+            In which locations do "keyword" elements appear? Get the last three steps of all datapaths.
+        </description>
+        <call>
+            fox ".//*.dita\\keyword\name-path(3) => f()"
+        </call>
+    </example>
+</examples>

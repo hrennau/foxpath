@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples function="name-path">
+    <example>
+        <description>
+            Get the content paths found in "example elements".
+        </description>
+        <call>
+            fox ".//*.dita\\example\path-content() => f()"
+        </call>
+    </example>
+</examples>

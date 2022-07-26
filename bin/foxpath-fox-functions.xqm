@@ -63,6 +63,84 @@ declare function f:aname($nodes as node()*)
 };
 
 (:~
+ : Augments a document by inserting content. The receiving nodes are selected 
+ : by an expression evaluated in the context of the input node, or the 
+ : document node in case of an input URI. The received content is provided 
+ : by an expression evaluated in the context of the receiving node. Optionally, 
+ : the received content is wrapped in an element or attribute with a name 
+ : provided by an expression also evaluated in the context of the receiving 
+ : node.
+ :
+ : @param item a node or a document URI
+ : @param insertWhereExpr a Foxpath expression selecting the nodes receiving new 
+ :   content
+ : @param insertWhatExpr a Foxpath expression providing new content
+ : @param wrapExpr a Foxpath expression providing the name of an optional
+ :   wrapper element or attribute
+ : @param options options controling processing details
+ :   att - node kind of wrapper node is attribute
+ :   elem - node kind of wrapper node is element 
+ :   first - new content is inserted as first child node of receiving node 
+ :   last - new content is inserted as first child node of receiving node
+ :   before - new content is inserted as sibling immediate preceding the receiving node 
+ :   after - new content is inserted as sibling immediate following the receiving node 
+ : @param processingOptions options controling the Foxpath processor 
+ : @return the augmented document
+ :)
+declare function f:augmentDoc($item as item()?,
+                              $insertWhereExpr as xs:string,
+                              $insertWhatExpr as xs:string,
+                              $wrapExpr as xs:string?,
+                              $options as xs:string?,
+                              $processingOptions as map(*))
+        as node()* {
+    let $node := if ($item instance of node()) then $item else i:fox-doc($item, ())
+    let $ops := $options ! tokenize(.)
+    let $insertionPoint := ($ops[. = ('first', 'last', 'before', 'after')], 'last')[1]
+    let $nodeKind := ($ops[. = ('elem', 'att')], 'elem')[1]
+    let $withBaseUri := $ops = 'base'
+    let $resultDoc :=  
+        copy $node_ := $node
+        modify (
+            let $receivingNodes := f:resolveFoxpath($node_, $insertWhereExpr, (), $processingOptions)
+            for $rnode in $receivingNodes
+            let $newContent := f:resolveFoxpath($rnode, $insertWhatExpr, (), $processingOptions)
+            let $newNode :=
+                if (not($wrapExpr)) then () else
+                    let $wrapperName := f:resolveFoxpath($rnode, $wrapExpr, (), $processingOptions)
+                    return 
+                        if ($nodeKind eq 'att') then attribute {$wrapperName} {$newContent} 
+                        else element {$wrapperName} {$newContent}
+            return
+                if ($newNode) then 
+                    switch($insertionPoint)
+                    case 'first' return insert node $newNode as first into $rnode 
+                    case 'before' return insert node $newNode before $rnode
+                    case 'after' return insert node $newNode after $rnode
+                    default return insert node $newNode as last into $rnode
+                else if ($rnode instance of attribute()) then
+                    replace value of node $rnode with $newContent
+                else
+                    for $item in $newContent
+                    let $item :=
+                        typeswitch($item)
+                        case document-node() return $item/*
+                        case node() return $item
+                        default return text {$item}
+                    return
+                        if ($insertionPoint eq 'first') then insert node $item as first into $rnode
+                        else insert node $item as last into $rnode,
+                if (not($withBaseUri)) then () else
+                    let $targetElem := $node_/root()/descendant-or-self::*[1] (: /ancestor-or-self::*[last()] :)
+                    return
+                        if ($targetElem/@xml:base) then () else
+                            insert node attribute xml:base {$targetElem/base-uri(.)} into $targetElem              
+            )                        
+        return $node_
+    return $resultDoc
+ };
+
+(:~
  : Returns the names of folders containing a resource identified by $item. Parameter
  : $distance specifies the number of containing folders ($distance ge 1). A value
  : of 1, 2, 3, ... selects the closest, the two closest, the three closest folders,
@@ -1361,6 +1439,21 @@ declare function f:jname($nodes as node()*)
     $nodes ! local-name(.) ! convert:decode-key(.)        
 };
 
+declare function f:jparse($text as xs:string*,
+                          $options as xs:string?)
+        as document-node()* {
+    let $omap := trace(
+        if (not($options)) then () else
+            let $ops := $options ! tokenize(.)
+            return 
+                map:merge((
+                    map:entry('escape', 'yes')[$ops = 'escape'],
+                    map:entry('escape', 'no')[$ops = '~escape']
+                )) , '_OMAP: ')
+    return
+        $text ! json:parse(., $omap)                
+};
+
 (:~
  : Returns the JSON Schema keywords found at and under a set of nodes from a 
  : JSON Schema document.
@@ -2541,9 +2634,9 @@ declare function f:pfilterItems($items as item()*,
  : @param excludeExprs expressions excluding nodes
  : @return a copy of the input doc in which the selected nodes have been removed
  :)
-declare function f:reduceNode($item as item()?,
-                              $excludeExprs as xs:string*,
-                              $processingOptions as map(*))
+declare function f:reduceDoc($item as item()?,
+                             $excludeExprs as xs:string*,
+                             $processingOptions as map(*))
         as node()* {
     let $node := if ($item instance of node()) then $item else i:fox-doc($item, ())
     let $resultDoc :=  
@@ -3168,7 +3261,36 @@ declare function f:unescapeJsonName($item as item()) as xs:string {
  :)
 declare function f:writeFiles($files as item()*, 
                               $dir as xs:string?,
-                              $encoding as xs:string?)
+                              $fileNameExpr as xs:string?,
+                              $encoding as xs:string?,
+                              $options as xs:string?,
+                              $processingOptions as map(*)?)
+        as empty-sequence() {
+    let $ops := $options ! tokenize(.)
+    
+    for $file in $files
+    let $fileName := 
+        if (not($fileNameExpr)) then
+            if ($file instance of node()) then $file ! base-uri(.) ! f:fileName(.)
+            else error(QName((), 'INVALID_ARG'), 
+                'Writing a file with non-node content requires a file name expr')
+        else f:resolveFoxpath($file, $fileNameExpr, (), $processingOptions)
+    let $dir := ($dir, '.')[1]
+    let $path := $dir||'/'||$fileName
+    return
+        file:write($path, $file)
+};
+
+(:~
+ : Writes a collection of files into a folder.
+ :
+ : @param files the file URIs
+ : @param dir the folder into which to write
+ : @return 0 if no errors were observed, 1 otherwise
+ :)
+declare function f:writeFilesXXX($files as item()*, 
+                                 $dir as xs:string?,
+                                 $encoding as xs:string?)
         as xs:integer {
     let $tocItems :=        
         for $file at $pos in $files

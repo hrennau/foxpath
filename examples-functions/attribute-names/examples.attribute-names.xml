@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples function="node-deep-equal">
+    <example>
+        <description>
+            Which attribute sets appear in "note" elements?
+        </description>
+        <call>
+            fox ".//*.dita\\note\att-names() => f()"        
+        </call>
+    </example>
+    <example>
+        <description>
+            Which attribute sets appear in "note" elements, ignoring @id attributes?
+        </description>
+        <call>
+            fox ".//*.dita\\note\att-names('~id') => f()"        
+        </call>
+    </example>
+    <example>
+        <description>
+            How many percent of "note" elements have a @type attribute?
+        </description>
+        <call>
+            fox ".//*.dita\\note\att-names('type') => pf()"        
+        </call>
+    </example>
+</examples>

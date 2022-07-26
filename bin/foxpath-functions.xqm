@@ -108,6 +108,23 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:nodeNavigation($contextNodes, $axis, $namesFilter, $pselector, $controlOptions)
 
+        (: function `augment-doc` 
+           ===================== :)
+        else if ($fname = ('augment-doc', 'augment-doc-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0        
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $doc := if ($da) then $arg1 else $context
+            let $insertWhereExpr :=
+                if (not($da)) then $arg1 else                
+                $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $insertWhatExpr :=
+                $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $wrapExpr :=
+                $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions :=
+                $call/*[4 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:augmentDoc($doc, $insertWhereExpr, $insertWhatExpr, $wrapExpr, $fnOptions, $options)
+                        
         (: function `back-slash` 
            ===================== :)
         else if ($fname eq 'back-slash' or $fname eq 'bslash') then
@@ -856,8 +873,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $text :=
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
-            return
-                json:parse($text)
+            let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
+            return foxf:jparse($text, $options)
 
        (: function `left-value-only` 
           ========================== :)
@@ -1223,16 +1240,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 <rcat t="{current-dateTime()}" count="{count($refs)}">{$refs}</rcat>
                         
-        (: function `reduce-node` 
-           ===================== :)
-        else if ($fname = ('reduce-node', 'reduce-node-ec')) then
+        (: function `reduce-doc` 
+           ==================== :)
+        else if ($fname = ('reduce-doc', 'reduce-doc-ec')) then
             let $da := if (ends-with($fname, '-ec')) then 1 else 0        
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             let $doc := if ($da) then $arg1 else $context
             let $excludeExprs :=
                 if (not($da)) then $arg1 else                
                 $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:reduceNode($doc, $excludeExprs, $options)
+            return foxf:reduceDoc($doc, $excludeExprs, $options)
                         
         (: function `resolve-fox` 
            ====================== :)
@@ -1532,10 +1549,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `write-file` 
            ====================== :)
         else if ($fname eq 'write-file') then
-            let $items := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $fname := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $items := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $fname := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             let $encoding := $call/*[3] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-
             let $text := string-join($items, '&#xA;')
             let $encoding := ($encoding, 'UTF8')[1]
             return
@@ -1543,13 +1559,25 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 
         (: function `write-files` 
            ====================== :)
+           (:
         else if ($fname eq 'write-files') then
             let $files := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             let $folder := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $encoding := $call/*[3] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:writeFiles($files, $folder, $encoding)
-
+:)
+        (: function `write-files` 
+           ====================== :)
+        else if ($fname eq 'write-files') then
+            let $items := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $folder := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $fileNameExpr := $call/*[3] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $encoding := $call/*[4] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $call/*[5] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:writeFiles($items, $folder, $fileNameExpr, $encoding, $fnOptions, $options)
+                
         (: function `write-json-docs` 
            ========================= :)
         else if ($fname eq 'write-json-docs') then

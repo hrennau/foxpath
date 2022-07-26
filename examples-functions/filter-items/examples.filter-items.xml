@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples function="filter-items">
+    <example complexUsecase="yes">
+        <description>
+            Check if href-referenced local files exist.
+        </description>
+        <code>
+            fox ".//*.dita\\@href[not(matches(., '^[a-z]+:/'))]\resolve-uri(., base-uri(.))/replace(., '#.*', '') => distinct-values() => filter-items('not(file-exists(.))')"
+        </code>
+    </example>
+</examples>
