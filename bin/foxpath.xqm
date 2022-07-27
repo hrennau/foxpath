@@ -120,6 +120,10 @@ declare function f:resolveFoxpath($foxpath as xs:string,
     let $DEBUG := util:trace($foxpath, 'parse.resolve_foxpath', 'INTEXT_RESOLVE_FOXPATH: ')
     let $context := f:editInitialContext($context)
     let $tree := util:trace(i:parseFoxpath($foxpath, $options), 'parse', 'FOXPATH_ELEM: ')
+(:    
+    return f:resolveFoxpathTree($tree, $ebvMode, $context, $options, $externalVariableBindings)
+    :)
+    
     let $errors := $tree/self::errors 
     return 
         if ($errors) then $errors
@@ -127,6 +131,25 @@ declare function f:resolveFoxpath($foxpath as xs:string,
             let $useOptions := f:finalizeOptions($options)
             let $expr := $tree/*[not(self::prolog)]
             let $vars := f:initVars($tree/prolog, $externalVariableBindings, $context, $useOptions)
+            return
+                f:resolveFoxpathRC($expr, $ebvMode, $context, (), (), $vars, $useOptions)
+                
+};
+
+declare function f:resolveFoxpathTree(
+                                  $foxpathTree as element(), 
+                                  $ebvMode as xs:boolean?, 
+                                  $context as item()?,
+                                  $options as map(*)?,
+                                  $externalVariableBindings as map(xs:QName, item()*)?)
+        as item()* {
+    let $errors := $foxpathTree/self::errors 
+    return 
+        if ($errors) then $errors
+        else
+            let $useOptions := f:finalizeOptions($options)
+            let $expr := $foxpathTree/*[not(self::prolog)]
+            let $vars := f:initVars($foxpathTree/prolog, $externalVariableBindings, $context, $useOptions)
             return
                 f:resolveFoxpathRC($expr, $ebvMode, $context, (), (), $vars, $useOptions)
 };
@@ -2026,7 +2049,7 @@ declare function f:resolveFunctionCall($call as element(),
 declare function f:getVarValue($varSpec as element(var), 
                                $vars as map(xs:QName, item()*)?, 
                                $options as map(*)?)
-        as item()* {       
+        as item()* { 
     let $varName := $varSpec/@localName
     let $varNamespace := $varSpec/@namespace    
     let $varQname := QName($varNamespace, $varName)

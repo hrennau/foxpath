@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples function="ftree">
+    <example>
+        <description>
+            Get a tree representation of the current working dir.
+        </description>
+        <code>
+            fox "ftree()"
+        </code>
+    </example>
+    <example>
+        <description>
+            Get a tree representation of the "ireland" subfolder.
+        </description>
+        <code>
+            fox "ireland/ftree()"
+        </code>
+    </example>
+    <example>
+        <description>
+            As the previous example; additionally, all files have a @size=size annotatione.
+        </description>
+        <code>
+            fox "ireland/ftree('@size=file-size()')"
+        </code>
+    </example>
+    <example>
+        <description>
+            As the first example, but annotate airports-*.xml files with @countAirports.
+        </description>
+        <code>
+            fox "ftree('airports-*.xml @countAirports=\\airport => count()')"
+        </code>
+    </example>
+    <example>
+        <description>
+            As the previous example; additionally, all airport*.json files are annotated with @iata=iataCode.
+        </description>
+        <code>
+            fox "ftree('airports-*.xml @countAirports=\\airport => count()', '@size=file-size()', '*.json @iata=\\airport\\iata\string()')"
+        </code>
+    </example>
+    <example>
+        <description>
+            Get a tree representation of the current working dir; airport- filese are annotated with a "codes" element containing IATA codes.             
+        </description>
+        <code>
+            fox "ftree('airports-* codes=\\@iata\string()/xelem(., """"code"""")')"
+        </code>
+    </example>
+    <example>
+        <description>
+            As the previous example, but the IATA codes are sorted.             
+        </description>
+        <code>
+            fox "ftree('airports-* codes=\\@iata\string() => sort() => xelem(""""code"""", """"repeat"""")')"
+        </code>
+    </example>
+</examples>

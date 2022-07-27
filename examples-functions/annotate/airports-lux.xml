@@ -1,0 +1,3 @@
+<airports country="Luxembourg" count="1">
+  <airport id="629" iata="LUX" icao="ELLX" latitude="49.6233333" longitude="6.2044444" href="luxembourg/airport-lux.xml"/>
+</airports>

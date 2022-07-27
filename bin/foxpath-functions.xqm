@@ -59,17 +59,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 foxf:aname($nodes)
                     
 
-        (: function `annotate` 
-           =================== :)
-        else if ($fname eq 'annotate') then
-            let $value :=
-                if (count($call/*) eq 1) then $context else
-                    $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $anno :=
-                let $index := if (count($call/*) eq 1) then 1 else 2
-                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return $value||' ('||$anno||')'            
-                
+        (: function `annotate`, ànnotate-ec` 
+           ================================= :)
+        else if ($fname = ('annotate', 'annotate-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $value := if ($da eq 1) then $arg1 else $context
+            let $anno := if ($da eq 1) then $arg2 else $arg1
+            let $prefix := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $postfix := $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:annotate($value, $anno, $prefix, $postfix)            
 
         (: function `atts` 
            =============== :)
@@ -654,12 +654,11 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:frequencies($values, $min, $max, 'count', $order, $format)
 
-        else if ($fname = ('ftree', 'ec-ftree')) then
+        else if ($fname = ('ftree', 'ftree-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0        
             let $args := $call/*[not(@ignore eq 'true')]        
-            let $narg := count($args)
-            let $da := if (starts-with($fname, 'ec-')) then 1 else 0
             let $rootFolders := 
-                if (starts-with($fname, 'ec-')) then $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
+                if ($da eq 1) then $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
                 else $context
             let $fileProperties := subsequence($args, 1 + $da)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $exprTrees := $call/_parsed
@@ -678,10 +677,10 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $fileProperties := subsequence($args, 3 + $da)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return foxf:ftreeSelective($rootFolders, (), $descendantNames, $folderNames, $fileProperties, $exprTrees, ())
             
-        else if ($fname = ('ftree-view', 'ec-ftree-view')) then
+        else if ($fname = ('ftree-view', 'ftree-view-ec')) then
             let $args := $call/*[not(@ignore eq 'true')]        
             let $narg := count($args)
-            let $da := if (starts-with($fname, 'ec-')) then 1 else 0            
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0            
             let $exprTrees := $call/_parsed        
             let $uris := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $fileProperties := subsequence($args, 2)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -711,7 +710,19 @@ declare function f:resolveStaticFunctionCall($call as element(),
             ])
             let $uris := if ($narg eq 1) then $context else $args(1)
             return foxf:grep($uris, $args(1 + $da), $args(2 + $da))
-                
+
+        (: function `group-items` 
+           ===================== :)
+        else if ($fname = ('group-items')) then
+            let $items := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $groupKeyExpr := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $groupProcExpr := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $wrapperName := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $keyName := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $call/*[6]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:groupItems($items, $groupKeyExpr, $groupProcExpr, $wrapperName, $keyName, $fnOptions, $options)
+                        
+
         (: function `hlist` 
            ================ :)
         else if ($fname = ('hlist')) then
@@ -1259,7 +1270,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $narg := count($args)
             let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $arg2 := $args[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $exprTree := $call/_parsed/foxpath
+            let $exprTree := $call/_parsed/*
             let $expr := if ($narg le 1) then $arg1 else $arg2
             let $ctxt := if ($narg le 1) then $context else $arg1
             return foxf:resolveFoxpath($ctxt, (), $exprTree, $options)            
@@ -1588,14 +1599,20 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:writeJsonDocs($files, $folder, $encoding)
 
-        (: function `xelement` 
+        (: function `xatt` 
            ================== :)
-        else if ($fname eq 'xelement') then
-            let $name := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $contents := $call/*[position() gt 1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+        else if ($fname eq 'xatt') then
+            let $contents := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $name := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:xattribute($contents, $name)
 
-            return
-                foxf:xelement($name, $contents)
+        (: function `xelem` 
+           ================ :)
+        else if ($fname eq 'xelem') then
+            let $contents := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $name := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $options := $call/*[3] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:xelement($contents, $name, $options)
 
         (: function `xitem-elems` 
            ====================== :)

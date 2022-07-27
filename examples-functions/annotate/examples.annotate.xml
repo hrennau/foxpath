@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples function="annotate">
+    <example>
+        <description>
+            Get file URIs annotated with the number of contained "airport" elements.
+        </description>
+        <code>
+            fox "airports*.xml/annotate(\\airport => count())"
+        </code>
+    </example>
+    <example>
+        <description>
+            Get file names annotated with the number of contained "airport" elements.
+        </description>
+        <code>
+            fox "airports*.xml/annotate-ec(file-name(.), \\airport => count())"
+        </code>
+    </example>
+    <example>
+        <description>
+            As the preceding example, but pad file names and use " airports" as postfix.
+        </description>
+        <code>
+            fox "airports*.xml/annotate-ec(file-name(.)/rpad(., 20), \\airport => count(), (), ' airports)')"
+        </code>
+    </example>
+</examples>

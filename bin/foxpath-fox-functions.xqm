@@ -1,7 +1,8 @@
 module namespace f="http://www.foxpath.org/ns/fox-functions";
 import module namespace i="http://www.ttools.org/xquery-functions" 
 at "foxpath-processorDependent.xqm",
-   "foxpath-uri-operations.xqm";
+   "foxpath-uri-operations.xqm",
+   "foxpath-parser.xqm";
 
 import module namespace util="http://www.ttools.org/xquery-functions/util" 
 at  "foxpath-util.xqm";
@@ -61,6 +62,28 @@ declare function f:aname($nodes as node()*)
         as xs:string* {
     $nodes ! (self::attribute()/'@' || name())        
 };
+
+(:~
+ : Annotates a value, appending information surrounded
+ : by prefix and postfix.
+ :
+ : @param value a value item
+ : @param anno the annotation
+ : @param prefix string inserted between value and annotation
+ : @param postfix string appended to the annotation
+ : @return concatenation of value, prefix, annotation, postfix
+ :)
+declare function f:annotate($value as item()?,
+                            $anno as item()?,
+                            $prefix as xs:string?,
+                            $postfix as xs:string?)
+        as xs:string? {
+    if (empty($value)) then () else
+    
+    let $prefix := ($prefix, ' (')[1]
+    let $postfix := ($postfix, ')')[1]
+    return $value||$prefix||$anno||$postfix
+};        
 
 (:~
  : Augments a document by inserting content. The receiving nodes are selected 
@@ -355,6 +378,65 @@ declare function f:docxDoc($uri as xs:string)
     archive:extract-text(i:fox-binary($uri, ()), 'word/document.xml')   
     ! parse-xml(.)
 };
+
+(:~
+ : Groups a sequence of items, obtaining the grouping key from an expression
+ : evaluated in the context of the items to be grouped.
+ :
+ : @param items the items to group
+ : @param groupKeyExpr expression returning the grouping key
+ : @param wrapperName the grouped items are wrapped in an element
+ :   with this name; if the value is delimited by { and }, it is
+ :   interpreted as a Foxpath expression evaluated in the context
+ :   of the current key 
+ : @param keyName name of attributes storing the group keys
+ : @options options controling function behavior
+ : @processingOptions processing options
+ : @return for each group an element containing the grouped items
+ :)
+declare function f:groupItems($items as item()*,
+                              $groupKeyExpr as xs:string,
+                              $groupProcExpr as xs:string?,
+                              $wrapperName as xs:string?,
+                              $keyName as xs:string?,
+                              $options as xs:string?,
+                              $processingOptions as map(*))
+        as node()* {
+    if (empty($items)) then () else
+    
+    let $_DEBUG := trace($groupProcExpr, '_GROUP_PROC_EXPR: ')
+    let $groupProcExpr := $groupProcExpr ! ('declare variable $items external; '||.)
+    let $groupKeyExprTree := i:parseFoxpath($groupKeyExpr, $processingOptions)
+    let $groupProcExprTree := $groupProcExpr ! i:parseFoxpath(., $processingOptions)
+    let $_DEBUG := trace($groupProcExprTree, 'GET: ')
+    let $wrapperNameExpr := 
+        if (not(matches($wrapperName, '^\s*\{.*\}\s*$'))) then ()
+        else replace($wrapperName, '^\s*\{\s*|\s*\}\s*$', '') ! i:parseFoxpath(., $processingOptions)
+    let $wrapperName := if ($wrapperNameExpr) then () else ($wrapperName, 'group')[1]
+    let $keyName := ($keyName, 'key')[1]
+    let $itemsQname := QName((), 'items')
+    let $groups :=
+        for $item in $items
+        let $key := f:resolveFoxpath($item, (), $groupKeyExprTree, $processingOptions)
+        group by $key
+        let $groupContent :=
+            if (not($groupProcExpr)) then $item
+            else f:resolveFoxpath($key, (), $groupProcExprTree, map{$itemsQname: $item}, $processingOptions)
+        let $groupElemName := 
+            if ($wrapperNameExpr) then f:resolveFoxpath($key, (), $wrapperNameExpr, $processingOptions)
+            else $wrapperName
+        return
+            element {$groupElemName} {
+                attribute {$keyName} {$key},
+                for $item in $groupContent  return
+                    typeswitch ($item) 
+                        case element() return $item 
+                        case attribute() return $item
+                        default return <item>{$item}</item>
+            }
+    return
+        $groups
+ };
 
 (:~
  : Compares two or more nodes for deep equality. The nodes can be
@@ -2799,17 +2881,50 @@ declare function f:rightValueOnly($leftValue as item()*,
     $rightValue[not(. = $leftValue)]  => distinct-values()
 };
 
-declare function f:resolveFoxpath($context as item(), $expr as xs:string?, $exprTree as element()?, $options as map(*))
+declare function f:resolveFoxpath($context as item(), 
+                                  $expr as xs:string?, 
+                                  $exprTree as element()?, 
+                                  $options as map(*))
         as item()* {
+    (: let $_DEBUG := trace($exprTree, '_EXPRESSION_TREE: ') :)        
     let $useOptions :=
         if ($context instance of node()) then $options
         (: else if ($context?IS_CONTEXT_URI) then $options :)   (: 20200213 - commented out _TO_DO_ must be analyzed :)
         else map:put($options, 'IS_CONTEXT_URI', true())
     return
         if ($exprTree) then
-            i:resolveFoxpathRC($exprTree, false(), $context, 1, 1, (), $options)
+            i:resolveFoxpathTree($exprTree, false(), $context, $useOptions, ())
+            (: i:resolveFoxpathRC($exprTree, false(), $context, 1, 1, (), $options) :)
         else i:resolveFoxpath($expr, false(), $context, $useOptions, ())
 };
+
+declare function f:resolveFoxpath($context as item(), 
+                                  $expr as xs:string?, 
+                                  $exprTree as element()?,
+                                  $vars as map(*)?,
+                                  $options as map(*))
+        as item()* {
+    let $_DEBUG := trace(map:keys($vars), '_VARS: ')        
+    let $useOptions :=
+        if ($context instance of node()) then $options
+        (: else if ($context?IS_CONTEXT_URI) then $options :)   (: 20200213 - commented out _TO_DO_ must be analyzed :)
+        else map:put($options, 'IS_CONTEXT_URI', true())
+    return
+        if ($exprTree) then
+            i:resolveFoxpathTree($exprTree, false(), $context, $useOptions, $vars)
+        else i:resolveFoxpath($expr, false(), $context, $useOptions, $vars)
+        
+        (:
+declare function f:resolveFoxpathExpr($foxpath as element(foxpath), 
+                                      $ebvMode as xs:boolean?,
+                                      $context as item()?,
+                                      $position as xs:integer?,
+                                      $last as xs:integer?,
+                                      $vars as map(xs:QName, item()*)?,
+                                      $options as map(*)?)                                      
+:)        
+};
+
 
 (:~
  : Resolves a JSON Schema allOf group. Returns all subschemas, with schema
@@ -3447,18 +3562,37 @@ declare function f:writeJsonDocs($files as xs:string*,
  :
  : @param content the element content
  : @param name the element name
- : @param atts attributes to be added
  : @return the constructed element
  :)
-declare function f:xelement($name as xs:string, $content as item()*)
-        as element() {
-    let $atts := $content[. instance of attribute()]
-    let $nonatts := $content[not(. instance of attribute())]
+declare function f:xattribute($content as item()*, $name as xs:string)
+        as attribute() {
+    attribute {$name} {$content}
+};      
+
+
+(:~
+ : Constructs an element with content given by $content. Each pair of items in $atts
+ : provides the name and value of an attribute to be added.
+ :
+ : @param content the element content
+ : @param name the element name
+ : @param repeat options controling the function behaviour
+ :   repeat - create an element for every item in $content
+ : @return the constructed element
+ :)
+declare function f:xelement($content as item()*, 
+                            $name as xs:string, 
+                            $options as xs:string?)
+        as element()* {
+    let $ops := $options ! tokenize(.)
+    let $repeat := $options = 'repeat'
     return
-        element {$name} {
-            $atts,
-            $nonatts
-        }
+        if ($repeat) then $content ! element {$name} {.}
+        else
+            let $atts := $content[. instance of attribute()]
+            let $nonatts := $content[not(. instance of attribute())]
+            return
+                element {$name} {$atts, $nonatts}
 };      
 
 (:~
@@ -3540,7 +3674,7 @@ declare function f:xwrap($items as item()*,
     let $sortRule := if (contains($flags, 's')) then 's' else if (contains($flags, 'S')) then 'S' else ()        
     let $val :=
         for $item in $items 
-        let $_DEBUG := trace($item, '_ITEM: ')
+        (: let $_DEBUG := trace($item, '_ITEM: ') :)
         order by if ($sortRule eq 's') then $item else if ($sortRule eq 'S') then lower-case($item) else ()
         return 
 
@@ -3621,9 +3755,10 @@ declare function f:xwrap($items as item()*,
                 element {$name2} {$item}
             
             else $item
-            
+(:            
     let $_DEBUG := trace($val, '_VAL: ')
     let $_DEBUG := trace(count($val), '_COUNT: ')
+ :)    
     (: Write wrapper :)            
     let $namespaces :=  
         let $nns := f:extractNamespaceNodes($val[. instance of element()])
@@ -3932,7 +4067,9 @@ declare function f:ftreeSelectiveREC(
  : Returns an array of maps, each one describing a file property.
  : A file property is described by a name and a Foxpath expression
  : returning the property value, as well as an optional file
- : name filter selecting files for which the property is assigned.
+ : name filter selecting files for which the property is assigned:
+ :     name=expr
+ :     filter name=expr
  :
  : @param exprTrees parsed expression trees - each child element provides
  :   the expression tree for the file property named like the element 
@@ -4287,52 +4424,3 @@ declare function f:xxxRow($items as item()*)
     return
         string-join($items, $sep)
 };
-
-(:~
- : Constructs an element with content given by $content. Each pair of items in $atts
- : provides the name and value of an attribute to be added.
- :
- : @param content the element content
- : @param name the element name
- : @param atts attributes to be added
- : @return the constructed element
- :)
-declare function f:zzzXelement_old($content as item()*,
-                            $name as xs:string,
-                            $atts as item()*)
-        as element() {
-    element {$name} {
-        for $attName at $pos in $atts[(position() + 1) mod 2 eq 0]
-        let $attValue := $atts[$pos + 1]
-        return
-            attribute {$attName} {$attValue},
-        $content            
-    }
-};      
-
-(:~
- : Returns the ancestor-or-self URIs of a given URI, provided their name matches a 
- : given name, or a regex derived from it. If $fromSubstring and $toSubstring are 
- : supplied, the URI names must match the regex obtained obtained by replacing in 
- : $name substring $fromSubstring with $toSubstring.
- :
- : @param context the context URI
- : @param names one or several name patterns
- : @param fromSubstring used to map $name to a regex
- : @param toSubstring used to map $name to a regex
- : @return sibling URIs matching the name or the derived regex
- :)
-(: 
-declare function f:foxAncestorOrSelf($context as xs:string*,                                        
-                                     $names as xs:string+,
-                                     $namesExcluded as xs:string*,
-                                     $pselector as xs:string?,
-                                     $ignoreCase as xs:boolean?)                                     
-        as xs:string* {
-    (
-    for $c in $context return (
-    f:foxAncestor($context, $names, $namesExcluded, $pselector, $ignore),
-    f:foxSelf($context, $names, $namesExcluded)
-    )) => distinct-values()
-};
-:)

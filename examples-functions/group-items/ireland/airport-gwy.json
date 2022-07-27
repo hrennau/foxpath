@@ -1,0 +1,22 @@
+{
+  "airport":{
+    "id":597,
+    "iata":"GWY",
+    "icao":"EICM",
+    "name":"Galway Airport",
+    "city":"Galway",
+    "country":"Ireland",
+    "geo":{
+      "latitude":53.300201416015625,
+      "longitude":-8.941590309143066,
+      "altitude":81
+    },
+    "temporal":{
+      "timezone":0,
+      "tzTimezone":"Europe\/Dublin",
+      "dst":"E"
+    },
+    "type":"airport",
+    "source1":"OurAirports"
+  }
+}

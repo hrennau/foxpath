@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<examples function="node-deep-equal">
+<examples function="map-items">
     <example>
         <description>
             Get a sorted list of distinct QNames used in a set of documents, inserting a slash between local name and namespace URI. The four-fold quoting is necessary when entering the expression on the command-line.

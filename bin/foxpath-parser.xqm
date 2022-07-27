@@ -2574,23 +2574,29 @@ declare function f:parseNestedFoxpathCall($functionName as xs:string,
         as element()* {
     let $argShift := if ($isArrowCall) then -1 else 0        
     return
+    
+    (: resolve-fox :)
     if ($functionName eq 'resolve-fox') then
         let $text := $arguments[last()]/string()
         let $tree := f:parseFoxpath($text, $context)
-        return <_parsed ignore="true">{$tree/*}</_parsed>
-    else if ($functionName = ('ftree', 'ec-ftree')) then
-        let $ecShift := if (starts-with($functionName, 'ec-')) then 1 else 0
+        return <_parsed ignore="true">{$tree}</_parsed>
+        
+    (: free, ftree-ec :)
+    else if ($functionName = ('ftree', 'ftree-ec')) then
+        let $ecShift := if (ends-with($functionName, '-ec')) then 1 else 0
         let $useArgs := subsequence($arguments, 1 + $argShift + $ecShift)
         let $trees :=
             for $arg in $useArgs
             let $pname := replace($arg, '^.*?([\S]+?)\s*=.*', '$1') ! replace(., '^@', '')
             let $expr := replace($arg, '^.+?=\s*', '')
+            let $_DEBUG := trace($arg, '_ARG: ')
+            let $_DEBUG := trace($expr, '_EXPR: ')
             let $tree := f:parseFoxpath($expr, $context)
-            return element {$pname} {$tree/*}
+            return element {$pname} {$tree}
         return
             if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>            
-    else if ($functionName = ('ftree-selective', 'ec-ftree-selective')) then
-        let $ecShift := if (starts-with($functionName, 'ec-')) then 1 else 0    
+    else if ($functionName = ('ftree-selective', 'ftree-selective-ec')) then
+        let $ecShift := if (ends-with($functionName, '-ec')) then 1 else 0    
         let $useArgs := subsequence($arguments, 3 + $argShift + $ecShift)
         let $trees :=
             for $arg in $useArgs
@@ -2602,7 +2608,7 @@ declare function f:parseNestedFoxpathCall($functionName as xs:string,
             if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>            
     else if ($functionName = ('ftree-view')) then
         let $_DEBUG := trace(count($arguments), '_CARG: ')
-        let $ecShift := if (starts-with($functionName, 'ec-')) then 1 else 0    
+        let $ecShift := if (ends-with($functionName, '-ec')) then 1 else 0    
         let $useArgs := subsequence($arguments, 2 + $argShift + $ecShift)
         let $_DEBUG := trace($useArgs, '_USE_ARGS: ')
         let $trees :=
@@ -2611,6 +2617,7 @@ declare function f:parseNestedFoxpathCall($functionName as xs:string,
             let $expr := replace($arg, '^.+?=\s*', '')
             let $tree := f:parseFoxpath($expr, $context)
             return element {$pname} {$tree/*}
+        let $_DEBUG := trace($trees, '_TREES: ')            
         return 
             if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>            
     else ()

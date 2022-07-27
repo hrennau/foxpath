@@ -1,0 +1,226 @@
+<groups countItems="7">
+  <name key="name">
+    <name>Grønholt Hillerød Airport</name>
+    <name>Kruså-Padborg Airport</name>
+    <name>Kolding Vamdrup Airfield</name>
+    <name>Vesthimmerlands Flyveplads</name>
+    <name>Samsø Airport</name>
+    <name>Kalundborg Airport</name>
+    <name>Tønder Airport</name>
+    <name>Endelave Flyveplads</name>
+    <name>Herning Airport</name>
+    <name>Nordborg Flyveplads</name>
+    <name>Ærø Airport</name>
+    <name>El Fuentero Airport</name>
+    <name>Anholt Airport</name>
+    <name>Aarhus Seaplne Terminal</name>
+  </name>
+  <city key="city">
+    <city>Gronholt</city>
+    <city>Krusa-padborg</city>
+    <city>Kolding</city>
+    <city>Vesthimmerland</city>
+    <city>Samsoe</city>
+    <city>Kalundborg</city>
+    <city>Toender</city>
+    <city>Endelage</city>
+    <city>Herning</city>
+    <city>Nordborg</city>
+    <city>Aero</city>
+    <city>Svenborg</city>
+    <city>Anholt</city>
+    <city>Aarhus</city>
+  </city>
+  <country key="country">
+    <country>Denmark</country>
+    <country>Denmark</country>
+    <country>Denmark</country>
+    <country>Denmark</country>
+    <country>Denmark</country>
+    <country>Denmark</country>
+    <country>Denmark</country>
+    <country>Denmark</country>
+    <country>Denmark</country>
+    <country>Denmark</country>
+    <country>Denmark</country>
+    <country>Denmark</country>
+    <country>Denmark</country>
+    <country>Denmark</country>
+  </country>
+  <geo key="geo">
+    <geo>
+      <latitude>55.94139862060547</latitude>
+      <longitude>12.382200241088867</longitude>
+      <altitude>97</altitude>
+    </geo>
+    <geo>
+      <latitude>54.87030029296875</latitude>
+      <longitude>9.279009819030762</longitude>
+      <altitude>88</altitude>
+    </geo>
+    <geo>
+      <latitude>55.436298</latitude>
+      <longitude>9.33092</longitude>
+      <altitude>143</altitude>
+    </geo>
+    <geo>
+      <latitude>56.846901</latitude>
+      <longitude>9.45861</longitude>
+      <altitude>119</altitude>
+    </geo>
+    <geo>
+      <latitude>55.88949966430664</latitude>
+      <longitude>10.613699913024902</longitude>
+      <altitude>1</altitude>
+    </geo>
+    <geo>
+      <latitude>55.70029830932617</latitude>
+      <longitude>11.25</longitude>
+      <altitude>1</altitude>
+    </geo>
+    <geo>
+      <latitude>54.9296989440918</latitude>
+      <longitude>8.840570449829102</longitude>
+      <altitude>1</altitude>
+    </geo>
+    <geo>
+      <latitude>55.7565</latitude>
+      <longitude>10.2485</longitude>
+      <altitude>15</altitude>
+    </geo>
+    <geo>
+      <latitude>56.18470001220703</latitude>
+      <longitude>9.044449806213379</longitude>
+      <altitude>167</altitude>
+    </geo>
+    <geo>
+      <latitude>55.07485</latitude>
+      <longitude>9.753379</longitude>
+      <altitude>0</altitude>
+    </geo>
+    <geo>
+      <latitude>54.85279846191406</latitude>
+      <longitude>10.456399917602539</longitude>
+      <altitude>3</altitude>
+    </geo>
+    <geo>
+      <latitude>7.099999904632568</latitude>
+      <longitude>-69.58333587646484</longitude>
+      <altitude>420</altitude>
+    </geo>
+    <geo>
+      <latitude>56.698898315399994</latitude>
+      <longitude>11.5558996201</longitude>
+      <altitude>23</altitude>
+    </geo>
+    <geo>
+      <latitude>56.151717</latitude>
+      <longitude>10.248428</longitude>
+      <altitude>0</altitude>
+    </geo>
+  </geo>
+  <temporal key="temporal">
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>\N</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>\N</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>\N</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>\N</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>\N</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+  </temporal>
+  <type key="type">
+    <type>airport</type>
+    <type>airport</type>
+    <type>airport</type>
+    <type>airport</type>
+    <type>airport</type>
+    <type>airport</type>
+    <type>airport</type>
+    <type>airport</type>
+    <type>airport</type>
+    <type>airport</type>
+    <type>airport</type>
+    <type>airport</type>
+    <type>airport</type>
+    <type>airport</type>
+  </type>
+  <source1 key="source1">
+    <source1>OurAirports</source1>
+    <source1>OurAirports</source1>
+    <source1>OurAirports</source1>
+    <source1>OurAirports</source1>
+    <source1>OurAirports</source1>
+    <source1>OurAirports</source1>
+    <source1>OurAirports</source1>
+    <source1>OurAirports</source1>
+    <source1>OurAirports</source1>
+    <source1>OurAirports</source1>
+    <source1>OurAirports</source1>
+    <source1>OurAirports</source1>
+    <source1>OurAirports</source1>
+    <source1>OurAirports</source1>
+  </source1>
+</groups>

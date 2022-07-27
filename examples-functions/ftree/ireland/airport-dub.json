@@ -1,0 +1,22 @@
+{
+  "airport":{
+    "id":599,
+    "iata":"DUB",
+    "icao":"EIDW",
+    "name":"Dublin Airport",
+    "city":"Dublin",
+    "country":"Ireland",
+    "geo":{
+      "latitude":53.421299,
+      "longitude":-6.27007,
+      "altitude":242
+    },
+    "temporal":{
+      "timezone":0,
+      "tzTimezone":"Europe\/Dublin",
+      "dst":"E"
+    },
+    "type":"airport",
+    "source1":"OurAirports"
+  }
+}
