@@ -279,36 +279,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
                       count="{count($items)}"
                       t="{current-dateTime()}" 
                       onlyDocAvailable="{boolean($onlyDocAvailable)}">{$refs}</dcat>
-                            
-        (: function `descendant-jnames` 
-           ============================ :)
-        else if ($fname eq 'descendant-jnames') then
-            let $node := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]
-            let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:descendantNames($node, true(), 'jname', $namePattern, $excludedNamePattern)            
 
-        (: function `descendant-lnames` 
-           ============================ :)
-        else if ($fname eq 'descendant-lnames') then
-            let $node := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]
-            let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:descendantNames($node, true(), 'lname', $namePattern, $excludedNamePattern)            
-
-        (: function `descendant-names` 
-           =========================== :)
-        else if ($fname eq 'descendant-names') then
-            let $node := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]
-            let $namePattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedNamePattern := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:descendantNames($node, true(), 'name', $namePattern, $excludedNamePattern)            
+        (: function `depth` 
+           ================ :)
+        else if ($fname = ('depth', 'depth-ec')) then
+            let $item := 
+                if (f:hasExplicitContext($fname)) then   
+                    $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $context
+            return foxf:depth($item)            
 
         (: function `dir-name` 
            ==================== :)
@@ -507,7 +486,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             
         (: function `file-date-string` 
            =========================== :)
-        else if ($fname eq 'file-date-string' or $fname eq 'fdates') then
+        else if ($fname = ('file-date-string', 'file-date-str')) then
             let $uri := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return
@@ -920,7 +899,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $fillChar := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $fillChar := ($fillChar, ' ')[1]
             return
-                foxf:lpad($string, $width, $fillChar)
+                util:lpad($string, $width, $fillChar)
 
         (: function `map-items` 
            ==================== :)
@@ -1106,15 +1085,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
                         if (not($width) or string-length($value) ge $width) then concat($value, ' ') 
                         else
                             let $flags := trace(replace($widthItem, '\d', '') , 'FLAGS: ')
-                            let $func := trace(if (substring($flags, 1, 1) eq 'l') then foxf:lpad#3 else foxf:rpad#3 , 'FUNC: ')
+                            let $func := trace(if (substring($flags, 1, 1) eq 'l') then util:lpad#3 else util:rpad#3 , 'FUNC: ')
                             let $side := if (substring($flags, 1, 1) eq 'l') then 'l' else 'r'                            
                             let $fill := substring($flags, 2, 1)
                             return 
-                            (:
-                                $func($value, $width, $fill)
-                                :)
-                                if ($side eq 'l') then foxf:lpad($value, $width, $fill)
-                                else foxf:rpad($value, $width, $fill)
+                                if ($side eq 'l') then util:lpad($value, $width, $fill)
+                                else util:rpad($value, $width, $fill)
                 , '')
 
         (: function `parent-jname` 
@@ -1396,7 +1372,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $fillChar := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $fillChar := ($fillChar, ' ')[1]
             return
-                foxf:rpad($string, $width, $fillChar)
+                util:rpad($string, $width, $fillChar)
 
         (: function `serialize` 
            ==================== :)
@@ -1608,11 +1584,22 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `xelem` 
            ================ :)
-        else if ($fname eq 'xelem') then
-            let $contents := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+        else if ($fname = ('xelem', 'xelem-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $arg1 := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $items := if ($da) then $arg1 else $context 
+            let $name := $call/*[1 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $options := $call/*[2 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:xelement($items, $name, $options)
+
+        (: function `xelems` 
+           ================= :)
+        else if ($fname eq 'xelems') then
+            let $items := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
             let $name := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $options := $call/*[3] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:xelement($contents, $name, $options)
+            let $useOptions := string-join(('repeat', $options), ' ')
+            return foxf:xelement($items, $name, $useOptions)
 
         (: function `xitem-elems` 
            ====================== :)
@@ -2661,3 +2648,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
         , 'function', concat('FUNCTION_CALL; FNAME=', $fname, ' : '))
         
 };
+
+(:~
+ : Returns true if the function input is supplied by
+ : a parameter, it is not the context item.
+ :)
+declare function f:hasExplicitContext($funcName as xs:string)
+        as xs:boolean {
+    ends-with($funcName, '-ec')        
+};        

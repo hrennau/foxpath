@@ -324,48 +324,21 @@ declare function f:countChars($s as xs:string?, $char as xs:string?)
 };
 
 (:~
- : Returns the descendant element names of a node. If $separator is specified, the sorted
- : names are concatenated, using this separator, otherwise the names are returned
- : as a sequence. If $localNames is true, the local names are returned, otherwise the 
- : lexical names. 
+ : Returns the depth of a node in the hierarchical structure. The root element
+ : has depth 1, its child elements have depth2, etc. Document nodes have depth 
+ : 0, non-element nodes have the depth of their parent element. If the input 
+ : item is not a node, the empty sequence is returned.
+ : 
+ : Formally: the depth is the number of ancestor-or-self element nodes.
  :
- : When using $namePattern, only those descendant elements are considered which have
- : a local name matching the pattern.
- :
- : Example: .../foo/descendant-names(., ', ', false(), '*put')
- : Example: .../foo/descendant-names(., ', ', false(), 'input|output') 
- :
- : @param node a node (unless it is an element, the function returns the empty sequence)
- : @param separator if used, the names are concatenated, using this separator
- : @param localNames if true, the local names are returned, otherwise the lexical names 
- : @param namePattern an optional name pattern filtering the descendant elements to be considered
- : @return the names as a sequence, or as a concatenated string
+ : @param an item
+ : @return the node depth
  :)
-declare function f:descendantNames(
-                             $node as node(), 
-                             $concat as xs:boolean?, 
-                             $nameKind as xs:string?,   (: name | lname | jname :)
-                             $namePattern as xs:string?,
-                             $excludedNamePattern as xs:string?)
-        as xs:string* {
-    let $nameRegex := $namePattern ! replace(., '\*', '.*') ! replace(., '\?', '.') 
-                      ! concat('^', ., '$')        
-    let $excludedNameRegex := $excludedNamePattern ! replace(., '\*', '.*') ! replace(., '\?', '.') 
-                      ! concat('^', ., '$')        
-    let $items := $node//*
-       [not($nameRegex) or matches(local-name(.), $nameRegex, 'i')]
-       [not($excludedNameRegex) or not(matches(local-name(.), $excludedNameRegex, 'i'))]
-    let $separator := ', '[$concat]
-    let $names := 
-        if ($nameKind eq 'lname') then 
-            ($items/local-name(.)) => distinct-values() => sort()
-        else if ($nameKind eq 'jname') then 
-            ($items/f:unescapeJsonName(local-name(.))) => distinct-values() => sort()
-        else ($items/name(.)) => distinct-values() => sort()
-    return
-        if (exists($separator)) then string-join($names, $separator)
-        else $names
-};        
+declare function f:depth($item as item())
+        as xs:integer? {
+    if (not($item instance of node())) then () 
+    else $item/count(ancestor-or-self::*)
+};
 
 (:~
  : Returns the XML representation of a docx document.
@@ -404,7 +377,6 @@ declare function f:groupItems($items as item()*,
         as node()* {
     if (empty($items)) then () else
     
-    let $_DEBUG := trace($groupProcExpr, '_GROUP_PROC_EXPR: ')
     let $groupProcExpr := $groupProcExpr ! ('declare variable $items external; '||.)
     let $groupKeyExprTree := i:parseFoxpath($groupKeyExpr, $processingOptions)
     let $groupProcExprTree := $groupProcExpr ! i:parseFoxpath(., $processingOptions)
@@ -497,7 +469,6 @@ declare function f:nodePairDeepSimilar($node1 as node(),
                                        $excludeExprs as xs:string*,
                                        $processingOptions as map(*))
         as xs:boolean {
-        let $_DEBUG := trace($excludeExprs, '_EXCLUDE: ') return
     if (empty($excludeExprs)) then deep-equal($node1, $node2) else
     
     let $fnPrune := function($node) {
@@ -770,9 +741,9 @@ declare function f:fileInfo($uri as xs:string?, $content as xs:string?, $options
             else ()
         return
             if (exists($pad)) then
-                if ($kind eq 's' and $isDir) then f:rpad('/', $pad?padWidth, ' ')  
-                else if ($pad?padSide eq 'l') then f:lpad($value, $pad?padWidth, $pad?fillChar)
-                else f:rpad($value, $pad?padWidth, $pad?fillChar)
+                if ($kind eq 's' and $isDir) then util:rpad('/', $pad?padWidth, ' ')  
+                else if ($pad?padSide eq 'l') then util:lpad($value, $pad?padWidth, $pad?fillChar)
+                else util:rpad($value, $pad?padWidth, $pad?fillChar)
             else if ($parentheses) then '('||$value||')'
             else $value
         ), ' ')            
@@ -1101,9 +1072,9 @@ declare function f:fractions($values as item()*,
             let $c2ValueWidth := ($rvalues ! string-length()) => max()
             let $useLabels :=
                 if ($comparison ne 'between') then 
-                    $useCompareWith ! f:lpad(., $c1ValueWidth, ' ') ! concat($comparison, ' ', .)
+                    $useCompareWith ! util:lpad(., $c1ValueWidth, ' ') ! concat($comparison, ' ', .)
                 else
-                    let $padded := $useCompareWith ! f:lpad(., $c1ValueWidth, ' ') 
+                    let $padded := $useCompareWith ! util:lpad(., $c1ValueWidth, ' ') 
                         return (
                             (if (xs:decimal($rvalues[1]) = 0) then '[  ' else ' < ')||$padded[1],
                             ($padded => subsequence(2)) ! concat('[) ', .),
@@ -1117,18 +1088,18 @@ declare function f:fractions($values as item()*,
             let $colFrameLine :=
                 let $labelWidth := ($useLabels ! string-length(.)) => max() return
                 if (not($colWidth)) then () else
-                    f:lpad(' ', $labelWidth + $c2ValueWidth + 6, ' ')||'#'||f:repeat('-', $colWidth)||'#'
+                    util:lpad(' ', $labelWidth + $c2ValueWidth + 6, ' ')||'#'||f:repeat('-', $colWidth)||'#'
             return (
                 $colFrameLine,                    
                 for $c at $pos in $rvaluesPruned 
                 let $cdec := xs:decimal($c)
                 let $rvalue := (
                     if ($comparison ne 'between' or $pos gt 1 or $cdec gt 0) then $c else ' ')
-                    ! f:lpad(., $c2ValueWidth, ' ')
+                    ! util:lpad(., $c2ValueWidth, ' ')
                 return 
                     $useLabels[$pos]||'   '||$rvalue||(if (not($colWidth)) then () else 
                       '   |'
-                    ||f:rpad(f:repeat('*', ($cdec div $rvaluesMax * $colWidth)), $colWidth,  ' ')
+                    ||util:rpad(f:repeat('*', ($cdec div $rvaluesMax * $colWidth)), $colWidth,  ' ')
                     ||'|'),                    
                        (: In case of between, the line "< lower limit" is represented differently
                           if there are no values < lower limit :)
@@ -1624,21 +1595,6 @@ declare function f:leftValueOnly($leftValue as item()*,
                                  $rightValue as item()*)
     as item()* {
     $leftValue[not(. = $rightValue)] => distinct-values()
-};
-
-(:~
- : Pads a string on the lefthand side.
- :)
-declare function f:lpad($s as xs:anyAtomicType?, $width as xs:integer, $char as xs:string?)
-        as xs:string? {
-    let $s := string($s)    
-    let $len := string-length($s) 
-    return
-        if ($len ge $width) then $s else    
-            let $char := ($char, ' ')[1]
-            let $pad := concat(string-join(for $i in 1 to $width - $len - 1 return $char, ''), ' ')
-            return
-                concat($pad, $s)
 };
 
 (:~
@@ -2732,10 +2688,9 @@ declare function f:reduceDoc($items as item()*,
                 for $expr in $excludeExprs return 
                     f:resolveFoxpath($node_, $expr, (), $processingOptions)
                     [. instance of node()]
-            (: let $_DEBUG := trace($delNodes, '_DEL_NODES: ') :)
-                return 
-                if (empty($delNodes))then () else
-                    delete nodes $delNodes
+            return 
+            if (empty($delNodes))then () else
+                delete nodes $delNodes
         return $node_
     let $resultDoc := if ($keepWS) then $resultDoc else $resultDoc ! util:prettyFoxPrint(.)        
     return $resultDoc
@@ -3179,21 +3134,6 @@ declare function f:row($items as item()*)
 };
 
 (:~
- : Pads a string on the righthand side.
- :)
-declare function f:rpad($s as xs:anyAtomicType?, $width as xs:integer, $char as xs:string?)
-        as xs:string? {
-    let $s := string($s)
-    let $len := string-length($s) 
-    return
-        if ($len ge $width) then $s else    
-            let $char := ($char, ' ')[1]
-            let $pad := concat(' ', string-join(for $i in 1 to $width - $len - 1 return $char, ''), '')
-            return
-                concat($s, $pad)
-};
-
-(:~
  : Returns a URI so that the relative paths from $sourceFolder to $uri and
  : from $targetFolder to the result URI are the same.
  :
@@ -3271,34 +3211,37 @@ declare function f:table($rows as item()*,
         for $i in 1 to $countCols
         let $preColWidth := subsequence($widths, 1, $i - 1) => sum()
         let $preSepWidth := 2 + 3 * ($i - 1)
-        (:
-        let $_DEBUG := trace($preColWidth||'/'||$preSepWidth, 'PRECOLW/PRESEPW: ')
-        :)
         return 1 + $preColWidth + $preSepWidth
-    (:
-    let $_DEBUG := trace(($widths ! string()) => string-join(', '), 'WIDTHS: ')
-    let $_DEBUG := trace(($startPos ! string()) => string-join(', '), 'STARTPOS: ')    
-    :)
     let $rowLines :=        
         for $row in $rows
-        return concat('| ',
+        return concat(
+            '| ',
             string-join(
                 for $i in 1 to $countCols return 
-                    $row($i) ! f:rpad(., $widths[$i], ' ')
-            , ' | '),
+                    $row($i) ! util:rpad(., $widths[$i], ' '), ' | '),
             ' |')
     let $tableWidth := 4 + sum($widths) + ($countCols - 1) * 3
     let $frameLine := '#'||f:repeat('-', $tableWidth - 2)||'#'
     let $headLines :=
-        if (empty($headers)) then () else ( 
+        if (empty($headers)) then ()
+        else if (every $i in (1 to count($headers)) satisfies 
+                    string-length($headers[$i]) lt $widths[$i] + 1) then
+                concat(
+                    '| ', 
+                    string-join(
+                        for $header at $pos in $headers return 
+                            util:rpad($header, $widths[$pos] - 0, ' '), ' | '),
+                ' |')        
+        else ( 
             for $header at $pos in $headers
-            let $prefix := f:repeat(' ', $startPos[$pos] - 3)
-            return $prefix || '| '||$header
-            )
+            let $prefix := f:repeat(' ', $startPos[$pos] - 3) ! replace(., '^.', '|')
+            return ($prefix || '| '||$header) ! (util:rpad(., $tableWidth - 1, ' ')||'|')
+        )
    
     return 
-        string-join((            
-            $headLines,
+        string-join((    
+            if (empty($headLines)) then () else        
+            ($frameLine, $headLines),
             $frameLine,
             $rowLines,
             $frameLine
@@ -3585,7 +3528,7 @@ declare function f:xelement($content as item()*,
                             $options as xs:string?)
         as element()* {
     let $ops := $options ! tokenize(.)
-    let $repeat := $options = 'repeat'
+    let $repeat := $ops = 'repeat'
     return
         if ($repeat) then $content ! element {$name} {.}
         else
@@ -3934,6 +3877,10 @@ declare function f:extractNamespaceNodes($elems as element()*)
 (:~
  : Creates a file system tree document. Return an <ftree> or
  : an <ftrees> document.
+ :
+ : File properties are described by (a) an optional file name
+ : pattern, (b) a property name, (c) a property retrieval
+ : expression.
  :)
 declare function f:ftree($folders as xs:string*,
                          $fileProperties as xs:string*, 
@@ -3967,7 +3914,7 @@ declare function f:ftreeREC($folder as xs:string, $options as map(*)) as element
                 let $pmap := $p($pname)
                 let $fileNameFilter := $pmap?fileName
                 return
-                    if (not(util:matchesPlusMinusNameFilter(util:fileName(.), $fileNameFilter))) then ()
+                    if (not(sf:matchesComplexStringFilter(util:fileName(.), $fileNameFilter))) then ()
                     else
                         let $pvalueP := f:resolveFoxpath(., (), $pmap?exprTree/*, $options)
                         return 
@@ -4088,7 +4035,7 @@ declare function f:ftreeUtil_filePropertyMap($fileProperties as xs:string*, $exp
         let $fname := (
             if (not($withFname)) then '*' 
             else replace($fnameAndPname, '^(.*)\s.*', '$1')
-        ) ! util:compilePlusMinusNameFilter(.)
+        ) ! sf:compileComplexStringFilter(., true())
         (: Property name :)
         let $pname := 
             if (not($withFname)) then $fnameAndPname 

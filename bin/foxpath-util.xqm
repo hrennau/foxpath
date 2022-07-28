@@ -694,3 +694,39 @@ declare function f:prettyFoxPrint($n as node())
     modify delete nodes $n_//text()[not(matches(., '\S'))][../*]
     return $n_
 };        
+
+(:~
+ : Pads a string on the lefthand side.
+ :)
+declare function f:lpad($s as xs:anyAtomicType?, 
+                        $width as xs:integer, 
+                        $char as xs:string?)
+        as xs:string? {
+    let $s := string($s)    
+    let $len := string-length($s) 
+    return
+        if ($len ge $width) then $s else    
+            let $char := ($char, ' ')[1]
+            let $pad := concat(string-join(for $i in 1 to $width - $len - 1 return $char, ''), ' ')
+            return
+                concat($pad, $s)
+};
+
+(:~
+ : Pads a string on the righthand side.
+ :)
+declare function f:rpad($s as xs:anyAtomicType?, 
+                        $width as xs:integer, 
+                        $char as xs:string?)
+        as xs:string? {
+    let $s := string($s)
+    let $len := string-length($s) 
+    return
+        if ($len ge $width) then $s else    
+            let $char := ($char, ' ')[1]
+            let $pad := concat(' ', string-join(for $i in 1 to $width - $len - 1 return $char, ''), '')
+            return
+                concat($s, $pad)
+};
+
+

@@ -2589,8 +2589,6 @@ declare function f:parseNestedFoxpathCall($functionName as xs:string,
             for $arg in $useArgs
             let $pname := replace($arg, '^.*?([\S]+?)\s*=.*', '$1') ! replace(., '^@', '')
             let $expr := replace($arg, '^.+?=\s*', '')
-            let $_DEBUG := trace($arg, '_ARG: ')
-            let $_DEBUG := trace($expr, '_EXPR: ')
             let $tree := f:parseFoxpath($expr, $context)
             return element {$pname} {$tree}
         return

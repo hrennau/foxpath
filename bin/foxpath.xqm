@@ -120,10 +120,10 @@ declare function f:resolveFoxpath($foxpath as xs:string,
     let $DEBUG := util:trace($foxpath, 'parse.resolve_foxpath', 'INTEXT_RESOLVE_FOXPATH: ')
     let $context := f:editInitialContext($context)
     let $tree := util:trace(i:parseFoxpath($foxpath, $options), 'parse', 'FOXPATH_ELEM: ')
-(:    
+  
     return f:resolveFoxpathTree($tree, $ebvMode, $context, $options, $externalVariableBindings)
-    :)
-    
+
+(:    
     let $errors := $tree/self::errors 
     return 
         if ($errors) then $errors
@@ -133,7 +133,7 @@ declare function f:resolveFoxpath($foxpath as xs:string,
             let $vars := f:initVars($tree/prolog, $externalVariableBindings, $context, $useOptions)
             return
                 f:resolveFoxpathRC($expr, $ebvMode, $context, (), (), $vars, $useOptions)
-                
+:)                
 };
 
 declare function f:resolveFoxpathTree(
