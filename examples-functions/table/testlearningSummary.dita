@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE learningSummary PUBLIC "-//OASIS//DTD DITA Learning Summary//EN" "learningSummary.dtd">
+<learningSummary id="learningsummary">
+ <title>Learning summary</title>
+ <shortdesc>It's always good to provide a summary.</shortdesc>
+ <learningSummarybody>
+  <lcSummary>
+   <title>Summary</title>
+   <p>Start first with the summary.</p>
+  </lcSummary>
+  <lcObjectives>
+   <title>Objectives</title>
+   <lcObjectivesStem>You now know how to do the following:</lcObjectivesStem>
+   <lcObjectivesGroup>
+    <lcObjective>Identify good objectives and achieve them.</lcObjective>
+    <lcObjective>Pass the test.</lcObjective>
+    <lcObjective>Continue with your life.</lcObjective>
+   </lcObjectivesGroup>
+  </lcObjectives>
+  <lcReview>
+   <title>Review</title>
+   <p>You can offer more review here.</p>
+  </lcReview>
+  <lcNextSteps>
+   <title>Next steps</title>
+   <p>Describe next steps here.</p>
+  </lcNextSteps>
+  <lcResources>
+   <title>Resources</title>
+   <p>You can list resources as you like, including xref links to external URLs, if appropriate.</p>
+  </lcResources>
+  <section>
+   <title>More sections</title>
+   <p>You can include additional sections with any content you like.</p>
+  </section>
+ </learningSummarybody>
+</learningSummary>

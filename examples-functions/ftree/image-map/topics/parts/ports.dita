@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="ports_topic">
+  <title>Ports</title>
+  <body>
+    <section id="sucction_port">
+      <title>Suction Port</title>
+      <p>The liquid enters in the pump through the <term>suction port</term>.</p>
+    </section>
+    <section id="presure_port">
+      <title>Pressure Port</title>
+      <p>The liquid leaves the pump through the <term>pressure port</term> (or discharge port).</p>
+    </section>
+  </body>
+</topic>

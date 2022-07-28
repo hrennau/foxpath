@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE learningOverview PUBLIC "-//OASIS//DTD DITA Learning Overview//EN" "learningOverview.dtd">
+<learningOverview id="overview">
+ <title>Learning Overview topic</title>
+ <shortdesc>Working outline for learning overview topic design</shortdesc>
+ <learningOverviewbody>
+  <lcIntro>
+   <title>Introduction</title>
+   <p>If you need an introduction, you would include it here.</p>
+   <note>You can have notes, tables, all kinds of things like that here, if you desire.</note>
+   <lcInstructornote>You can provide tips for instructors in an instructor note, like this
+    one.</lcInstructornote>
+  </lcIntro>
+  <lcAudience>
+   <title>Audience</title>
+   <p>Target audience for this lesson includes anyone with a pulse and interest in the topic. </p>
+  </lcAudience>
+  <lcDuration>
+   <title>Duration</title>
+   <lcTime value="00:07:00">7 minutes</lcTime>
+  </lcDuration>
+  <lcPrereqs>
+   <title>Prerequisites</title>
+   <p>You have no need to know anything prior to taking this lesson. It informs all.</p>
+  </lcPrereqs>
+  <lcObjectives>
+   <title>Objectives</title>
+   <lcObjectivesStem>When you complete this lesson, you'll know how to do the
+    following:</lcObjectivesStem>
+   <lcObjectivesGroup>
+    <lcObjective>Creating a good learning overview topic.</lcObjective>
+    <lcObjective>Identifying clear learning objectives.</lcObjective>
+    <lcObjective>Adding good test items to assess knowledge gained.</lcObjective>
+   </lcObjectivesGroup>
+  </lcObjectives>
+  <lcResources>
+   <title>Resources</title>
+   <p>Use this to list the resources available about this topic.</p>
+   <ul>
+    <li>A good book.</li>
+    <li>A wiki page.</li>
+    <li>A good article or presentation.</li>
+    <li>A relevant information center URL.</li>
+   </ul>
+  </lcResources>
+  <section>
+   <title>Additional sections</title>
+   <p>You can add additional sections to cover any other content you'd like to include in a learning
+    Overview.</p>
+  </section>
+ </learningOverviewbody>
+</learningOverview>

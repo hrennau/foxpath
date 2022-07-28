@@ -2,58 +2,51 @@
 <examples function="ftree">
     <example>
         <description>
-            Get a tree representation of the current working dir.
+            Get a folder tree, that is, a tree representation of the folder "image-map".
         </description>
         <code>
-            fox "ftree()"
+            fox "image-map/ftree()"
         </code>
     </example>
     <example>
         <description>
-            Get a tree representation of the "ireland" subfolder.
+            Get folder trees of folders matching "image-map*". If there are 
+            several folders, the trees are wrapped in an "ftrees" element.
         </description>
         <code>
-            fox "ireland/ftree()"
+            fox "image-map* => ftree-ec()"
         </code>
     </example>
     <example>
         <description>
-            As the previous example; additionally, all files have a @size=size annotatione.
+            Get a folder tree in which every .dita file is annotate with a @ti attribute showing the title.
         </description>
         <code>
-            fox "ireland/ftree('@size=file-size()')"
+            fox "image-map/ftree('*.dita @ti=\*\title\truncate(50)')"
         </code>
     </example>
     <example>
         <description>
-            As the first example, but annotate airports-*.xml files with @countAirports.
+            As the previous example, but every file has also a @t annotation giving the file date and a @size annotation giving the size.
         </description>
         <code>
-            fox "ftree('airports-*.xml @countAirports=\\airport => count()')"
+            fox "image-map/ftree('*.dita @ti=\*\title\truncate(50)', '@t=file-date-str()/substring(., 1, 10)', '@size=file-size()')"
         </code>
     </example>
     <example>
         <description>
-            As the previous example; additionally, all airport*.json files are annotated with @iata=iataCode.
+            Get a folder tree in which every every .dita file has a "hrefs" annotation, listing all file names referenced by href.
         </description>
         <code>
-            fox "ftree('airports-*.xml @countAirports=\\airport => count()', '@size=file-size()', '*.json @iata=\\airport\\iata\string()')"
+            fox "image-map/ftree('*.dita hrefs=\\@href\substring-before(., """"#"""")[string()] => distinct-values() => xelems(""""href"""")')"
         </code>
     </example>
     <example>
         <description>
-            Get a tree representation of the current working dir; airport- filese are annotated with a "codes" element containing IATA codes.             
+            As the previous example, but performing a cleanup removing empty "hrefs".
         </description>
         <code>
-            fox "ftree('airports-* codes=\\@iata\string()/xelem(., """"code"""")')"
-        </code>
-    </example>
-    <example>
-        <description>
-            As the previous example, but the IATA codes are sorted.             
-        </description>
-        <code>
-            fox "ftree('airports-* codes=\\@iata\string() => sort() => xelem(""""code"""", """"repeat"""")')"
+            fox "image-map/ftree('*.dita hrefs=\\@href\substring-before(., """"#"""")[string()] => distinct-values() => xelems(""""href"""")')/reduce-doc('\\hrefs[not(*)]')"
         </code>
     </example>
 </examples>

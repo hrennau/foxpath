@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples function="depth">
+    <example>
+        <description>
+            Find out at which depth titles occur.
+        </description>
+        <call>
+            fox "*.dita\\title\depth() => freq()"
+        </call>
+    </example>
+</examples>

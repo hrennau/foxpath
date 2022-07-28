@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="gear_pump">
+    <title>Gear Pump - Exploded View</title>
+  <shortdesc>Detailed description.</shortdesc>
+    <body>
+        <p>A <b>gear pump</b> uses the meshing of gears to pump fluid by displacement. They are one
+            of the most common types of <term>pumps</term> for hydraulic fluid power applications.
+                <term>Gear pumps</term> are also widely used in chemical installations to pump high
+            viscosity fluids.</p>
+        <example>
+            <title>An exploded view diagram of a gear pump </title>
+            <p>Click on <uicontrol>Edit image map</uicontrol> to edit the map, or use
+                    <uicontrol>Image map details</uicontrol> to see the defined areas directly in
+                the document.</p>
+            <p>
+                <imagemap id="gear_pump_map">
+                    <image href="../images/Gear_pump_exploded.png" id="gear_pump_exploded">
+                        <alt>Gear Pump</alt>
+                    </image>
+                    <area>
+                        <shape>circle</shape>
+                        <coords>172, 265, 14</coords>
+                        <xref href="parts/bushings.dita#bushings_topic/bushings" format="dita"
+                            >Bushings</xref>
+                    </area>
+                    <area>
+                        <shape>circle</shape>
+                        <coords>171, 331, 13</coords>
+                        <xref href="parts/bushings.dita#bushings_topic/bushings" format="dita"
+                            >Bushings</xref>
+                    </area>
+                    <area>
+                        <shape>circle</shape>
+                        <coords>327, 198, 14</coords>
+                        <xref href="parts/bushings.dita#bushings_topic/bushings" format="dita"
+                            >Bushings</xref>
+                    </area>
+                    <area>
+                        <shape>circle</shape>
+                        <coords>326, 263, 14</coords>
+                        <xref href="parts/bushings.dita#bushings_topic/bushings" format="dita"
+                            >Bushings</xref>
+                    </area>
+                    <area>
+                        <shape>circle</shape>
+                        <coords>232, 242, 47</coords>
+                        <xref href="parts/gears.dita#gears_topic/drive_gear" format="dita">Drive
+                            Gear</xref>
+                    </area>
+                    <area>
+                        <shape>circle</shape>
+                        <coords>238, 306, 49</coords>
+                        <xref href="parts/gears.dita#gears_topic/idler_gear" format="dita">Idler
+                            Gear</xref>
+                    </area>
+                    <area>
+                        <shape>circle</shape>
+                        <coords>324, 210, 14</coords>
+                        <xref href="parts/ports.dita#ports_topic/sucction_port" format="dita"
+                            >Suction Port</xref>
+                    </area>
+                    <area>
+                        <shape>circle</shape>
+                        <coords>391, 250, 16</coords>
+                        <xref href="parts/ports.dita#ports_topic/presure_port" format="dita"
+                            >Pressure Port</xref>
+                    </area>
+                    <area>
+                        <shape>poly</shape>
+                        <coords>422, 145, 459, 179, 462, 221, 423, 221</coords>
+                        <xref
+                            href="parts/mounting-flange.dita#mounting_flange_topic/mounting_flange"
+                            format="dita">Mounting Flange</xref>
+                    </area>
+                    <area>
+                        <shape>circle</shape>
+                        <coords>448, 147, 19</coords>
+                        <xref href="parts/seals.dita#seals_topic/shaft_seal" format="dita">Shaft
+                            Seal</xref>
+                    </area>
+                    <area>
+                        <shape>poly</shape>
+                        <coords>135, 208, 183, 247, 184, 393, 160, 397, 158, 383, 172, 380, 174,
+                            347, 174, 282, 161, 243, 134, 222, 113, 226</coords>
+                        <xref href="parts/seals.dita#seals_topic/case_seal" format="dita">Case
+                            Seal</xref>
+                    </area>
+                    <area>
+                        <shape>poly</shape>
+                        <coords>568, 81, 576, 103, 468, 152, 455, 130</coords>
+                        <xref href="parts/drive-shaft.dita#drive_shaft_topic/drive_shaft"
+                            format="dita">Drive Shaft</xref>
+                    </area>
+                </imagemap>
+            </p>
+        </example>
+    </body>
+</topic>

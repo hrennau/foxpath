@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE learningPlan PUBLIC "-//OASIS//DTD DITA Learning Plan//EN" "learningPlan.dtd">
+<learningPlan id="learningPlanTest">
+ <title>Learning Plan</title>
+ <shortdesc>It's always good to provide a plan.</shortdesc>
+ <learningPlanbody>
+  <lcProject>
+   <title>lcProject</title>
+   <lcClient>
+    <title>lcClient</title>
+    <p>describe the thing here</p>
+   </lcClient>
+   <lcPlanTitle>
+    <title>lcPlanTitle</title>
+    <p>describe the thing here</p>
+   </lcPlanTitle>
+   <lcCIN>
+    <title>lcCIN</title>
+    <p>describe the thing here</p>
+   </lcCIN>
+   <lcModDate>
+    <title>lcModDate</title>
+    <p>describe the thing here</p>
+   </lcModDate>
+   <lcDelivDate>
+    <title>lcDelivDate</title>
+    <p>describe the thing here</p>
+   </lcDelivDate>
+   <lcPlanSubject>
+    <title>lcPlanSubject</title>
+    <p>describe the thing here</p>
+   </lcPlanSubject>
+   <lcPlanDescrip>
+    <title>lcPlanDescrip</title>
+    <p>describe the thing here</p>
+   </lcPlanDescrip>
+   <lcPlanPrereqs>
+    <title>lcPlanPrereqs</title>
+    <p>describe the thing here</p>
+   </lcPlanPrereqs>
+  </lcProject>
+  <lcNeedsAnalysis>
+   <title>lcNeedsAnalysis</title>
+   <lcOrganizational>
+    <title>lcOrganizational</title>
+    <lcGeneralDescription>all about the lcGeneralDescription...</lcGeneralDescription>
+    <lcGoals>the lcGoals</lcGoals>
+    <lcNeeds>the lcNeeds...</lcNeeds>
+    <lcValues>the lcValues...</lcValues>
+    <lcOrgConstraints>the lcOrgConstraints...</lcOrgConstraints>
+   </lcOrganizational>
+   <lcPlanAudience>
+    <title>lcPlanAudience</title>
+    <lcGeneralDescription>all about the lcGeneralDescription...</lcGeneralDescription>
+    <lcEdLevel>all about lcEdLevel</lcEdLevel>
+    <lcAge>all about lcAge</lcAge>
+    <lcBackground>all about lcBackground</lcBackground>
+    <lcSkills>all about lcSkills</lcSkills>
+    <lcKnowledge>all about lcKnowledge</lcKnowledge>
+    <lcMotivation>all about lcMotivation</lcMotivation>
+    <lcSpecChars>all about lcSpecChars</lcSpecChars>
+   </lcPlanAudience>
+   <lcWorkEnv>
+    <title>lcWorkEnv</title>
+    <lcWorkEnvDescription>all about lcWorkEnvDescription</lcWorkEnvDescription>
+    <lcPlanResources>all about lcPlanResources</lcPlanResources>
+    <lcProcesses>all about lcProcesses</lcProcesses>
+   </lcWorkEnv>
+   <lcTask>
+    <title>lcTask</title>
+    <lcTaskItem>lcTaskItem is really great...</lcTaskItem>
+    <lcKnowledge>all about lcKnowledge</lcKnowledge>
+    <lcSkills>lcSkills</lcSkills>
+    <lcAttitude>lcAttitude...</lcAttitude>
+   </lcTask>
+   <lcTask>
+    <title>another lcTask (as many more as you would like...)</title>
+    <lcTaskItem>lcTaskItem is really great...</lcTaskItem>
+    <lcKnowledge>all about lcKnowledge</lcKnowledge>
+    <lcSkills>lcSkills</lcSkills>
+    <lcAttitude>lcAttitude...</lcAttitude>
+   </lcTask>
+  </lcNeedsAnalysis>
+  <lcGapAnalysis>
+   <title>lcGapAnalysis</title>
+   <lcGapItem>
+    <title>an lcGapItem</title>
+    <lcPlanObjective>lcPlanObjective...</lcPlanObjective>
+    <lcJtaItem>lcJtaItem</lcJtaItem>
+    <lcGapItemDelta>lcGapItemDelta</lcGapItemDelta>
+   </lcGapItem>
+   <lcGapItem>
+    <title>and another GapItem for you to consider</title>
+    <lcPlanObjective>lcPlanObjective...</lcPlanObjective>
+    <lcJtaItem>lcJtaItem</lcJtaItem>
+    <lcGapItemDelta>lcGapItemDelta</lcGapItemDelta>
+   </lcGapItem>
+  </lcGapAnalysis>
+  <lcIntervention>
+   <title>lcIntervention</title>
+   <lcInterventionItem>
+    <title>lcInterventionItem</title>
+    <lcLearnStrat>lcLearnStrat info...</lcLearnStrat>
+    <lcPlanObjective>lcPlanObjective info...</lcPlanObjective>
+    <lcAssessment>lcAssessment info...</lcAssessment>
+    <lcDelivery>lcDelivery info...</lcDelivery>
+   </lcInterventionItem>
+   <lcInterventionItem>
+    <title>another lcInterventionItem (and more if you want 'em)</title>
+    <lcLearnStrat>lcLearnStrat info...</lcLearnStrat>
+    <lcPlanObjective>lcPlanObjective info...</lcPlanObjective>
+    <lcAssessment>lcAssessment info...</lcAssessment>
+    <lcDelivery>lcDelivery info...</lcDelivery>
+   </lcInterventionItem>
+  </lcIntervention>
+  <lcTechnical>
+   <title>lcTechnical</title>
+   <lcLMS>
+    <title>lcLMS</title>
+    <p>find all about it right here</p>
+   </lcLMS>
+   <lcHandouts>
+    <title>lcHandouts</title>
+    <p>find all about it right here</p>
+   </lcHandouts>
+   <lcClassroom>
+    <title>lcClassroom</title>
+    <p>find all about it right here</p>
+   </lcClassroom>
+   <lcOJT>
+    <title>lcOJT</title>
+    <p>find all about it right here</p>
+   </lcOJT>
+   <lcConstraints>
+    <title>lcConstraints</title>
+    <p>find all about it right here</p>
+   </lcConstraints>
+   <lcW3C>
+    <title>lcW3C</title>
+    <p>find all about it right here</p>
+   </lcW3C>
+   <lcPlayers>
+    <title>lcPlayers</title>
+    <p>find all about it right here</p>
+   </lcPlayers>
+   <lcViewers>
+    <title>lcViewers</title>
+    <p>find all about it right here</p>
+   </lcViewers>
+   <lcResolution>
+    <title>lcResolution</title>
+    <p>find all about it right here</p>
+   </lcResolution>
+   <lcFileSizeLimitations>
+    <title>lcFileSizeLimitations</title>
+    <p>find all about it right here</p>
+   </lcFileSizeLimitations>
+   <lcDownloadTime>
+    <title>lcDownloadTime</title>
+    <p>find all about it right here</p>
+   </lcDownloadTime>
+   <lcSecurity>
+    <title>lcSecurity</title>
+    <p>find all about it right here</p>
+   </lcSecurity>
+  </lcTechnical>
+ </learningPlanbody>
+</learningPlan>

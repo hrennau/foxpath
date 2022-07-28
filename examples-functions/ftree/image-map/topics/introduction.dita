@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="introduction">
+    <title>Introduction</title>
+  <shortdesc>Introductory page.</shortdesc>
+    <body>
+        <p>An <b>image map</b> is a list of coordinates defining areas over an image. These areas
+            can link to different destinations (URLs).</p>
+        <p>For a sample image map of a <b>gear pump</b>, see the <xref
+                href="gear-pump.dita#gear_pump"/> topic. Transform the DITA map to an HTML output in
+            order to see how clicking over the image works.</p>
+    </body>
+</topic>

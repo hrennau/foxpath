@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples function="table">
+    <example>
+        <description>
+            Get a description of DITA topics as a three column table - file name, title, short description.
+        </description>
+        <call>
+            fox "*.dita\*\row(base-file-name(), title, normalize-space(shortdesc)) => table('File name, Title, Short description')"
+        </call>
+    </example>
+</examples>
