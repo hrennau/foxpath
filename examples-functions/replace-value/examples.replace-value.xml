@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples function="replace-value">
+    <example>
+        <description>
+            Change @longitude and @latitude attributes, using decimal numbers with three decimal digits.
+        </description>
+        <code>
+            fox "airport*.xml/replace-value('\\(@latitude, @longitude)', 'format-number(., """"##9.999"""")')"
+        </code>
+    </example>
+    <example>
+        <desctiprion>
+            As in the first example, but also add an @xml:base attribute to the root element and write the file into sub folder "edited", retaining the file name.            
+        </desctiprion>
+        <code>
+            fox "airport*.xml/replace-value('\\(@latitude, @longitude)', 'format-number(., """"##9.999"""")' , 'base') => write-files('edited')"
+        </code>
+    </example>
+</examples>

@@ -1288,6 +1288,21 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:repeat($string, $count)
                 
+        (: function `replace-value` 
+           ======================== :)
+        else if ($fname = ('replace-value')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0        
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $doc := if ($da) then $arg1 else $context
+            let $replaceNodesExpr :=
+                if (not($da)) then $arg1 else                
+                $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $valueExpr :=
+                $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions :=
+                $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:replaceValue($doc, $replaceNodesExpr, $valueExpr, $fnOptions, $options)
+                        
         (: function `resolve-json-allof` 
            ============================ :)
         else if ($fname = ('resolve-json-allof', 'jallof')) then
@@ -2119,6 +2134,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
             return
                 ends-with($arg1, $arg2)
+                
+        (: function `format-number` 
+           ======================== :)
+        else if ($fname eq 'format-number') then
+            let $number := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $picture := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
+            let $decimalFormatName := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                if ($decimalFormatName) then format-number($number, $picture, $decimalFormatName)
+                else format-number($number, $picture)
                 
         (: function `false` 
            ================ :)

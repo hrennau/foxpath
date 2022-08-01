@@ -2824,6 +2824,45 @@ declare function f:repeat($string as xs:string?, $count as xs:decimal?)
 };      
 
 (:~
+ : Replaces the values of selected nodes.
+ :
+ : @param item a node or a document URI
+ : @param replaceNodesExpr a Foxpath expression selecting the nodes which to change 
+ : @param valueExpr a Foxpath expression returning the new value of the node; the expression
+ :   is evaluated in the context of the node to be changed
+ : @param options options controling processing details
+ :   base - add to the root element an @xml:base attribute
+ : @param processingOptions options controling the Foxpath processor 
+ : @return the edited input item
+ :)
+declare function f:replaceValue($item as item()?,
+                                $replaceNodesExpr as xs:string,
+                                $valueExpr as xs:string,
+                                $options as xs:string?,
+                                $processingOptions as map(*))
+        as node()* {
+    let $node := if ($item instance of node()) then $item else i:fox-doc($item, ())
+    let $ops := $options ! tokenize(.)
+    let $withBaseUri := $ops = 'base'
+    let $resultDoc :=  
+        copy $node_ := $node
+        modify (
+            let $replaceNodes := f:resolveFoxpath($node_, $replaceNodesExpr, (), $processingOptions)
+            for $rnode in $replaceNodes
+            let $newValue := f:resolveFoxpath($rnode, $valueExpr, (), $processingOptions)
+            return replace value of node $rnode with $newValue,
+            
+            if (not($withBaseUri)) then () else
+                let $targetElem := $node_/root()/descendant-or-self::*[1] (: /ancestor-or-self::*[last()] :)
+                return
+                    if ($targetElem/@xml:base) then () else
+                        insert node attribute xml:base {$targetElem/base-uri(.)} into $targetElem              
+            )                        
+        return $node_
+    return $resultDoc
+ };
+
+(:~
  : Returns those atomic items which are in the right value, but not in the left one. 
  :
  : @param leftValue a value
