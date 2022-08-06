@@ -1,0 +1,17 @@
+<airport id="6421" iata="IOR" icao="EIIM">
+  <name>Inishmore Aerodrome</name>
+  <city>Inis Mor</city>
+  <country>Ireland</country>
+  <geo>
+    <latitude>53.1067008972168</latitude>
+    <longitude>-9.653610229492188</longitude>
+    <altitude>24</altitude>
+  </geo>
+  <temporal>
+    <timezone>0</timezone>
+    <tzTimezone>Europe/Dublin</tzTimezone>
+    <dst>U</dst>
+  </temporal>
+  <type>airport</type>
+  <source1>OurAirports</source1>
+</airport>

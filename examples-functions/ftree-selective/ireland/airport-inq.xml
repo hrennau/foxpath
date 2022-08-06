@@ -1,0 +1,17 @@
+<airport id="7030" iata="INQ" icao="EIIR">
+  <name>Inisheer Aerodrome</name>
+  <city>Inisheer</city>
+  <country>Ireland</country>
+  <geo>
+    <latitude>53.064701080322266</latitude>
+    <longitude>-9.510899543762207</longitude>
+    <altitude>40</altitude>
+  </geo>
+  <temporal>
+    <timezone>0</timezone>
+    <tzTimezone>Europe/Dublin</tzTimezone>
+    <dst>E</dst>
+  </temporal>
+  <type>airport</type>
+  <source1>OurAirports</source1>
+</airport>

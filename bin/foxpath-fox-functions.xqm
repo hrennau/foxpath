@@ -2672,10 +2672,10 @@ declare function f:pfilterItems($items as item()*,
  : @param excludeExprs expressions excluding nodes
  : @return a copy of the input doc in which the selected nodes have been removed
  :)
-declare function f:reduceDoc($items as item()*,
-                             $excludeExprs as xs:string*,
-                             $options as xs:string?,
-                             $processingOptions as map(*))
+declare function f:deleteNodes($items as item()*,
+                               $excludeExprs as xs:string*,
+                               $options as xs:string?,
+                               $processingOptions as map(*))
         as node()* {
     let $ops := $options ! tokenize(.)
     let $keepWS := $ops = 'keepws'
@@ -3951,13 +3951,16 @@ declare function f:ftreeREC($folder as xs:string, $options as map(*)) as element
                 for $p in array:flatten($filePropertiesMap)
                 let $pname := map:keys($p)
                 let $pmap := $p($pname)
-                let $fileNameFilter := $pmap?fileName
+                let $fileNameFilter := $pmap?fileName                
                 return
                     if (not(sf:matchesComplexStringFilter(util:fileName(.), $fileNameFilter))) then ()
                     else
+                        let $itemElemName := $pmap?itemElemName[string()]
                         let $pvalueP := f:resolveFoxpath(., (), $pmap?exprTree/*, $options)
                         return 
                             if ($pmap?isAtt) then attribute {$pname} {$pvalueP}
+                            else if ($itemElemName) then
+                                element {$pname} {$pvalueP ! element {$itemElemName} {.}}
                             else element {$pname} {$pvalueP}
         }</fi>
     return
@@ -4081,11 +4084,13 @@ declare function f:ftreeUtil_filePropertyMap($fileProperties as xs:string*, $exp
             else replace($fnameAndPname, '.*\s', '')
         let $isAtt := starts-with($pname, '@')
         let $pname := if ($isAtt) then substring($pname, 2) else $pname
+        let $pname2 := if (not(contains($pname, '/'))) then () else replace($pname, '.*/\s*', '')
+        let $pname1 := if (empty($pname2)) then $pname else replace($pname, '\s*/.*', '') 
         (: Expression or expression tree :)
         let $expr := replace($fp, '^.+?=\s*', '')
-        let $exprTree := $exprTrees/*[local-name(.) eq $pname]
+        let $exprTree := $exprTrees/*[local-name(.) eq $pname1]
         return
-            map:entry($pname, map{'isAtt': $isAtt, 'expr': $expr, 'exprTree': $exprTree, 'fileName': $fname})
+            map:entry($pname1, map{'isAtt': $isAtt, 'expr': $expr, 'exprTree': $exprTree, 'fileName': $fname, 'itemElemName': $pname2})
     let $entriesAtt := $entries[?(map:keys(.))?isAtt]                
     let $entriesElem := $entries[not(?(map:keys(.))?isAtt)]
     return

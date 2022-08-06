@@ -1,13 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<examples function="ftree">
+<examples function="ftree-selective">
     <example>
         <description>
-            Get a folder tree, that is, a tree representation of the folder "image-map".
+            Get a folder tree, that is, a tree representation of the folder "image-map". Do not exclude any folders or files.
         </description>
         <code>
-            fox "image-map/ftree()"
+            fox "image-map/ftree-selective"
         </code>
     </example>
+    <example>
+        <description>
+            As the first example, but excluding any files which do not have the extension .data.
+        </description>
+        <code>
+            fox "image-map/ftree-selective('*.dita')"
+        </code>
+    </example>
+    <example>
+        <description>
+            As the first example, but excluding any folders with a name matching *parts* or equal "images".
+        </description>
+        <code>
+            fox "image-map/ftree-selective((), '~*parts* ~images')"
+        </code>
+    </example>
+    
     <example>
         <description>
             Get folder trees of folders matching "image-map*". If there are 
@@ -38,7 +55,7 @@
             Get a folder tree in which every every .dita file has a "hrefs" annotation, listing all file names referenced by href.
         </description>
         <code>
-            fox  "image-map/ftree('*.dita hrefs/href=\\@href\substring-before(., """"#"""")[string()] => distinct-values()')"
+            fox "image-map/ftree('*.dita hrefs=\\@href\substring-before(., """"#"""")[string()] => distinct-values() => xelems(""""href"""")')"
         </code>
     </example>
     <example>
@@ -46,7 +63,7 @@
             As the previous example, but performing a cleanup removing empty "hrefs".
         </description>
         <code>
-            fox  "image-map/ftree('*.dita hrefs/href=\\@href\substring-before(., """"#"""")[string()] => distinct-values()')/delete-nodes('\\hrefs[not(*)]')"            
+            fox "image-map/ftree('*.dita hrefs=\\@href\substring-before(., """"#"""")[string()] => distinct-values() => xelems(""""href"""")')/reduce-doc('\\hrefs[not(*)]')"
         </code>
     </example>
 </examples>

@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="bushings_topic">
+ <title>Bushings</title>
+ <body>
+  <section id="bushings">
+   <title>Bushings</title>
+   <p>A <term>bushing</term>, also known as a <term>bush</term>, is an independent plain bearing
+    that is inserted into a housing to provide a bearing surface for rotary applications. The
+    bushings in the <b>gear pump</b> provide a bearing surface for the <xref
+     href="gears.dita#gears_topic/drive_gear"><b>drive gear</b></xref> and <xref
+     href="gears.dita#gears_topic/idler_gear"><b>idler gear</b></xref>.</p>
+  </section>
+ </body>
+</topic>

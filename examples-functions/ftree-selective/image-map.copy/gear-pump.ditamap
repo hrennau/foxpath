@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN" "map.dtd">
+<map>
+ <title>Gear Pump</title>
+ <topicref href="topics/introduction.dita"/>
+ <topicref href="topics/gear-pump.dita">
+  <topicref href="topics/parts/bushings.dita"/>
+  <topicref href="topics/parts/drive-shaft.dita"/>
+  <topicref href="topics/parts/gears.dita"/>
+  <topicref href="topics/parts/mounting-flange.dita"/>
+  <topicref href="topics/parts/ports.dita"/>
+  <topicref href="topics/parts/seals.dita"/>
+ </topicref>
+ <topicref href="topics/copyright.dita"/>
+</map>

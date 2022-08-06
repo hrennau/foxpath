@@ -280,6 +280,18 @@ declare function f:resolveStaticFunctionCall($call as element(),
                       t="{current-dateTime()}" 
                       onlyDocAvailable="{boolean($onlyDocAvailable)}">{$refs}</dcat>
 
+        (: function `delete-nodes` 
+           ======================= :)
+        else if ($fname = ('delete-nodes', 'delete-nodes-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0        
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $doc := if ($da) then $arg1 else $context
+            let $excludeExprs :=
+                if (not($da)) then $arg1 else                
+                $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
+            return foxf:deleteNodes($doc, $excludeExprs, $fnOptions, $options)
+                        
         (: function `depth` 
            ================ :)
         else if ($fname = ('depth', 'depth-ec')) then
@@ -643,17 +655,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $exprTrees := $call/_parsed
             return foxf:ftree($rootFolders, $fileProperties, $exprTrees)    
             
-        else if ($fname = ('ftree-selective', 'ec-ftree-selective')) then
+        else if ($fname = ('ftree-selective', 'ftree-selective-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0        
             let $args := $call/*[not(@ignore eq 'true')]        
             let $narg := count($args)
-            let $da := if (starts-with($fname, 'ec-')) then 1 else 0
-            let $exprTrees := $call/_parsed            
             let $rootFolders := 
-                if (starts-with($fname, 'ec-')) then $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
+                if ($da eq 1) then $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
                 else $context
             let $descendantNames := $args[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
             let $folderNames := $args[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
             let $fileProperties := subsequence($args, 3 + $da)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $exprTrees := $call/_parsed            
             return foxf:ftreeSelective($rootFolders, (), $descendantNames, $folderNames, $fileProperties, $exprTrees, ())
             
         else if ($fname = ('ftree-view', 'ftree-view-ec')) then
@@ -1226,18 +1238,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     <resource href="{$item}"/>
             return
                 <rcat t="{current-dateTime()}" count="{count($refs)}">{$refs}</rcat>
-                        
-        (: function `reduce-doc` 
-           ==================== :)
-        else if ($fname = ('reduce-doc', 'reduce-doc-ec')) then
-            let $da := if (ends-with($fname, '-ec')) then 1 else 0        
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
-            let $doc := if ($da) then $arg1 else $context
-            let $excludeExprs :=
-                if (not($da)) then $arg1 else                
-                $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $fnOptions := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
-            return foxf:reduceDoc($doc, $excludeExprs, $fnOptions, $options)
                         
         (: function `resolve-fox` 
            ====================== :)
