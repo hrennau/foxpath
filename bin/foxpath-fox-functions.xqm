@@ -3956,9 +3956,10 @@ declare function f:ftreeREC($folder as xs:string, $options as map(*)) as element
                     if (not(sf:matchesComplexStringFilter(util:fileName(.), $fileNameFilter))) then ()
                     else
                         let $itemElemName := $pmap?itemElemName[string()]
-                        let $pvalueP := f:resolveFoxpath(., (), $pmap?exprTree/*, $options)
+                        let $pvalueP := $folder ! f:resolveFoxpath(., (), $pmap?exprTree/*, $options)
                         return 
-                            if ($pmap?isAtt) then attribute {$pname} {$pvalueP}
+                            if (empty($pvalueP) and $pmap?optional) then ()
+                            else if ($pmap?isAtt) then attribute {$pname} {$pvalueP}
                             else if ($itemElemName) then
                                 element {$pname} {$pvalueP ! element {$itemElemName} {.}}
                             else element {$pname} {$pvalueP}
@@ -4034,10 +4035,14 @@ declare function f:ftreeSelectiveREC(
                         return
                             if (not(util:matchesPlusMinusNameFilter($childName, $fileNameFilter))) then ()
                             else
-                                let $pvalueP := f:resolveFoxpath($childUri, (), $pmap?exprTree/*, $options)
+                                let $itemElemName := $pmap?itemElemName[string()]
+                                let $pvalueP := $folder ! f:resolveFoxpath(., (), $pmap?exprTree/*, $options)
                                 return 
-                                    if ($pmap?isAtt) then attribute {$pname} {$pvalueP}
-                                    else element {$pname} {$pvalueP}                
+                                    if (empty($pvalueP) and $pmap?optional) then ()
+                                    else if ($pmap?isAtt) then attribute {$pname} {$pvalueP}
+                                    else if ($itemElemName) then
+                                        element {$pname} {$pvalueP ! element {$itemElemName} {.}}
+                                    else element {$pname} {$pvalueP}
                 }</fi>
             else
                 let $newFolder := $folder||'/'||$childName
@@ -4079,18 +4084,25 @@ declare function f:ftreeUtil_filePropertyMap($fileProperties as xs:string*, $exp
             else replace($fnameAndPname, '^(.*)\s.*', '$1')
         ) ! sf:compileComplexStringFilter(., true())
         (: Property name :)
-        let $pname := 
+        let $pnameRaw := 
             if (not($withFname)) then $fnameAndPname 
             else replace($fnameAndPname, '.*\s', '')
-        let $isAtt := starts-with($pname, '@')
-        let $pname := if ($isAtt) then substring($pname, 2) else $pname
-        let $pname2 := if (not(contains($pname, '/'))) then () else replace($pname, '.*/\s*', '')
-        let $pname1 := if (empty($pname2)) then $pname else replace($pname, '\s*/.*', '') 
+        let $optional := ends-with($pnameRaw, '?')
+        let $isAtt := starts-with($pnameRaw, '@')        
+        let $pname := $pnameRaw ! replace(., '^@|\?$', '')       
+        let $pname2 := $pname[contains(., '/')] ! replace(., '.*/\s*', '')
+        let $pname1 := if (empty($pname2)) then $pname else replace($pname, '\s*/.*', '')
         (: Expression or expression tree :)
         let $expr := replace($fp, '^.+?=\s*', '')
         let $exprTree := $exprTrees/*[local-name(.) eq $pname1]
         return
-            map:entry($pname1, map{'isAtt': $isAtt, 'expr': $expr, 'exprTree': $exprTree, 'fileName': $fname, 'itemElemName': $pname2})
+            map:entry($pname1, map{'isAtt': $isAtt,
+                                   'optional': $optional,            
+                                   'expr': $expr, 
+                                   'exprTree': $exprTree, 
+                                   'fileName': $fname,                                   
+                                   'itemElemName': $pname2
+                                  })
     let $entriesAtt := $entries[?(map:keys(.))?isAtt]                
     let $entriesElem := $entries[not(?(map:keys(.))?isAtt)]
     return

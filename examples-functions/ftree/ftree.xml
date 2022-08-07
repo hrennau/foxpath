@@ -5,49 +5,16 @@
     </fo>
     <fo name="topics">
       <fo name="parts">
-        <fi name="bushings.dita">
-          <hrefs>
-            <href>gears.dita</href>
-          </hrefs>
-        </fi>
-        <fi name="drive-shaft.dita">
-          <hrefs/>
-        </fi>
-        <fi name="gears.dita">
-          <hrefs>
-            <href>bushings.dita</href>
-          </hrefs>
-        </fi>
-        <fi name="mounting-flange.dita">
-          <hrefs/>
-        </fi>
-        <fi name="ports.dita">
-          <hrefs/>
-        </fi>
-        <fi name="seals.dita">
-          <hrefs>
-            <href>drive-shaft.dita</href>
-          </hrefs>
-        </fi>
+        <fi name="bushings.dita"/>
+        <fi name="drive-shaft.dita"/>
+        <fi name="gears.dita"/>
+        <fi name="mounting-flange.dita"/>
+        <fi name="ports.dita"/>
+        <fi name="seals.dita"/>
       </fo>
-      <fi name="copyright.dita">
-        <hrefs/>
-      </fi>
-      <fi name="gear-pump.dita">
-        <hrefs>
-          <href>parts/bushings.dita</href>
-          <href>parts/gears.dita</href>
-          <href>parts/ports.dita</href>
-          <href>parts/mounting-flange.dita</href>
-          <href>parts/seals.dita</href>
-          <href>parts/drive-shaft.dita</href>
-        </hrefs>
-      </fi>
-      <fi name="introduction.dita">
-        <hrefs>
-          <href>gear-pump.dita</href>
-        </hrefs>
-      </fi>
+      <fi name="copyright.dita"/>
+      <fi name="gear-pump.dita"/>
+      <fi name="introduction.dita"/>
     </fo>
     <fi name="gear-pump.ditamap"/>
   </fo>

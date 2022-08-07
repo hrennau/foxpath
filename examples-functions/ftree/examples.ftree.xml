@@ -19,7 +19,27 @@
     </example>
     <example>
         <description>
+            Get a folder tree in which every file is annotated with a @date attribute showing the file date.
+            The whitespace after the equal sign is inserted in order to avoid string mangling caused by
+            the command shell.
+        </description>
+        <code>
+            fox "image-map/ftree('@date= file-date()')"
+        </code>
+    </example>
+    <example>
+        <description>
+            Get a folder tree in which every file is annotated with an @date attribute showing the file date
+            and a @size attribute showing the file size. Use one parameter for each file property.
+        </description>
+        <code>
+            fox "image-map/ftree('@date= file-date()', '@size= file-size()')"
+        </code>
+    </example>
+    <example>
+        <description>
             Get a folder tree in which every .dita file is annotate with a @ti attribute showing the title.
+            In order to annotated selected files, use a file name selector preceding the property name.
         </description>
         <code>
             fox "image-map/ftree('*.dita @ti=\*\title\truncate(50)')"
@@ -27,26 +47,20 @@
     </example>
     <example>
         <description>
-            As the previous example, but every file has also a @t annotation giving the file date and a @size annotation giving the size.
-        </description>
-        <code>
-            fox "image-map/ftree('*.dita @ti=\*\title\truncate(50)', '@t=file-date-str()/substring(., 1, 10)', '@size=file-size()')"
-        </code>
-    </example>
-    <example>
-        <description>
             Get a folder tree in which every every .dita file has a "hrefs" annotation, listing all file names referenced by href.
+            Use two names separated by / in order to represent each value item in an element.
         </description>
         <code>
-            fox  "image-map/ftree('*.dita hrefs/href=\\@href\substring-before(., """"#"""")[string()] => distinct-values()')"
+            fox "image-map/ftree('*.dita hrefs/href=\\@href\substring-before(., """"#"""")[string()] => distinct-values() => sort()')"
         </code>
     </example>
     <example>
         <description>
-            As the previous example, but performing a cleanup removing empty "hrefs".
+            As the previous example, but suppress property items if the property value is the empty sequence. Use a ? after
+            the property name in order to suppress empty property items.
         </description>
         <code>
-            fox  "image-map/ftree('*.dita hrefs/href=\\@href\substring-before(., """"#"""")[string()] => distinct-values()')/delete-nodes('\\hrefs[not(*)]')"            
+            fox "image-map/ftree('*.dita hrefs/href?=\\@href\substring-before(., """"#"""")[string()] => distinct-values() => sort()')"
         </code>
     </example>
 </examples>

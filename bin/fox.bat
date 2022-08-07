@@ -23,6 +23,8 @@ set GITHUB_TOKEN=/git/token
 set DEBUG_TIME=0
 set CONSERVE_WS=
 
+REM echo "Expression: %1%"
+
 :NEXTPAR
 set name="%~1"
 set char1=%name:~1,1%
