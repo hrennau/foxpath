@@ -1879,30 +1879,30 @@ declare function f:nodeNavigation(
 
 declare function f:nameContent(
                        $contextItems as item()*,
-                       $nameKind as xs:string,
                        $namesFilter as xs:string?,
-                       $flags as xs:string?)                       
+                       $options as xs:string?)                       
         as xs:string* {
-    let $contextNodes :=
+    let $ops := $options ! tokenize(.)        
+    let $inputNodes :=
         for $item in $contextItems return
             if ($item instance of node()) then $item 
             else i:fox-doc($item, ())
     let $cNamesFilter := $namesFilter ! util:compilePlusMinusNameFilter(.)
-    let $flags := lower-case($flags)
-    let $withAtts := contains($flags, 'a')
-    let $withChildren := contains($flags, 'c')
-    let $withParent := contains($flags, 'p')
+
+    let $fn_name := 
+        if ($ops = 'name') then function($node) {$node/name(.)}
+        else if ($ops = 'jname') then function($node) {$node/local-name(.) ! convert:decode-key(.)}
+        else function($node) {$node/local-name(.)}
+    let $withAtts := $ops = ('a', 'att')
+    let $withChildren := $ops = ('c', 'child')
+    let $withParent := $ops = ('p', 'parent')
     let $sepline := 
         if (not($withAtts) and not($withChildren) and not($withParent)) then () else
         '------------------------------------------'
-    let $fn_name := 
-        if ($nameKind = 'name') then function($node) {$node/name(.)}
-        else if ($nameKind = 'jname') then function($node) {$node/local-name(.) ! convert:decode-key(.)}
-        else function($node) {$node/local-name(.)}
     let $nodes :=
-        for $contextNode in $contextNodes
+        for $inputNode in $inputNodes
         return
-            $contextNode/descendant-or-self::*/(., @*)
+            $inputNode/descendant-or-self::*/(., @*)
                 [$fn_name(.) ! util:matchesPlusMinusNameFilter(., $cNamesFilter)]
                 
     let $results :=
@@ -2263,7 +2263,9 @@ declare function f:nameCompare($docs as item()*,
 
     let $d1 := $docs[1] ! (if (. instance of node()) then . else i:fox-doc(., ()))
     let $d2 := $docs[2] ! (if (. instance of node()) then . else i:fox-doc(., ()))
-    return if (count(($d1, $d2)) lt 2) then () else
+    return 
+        if (count(($d1, $d2)) lt 2) then () 
+        else if (deep-equal($d1, $d2)) then () else
     
     let $ops := $options ! tokenize(.) ! lower-case(.)
     let $fname := $ops = 'fname'
@@ -2275,8 +2277,6 @@ declare function f:nameCompare($docs as item()*,
         if ($nameKind eq 'name') then f:aname#1
         else if ($nameKind eq 'jname') then f:jname#1
         else f:alname#1    
-    return if (deep-equal($d1, $d2)) then () else
-
     let $names1 :=
         for $item in $d1/f:allDescendants(.)
         group by $name := $item/$fn_name(.)
@@ -2663,6 +2663,17 @@ declare function f:pfilterItems($items as item()*,
     let $cpattern := $pattern ! sf:compileComplexStringFilter(., true())
     return $items[sf:matchesComplexStringFilter(string(.), $cpattern)]
 };
+
+declare function f:prettyNode($items as item()*, 
+                              $options as xs:string?)
+        as item()* {
+    let $ops := $options ! tokenize(.)
+    let $nodes :=
+        for $item in $items return
+            if ($item instance of node()) then $item else i:fox-doc($item, ())
+    return $nodes ! util:prettyNode(., $ops)
+};
+
 
 (:~
  : Creates a reduced copy of a node. Content nodes selected by the
@@ -3956,12 +3967,14 @@ declare function f:ftreeREC($folder as xs:string, $options as map(*)) as element
                     if (not(sf:matchesComplexStringFilter(util:fileName(.), $fileNameFilter))) then ()
                     else
                         let $itemElemName := $pmap?itemElemName[string()]
-                        let $pvalueP := $folder ! f:resolveFoxpath(., (), $pmap?exprTree/*, $options)
+                        let $occs := $pmap?occs[string()]
+                        let $pvalueP := f:resolveFoxpath(., (), $pmap?exprTree/*, $options)
                         return 
-                            if (empty($pvalueP) and $pmap?optional) then ()
+                            if (empty($pvalueP) and $occs = ('?', '*')) then ()
                             else if ($pmap?isAtt) then attribute {$pname} {$pvalueP}
                             else if ($itemElemName) then
                                 element {$pname} {$pvalueP ! element {$itemElemName} {.}}
+                            else if ($occs eq '*') then $pvalueP ! element {$pname} {.}                            
                             else element {$pname} {$pvalueP}
         }</fi>
     return
@@ -4036,12 +4049,14 @@ declare function f:ftreeSelectiveREC(
                             if (not(util:matchesPlusMinusNameFilter($childName, $fileNameFilter))) then ()
                             else
                                 let $itemElemName := $pmap?itemElemName[string()]
-                                let $pvalueP := $folder ! f:resolveFoxpath(., (), $pmap?exprTree/*, $options)
+                                let $occs := $pmap?occs[string()]
+                                let $pvalueP := $childUri ! f:resolveFoxpath(., (), $pmap?exprTree/*, $options)
                                 return 
-                                    if (empty($pvalueP) and $pmap?optional) then ()
+                                    if (empty($pvalueP) and $occs = ('?', '*')) then ()
                                     else if ($pmap?isAtt) then attribute {$pname} {$pvalueP}
                                     else if ($itemElemName) then
                                         element {$pname} {$pvalueP ! element {$itemElemName} {.}}
+                                    else if ($occs eq '*') then $pvalueP ! element {$pname} {.}                                        
                                     else element {$pname} {$pvalueP}
                 }</fi>
             else
@@ -4087,9 +4102,10 @@ declare function f:ftreeUtil_filePropertyMap($fileProperties as xs:string*, $exp
         let $pnameRaw := 
             if (not($withFname)) then $fnameAndPname 
             else replace($fnameAndPname, '.*\s', '')
-        let $optional := ends-with($pnameRaw, '?')
+        (: occs - optional ? or * :)
+        let $occs := replace($pnameRaw, '.*([?*])$', '$1')[. ne $pnameRaw]
         let $isAtt := starts-with($pnameRaw, '@')        
-        let $pname := $pnameRaw ! replace(., '^@|\?$', '')       
+        let $pname := $pnameRaw ! replace(., '^@|\?|\*$', '')       
         let $pname2 := $pname[contains(., '/')] ! replace(., '.*/\s*', '')
         let $pname1 := if (empty($pname2)) then $pname else replace($pname, '\s*/.*', '')
         (: Expression or expression tree :)
@@ -4097,7 +4113,7 @@ declare function f:ftreeUtil_filePropertyMap($fileProperties as xs:string*, $exp
         let $exprTree := $exprTrees/*[local-name(.) eq $pname1]
         return
             map:entry($pname1, map{'isAtt': $isAtt,
-                                   'optional': $optional,            
+                                   'occs': $occs,            
                                    'expr': $expr, 
                                    'exprTree': $exprTree, 
                                    'fileName': $fname,                                   

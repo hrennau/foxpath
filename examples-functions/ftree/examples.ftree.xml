@@ -47,8 +47,25 @@
     </example>
     <example>
         <description>
-            Get a folder tree in which every every .dita file has a "hrefs" annotation, listing all file names referenced by href.
-            Use two names separated by / in order to represent each value item in an element.
+            Get a folder tree in which every every .dita file has a "href" annotation, containing a space-separated list of referenced file names.
+        </description>
+        <code>
+            fox "image-map/ftree('*.dita href=\\@href\substring-before(., """"#"""")[string()] => distinct-values() => sort()')"
+        </code>
+    </example>
+    <example>
+        <description>
+            Similar to the previous example, but writing one "href" element for each referenced file name. 
+            Use a * after the property name in order to get one property element per value item.
+        </description>
+        <code>
+            fox "image-map/ftree('*.dita href*=\\@href\substring-before(., """"#"""")[string()] => distinct-values() => sort()')"
+        </code>
+    </example>
+    <example>
+        <description>
+            Similar to the previous example, but wrapping the "href" elements in a "hrefs" element. Specify two element names separated by a slash - 
+            first the wrapper element name, then the item element name.
         </description>
         <code>
             fox "image-map/ftree('*.dita hrefs/href=\\@href\substring-before(., """"#"""")[string()] => distinct-values() => sort()')"
@@ -57,7 +74,7 @@
     <example>
         <description>
             As the previous example, but suppress property items if the property value is the empty sequence. Use a ? after
-            the property name in order to suppress empty property items.
+            the property name (or names) in order to suppress empty property items.
         </description>
         <code>
             fox "image-map/ftree('*.dita hrefs/href?=\\@href\substring-before(., """"#"""")[string()] => distinct-values() => sort()')"

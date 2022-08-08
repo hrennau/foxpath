@@ -956,19 +956,19 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `name-content` 
            ===================== :)
-        else if ($fname = ('name-content', 'ec-name-content',
-                           'lname-content', 'ec-lname-content',
-                           'jname-content', 'ec-jname-content'))
+        else if ($fname = ('name-content', 'name-content-ec',
+                           'lname-content', 'lname-content-ec',
+                           'jname-content', 'jname-content-ec'))
         then
-            let $da := if (starts-with($fname, 'ec-')) then 1 else 0
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
             let $nameKind := 
                 if (contains($fname, 'lname')) then 'lname' else if (contains($fname, 'jname')) then 'jname' else 'name'
             let $contextNodes := if ($da eq 0) then $context else 
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $namesFilter := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $flags := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $options := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:nameContent($contextNodes, $nameKind, $namesFilter, $flags)
+                foxf:nameContent($contextNodes, $namesFilter, $options)
 
         (: function `name-path` 
            =================== :)
@@ -1213,6 +1213,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:frequencies($values, $min, $max, 'percent', $order, $format)
 
+        (: function `pretty-node` 
+           ===================== :)
+        else if ($fname = ('pretty-node', 'pretty-node-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $doc := if ($da) then $arg1 else $context        
+            let $options := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:prettyNode($doc, $options)
+            
         (: function `ps.copy` 
            ===================== :)
         else if ($fname eq 'ps.copy') then
