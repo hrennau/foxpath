@@ -1543,6 +1543,11 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `write-doc` 
            ==================== :)
         else if ($fname eq 'write-doc') then
+            let $item := $context
+            let $fname := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $options := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:writeDoc($item, $fname, $options)
+        (:
             let $items := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $fname := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             let $encoding := $call/*[3] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -1558,7 +1563,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $encoding := ($encoding, 'UTF8')[1]
             return
                 file:write($fname, $doc, map{'method': 'xml', 'encoding': $encoding, 'indent': 'yes'})
-                
+         :)        
         (: function `write-file` 
            ====================== :)
         else if ($fname eq 'write-file') then

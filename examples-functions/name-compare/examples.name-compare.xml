@@ -16,4 +16,28 @@
             fox "(msg1.xml, msg2.xml) => name-compare-ec()"
         </call>
     </example>
+    <example>
+        <description>
+            Get a list of names used in both files.
+        </description>
+        <call>
+            fox "(msg1.xml, msg2.xml) => name-compare-ec('common')"
+        </call>
+    </example>
+    <example>
+        <description>
+            Get a list of names used in both files, as well as names used in only one file.
+        </description>
+        <call>
+            fox "(msg1.xml, msg2.xml) => name-compare-ec('common uncommon')"
+        </call>
+    </example>
+    <example>
+        <description>
+            Get a list of names used only in the second file.
+        </description>
+        <call>
+            fox "(msg1.xml, msg2.xml) => name-compare-ec('only2')"
+        </call>
+    </example>
 </examples>

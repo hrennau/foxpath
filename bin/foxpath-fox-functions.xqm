@@ -3365,6 +3365,22 @@ declare function f:unescapeJsonName($item as item()) as xs:string {
         default return replace(., '__', '_')), '')
 };
 
+declare function f:writeDoc($item as item()*,
+                            $filePath as xs:string?,
+                            $options as xs:string?)
+        as empty-sequence() {
+    let $ops := $options ! tokenize(.)        
+    let $inputNode :=
+        if ($item instance of node()) then $item else i:fox-doc($item, ())
+
+    let $indent := ('no'[$ops = 'noindent'], 'yes')[1]
+    let $skipws := ('yes'[$ops = 'skipws'], 'no')[1]
+    
+    let $node := if (not($skipws)) then $inputNode else $inputNode ! util:prettyNode(., ())
+    return
+        file:write($filePath, $node, map{'method': 'xml', 'indent': $indent})
+};
+
 (:~
  : Writes a collection of files into a folder.
  :
@@ -3991,7 +4007,7 @@ declare function f:ftreeSelective(
                          $folderNamesFilter as xs:string?,
                          $fileProperties as xs:string*,
                          $exprTrees as element()?,
-                         $options as map(*)?) as element(ftree)? {
+                         $options as map(*)?) as element()? {
     let $filePropertiesMap := f:ftreeUtil_filePropertyMap($fileProperties, $exprTrees)
     let $cdescendantNamesFilter := $descendantNamesFilter ! util:compilePlusMinusNameFilter(.)        
     let $cfolderNamesFilter := $folderNamesFilter! util:compilePlusMinusNameFilter(.)
