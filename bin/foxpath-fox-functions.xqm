@@ -2573,31 +2573,28 @@ declare function f:pathMultiCompare($items as item()*,
  : @return the parent name
  :)
 declare function f:pathContent($context as item()*, 
-                               $nameKind as xs:string?,
-                               $leafNamesFilter as xs:string?,
-                               $excludedInnerNamesFilter as xs:string?,
+                               $leafNameFilter as xs:string?,
+                               $innerNodeNameFilter as xs:string?,
                                $options as xs:string?)
         as xs:string* {
     let $ops := $options ! tokenize(.)        
     let $alsoInnerNodes := $ops = 'with-inner'
-    let $cLeafNamesFilter := $leafNamesFilter ! util:compilePlusMinusNameFilter(.)    
-    let $cExcludedInnerNamesFilter := $excludedInnerNamesFilter ! util:compilePlusMinusNameFilter(.)
+    let $cLeafNameFilter := $leafNameFilter ! sf:compileComplexStringFilter(., true())    
+    let $cInnerNodeNameFilter := $innerNodeNameFilter ! sf:compileComplexStringFilter(., true())
     
     let $fnGetName :=
-        switch($nameKind)
-        case 'name' return function($node) {name($node)}
-        case 'lname' return function($node) {local-name($node)}
-        case 'jname' return function($node) {$node ! name() ! convert:decode-key(.)}
-        default return error()
+        if ($ops = 'name') then function($node) {name($node)}
+        else if ($ops = 'jname') then function($node) {$node ! name() ! convert:decode-key(.)} 
+        else function($node) {local-name($node)}
 
     let $fnGetStepName :=
-        switch($nameKind)
-        case 'name' return function($node) {$node/concat(self::attribute()/'@', name(.))}        
-        case 'lname' return function($node) {$node/concat(self::attribute()/'@', local-name(.))}
-        case 'jname' return function($node) {
-            let $raw := f:unescapeJsonName(local-name(.))
-            return if (not(contains($raw, '/'))) then $raw else concat('"', $raw, '"')}
-        default return error()
+        if ($ops = 'name') then function($node) {$node/concat(self::attribute()/'@', name(.))}        
+        else if ($ops = 'jname') then 
+            function($node) {
+                let $raw := f:unescapeJsonName(local-name(.))
+                return if (not(contains($raw, '/'))) then $raw else concat('"', $raw, '"')
+            }
+        else function($node) {$node/concat(self::attribute()/'@', local-name(.))}
         
     let $context := (
         $context[. instance of node()],
@@ -2606,21 +2603,23 @@ declare function f:pathContent($context as item()*,
     
     for $cnode in $context
     let $descendants1 := (
-        if (empty($cExcludedInnerNamesFilter)) then    
-            if ($nameKind eq 'jname') then $cnode/descendant::*
+        if (empty($cInnerNodeNameFilter)) then    
+            if ($ops = 'jname') then $cnode/descendant::*
             else $cnode/(@*, descendant::*/(., @*))
         else
-            let $excluded := $cnode//*[*][util:matchesPlusMinusNameFilter($fnGetName(.), $cExcludedInnerNamesFilter)]
+            let $excluded := $cnode//*[*][not(sf:matchesComplexStringFilter($fnGetName(.), $cInnerNodeNameFilter))]
             let $unfiltered :=
-                if ($nameKind eq 'jname') then $cnode/descendant::*
+                if ($ops = 'jname') then $cnode/descendant::*
                 else $cnode/(@*, descendant::*/(., @*))
-            return $unfiltered[not(ancestor::* intersect $excluded)]
+            return $unfiltered[not(ancestor-or-self::* intersect $excluded)]
     )[$alsoInnerNodes or not(*)]
-    
-    let $descendants2 :=
-        if (empty($cLeafNamesFilter)) then $descendants1
-        else $descendants1[* or util:matchesPlusMinusNameFilter($fnGetName(.), $cLeafNamesFilter)]
-    
+    let $descendants2 := (
+        if (empty($cLeafNameFilter)) then $descendants1
+        else if ($alsoInnerNodes) then 
+            $descendants1[* or sf:matchesComplexStringFilter($fnGetName(.), $cLeafNameFilter)]
+        else 
+            $descendants1[sf:matchesComplexStringFilter($fnGetName(.), $cLeafNameFilter)]
+        )
     for $d in $descendants2 return
     let $ancos := $d/ancestor-or-self::node()[. >> $cnode]
     let $steps := $ancos/$fnGetStepName(.)        

@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<examples function="node-deep-equal">
+<examples function="path-content">
     <example>
         <description>
-            In which locations do "keyword" elements appear? Get the last three steps of all datapaths.
+            Get the path content of "list-block" elements.
         </description>
         <call>
-            fox ".//*.dita\\keyword\name-path(3) => f()"
+            fox "fo/*.fo\\*:list-block\path-content() => f()"
         </call>
+    </example>
+    <example>
+        <description>
+            Get the path content, restricted to items with matching names:
+        </description>
+        <code>
+            fox "fo/*.fo\\*:list-block\path-content('font-* text-*') => f()"
+        </code>
+    </example>
+    <example>
+        <description>
+            Get the path content of "list-block" elements, excluding the descendants of "list-item-label".
+        </description>
+        <code>
+            fox "fo/*.fo\\*:list-block\path-content((), '~list-item-label') => f()"
+        </code>
+    </example>
+    <example>
+        <description>
+            Equivalent to the preceding example.
+        </description>
+        <code>
+            fox "fo/*.fo\\*:list-block => path-content-ec((), '~list-item-label') => f()"
+        </code>
     </example>
 </examples>

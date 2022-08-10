@@ -1170,20 +1170,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `path-content` 
            ======================= :)
-        else if ($fname = ('path-content', 'ec-path-content',
-                           'lpath-content', 'ec-lpath-content',
-                           'jpath-content', 'ec-jpath-content')) then
-            let $nameKind := 
-                if (contains($fname, 'lpath')) then 'lname' else if (contains($fname, 'jpath')) then 'jname' else 'name'
-            let $args := $call/*        
-            let $narg := count($args)
-            let $da := if (starts-with($fname, 'ec-')) then 1 else 0
-            let $nodes := if ($da eq 0) then $context else $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $leafNamesFilter := $args[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedInnerNamesFilter := $args[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $options := $args[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+        else if ($fname = ('path-content', 'path-content-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $args := $call/*
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $nodes := if ($da eq 0) then $context else $arg1
+            let $leafNameFilter := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $innerNodeNameFilter := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $options := $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:pathContent($nodes, $nameKind, $leafNamesFilter, $excludedInnerNamesFilter, $options)
+                foxf:pathContent($nodes, $leafNameFilter, $innerNodeNameFilter, $options)
 
         (: function `percent` 
            ================== :)

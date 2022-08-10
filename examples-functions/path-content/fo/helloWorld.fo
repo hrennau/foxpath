@@ -1,0 +1,14 @@
+<!-- Example from: http://www.renderx.net
+    Copyright © 2004 RenderX, Inc.-->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <fo:layout-master-set>
+    <fo:simple-page-master master-name="my-page">
+      <fo:region-body margin="1in"/>
+    </fo:simple-page-master>
+  </fo:layout-master-set>
+  <fo:page-sequence master-reference="my-page">
+    <fo:flow flow-name="xsl-region-body">
+      <fo:block>Hello, world!</fo:block>
+    </fo:flow>
+  </fo:page-sequence>
+</fo:root>
