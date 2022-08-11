@@ -1,0 +1,179 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+<!-- This file makes part of an XSL Test Suite -->
+<!-- Paragraph styles: Alignment               -->
+<!-- Use the macro.xsl file to generate the FO document. -->
+<!-- Example from: http://www.renderx.net
+    Copyright © 2004 RenderX, Inc.-->
+
+<plain-doc>
+
+  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+           xmlns:dc="http://purl.org/dc/elements/1.1/"
+           xmlns:dcterms="http://purl.org/dc/terms/"
+           xmlns:db="http://www.oasis-open.org/docbook/xml/4.2/">
+     <rdf:Description rdf:about="http://xep.xattic.com/testsuite/features/align.xml">
+        <dc:title> Text Block Attributes - Alignment </dc:title>
+        <dc:description>
+          <db:para>
+     Tests XSL-FO attributes dealing with horizontal text alignment: 
+           <db:sgmltag class='attribute'>text-align</db:sgmltag>, 
+           <db:sgmltag class='attribute'>text-indent</db:sgmltag>, 
+           <db:sgmltag class='attribute'>text-align-last</db:sgmltag>.
+          </db:para>
+        </dc:description>
+        <dc:date>2003-07-24</dc:date><dcterms:requires rdf:resource="http://xep.xattic.com/testsuite/features/macro.xsl"/>
+    </rdf:Description>
+  </rdf:RDF> 
+
+
+<!-- ===================================================== -->
+<!-- Content templates                                     -->
+
+<define-macro name="phrase-start">
+  This text is left-justified (<code>text-align="start"</code>). 
+</define-macro>
+
+<define-macro name="phrase-end">
+  This text is right-justified (<code>text-align="end"</code>).
+</define-macro>
+
+<define-macro name="phrase-left">
+  This text is left-justified (<code>text-align="left"</code>). 
+</define-macro>
+
+<define-macro name="phrase-right">
+  This text is right-justified (<code>text-align="right"</code>).
+</define-macro>
+
+<define-macro name="phrase-justify">
+  This text is double-justified.
+</define-macro>
+
+<define-macro name="phrase-center">
+  This text is centered. 
+</define-macro>
+
+<define-macro name="phrase-inside">
+  This text is aligned at the inside edge of the page. 
+</define-macro>
+
+<define-macro name="phrase-outside">
+  This text is aligned at the outside edge of the page. 
+</define-macro>
+
+<define-macro name="phrase-start-indented">
+  The first line is indented by <arg/>.
+</define-macro>
+
+<define-macro name="phrase-left-indented">
+  The first line is indented by <arg/>.
+</define-macro>
+
+<define-macro name="phrase-justify-indented">
+  The first line is indented by <arg/>.
+</define-macro>
+
+<define-macro name="last-line-start">
+  The last line of the paragraph is aligned to the left 
+  (<code>text-align-last="start"</code>).
+</define-macro>
+
+<define-macro name="last-line-end">
+  The last line of the paragraph is aligned to the right 
+  (<code>text-align-last="end"</code>).
+</define-macro>
+
+<define-macro name="last-line-left">
+  The last line of the paragraph is aligned to the left 
+  (<code>text-align-last="left"</code>).
+</define-macro>
+
+<define-macro name="last-line-right">
+  The last line of the paragraph is aligned to the right 
+  (<code>text-align-last="right"</code>).
+</define-macro>
+
+<define-macro name="last-line-justify">
+  The last line of the paragraph is double-justified.
+</define-macro>
+
+<define-macro name="last-line-center">
+  The last line of the paragraph is centered.
+</define-macro>
+
+<define-macro name="last-line-inside">
+  The last line of the paragraph is aligned 
+  at the inside edge of the page.
+</define-macro>
+
+<define-macro name="last-line-outside">
+  The last line of the paragraph is aligned 
+  at the outside edge of the page.
+</define-macro>
+
+<define-macro name="last-line-relative">
+  The last line of the paragraph is aligned 
+  in a default manner, based on the alignment
+  of the paragraph (<code>text-align-last="relative"</code>).
+</define-macro>
+
+<!-- ============================================ -->
+<!-- Paragraph templates                          -->
+
+<define-macro name="test-align">
+  <p space-before.optimum="12pt"
+     text-align="$arg" 
+     text-indent="{$arg1}in">
+    <repeat times="6">
+      <macro name="phrase-{$arg}"/>
+      <macro name="phrase-{$arg}-indented" arg="{$arg1} inch"/>
+    </repeat>  
+  </p>
+</define-macro>
+
+<define-macro name="test-last-line-align">
+  <p space-before.optimum="12pt"
+     text-align="$arg" 
+     text-align-last="$arg1">
+    <repeat times="3">
+      <macro name="phrase-{$arg}" arg="{$arg1} inch"/>
+      <macro name="last-line-{$arg1}"/>
+    </repeat>
+  </p>
+
+</define-macro>
+
+
+<!-- ========================================== -->
+<!-- Document body                              -->
+
+<title> Text Block Attributes - Alignment </title>
+<h2> Paragraph Alignment </h2>
+
+<macro name="test-align" arg="start"     arg1="0"/>
+<macro name="test-align" arg="end"       arg1="0"/>
+<macro name="test-align" arg="left"      arg1="0.5"/>
+<macro name="test-align" arg="right"     arg1="0"/>
+<macro name="test-align" arg="justify"   arg1="0.5"/>
+<macro name="test-align" arg="center"    arg1="0"/>
+<macro name="test-align" arg="inside"    arg1="0"/>
+<macro name="test-align" arg="outside"   arg1="0"/>
+
+<h2> Last Line Alignment</h2>
+
+<macro name="test-last-line-align" arg="center"   arg1="start"/>
+<macro name="test-last-line-align" arg="center"   arg1="end"/>
+<macro name="test-last-line-align" arg="start"    arg1="inside"/>
+<macro name="test-last-line-align" arg="end"      arg1="start"/>
+<macro name="test-last-line-align" arg="justify"  arg1="center"/>
+<macro name="test-last-line-align" arg="justify"  arg1="justify"/>
+<macro name="test-last-line-align" arg="center"   arg1="outside"/>
+<macro name="test-last-line-align" arg="right"    arg1="left"/>
+<macro name="test-last-line-align" arg="start"    arg1="end"/>
+<macro name="test-last-line-align" arg="outside"  arg1="inside"/>
+<macro name="test-last-line-align" arg="justify"  arg1="relative"/>
+<macro name="test-last-line-align" arg="end"      arg1="relative"/>
+
+</plain-doc>
+

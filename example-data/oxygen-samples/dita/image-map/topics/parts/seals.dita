@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="seals_topic">
+  <title>Seals</title>
+  <body>
+    <section id="shaft_seal">
+      <title>Shaft Seal</title>
+      <p>This is a seal that is placed between the <xref href="drive-shaft.dita#drive_shaft_topic"
+            ><term>drive shaft</term></xref> and the main case of the <b>gear pump</b>.</p>
+    </section>
+    <section id="case_seal">
+      <title>Case Seal</title>
+      <p>The case seal is placed between the main case and the case cover.</p>
+    </section>
+  </body>
+</topic>

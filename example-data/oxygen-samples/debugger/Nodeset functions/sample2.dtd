@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ===========================================================
+      Sample from Zvon XSLT tutorial (www.zvon.org)  
+================================================================ -->
+<!ELEMENT  source (xslTutorial|doc|ref|note)*>
+
+<!ELEMENT xslTutorial (doc,note*)>
+<!ELEMENT doc (#PCDATA|ref)*>
+<!ELEMENT  ref EMPTY>
+<!ATTLIST ref id IDREF #REQUIRED>
+<!ELEMENT note (#PCDATA)>
+<!ATTLIST note id ID #REQUIRED>

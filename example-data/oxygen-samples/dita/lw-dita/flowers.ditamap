@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE map PUBLIC "-//OASIS//DTD XDITA Map//EN" "map.dtd">
+<map id="Flowers_by_Season" >
+  <topicmeta>
+    <navtitle>Growing Flowers</navtitle>
+  </topicmeta>
+  <topicref href="topics/index.dita">
+    <topicref href="topics/springFlowers.dita">
+      <topicref href="topics/flowers/iris.dita"/>
+      <topicref href="topics/flowers/snowdrop.dita"/>
+    </topicref>
+    <topicref href="topics/summerFlowers.dita">
+      <topicref href="topics/flowers/gardenia.dita"/>
+      <topicref href="topics/flowers/lilac.dita"/>
+    </topicref>
+    <topicref href="topics/autumnFlowers.dita">
+      <topicref href="topics/flowers/chrysanthemum.dita"/>
+      <topicref href="topics/flowers/salvia.dita"/>
+    </topicref>
+    <topicref href="topics/winterFlowers.dita">
+      <topicref href="topics/flowers/gerbera.dita"/>
+    </topicref>
+  </topicref>
+  <topicref href="topics/copyright.dita">
+    <topicmeta>
+      <data name="wh-tile">
+        <data name="hide" value="yes"/>
+      </data>
+    </topicmeta>
+  </topicref>
+</map>

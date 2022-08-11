@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" 
+  xmlns:xlink="http://www.w3.org/1999/xlink" 
+  width="250" height="250">
+  <rect x="50" y="50" width="60" height="60" fill="#4276AC">
+    <animateTransform attributeType="xml"
+    				  attributeName="transform"
+    				  type="rotate"
+    				  from="0 80 80"
+    				  to="360 80 80"
+    				  dur="2s"
+    				  repeatCount="indefinite" />
+  </rect>  
+</svg>

@@ -1,0 +1,142 @@
+/*DATE OF BIRTH*/
+dateOfBirth:before {
+    content:
+        counter(count) ". "
+        oxy_label(text, "Date of Birth  (mm/dd/yyyy) ", width, 40%) 
+        oxy_datePicker(edit, '#text', format, 'MM/dd/yyyy', columns, 15); 
+}
+
+form {
+    width:700px;
+    margin: 0 auto;
+    padding: 2em;
+    border: 1px solid;
+}
+title {
+    text-align:center;
+    font-size:20px;
+    font-weight:bold;
+    margin-top:10px;
+    margin-bottom:10px;
+    display:block;
+}
+
+personalInformation {
+    display:block;
+    counter-reset:count;
+}
+
+gender, 
+dateOfBirth, 
+cityOfBirth,
+countryOfBirth,
+classOfAddmission,
+dateOfAdmission,
+usSocialNumber {
+    visibility:-oxy-collapse-text;
+    display:block;
+}
+
+
+gender:before, 
+dateOfBirth:before, 
+cityOfBirth:before,
+countryOfBirth:before,
+classOfAddmission:before,
+dateOfAdmission:before,
+usSocialNumber:before {
+    counter-increment:count;
+    visibility:visible;
+}
+
+personalInformation:before {
+    display:block;
+    background-color:rgb(200, 200, 200);
+    border:1px solid black;
+    content: "Part 1. Information About You";
+    padding-left:5px;
+}
+
+gender:before {
+    content:
+        counter(count) ". "
+        oxy_label(text, "Gender ", width, 40%)
+        oxy_checkbox(edit, '#text', values, 'male', labels, 'Male')
+        " "
+        oxy_checkbox(edit, '#text', values, 'female', labels, 'Female');
+}
+
+cityOfBirth:before {
+    content:
+    counter(count) ". "
+    oxy_label(text, "City/Town/Village of Birth ", width, 40%) 
+        oxy_textfield(edit, '#text', columns, 30)
+}
+
+countryOfBirth:before {
+    content:
+    counter(count) ". "
+    oxy_label(text, "Country of Birth ", width, 40%) 
+        oxy_combobox(edit, '#text', columns, 30, 
+        values, "Czech Republic, Germany");
+}
+
+classOfAddmission:before {
+    content:
+    counter(count) ". "
+    oxy_label(text, "Class of Admission ", width, 40%) 
+        oxy_combobox(edit, '#text', columns, 30, 
+        values, "12 - PER OF GERMANIC ETHNIC ORIGINS, T1 - 1ST PREF SELECTED ALIEN");
+}
+
+dateOfAdmission:before {
+    content:
+    counter(count) ". "
+    oxy_label(text, "Date of Admission (mm/dd/yyyy) ", width, 40%)
+        oxy_datePicker(edit, '#text', columns, 15, format, 'MM/dd/yyyy');
+}
+
+usSocialNumber:before {
+    content: 
+    counter(count) ". "
+    oxy_label(text, "U.S. Social Security number (if any) ", width, 40%) 
+        oxy_textfield(edit, '#text', columns, 30)
+}
+
+applicationType {
+    display:block;
+    white-space:normal;
+}
+
+note:before {
+    font-weight:bold;
+    content:"NOTE: ";
+}
+
+note {
+    display:block;
+    margin-top:3px;
+    margin-bottom:5px;
+}
+
+applicationType:before {
+    display:block;
+    background-color:rgb(200, 200, 200);
+    border:1px solid black;
+    content: "Part 2. Application Type";
+    padding-left:5px;
+}
+
+status {
+    display:block;
+}
+status:before {
+    display:block;
+    font-weight:bold;
+    content:
+     "My status is (Select only one box): \A "
+     "1.a. " oxy_checkbox(edit, '@type', values, 'perm', uncheckedValues, 'perm', labels, 'Permanent Resident') "\A "
+     "1.b. " oxy_checkbox(edit, '@type', values, 'perm-cs', uncheckedValues, 'perm-cs',labels, 'Permanent Resident - In Commuter Status') "\A "
+     "1.c. " oxy_checkbox(edit, '@type', values, 'perm-cond', uncheckedValues, 'perm-cond', labels, 'Conditional Permanent Resident') "\A "
+    ;
+}

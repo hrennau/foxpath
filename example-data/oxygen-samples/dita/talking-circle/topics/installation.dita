@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="installation">
+    <title>Installation</title>
+    <shortdesc>This section describes how to install the desktop version of the
+        <?oxy_comment_start author="dan" timestamp="20160601T111511+0300" comment="We can use the keyword instead plain text."?>Talking
+        Circle<?oxy_comment_end?> messenging application.</shortdesc>
+</topic>

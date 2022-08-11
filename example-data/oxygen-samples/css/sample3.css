@@ -1,0 +1,80 @@
+/* Valid CSS using "CSS2" profile and "ALL" medium */
+p {
+    color:#000066;
+    background-color:white;
+    text-indent:.5in;
+    line-height:1.5
+}
+p a {
+    font-size:30px;
+    color:black;
+    background-color:#FFFFCC;
+}
+.quote {
+    color:#000066;
+    background-color:white;
+    font-size:11pt;
+    font-style:italic;
+    line-height:normal
+}
+h1 {
+    color:#000066;
+    background-color:white;
+    margin-left:100px;
+    text-align:center;
+    text-transform:uppercase
+}
+h2, h3 {
+    color:#000066;
+    background-color:white;
+    margin-left:100px;
+    text-align:left;
+    font-style:italic
+}
+h4 {
+    color:#000066;
+    background-color:#d7d7d7;
+    font-size:12pt;
+    font-weight:bold;
+    font-style:normal
+}
+ul li {
+    color:#660000;
+    background-color:white;
+    list-style-type:disc;
+}
+ul li li {
+    color:#660000;
+    background-color:white;
+    list-style-type:circle
+}
+ol li {
+    color:#660000;
+    background-color:white;
+    list-style-type:upper-roman
+}
+ol li li {
+    color:#660000;
+    background-color:white;
+    list-style-type:lower-alpha
+}
+a:link {
+    color:blue;
+    background-color:white;
+    text-decoration:none
+}
+a:active {
+    color:blue;
+    background-color:red;
+    text-decoration:none
+}
+a:visited {
+    color:blue;
+    background-color:white;
+    text-decoration:none
+}
+a:hover {
+    color:purple;
+    background-color:yellow;
+    text-decoration:underline
+}

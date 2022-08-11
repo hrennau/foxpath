@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--    Sample from Zvon XSLT tutorial (www.zvon.org)   -->
+<source>
+    <p id="a12"> Compare <B>these constructs</B>.</p>
+</source>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="topic_cdz_5yv_kx">
+    <title>Movies</title>
+    <body>
+        <p>To insert a new videos into your topics, use the <uicontrol>Insert Media</uicontrol>
+            button from the toolbar. If your movie is already published on YouTube and you want to
+            refer it in your documentation, make sure you select the <uicontrol>iframe</uicontrol>
+            option, and set as URL the value from the YouTube embed code for that video clip. To
+            find out the embed code, you should use the "Copy/Get embed code" action from the
+            player's contextual menu. Paste it into a text document, then collect the value of the
+                <codeph>iframe/@src</codeph> attribute value and use it as the URL value in the
+                <uicontrol>Insert Media</uicontrol> dialog.</p>
+    </body>
+    <related-links>
+        <link href="aeronautics.dita"/>
+        <link href="deep_space_exploration.dita"/>
+    </related-links>
+</topic>

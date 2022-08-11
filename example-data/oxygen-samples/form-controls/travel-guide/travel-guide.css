@@ -1,0 +1,459 @@
+@namespace oxy url('http://www.oxygenxml.com/extensions/author');
+
+oxy|document{
+    background-image:url("images/background.png");
+    background-repeat:repeat-x;
+    background-position:top;
+    background-color:#dde8f5;
+}
+
+oxy|comment{
+    display:none !important;
+}
+
+*{
+    display:block;
+}
+
+travelGuide{
+    padding:4em;
+    padding-left:2em;
+    font-family:Verdana, Helvetica, Arial, sans-serif;
+    font-size:0.8em;
+    line-height:120%;
+    margin: 0 auto;
+    width: 900px;
+}
+
+travelGuide > title{
+    display:block;
+    margin-left:10pt;
+    font-size:2.5em;
+    font-weight:bold;
+}
+
+header{
+    margin-left:1em;
+    margin-top:1em;
+    padding:15px;
+    padding:20px;
+    background-image:attr(bgimage, url);
+    background-position:right top;
+    background-repeat:no-repeat;
+}
+
+information{
+    padding:8px;
+    background-color:rgba(0, 0, 0, 0.5);
+    margin-right: 60%;
+}
+
+
+information:before{
+    color:white;
+    background-color:transparent;
+    content:
+    oxy_label(text, "Population: ", width, 7em, text-align, right)
+ oxy_textfield(
+width, 12em, 
+edit, "@population")
+ "\A " oxy_label(text, "Area: ", width, 7em, text-align, right)
+ oxy_textfield(
+width, 12em, 
+edit, "@area")
+ "\A " oxy_label(text, "Currency: ", width, 7em, text-align, right)
+ oxy_combobox(
+width, 12em, 
+edit, "@currency", 
+editable, false, 
+values, "Dollar, Euro");
+}
+
+
+section > title{
+    display:block;
+    margin-bottom:5px;
+    font-size:2em;
+    font-weight:bold;
+}
+
+section{
+    margin-top:15px;
+    margin-left:1em;
+    padding:20px;
+    padding-bottom:25px;
+    background-color:white;
+}
+
+section[class = weather]{
+    background-image:url("images/clouds_texture.jpg");
+    background-repeat:no-repeat;
+    background-color:#1f5fb4;
+    color:white;
+}
+
+section[class = information]{
+    background-image:url("images/symbol_information.png");
+    background-repeat:no-repeat;
+    background-position:top right;
+}
+
+section[class = getting_by_plane]{
+    background-image:url("images/symbol_plane.png");
+    background-repeat:no-repeat;
+    background-position:top right;
+}
+
+section[class = getting_by_sea]{
+    background-image:url("images/symbol_sea.png");
+    background-repeat:no-repeat;
+    background-position:top right;
+}
+
+
+section[bgimage]{
+    background-image:attr(bgimage, url);
+    background-repeat:no-repeat;
+    background-position:top center;
+}
+
+
+infoTable{
+    display:table;
+    margin-top:1em;
+    margin-left:2em;
+}
+
+infoTable:after{
+    display:block;
+    visibility:visible;
+    margin:2em;
+}
+
+tr{
+    display:table-row;
+}
+
+th{
+    display:table-cell;
+    margin-bottom:0.3em;
+    border-bottom:0.2em solid white;
+}
+
+month{
+    display:table-cell;
+    padding-top:1px;
+    width:200px;
+}
+
+waterT{
+    display:table-cell;
+    visibility:-oxy-collapse-text;
+    padding-top:1px;
+    width:150px;
+    text-align:center;
+}
+
+waterT:before{
+    visibility:visible;
+    padding-top:1px;
+    content:
+    oxy_combobox(
+edit, "#text", 
+values, "15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26", 
+editable, true, 
+columns, 6);
+}
+
+airT{
+    display:table-cell;
+    visibility:-oxy-collapse-text;
+    padding-top:1px;
+    text-align:center;
+}
+
+airT:before{
+    padding-top:1px;
+    content:
+    oxy_combobox(
+edit, "#text", 
+values, "12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34", 
+editable, true, 
+columns, 6);
+}
+
+ferriesSchedule,
+planesSchedule{
+    display:block;
+    margin-top:10px;
+}
+
+planeSchedule:before{
+    content:
+    oxy_label(text, "Company: ", width, 6em, text-align, left)
+ oxy_combobox(
+columns, 20, 
+edit, "@company", 
+editable, true, 
+values, "Air Berlin, Condor, EasyJet, Germanwings, Norwegian")
+ oxy_label(text, "  From: ", width, 4em, text-align, left)
+ oxy_editor(
+type, text, 
+columns, 20, 
+edit, "@from");
+}
+
+ferrySchedule:before{
+    content:
+    oxy_label(text, "Company: ", width, 6em, text-align, left)
+ oxy_popup(
+columns, 10, 
+edit, "@company", 
+selectionMode, single, 
+values, "EuroFast, Apollon Hellas, JetFerry, Agios Georgios, Prevelis")
+ oxy_label(text, "  From: ", width, 4em, text-align, left)
+ oxy_textfield(
+columns, 20, 
+edit, "@from", 
+values, "Crete, Pireaus, Rhodes, Haifa");
+}
+
+pointsOfInterest{
+    display:block;
+}
+
+pointOfInterest{
+    display:block;
+    padding-left:20px;
+    padding-top:10px;
+}
+
+pointOfInterest > name{
+    display:block;
+    margin-top:5px;
+    padding-left:20px;
+    font-size:20px;
+    font-weight:bold;
+}
+
+data{
+    display:table;
+}
+
+data > row{
+    display:table-row;
+}
+
+row > description{
+    display:table-cell;
+    padding:0.5em;
+    padding-left:1em;
+    width:69%;
+    background-color:#fffdde;
+}
+
+row > description:after{
+    content:
+    oxy_label(text, "Facilities: ", width, 4em, text-align, left)
+ oxy_popup(
+edit, "@facilities", 
+resultSeparator, ",", 
+rendererSeparator, "|", 
+values, "Umbrella, Chaise lounges, Bar, Club, Restaurant");
+}
+
+info{
+    display:table-cell;
+    padding:0.5em;
+    vertical-align:top;
+    background-color:#fffdde;
+    background-image:url("images/info_background.png");
+    background-repeat:repeat-x;
+    border:blue;
+    width:26%;
+    min-width:12em;
+}
+
+info > category{
+    content:
+    oxy_label(text, "Type: ", width, 50px, text-align, left)
+ oxy_combobox(
+columns, 13, 
+edit, "@type", 
+editable, false);
+}
+
+info > cost{
+    content:
+    oxy_label(text, "Cost: ", width, 50px, text-align, left)
+ oxy_combobox(
+columns, 13, 
+edit, "@range", 
+editable, false);
+}
+
+info > how-to-get-there{
+    content:
+    oxy_label(text, "Reachable by: ", width, 6em, text-align, left)
+ "\A "
+ oxy_label(text, "", width, 10px)
+ oxy_checkbox(
+edit, "@reachableBy", 
+columns, 1);
+}
+
+info > category,cost,how-to-get-there {
+    margin-top:0.4em;
+}
+
+phone:before{
+    display:inline;
+    padding-top:0.2em;
+    padding-right:0.2em;
+    content:url("images/symbol_phone.png");
+}
+
+email:before{
+    display:inline;
+    padding-top:0.2em;
+    padding-right:0.2em;
+    content:url("images/symbol_email.png");
+}
+
+availability:before{
+    display:inline;
+    content:url("images/symbol_availability.png");
+    padding-top:0.2em;
+    padding-right:0.2em;
+}
+
+pointOfInterest{
+    /* A padding reserved for the button form controls that appear on hover. The icon 
+    from the button has a height of 29px. The form control puts another 1px padding top/bottom. */
+    padding-bottom:31px;
+    border-bottom:1px solid #DDDDDD;
+}
+
+pointOfInterest:hover{
+    padding-bottom:0;
+}
+
+
+pointOfInterest:hover:after{
+    display:block;
+    /* 
+	The actual button to action mapping is defined in the file:
+		
+	${frameworks}/sample_frameworks/css/travel-guide.css
+	
+	The action is defined in the "Travel Guide" framework. See Options > Document Types
+   */
+    text-align:right;
+}
+
+img:before{
+    display:block;
+    margin-top:1em;
+    margin-bottom:0.5em;
+    content:oxy_urlChooser(edit, "@href", columns, 25)
+}
+
+img[href]:before{
+    display:inline;
+    content:"";
+}
+
+img{
+    content:attr(href, url);
+}
+
+img[href]{
+    margin-top:1em;
+}
+
+img > caption{
+    font-family:"Segoe Script", tahoma, arial, sans-serif;
+    text-align:left;
+}
+
+a{
+    display:inline;
+    text-decoration:underline;
+    color:navy;
+    padding:1px;
+}
+
+a:hover{
+    color:blue;
+    border:1px dotted silver;
+    padding:0;
+}
+
+a:before{
+    content:url('images/link.png');
+    link:attr(href);
+}
+
+place{
+    display:inline;
+    font-weight:bold;
+    color:#333333;
+}
+
+external-links{
+    display:block;
+    margin:1em;
+    padding:1em;
+    background-color:rgba(255, 255, 255, 0.3);
+    margin-right:60%;
+}
+external-links > *{
+    display:block;
+}
+
+@media oxygen-high-contrast-black, oxygen-dark-theme{
+    section[class = getting_by_sea]{
+        background-image:url("images/symbol_sea_dark.png");
+    }
+    section[class = information]{
+        background-image:url("images/symbol_information_dark.png");
+    }
+    section[class = getting_by_plane]{
+        background-image:url("images/symbol_plane_dark.png");
+    }
+}
+
+@media oxygen-high-contrast-black{
+    section{
+        background-color:rgba(0, 0, 0, 0.5);
+    }
+    info{
+        background-color:gray;
+        background-image: none;
+    }
+    row > description{
+        background-color: rgb(105, 105, 105);
+    }
+}
+
+@media oxygen-dark-theme{
+    section{
+        background-color:rgb(0, 40, 81);
+    }
+    info{
+        background-color:rgb(132, 176, 255);
+        background-image: none;
+    }
+    row > description{
+        background-color: rgb(0, 66, 132);
+    }
+    place{
+        color:rgb(95,200,253);
+    }
+    a:hover{
+       color:rgb(95,200,253);
+    }
+    a{
+        color:rgb(95,200,253);
+    }
+}

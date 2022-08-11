@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="CSS3-selectors-and-structural-pseudo-classes.css"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Showcase for the CSS Level 3 selectors and structural pseudo-classes supported in the
+            Author visual mode.</title>
+        <link rel="stylesheet" type="text/css" href="CSS3-selectors-and-structural-pseudo-classes.css" />
+    </head>
+    <body>
+        <p>oXygen supports the CSS Level 2 and Level 3 selectors. For the full list of supported
+            selectors see the oXygen documentation.</p>
+        <p>In the sections below you can find examples for each of the CSS Level 3 structural
+            pseudoclasses, except for the <b>:root</b> (<a
+                href="http://www.w3.org/TR/css3-selectors/"
+            >http://www.w3.org/TR/css3-selectors/</a>). To see the CSS rules used by the samples,
+            open: <a href="selectors-and-structural-pseudo-classes.css">selectors-and-structural-pseudo-classes.css</a></p>
+        <section id="first-child">
+            <h1>:first-child</h1>
+            <p>A nested list of DIV-s, the first child painted differently.</p>
+            <div class="sample">
+                <div>
+                    <div>1.1</div>
+                    <div>1.2</div>
+                    <div>1.3</div>
+                </div>
+                <div>2</div>
+                <div>
+                    <div>3.1</div>
+                    <div>3.2</div>
+                    <div>3.3</div>
+                </div>
+            </div>
+            <div class="rws">
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+                    incididunt ut labore et dolore magna aliqua.</p>
+                <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                    aliquip ex ea commodo consequat. </p>
+                <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+                    fugiat nulla pariatur. </p>
+                <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+                    deserunt mollit anim id est laborum.</p>
+            </div>
+        </section>
+        <section id="last-child">
+            <h1>:last-child</h1>
+            <p>A nested list of DIV-s, the last child painted differently.</p>
+            <div class="sample">
+                <div>
+                    <div>1.1</div>
+                    <div>1.2</div>
+                    <div>1.3</div>
+                </div>
+                <div>2</div>
+                <div>
+                    <div>3.1</div>
+                    <div>3.2</div>
+                    <div>3.3</div>
+                </div>
+            </div>
+            <div class="rws">
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+                    incididunt ut labore et dolore magna aliqua.</p>
+                <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                    aliquip ex ea commodo consequat. </p>
+                <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+                    fugiat nulla pariatur. </p>
+                <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+                    deserunt mollit anim id est laborum.</p>
+            </div>
+        </section>
+        <section id="nth-child">
+            <h1>:nth-child</h1>
+            <p>A nested list of DIV-s, the 3n+2 child painted differently.</p>
+            <div class="sample">
+                <div>
+                    <div>1.1</div>
+                    <div>1.2</div>
+                    <div>1.3</div>
+                    <div>1.4</div>
+                    <div>1.5</div>
+                    <div>1.6</div>
+                    <div>1.7</div>
+                </div>
+                <div>2</div>
+                <div>
+                    <div>3.1</div>
+                    <div>3.2</div>
+                    <div>3.3</div>
+                </div>
+                <div>
+                    <div>4.1</div>
+                    <div>4.2</div>
+                    <div>4.3</div>
+                    <div>4.4</div>
+                </div>
+            </div>
+            <div class="rws">
+                <p>Sed turpis enim, posuere sit amet augue at, ultricies rutrum est. </p>
+                <p>Aenean facilisis ultrices elit, vel blandit lectus posuere placerat. </p>
+                <p>Aenean vitae libero sagittis, molestie ante quis, mattis libero. </p>
+                <p>Integer faucibus orci id sagittis gravida.</p>
+                <p>Cras aliquam, nisi placerat rutrum facilisis, risus quam adipiscing arcu, eget
+                    faucibus libero risus ut felis. </p>
+                <p>In bibendum enim vitae velit pellentesque ullamcorper. </p>
+                <p>Aenean egestas vulputate porta. </p>
+                <p>Nulla ut sem non neque eleifend rhoncus. </p>
+                <p>Vivamus vel venenatis orci. Nam vel orci nisi. </p>
+            </div>
+        </section>
+        <section id="nth-last-child">
+            <h1>:nth-last-child</h1>
+            <p>A nested list of DIV-s, the second child counted from the last one, painted
+                differently.</p>
+            <div class="sample">
+                <div>
+                    <div>1.1</div>
+                    <div>1.2</div>
+                    <div>1.3</div>
+                    <div>1.4</div>
+                    <div>1.5</div>
+                    <div>1.6</div>
+                    <div>1.7</div>
+                </div>
+                <div>2</div>
+                <div>
+                    <div>3.1</div>
+                    <div>3.2</div>
+                    <div>3.3</div>
+                </div>
+                <div>
+                    <div>4.1</div>
+                    <div>4.2</div>
+                    <div>4.3</div>
+                    <div>4.4</div>
+                </div>
+            </div>
+            <div class="rws">
+                <p>Sed turpis enim, posuere sit amet augue at, ultricies rutrum est. </p>
+                <p>Aenean facilisis ultrices elit, vel blandit lectus posuere placerat. </p>
+                <p>Aenean vitae libero sagittis, molestie ante quis, mattis libero. </p>
+                <p>Integer faucibus orci id sagittis gravida.</p>
+                <p>Cras aliquam, nisi placerat rutrum facilisis, risus quam adipiscing arcu, eget
+                    faucibus libero risus ut felis. </p>
+                <p>In bibendum enim vitae velit pellentesque ullamcorper. </p>
+                <p>Aenean egestas vulputate porta. </p>
+                <p>Nulla ut sem non neque eleifend rhoncus. </p>
+                <p>Vivamus vel venenatis orci. Nam vel orci nisi. </p>
+            </div>
+        </section>
+        <section id="nth-of-type">
+            <h1>:nth-of-type</h1>
+            <p>A list of DIV-s and P-s, the third DIV and P painted differently.</p>
+            <div class="sample">
+                <div>
+                    <div>DIV 1</div>
+                    <div>DIV 2</div>
+                    <p>P 1</p> Text between elements (does not affect the element position) <div>DIV
+                        3</div>
+                    <div>DIV 4</div>
+                    <p>P 2</p>
+                    <p>P 3</p>
+                    <p>P 4</p>
+                    <div>DIV 5</div>
+                    <div>DIV 6</div>
+                </div>
+            </div>
+            <div class="rws">
+                <table>
+                    <tr><td>Lore</td><td>ipsum</td><td>dolor</td><td>sit</td></tr>
+                    <tr><td>ament</td><td>consectetur</td><td>adipiscing</td><td>elit</td></tr>
+                    <tr><td>aenean</td><td>tincidunt</td><td>metus</td><td>justo</td></tr>
+                    <tr><td>Sed</td><td>turpis</td><td>enim</td><td>posere</td></tr>
+                    <tr><td>sit</td><td>amet</td><td>augue</td><td>at</td></tr>
+                    <tr><td>ulticies</td><td>rurtum</td><td>est</td><td>aenean</td></tr>
+                    <tr><td>facilisis</td><td>ultirce</td><td>elt</td><td>vel </td></tr>
+                    <tr><td>blandit</td><td>lectus</td><td>posere</td><td>placerant</td></tr>
+                </table>
+            </div>
+        </section>
+        <section id="nth-last-of-type">
+            <h1>:nth-last-of-type</h1>
+            <p>A list of DIV-s and P-s, the second one, counted from the last one, painted
+                differently.</p>
+            <div class="sample">
+                <div>
+                    <div>DIV 1</div>
+                    <div>DIV 2</div>
+                    <p>P 1</p>
+                    <div>DIV 3</div>
+                    <div>DIV 4</div>
+                    <p>P 2</p>
+                    <p>P 3</p>
+                    <p>P 4</p>
+                    <div>DIV 5</div> 
+                    <div>DIV 6</div>
+                </div>
+            </div>
+            <div class="rws">
+                <table>
+                    <tr>
+                        <td>Lore</td>
+                        <td>ipsum</td>
+                        <td>dolor</td>
+                        <td>sit</td>
+                    </tr>
+                    <tr>
+                        <td>ament</td>
+                        <td>consectetur</td>
+                        <td>adipiscing</td>
+                        <td>elit</td>
+                    </tr>
+                    <tr>
+                        <td>aenean</td>
+                        <td>tincidunt</td>
+                        <td>metus</td>
+                        <td>justo</td>
+                    </tr>
+                    <tr>
+                        <td>Sed</td>
+                        <td>turpis</td>
+                        <td>enim</td>
+                        <td>posere</td>
+                    </tr>
+                    <tr>
+                        <td>sit</td>
+                        <td>amet</td>
+                        <td>augue</td>
+                        <td>at</td>
+                    </tr>
+                    <tr>
+                        <td>ulticies</td>
+                        <td>rurtum</td>
+                        <td>est</td>
+                        <td>aenean</td>
+                    </tr>
+                    <tr>
+                        <td>facilisis</td>
+                        <td>ultirce</td>
+                        <td>elt</td>
+                        <td>vel </td>
+                    </tr>
+                    <tr>
+                        <td>blandit</td>
+                        <td>lectus</td>
+                        <td>posere</td>
+                        <td>placerant</td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+        <section id="empty">
+            <h1>:empty :not(:empty)</h1>
+            <p>A list of nested DIV-s, annotated.</p>
+            <div class="sample">
+                <div>
+                    <div>
+                        <div></div>
+                    </div>
+                    <div><!-- --></div>
+                    <div>das</div>
+                    <div>4</div>
+                </div>
+            </div>
+            <div class="rws">
+                <p>Sed turpis enim, posuere sit amet augue at, ultricies rutrum est. Aenean
+                    facilisis ultrices elit, vel blandit lectus posuere placerat. </p>
+                <p>Aenean vitae libero sagittis, molestie ante quis, mattis libero. Integer faucibus
+                    orci id sagittis gravida.</p>
+                <p/>
+                <p>Cras aliquam, nisi placerat rutrum facilisis, risus quam adipiscing arcu, eget
+                    faucibus libero risus ut felis. </p>
+                <p/>
+                <p>Aenean egestas vulputate porta. Nulla ut sem non neque eleifend rhoncus. </p>
+                <p>Vivamus vel venenatis orci. Nam vel orci nisi.</p>
+            </div>
+        </section>
+        <section id="only-child">
+            <h1>:only-child</h1>
+            <p>A list of nested DIV-s, the ones being the only sibling are painted differently.</p>
+            <div class="sample">
+                <div>1</div>
+                <div>
+                    <div>2</div>
+                </div>
+                <div>3</div>
+                <div>4</div>
+            </div>
+            <div class="rws">
+                <div>
+                    <h3>Sed turpis enim</h3>
+                    <p>Sed turpis enim, posuere sit amet augue at, ultricies rutrum est. Aenean
+                        facilisis ultrices elit, vel blandit lectus posuere placerat.</p>
+                </div>
+                <div>
+                    <h3>Cras aliquam</h3>
+                </div>
+                <div>
+                    <h3>Aenean egestas.</h3>
+                    <p>Aenean egestas porta. Nulla ut sem non neque eleifend rhoncus.</p>
+                </div>
+                <div>
+                    <h3>Vivamus.</h3>
+                    <p>Vivamus vel venenatis orci. Nam vel orci nisi.</p>                    
+                </div>
+            </div>            
+        </section>
+        <section id="only-of-type">
+            <h1>:only-of-type</h1>
+            <p>A list of nested DIV-s, and Ps the ones being the only sibling of their type are
+                painted differently.</p>
+            <div class="sample">
+                <div>1</div>
+                <div>
+                    <div>DIV 2</div>
+                    <p>P 1</p>
+                </div>
+                <div>3</div>
+                <div>4</div>
+                <p>P 2</p>
+            </div>
+            <div class="rws">
+                <div>
+                    <h3>Sed turpis enim</h3>
+                    <p>Sed turpis enim, posuere sit amet augue at, ultricies rutrum est. Aenean
+                        facilisis ultrices elit, vel blandit lectus posuere placerat.</p>
+                </div>
+                <div>
+                    <h3>Cras aliquam</h3>
+                    <h3>Aenean egestas.</h3>
+                    <p>Aenean egestas porta. Nulla ut sem non neque eleifend rhoncus.</p>
+                </div>
+                <div>
+                    <h3>Vivamus.</h3>
+                    <p>Vivamus vel venenatis orci. Nam vel orci nisi.</p>                    
+                </div>
+            </div>            
+        </section>
+        <section id="following-sibling">
+            <h1>Following sibling: E ~ F</h1>
+            <p>An F element preceded by an E element. A P preceded by a DIV is shown in red.</p>
+            <div class="sample">
+                <p>P 1</p>
+                <div>DIV 1</div>
+                <p>P 2</p>
+                <p>P 3</p>
+                <div>DIV 3</div>
+                <div>DIV 4</div>
+                <p>P 4</p>
+                <p>P 5</p>
+            </div>
+            <div class="rws">
+                <div>
+                    <p>Sed turpis enim, posuere sit amet augue at, ultricies rutrum est. Aenean
+                        facilisis ultrices elit, vel blandit lectus posuere placerat.</p>
+                    <h3>Sed turpis enim</h3>
+                </div>
+                <div>
+                    <h3>Aenean egestas.</h3>
+                    <p>Aenean egestas porta. Nulla ut sem non neque eleifend rhoncus.</p>
+                </div>
+                <div>
+                    <p>Vivamus vel venenatis orci. Nam vel orci nisi.</p>                    
+                    <h3>Vivamus.</h3>
+                </div>
+            </div>             
+        </section>
+        
+    </body>
+</html>

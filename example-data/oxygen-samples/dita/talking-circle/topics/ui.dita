@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="ui">
+  <title>Application UI</title>
+  <shortdesc>This section describes the <keyword keyref="product"/> user interface. You can find
+    here the description for each of the UI components.</shortdesc>
+  <body>
+    <p>The application is structured in two screens.</p>
+  </body>
+</topic>

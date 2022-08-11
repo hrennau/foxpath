@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sect1 xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Second section</title>
+    <para>In order to preview this text in the integrated browser, you have to choose the
+        &quot;docbook/xsl/xhtml/docbook.xsl&quot; stylesheet. For this press the "T.." button, then
+        click on the button in the right of the XSL url field and select the file. Press "Ok".</para>
+    <para>To apply the stylesheet you have to press the &quot;T&quot; button or to press
+        CTRL+SHIFT+T, or on Mac OS X, META+SHIFT+T.
+    </para>
+    <para>Here are some useful links, regarding XML:</para>
+    <itemizedlist>
+        <listitem>
+            <para>
+                <link xlink:href="http://www.xml.com">http://www.xml.com</link>
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                <link xlink:href="http://www.xml.org">http://www.xml.org</link>
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                <link xlink:href="http://www.w3c.org">http://www.w3c.org</link>
+            </para>
+        </listitem>
+    </itemizedlist>
+</sect1>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples function="ftree-view">
+    <testenviron>
+        In order to try out the examples, start a command shell and 
+        move to folder $FOXPATH/example-data/oxygen-samples.
+    </testenviron>
+    <examples>
+        <example>
+            <description>
+                Get a tree view of all .dita files with a "concept" root element.
+            </description>
+            <code>
+                fox ".//*.dita[\concept] => ftree-view()"
+            </code>
+        </example>
+        <example>
+            <description>
+                As before, but annotate the file elements with an @ti annotation providing the title.
+            </description>
+            <code>
+                fox ".//*.dita[\concept] => ftree-view('@ti=\*\title')"
+            </code>
+        </example>
+        <example>
+            <description>
+                Add a second annotation, "terms", providing all terms contained. 
+                Create for each term a distinct child element "term".
+            </description>
+            <code>
+                fox ".//*.dita[\concept] => ftree-view('@ti=\*\title', 'terms/term?=\\term[text()] => distinct-values() => sort()')"
+            </code>
+        </example>
+        <example>
+            <description>
+                For those files starting with "c_mv_" add a third annotation 
+                "enames" listing all element names used in the document. Create 
+                for each element name a distinct child element "ename".
+            </description>
+            <code>
+                fox ".//*.dita[\concept] => ftree-view('@ti=\*\title', 'terms/term?=\\term[text()] => distinct-values() => sort()', 'c_mv_* enames/ename=\\*\name() => distinct-values() => sort()')"
+            </code>
+        </example>
+    </examples>
+    <seealso>
+        For more examples of how to define file properties, look at the examples for function ftree().
+    </seealso>
+</examples>

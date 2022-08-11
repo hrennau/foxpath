@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head xml:lang="en">
+        <title dir="ltr" lang="en">XHTML Sample File</title>
+    </head>
+    <body>
+        <h1>Welcome to XHTML</h1>
+        <p>
+            <b>XHTML</b> stands for <b>W3C</b>
+            <i>Extensible HyperText Markup Language</i>. <b>XHTML</b> is aimed to replace
+                <b>HTML</b>. While almost identical to <b>HTML</b> 5, <b>XHTML</b> is a stricter and
+            cleaner version of <b>HTML</b>. <b>XHTML</b> is <b>HTML</b> defined as an <b>XML</b>
+            application<?oxy_delete author="Mary" timestamp="20120510T144848+0300" content=" " comment="Removed extra spacing before and after punctuation marks."?>.</p>
+        <p>This sample shows that &lt;oXygen/&gt; can be used to edit <b>XHTML</b> documents.
+                <b>XHTML</b> is a <b>W3C</b> standard. </p>
+        <p>
+            <img src="W3C.png" alt="" />
+        </p>
+        <p>Here are some useful links, regarding <i>XML</i>:</p>
+        <?oxy_comment_start author="John" timestamp="20120511T124555+0300" comment="We should also add an ordered list sample."?>
+        <ul>
+            <?oxy_comment_end?>
+            <li>
+                <a href="http://www.xml.com/">www.xml.com</a>
+            </li>
+            <li>
+                <a href="http://www.xml.org/">www.xml.org</a>
+            </li>
+            <li>
+                <a href="http://www.w3c.org/">www.w3c.org</a>
+            </li>
+        </ul>
+        <p>And here is the &lt;oXygen/&gt; home site <a href="http://www.oxygenxml.com/"
+                >http://www.oxygenxml.com/</a>
+        </p>
+        <h2>Media resources in XHTML</h2>
+        <p>With oXygen you can insert and play audio and video clips in the Author page of an XHTML
+            document.</p>
+        <p><iframe src="https://www.youtube.com/embed/x8r-Pm1-dVc"></iframe></p>
+        <h2>XHTML Table samples</h2>
+        <table>
+            <caption>A table with merged cells.</caption>
+            <thead>
+                <tr>
+                    <th>x</th>
+                    <th>y</th>
+                    <th colspan="3">Spans <b>Horizontally</b>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td rowspan="3">Spans <b>Vertically</b>
+                    </td>
+                    <td colspan="4">b</td>
+                </tr>
+                <tr>
+                    <td rowspan="2" colspan="2">Spans <b>Both</b>
+                    </td>
+                    <td colspan="2">d</td>
+                </tr>
+                <tr>
+                    <td>e</td>
+                    <td>f</td>
+                </tr>
+                <tr>
+                    <td>g</td>
+                    <td>h</td>
+                    <td>i</td>
+                    <td colspan="2">k</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>Select table rows and columns</h3>
+        <p>When you place the mouse cursor right above the first table column, the cursor is changed
+            and the column under the mouse cursor is highlighted. If you click, the column is
+            selected.</p>
+        <p>If you place the mouse cursor in the left side of the first table row, the cursor is
+            changed and the row placed to the right of the mouse cursor is highlighted. If you
+            click, the row is selected.</p>
+        <p>To select the entire table click the top-left corner of the table.</p>
+        <h3>Table operations</h3>
+        <p><?oxy_comment_start author="John" timestamp="20120510T145559+0300" comment="After this paragraph we can add information about table actions (insert or remove columns and rows, split and join cells)"?>The
+            column widths can be adjusted by dragging the column margins.<?oxy_comment_end?></p>
+        <p><?oxy_comment_start author="John" timestamp="20120510T152329+0300" comment="We should also say that the content of a table row or column can be deleted by selecting it and press DEL or Bacspace."?>Drag
+            and drop, cut, and copy operations are available on XHTML tables.
+            <?oxy_comment_end?></p>
+        <h2>About Author Customization</h2>
+        <p>The built-in <b>XHTML</b> support in <b>oXygen</b> includes a large set of operations and
+            functionality. However, there are situations in which you must extend this set to match
+            particular requirements.</p>
+        <p>The <b>oXygen Author SDK</b> for JAVA developers allows you to add custom Author actions
+            and extensions for the Author visual mode of oXygen XML Editor.</p>
+        <p>The following code represents the implementation of a sample extension operation that
+            selects the element at caret position:</p>
+        <pre>/**
+ * Operation used to select the element at caret position.
+ */
+public class SelectElementAtCaretOperation implements AuthorOperation {
+
+  /**
+   * @see ro.sync.ecss.extensions.api.AuthorOperation#doOperation(
+   * ro.sync.ecss.extensions.api.AuthorAccess, 
+   * ro.sync.ecss.extensions.api.ArgumentsMap)
+   */
+  public void doOperation(AuthorAccess authorAccess, ArgumentsMap arguments) 
+    throws IllegalArgumentException, AuthorOperationException {
+    try {
+      int caretOffset = authorAccess.getEditorAccess().getCaretOffset();
+      // Get the node at caret offset
+      AuthorNode nodeAtCaret = authorAccess.getDocumentController()
+        .getNodeAtOffset(caretOffset);
+      if (nodeAtCaret != null) {
+        authorAccess.getEditorAccess().select(nodeAtCaret.getStartOffset(), 
+            nodeAtCaret.getEndOffset());
+      }
+    } catch (BadLocationException e) {
+      e.printStackTrace();
+    }
+  }
+  
+  /**
+   * @see ro.sync.ecss.extensions.api.Extension#getDescription()
+   */
+  public String getDescription() {
+    return "Select the element at caret position";
+  }
+
+  /**
+   * @see ro.sync.ecss.extensions.api.AuthorOperation#getArguments()
+   */
+  public ArgumentDescriptor[] getArguments() {
+    return null;
+  }
+}</pre>
+        <p>You can read more about the Author SDK here: <a
+                href="http://www.oxygenxml.com/oxygen_sdk.html"
+                >http://www.oxygenxml.com/oxygen_sdk.html</a>.</p>
+    </body>
+</html>

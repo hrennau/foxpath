@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Type can be "proforma","quote", or "normal"-->
+<invoice xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="invoice.xsd"
+    number="85776767" type="normal" currency="USD">
+    <payment-method>Wire Transfer</payment-method>
+    <date>04 June 2004</date>
+    <delivery>Electronic</delivery>
+    <checked-by>Ben Winston</checked-by>
+    <customer>
+        <block>Customer Name</block>
+        <block>Customer Address</block>
+        <block>Customer City</block>
+        <block>Customer Country</block>
+        <!-- This can be optional
+        <vat>vat id</vat>
+        -->
+    </customer>
+    <products>
+        <product>
+            <quantity>1</quantity>
+            <description>Keyboard</description>
+            <unit-cost>12</unit-cost>
+        </product>               
+        <product>
+            <quantity>32</quantity>
+            <description>Mouse Pad</description>
+            <unit-cost>4.2</unit-cost>
+        </product>        
+        <product>
+            <quantity>32</quantity>
+            <description>Optical Mouse</description>
+            <unit-cost>16.5</unit-cost>
+        </product>        
+    </products>
+</invoice>

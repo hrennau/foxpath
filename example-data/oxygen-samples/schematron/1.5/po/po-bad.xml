@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!-- Deliberate errors!  -->
+<!-- See http://www.w3.org/TR/xmlschema-0/   -->
+<?xml-model href="po.xsd" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<purchaseOrder  >
+    <shipTo place="AU">
+        <name>Kippabboo Versace</name>
+        <street>18 Action Street</street>
+        <city>Sleepy Town</city>
+        <zip>2099</zip>
+    </shipTo>
+    <billAt country="NZ">
+        <name>Katapo Feelgood</name>
+        <street>1 Xena Avenue</street>
+        <city>Aukland</city>
+        <state>North Island</state>
+        <zip>123</zip>
+    </billAt>
+    <comment>Hurry, my kiwi is going <i>wild</i>!</comment>
+    <items>
+        <Item partNum="872-AA">
+            <ProductName>Deluxe Kiwi Beakbrush</ProductName>
+            <Quantity>1</Quantity>
+            <Price>148.95</Price>
+            <Comment>Confirm this is electric</Comment>
+        </Item>
+        <item partNum="926-AA">
+            <productName>Bilby Trap</productName>
+            <USPrice>39.98</USPrice>
+            <shipDate>2001-08-01</shipDate>
+        </item>
+    </items>
+</purchaseOrder>

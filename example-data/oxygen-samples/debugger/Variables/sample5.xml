@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--    Sample from Zvon XSLT tutorial (www.zvon.org)   -->
+<source>
+    <TABLE border="1">
+        <TR>
+            <TD>AAA</TD>
+            <TD>BBB</TD>
+        </TR>
+        <TR>
+            <TD>aaa</TD>
+            <TD>bbb</TD>
+        </TR>
+    </TABLE>
+    <TABLE border="1">
+        <TR>
+            <TD>1111111</TD>
+        </TR>
+        <TR>
+            <TD>22222222</TD>
+        </TR>
+    </TABLE>
+</source>

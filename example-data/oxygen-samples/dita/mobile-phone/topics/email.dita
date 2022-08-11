@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="email">
+  <title>E-mail</title>
+  <shortdesc>Setting up your e-mail account.</shortdesc>
+  <body>
+    <p><?oxy_comment_start author="Gary" timestamp="20120514T121417+0300" comment="Is too short. You did not mention sending and receiving emails using your phone."?>In
+      this section you find out how to set up an e-mail account. <?oxy_comment_end?></p>
+  </body>
+</topic>

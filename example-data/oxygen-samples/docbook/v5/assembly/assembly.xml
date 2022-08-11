@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.1/rng/assembly.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.1/sch/assembly.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<assembly version="5.1" xmlns="http://docbook.org/ns/docbook">
+    <resources>
+        <resource href="article.xml" xml:id="article"/>
+        <resource href="topic1.xml" xml:id="topic1"/>
+        <resource href="topic2.xml" xml:id="topic2"/>
+        <resource href="topic3.xml" xml:id="topic3"/>
+    </resources>
+
+    <structure resourceref="article">
+        <module resourceref="topic1"/>
+        <module resourceref="topic2"/>
+        <module resourceref="topic3"/>
+    </structure>
+</assembly>

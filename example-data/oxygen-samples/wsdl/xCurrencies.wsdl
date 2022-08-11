@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Currency rates-->
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+  xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+  xmlns:s0="http://www.xignite.com/services/" 
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:s="http://www.w3.org/2001/XMLSchema" 
+  xmlns="http://schemas.xmlsoap.org/wsdl/" 
+  targetNamespace="http://www.xignite.com/services/">
+  <types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.xignite.com/services/">
+      <s:element name="GetRealTimeCrossRateAsString">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="From" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="To" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRealTimeCrossRateAsStringResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRealTimeCrossRateAsStringResult" type="s0:CrossRate"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="CrossRate">
+        <s:complexContent mixed="false">
+          <s:extension base="s0:Common">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Symbol" type="s:string"/>
+              <s:element minOccurs="1" maxOccurs="1" name="Type" type="s0:QuoteTypes"/>
+              <s:element minOccurs="0" maxOccurs="1" name="From" type="s0:Currency"/>
+              <s:element minOccurs="0" maxOccurs="1" name="To" type="s0:Currency"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Date" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Time" type="s:string"/>
+              <s:element minOccurs="1" maxOccurs="1" name="Rate" type="s:double"/>
+              <s:element minOccurs="1" maxOccurs="1" name="Bid" type="s:double"/>
+              <s:element minOccurs="0" maxOccurs="1" name="BidTime" type="s:string"/>
+              <s:element minOccurs="1" maxOccurs="1" name="Ask" type="s:double"/>
+              <s:element minOccurs="0" maxOccurs="1" name="AskTime" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Text" type="s:string"/>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Common">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="Outcome" type="s0:OutcomeTypes"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Message" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Identity" type="s:string"/>
+          <s:element minOccurs="1" maxOccurs="1" name="Delay" type="s:double"/>
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="OutcomeTypes">
+        <s:restriction base="s:string">
+          <s:enumeration value="Success"/>
+          <s:enumeration value="SystemError"/>
+          <s:enumeration value="RequestError"/>
+          <s:enumeration value="RegistrationError"/>
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="QuoteTypes">
+        <s:restriction base="s:string">
+          <s:enumeration value="RealTime"/>
+          <s:enumeration value="Delayed15Minutes"/>
+          <s:enumeration value="Delayed20Minutes"/>
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="Currency">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="Symbol" type="s0:Currencies"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string"/>
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="Currencies">
+        <s:restriction base="s:string">
+          <s:enumeration value="USD"/>
+          <s:enumeration value="AED"/>
+          <s:enumeration value="AFA"/>
+          <s:enumeration value="ALL"/>
+          <s:enumeration value="AMD"/>
+          <s:enumeration value="ANG"/>
+          <s:enumeration value="AOA"/>
+          <s:enumeration value="ARS"/>
+          <s:enumeration value="AUD"/>
+          <s:enumeration value="AWG"/>
+          <s:enumeration value="AZM"/>
+          <s:enumeration value="BAM"/>
+          <s:enumeration value="BBD"/>
+          <s:enumeration value="BDT"/>
+          <s:enumeration value="BGN"/>
+          <s:enumeration value="BHD"/>
+          <s:enumeration value="BIF"/>
+          <s:enumeration value="BMD"/>
+          <s:enumeration value="BND"/>
+          <s:enumeration value="BOB"/>
+          <s:enumeration value="BRL"/>
+          <s:enumeration value="BSD"/>
+          <s:enumeration value="BTN"/>
+          <s:enumeration value="BWP"/>
+          <s:enumeration value="BYR"/>
+          <s:enumeration value="BZD"/>
+          <s:enumeration value="CAD"/>
+          <s:enumeration value="CDF"/>
+          <s:enumeration value="CHF"/>
+          <s:enumeration value="CLP"/>
+          <s:enumeration value="CNY"/>
+          <s:enumeration value="COP"/>
+          <s:enumeration value="CRC"/>
+          <s:enumeration value="CSD"/>
+          <s:enumeration value="CUP"/>
+          <s:enumeration value="CVE"/>
+          <s:enumeration value="CYP"/>
+          <s:enumeration value="CZK"/>
+          <s:enumeration value="DJF"/>
+          <s:enumeration value="DKK"/>
+          <s:enumeration value="DOP"/>
+          <s:enumeration value="DZD"/>
+          <s:enumeration value="ECS"/>
+          <s:enumeration value="EEK"/>
+          <s:enumeration value="EGP"/>
+          <s:enumeration value="ERN"/>
+          <s:enumeration value="ETB"/>
+          <s:enumeration value="EUR"/>
+          <s:enumeration value="FJD"/>
+          <s:enumeration value="FKP"/>
+          <s:enumeration value="GBP"/>
+          <s:enumeration value="GEL"/>
+          <s:enumeration value="GGP"/>
+          <s:enumeration value="GHC"/>
+          <s:enumeration value="GIP"/>
+          <s:enumeration value="GMD"/>
+          <s:enumeration value="GNF"/>
+          <s:enumeration value="GTQ"/>
+          <s:enumeration value="GYD"/>
+          <s:enumeration value="HKD"/>
+          <s:enumeration value="HNL"/>
+          <s:enumeration value="HRK"/>
+          <s:enumeration value="HTG"/>
+          <s:enumeration value="HUF"/>
+          <s:enumeration value="IDR"/>
+          <s:enumeration value="ILS"/>
+          <s:enumeration value="IMP"/>
+          <s:enumeration value="INR"/>
+          <s:enumeration value="IQD"/>
+          <s:enumeration value="IRR"/>
+          <s:enumeration value="ISK"/>
+          <s:enumeration value="JEP"/>
+          <s:enumeration value="JMD"/>
+          <s:enumeration value="JOD"/>
+          <s:enumeration value="JPY"/>
+          <s:enumeration value="KES"/>
+          <s:enumeration value="KGS"/>
+          <s:enumeration value="KHR"/>
+          <s:enumeration value="KMF"/>
+          <s:enumeration value="KPW"/>
+          <s:enumeration value="KRW"/>
+          <s:enumeration value="KWD"/>
+          <s:enumeration value="KYD"/>
+          <s:enumeration value="KZT"/>
+          <s:enumeration value="LAK"/>
+          <s:enumeration value="LBP"/>
+          <s:enumeration value="LKR"/>
+          <s:enumeration value="LRD"/>
+          <s:enumeration value="LSL"/>
+          <s:enumeration value="LTL"/>
+          <s:enumeration value="LVL"/>
+          <s:enumeration value="LYD"/>
+          <s:enumeration value="MAD"/>
+          <s:enumeration value="MDL"/>
+          <s:enumeration value="MFG"/>
+          <s:enumeration value="MGA"/>
+          <s:enumeration value="MKD"/>
+          <s:enumeration value="MMK"/>
+          <s:enumeration value="MNT"/>
+          <s:enumeration value="MOP"/>
+          <s:enumeration value="MRO"/>
+          <s:enumeration value="MTL"/>
+          <s:enumeration value="MTP"/>
+          <s:enumeration value="MUR"/>
+          <s:enumeration value="MVR"/>
+          <s:enumeration value="MWK"/>
+          <s:enumeration value="MXN"/>
+          <s:enumeration value="MYR"/>
+          <s:enumeration value="MZM"/>
+          <s:enumeration value="NAD"/>
+          <s:enumeration value="NGN"/>
+          <s:enumeration value="NIO"/>
+          <s:enumeration value="NOK"/>
+          <s:enumeration value="NPR"/>
+          <s:enumeration value="NZD"/>
+          <s:enumeration value="OMR"/>
+          <s:enumeration value="PAB"/>
+          <s:enumeration value="PEN"/>
+          <s:enumeration value="PGK"/>
+          <s:enumeration value="PHP"/>
+          <s:enumeration value="PKR"/>
+          <s:enumeration value="PLN"/>
+          <s:enumeration value="PYG"/>
+          <s:enumeration value="QAR"/>
+          <s:enumeration value="ROL"/>
+          <s:enumeration value="RUR"/>
+          <s:enumeration value="RWF"/>
+          <s:enumeration value="SAR"/>
+          <s:enumeration value="SBD"/>
+          <s:enumeration value="SCR"/>
+          <s:enumeration value="SDD"/>
+          <s:enumeration value="SDP"/>
+          <s:enumeration value="SEK"/>
+          <s:enumeration value="SGD"/>
+          <s:enumeration value="SHP"/>
+          <s:enumeration value="SIT"/>
+          <s:enumeration value="SKK"/>
+          <s:enumeration value="SLL"/>
+          <s:enumeration value="SOS"/>
+          <s:enumeration value="SPL"/>
+          <s:enumeration value="SRG"/>
+          <s:enumeration value="STD"/>
+          <s:enumeration value="SVC"/>
+          <s:enumeration value="SYP"/>
+          <s:enumeration value="SZL"/>
+          <s:enumeration value="THB"/>
+          <s:enumeration value="TJS"/>
+          <s:enumeration value="TMM"/>
+          <s:enumeration value="TND"/>
+          <s:enumeration value="TOP"/>
+          <s:enumeration value="TRL"/>
+          <s:enumeration value="TTD"/>
+          <s:enumeration value="TVD"/>
+          <s:enumeration value="TWD"/>
+          <s:enumeration value="TZS"/>
+          <s:enumeration value="UAH"/>
+          <s:enumeration value="UGX"/>
+          <s:enumeration value="UYU"/>
+          <s:enumeration value="UZS"/>
+          <s:enumeration value="VEB"/>
+          <s:enumeration value="VND"/>
+          <s:enumeration value="VUV"/>
+          <s:enumeration value="WST"/>
+          <s:enumeration value="XAF"/>
+          <s:enumeration value="XCD"/>
+          <s:enumeration value="XDR"/>
+          <s:enumeration value="XOF"/>
+          <s:enumeration value="XPF"/>
+          <s:enumeration value="YER"/>
+          <s:enumeration value="YUM"/>
+          <s:enumeration value="ZAR"/>
+          <s:enumeration value="ZMK"/>
+          <s:enumeration value="ZWD"/>
+          <s:enumeration value="ARE"/>
+          <s:enumeration value="AUN"/>
+          <s:enumeration value="BRI"/>
+          <s:enumeration value="DOW"/>
+          <s:enumeration value="FRN"/>
+          <s:enumeration value="KRU"/>
+          <s:enumeration value="MAL"/>
+          <s:enumeration value="M5P"/>
+          <s:enumeration value="NBL"/>
+          <s:enumeration value="OSO"/>
+          <s:enumeration value="NSO"/>
+          <s:enumeration value="VRL"/>
+          <s:enumeration value="VRN"/>
+          <s:enumeration value="XAU"/>
+          <s:enumeration value="XPD"/>
+          <s:enumeration value="XPT"/>
+          <s:enumeration value="XAG"/>
+          <s:enumeration value="BAD"/>
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="Header" type="s0:Header"/>
+      <s:complexType name="Header">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Username" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Tracer" type="s:string"/>
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetRealTimeCrossRate">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="From" type="s0:Currencies"/>
+            <s:element minOccurs="1" maxOccurs="1" name="To" type="s0:Currencies"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRealTimeCrossRateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRealTimeCrossRateResult" type="s0:CrossRate"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRealTimeCrossRateTable">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Symbols" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRealTimeCrossRateTableResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRealTimeCrossRateTableResult" type="s0:CrossRateTable"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="CrossRateTable">
+        <s:complexContent mixed="false">
+          <s:extension base="s0:Common">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Lines" type="s0:ArrayOfCrossRateTableLine"/>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ArrayOfCrossRateTableLine">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="CrossRateTableLine" nillable="true" type="s0:CrossRateTableLine"/>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="CrossRateTableLine">
+        <s:complexContent mixed="false">
+          <s:extension base="s0:Common">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="From" type="s0:Currency"/>
+              <s:element minOccurs="0" maxOccurs="1" name="ExchangeRates" type="s0:ArrayOfExchangeRate"/>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ArrayOfExchangeRate">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ExchangeRate" nillable="true" type="s0:ExchangeRate"/>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ExchangeRate">
+        <s:complexContent mixed="false">
+          <s:extension base="s0:Common">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="To" type="s0:Currency"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Date" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Time" type="s:string"/>
+              <s:element minOccurs="1" maxOccurs="1" name="Rate" type="s:double"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Text" type="s:string"/>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="GetRealTimeCrossRateTableAsHTML">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Symbols" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="ColumnHeaderStyle" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="LineHeaderStyle" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="CellStyle" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRealTimeCrossRateTableAsHTMLResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRealTimeCrossRateTableAsHTMLResult" type="s0:HTMLCrossRateTable"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="HTMLCrossRateTable">
+        <s:complexContent mixed="false">
+          <s:extension base="s0:Common">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="HTML" type="s:string"/>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="CrossRate" nillable="true" type="s0:CrossRate"/>
+      <s:element name="CrossRateTable" nillable="true" type="s0:CrossRateTable"/>
+      <s:element name="HTMLCrossRateTable" nillable="true" type="s0:HTMLCrossRateTable"/>
+    </s:schema>
+  </types>
+  <message name="GetRealTimeCrossRateAsStringSoapIn">
+    <part name="parameters" element="s0:GetRealTimeCrossRateAsString"/>
+  </message>
+  <message name="GetRealTimeCrossRateAsStringSoapOut">
+    <part name="parameters" element="s0:GetRealTimeCrossRateAsStringResponse"/>
+  </message>
+  <message name="GetRealTimeCrossRateAsStringHeader">
+    <part name="Header" element="s0:Header"/>
+  </message>
+  <message name="GetRealTimeCrossRateSoapIn">
+    <part name="parameters" element="s0:GetRealTimeCrossRate"/>
+  </message>
+  <message name="GetRealTimeCrossRateSoapOut">
+    <part name="parameters" element="s0:GetRealTimeCrossRateResponse"/>
+  </message>
+  <message name="GetRealTimeCrossRateHeader">
+    <part name="Header" element="s0:Header"/>
+  </message>
+  <message name="GetRealTimeCrossRateTableSoapIn">
+    <part name="parameters" element="s0:GetRealTimeCrossRateTable"/>
+  </message>
+  <message name="GetRealTimeCrossRateTableSoapOut">
+    <part name="parameters" element="s0:GetRealTimeCrossRateTableResponse"/>
+  </message>
+  <message name="GetRealTimeCrossRateTableHeader">
+    <part name="Header" element="s0:Header"/>
+  </message>
+  <message name="GetRealTimeCrossRateTableAsHTMLSoapIn">
+    <part name="parameters" element="s0:GetRealTimeCrossRateTableAsHTML"/>
+  </message>
+  <message name="GetRealTimeCrossRateTableAsHTMLSoapOut">
+    <part name="parameters" element="s0:GetRealTimeCrossRateTableAsHTMLResponse"/>
+  </message>
+  <message name="GetRealTimeCrossRateTableAsHTMLHeader">
+    <part name="Header" element="s0:Header"/>
+  </message>
+  <message name="GetRealTimeCrossRateAsStringHttpGetIn">
+    <part name="From" type="s:string"/>
+    <part name="To" type="s:string"/>
+  </message>
+  <message name="GetRealTimeCrossRateAsStringHttpGetOut">
+    <part name="Body" element="s0:CrossRate"/>
+  </message>
+  <message name="GetRealTimeCrossRateHttpGetIn">
+    <part name="From" type="s:string"/>
+    <part name="To" type="s:string"/>
+  </message>
+  <message name="GetRealTimeCrossRateHttpGetOut">
+    <part name="Body" element="s0:CrossRate"/>
+  </message>
+  <message name="GetRealTimeCrossRateTableHttpGetIn">
+    <part name="Symbols" type="s:string"/>
+  </message>
+  <message name="GetRealTimeCrossRateTableHttpGetOut">
+    <part name="Body" element="s0:CrossRateTable"/>
+  </message>
+  <message name="GetRealTimeCrossRateTableAsHTMLHttpGetIn">
+    <part name="Symbols" type="s:string"/>
+    <part name="ColumnHeaderStyle" type="s:string"/>
+    <part name="LineHeaderStyle" type="s:string"/>
+    <part name="CellStyle" type="s:string"/>
+  </message>
+  <message name="GetRealTimeCrossRateTableAsHTMLHttpGetOut">
+    <part name="Body" element="s0:HTMLCrossRateTable"/>
+  </message>
+  <message name="GetRealTimeCrossRateAsStringHttpPostIn">
+    <part name="From" type="s:string"/>
+    <part name="To" type="s:string"/>
+  </message>
+  <message name="GetRealTimeCrossRateAsStringHttpPostOut">
+    <part name="Body" element="s0:CrossRate"/>
+  </message>
+  <message name="GetRealTimeCrossRateHttpPostIn">
+    <part name="From" type="s:string"/>
+    <part name="To" type="s:string"/>
+  </message>
+  <message name="GetRealTimeCrossRateHttpPostOut">
+    <part name="Body" element="s0:CrossRate"/>
+  </message>
+  <message name="GetRealTimeCrossRateTableHttpPostIn">
+    <part name="Symbols" type="s:string"/>
+  </message>
+  <message name="GetRealTimeCrossRateTableHttpPostOut">
+    <part name="Body" element="s0:CrossRateTable"/>
+  </message>
+  <message name="GetRealTimeCrossRateTableAsHTMLHttpPostIn">
+    <part name="Symbols" type="s:string"/>
+    <part name="ColumnHeaderStyle" type="s:string"/>
+    <part name="LineHeaderStyle" type="s:string"/>
+    <part name="CellStyle" type="s:string"/>
+  </message>
+  <message name="GetRealTimeCrossRateTableAsHTMLHttpPostOut">
+    <part name="Body" element="s0:HTMLCrossRateTable"/>
+  </message>
+  <portType name="XigniteCurrenciesSoap">
+    <operation name="GetRealTimeCrossRateAsString">
+      <documentation>Returns a real-time currency cross-rate.</documentation>
+      <input message="s0:GetRealTimeCrossRateAsStringSoapIn"/>
+      <output message="s0:GetRealTimeCrossRateAsStringSoapOut"/>
+    </operation>
+    <operation name="GetRealTimeCrossRate">
+      <documentation>Returns a real-time currency cross-rate.</documentation>
+      <input message="s0:GetRealTimeCrossRateSoapIn"/>
+      <output message="s0:GetRealTimeCrossRateSoapOut"/>
+    </operation>
+    <operation name="GetRealTimeCrossRateTable">
+      <documentation>Returns a real-time currency cross-rate table.</documentation>
+      <input message="s0:GetRealTimeCrossRateTableSoapIn"/>
+      <output message="s0:GetRealTimeCrossRateTableSoapOut"/>
+    </operation>
+    <operation name="GetRealTimeCrossRateTableAsHTML">
+      <documentation>Returns a real-time currency cross-rate table as an HTML Output.</documentation>
+      <input message="s0:GetRealTimeCrossRateTableAsHTMLSoapIn"/>
+      <output message="s0:GetRealTimeCrossRateTableAsHTMLSoapOut"/>
+    </operation>
+  </portType>
+  <portType name="XigniteCurrenciesHttpGet">
+    <operation name="GetRealTimeCrossRateAsString">
+      <documentation>Returns a real-time currency cross-rate.</documentation>
+      <input message="s0:GetRealTimeCrossRateAsStringHttpGetIn"/>
+      <output message="s0:GetRealTimeCrossRateAsStringHttpGetOut"/>
+    </operation>
+    <operation name="GetRealTimeCrossRate">
+      <documentation>Returns a real-time currency cross-rate.</documentation>
+      <input message="s0:GetRealTimeCrossRateHttpGetIn"/>
+      <output message="s0:GetRealTimeCrossRateHttpGetOut"/>
+    </operation>
+    <operation name="GetRealTimeCrossRateTable">
+      <documentation>Returns a real-time currency cross-rate table.</documentation>
+      <input message="s0:GetRealTimeCrossRateTableHttpGetIn"/>
+      <output message="s0:GetRealTimeCrossRateTableHttpGetOut"/>
+    </operation>
+    <operation name="GetRealTimeCrossRateTableAsHTML">
+      <documentation>Returns a real-time currency cross-rate table as an HTML Output.</documentation>
+      <input message="s0:GetRealTimeCrossRateTableAsHTMLHttpGetIn"/>
+      <output message="s0:GetRealTimeCrossRateTableAsHTMLHttpGetOut"/>
+    </operation>
+  </portType>
+  <portType name="XigniteCurrenciesHttpPost">
+    <operation name="GetRealTimeCrossRateAsString">
+      <documentation>Returns a real-time currency cross-rate.</documentation>
+      <input message="s0:GetRealTimeCrossRateAsStringHttpPostIn"/>
+      <output message="s0:GetRealTimeCrossRateAsStringHttpPostOut"/>
+    </operation>
+    <operation name="GetRealTimeCrossRate">
+      <documentation>Returns a real-time currency cross-rate.</documentation>
+      <input message="s0:GetRealTimeCrossRateHttpPostIn"/>
+      <output message="s0:GetRealTimeCrossRateHttpPostOut"/>
+    </operation>
+    <operation name="GetRealTimeCrossRateTable">
+      <documentation>Returns a real-time currency cross-rate table.</documentation>
+      <input message="s0:GetRealTimeCrossRateTableHttpPostIn"/>
+      <output message="s0:GetRealTimeCrossRateTableHttpPostOut"/>
+    </operation>
+    <operation name="GetRealTimeCrossRateTableAsHTML">
+      <documentation>Returns a real-time currency cross-rate table as an HTML Output.</documentation>
+      <input message="s0:GetRealTimeCrossRateTableAsHTMLHttpPostIn"/>
+      <output message="s0:GetRealTimeCrossRateTableAsHTMLHttpPostOut"/>
+    </operation>
+  </portType>
+  <binding name="XigniteCurrenciesSoap" type="s0:XigniteCurrenciesSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <operation name="GetRealTimeCrossRateAsString">
+      <soap:operation soapAction="http://www.xignite.com/services/GetRealTimeCrossRateAsString" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+        <soap:header message="s0:GetRealTimeCrossRateAsStringHeader" part="Header" use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="GetRealTimeCrossRate">
+      <soap:operation soapAction="http://www.xignite.com/services/GetRealTimeCrossRate" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+        <soap:header message="s0:GetRealTimeCrossRateHeader" part="Header" use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="GetRealTimeCrossRateTable">
+      <soap:operation soapAction="http://www.xignite.com/services/GetRealTimeCrossRateTable" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+        <soap:header message="s0:GetRealTimeCrossRateTableHeader" part="Header" use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="GetRealTimeCrossRateTableAsHTML">
+      <soap:operation soapAction="http://www.xignite.com/services/GetRealTimeCrossRateTableAsHTML" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+        <soap:header message="s0:GetRealTimeCrossRateTableAsHTMLHeader" part="Header" use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <binding name="XigniteCurrenciesHttpGet" type="s0:XigniteCurrenciesHttpGet">
+    <http:binding verb="GET"/>
+    <operation name="GetRealTimeCrossRateAsString">
+      <http:operation location="/GetRealTimeCrossRateAsString"/>
+      <input>
+        <http:urlEncoded/>
+      </input>
+      <output>
+        <mime:mimeXml part="Body"/>
+      </output>
+    </operation>
+    <operation name="GetRealTimeCrossRate">
+      <http:operation location="/GetRealTimeCrossRate"/>
+      <input>
+        <http:urlEncoded/>
+      </input>
+      <output>
+        <mime:mimeXml part="Body"/>
+      </output>
+    </operation>
+    <operation name="GetRealTimeCrossRateTable">
+      <http:operation location="/GetRealTimeCrossRateTable"/>
+      <input>
+        <http:urlEncoded/>
+      </input>
+      <output>
+        <mime:mimeXml part="Body"/>
+      </output>
+    </operation>
+    <operation name="GetRealTimeCrossRateTableAsHTML">
+      <http:operation location="/GetRealTimeCrossRateTableAsHTML"/>
+      <input>
+        <http:urlEncoded/>
+      </input>
+      <output>
+        <mime:mimeXml part="Body"/>
+      </output>
+    </operation>
+  </binding>
+  <binding name="XigniteCurrenciesHttpPost" type="s0:XigniteCurrenciesHttpPost">
+    <http:binding verb="POST"/>
+    <operation name="GetRealTimeCrossRateAsString">
+      <http:operation location="/GetRealTimeCrossRateAsString"/>
+      <input>
+        <mime:content type="application/x-www-form-urlencoded"/>
+      </input>
+      <output>
+        <mime:mimeXml part="Body"/>
+      </output>
+    </operation>
+    <operation name="GetRealTimeCrossRate">
+      <http:operation location="/GetRealTimeCrossRate"/>
+      <input>
+        <mime:content type="application/x-www-form-urlencoded"/>
+      </input>
+      <output>
+        <mime:mimeXml part="Body"/>
+      </output>
+    </operation>
+    <operation name="GetRealTimeCrossRateTable">
+      <http:operation location="/GetRealTimeCrossRateTable"/>
+      <input>
+        <mime:content type="application/x-www-form-urlencoded"/>
+      </input>
+      <output>
+        <mime:mimeXml part="Body"/>
+      </output>
+    </operation>
+    <operation name="GetRealTimeCrossRateTableAsHTML">
+      <http:operation location="/GetRealTimeCrossRateTableAsHTML"/>
+      <input>
+        <mime:content type="application/x-www-form-urlencoded"/>
+      </input>
+      <output>
+        <mime:mimeXml part="Body"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="XigniteCurrencies">
+    <documentation>Provide real-time currency foreign exchange information.</documentation>
+    <port name="XigniteCurrenciesSoap" binding="s0:XigniteCurrenciesSoap">
+      <soap:address location="http://www.xignite.com/xCurrencies.asmx"/>
+    </port>
+    <port name="XigniteCurrenciesHttpGet" binding="s0:XigniteCurrenciesHttpGet">
+      <http:address location="http://www.xignite.com/xCurrencies.asmx"/>
+    </port>
+    <port name="XigniteCurrenciesHttpPost" binding="s0:XigniteCurrenciesHttpPost">
+      <http:address location="http://www.xignite.com/xCurrencies.asmx"/>
+    </port>
+  </service>
+</definitions>

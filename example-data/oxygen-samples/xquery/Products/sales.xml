@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sales>
+    <sale productId="1">
+        <mrq>180$</mrq>
+        <ytd>18.87% up</ytd>
+        <margin>5%</margin>
+    </sale>
+    <sale productId="2">
+        <mrq>1.50$</mrq>
+        <ytd>2.7% down</ytd>
+        <margin>7%</margin>
+    </sale>
+    <sale productId="3">
+        <mrq>0.57$</mrq>
+        <ytd>1.2% down</ytd>
+        <margin>2%</margin>
+    </sale>
+</sales>

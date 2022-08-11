@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--    Sample from Zvon XSLT tutorial (www.zvon.org)   -->
+<source>
+    <SECTION>
+        <DATA>I need a pen.</DATA>
+        <DATA>I need some paper.</DATA>
+        <SUMMARY>I need a pen and some paper</SUMMARY>
+    </SECTION>
+    <SECTION>
+        <DATA>I need bread.</DATA>
+        <DATA>I need butter.</DATA>
+    </SECTION>
+</source>

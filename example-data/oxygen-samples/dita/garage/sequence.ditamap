@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN"
+ "http://docs.oasis-open.org/dita/v1.1/OS/dtd/map.dtd">
+<!-- This file is part of the DITA Open Toolkit project hosted on 
+     Sourceforge.net. See the accompanying license.txt file for 
+     applicable licenses.-->
+<!-- (C) Copyright IBM Corporation 2001, 2005. All Rights Reserved.
+ *-->
+<map title="Eclipse content aggregated by a map">
+<topicref href="tasks/changingtheoil.dita" type="task"></topicref>
+<topicref href="tasks/organizing.dita" type="task"></topicref>
+<topicref href="tasks/shovellingsnow.dita" type="task"></topicref>
+<topicref href="tasks/spraypainting.dita" type="task"></topicref>
+<topicref href="tasks/takinggarbage.dita" type="task"></topicref>
+<topicref href="tasks/washingthecar.dita" type="task"></topicref>
+<topicref href="concepts/lawnmower.dita" type="concept"></topicref>
+<topicref href="concepts/oil.dita" type="concept"></topicref>
+<topicref href="concepts/paint.dita" type="concept"></topicref>
+<topicref href="concepts/shelving.dita" type="concept"></topicref>
+<topicref href="concepts/snowshovel.dita" type="concept"></topicref>
+<topicref href="concepts/toolbox.dita" type="concept"></topicref>
+<topicref href="concepts/tools.dita" type="concept"></topicref>
+<topicref href="concepts/waterhose.dita" type="concept"></topicref>
+<topicref href="concepts/wheelbarrow.dita" type="concept"></topicref>
+<topicref href="concepts/workbench.dita" type="concept"></topicref>
+<topicref href="concepts/wwfluid.dita" type="concept"></topicref>
+</map>

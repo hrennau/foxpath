@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="paragraph.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<Document>
+     <p>Alice is a nice girl.</p>
+     <p>Where is Peter.</p>
+     <p>Paul was invited.</p>
+     <p>But Paul did not come.</p>
+</Document>	

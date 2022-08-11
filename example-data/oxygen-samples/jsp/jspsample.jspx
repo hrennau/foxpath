@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://java.sun.com/JSP/Page http://java.sun.com/dtd/jspxml.xsd"
+ xmlns:jsp="http://java.sun.com/JSP/Page"
+ xmlns:temp="urn:jsptld:/WEB-INF/tlds/my.tld"
+ xmlns:test="urn:jsptld:/tomcat/taglib"
+ xmlns:eg="http://java.apache.org/tomcat/examples-taglib"
+ version="1.2">
+<!-- HINT: Change Version to your jsp xml schema version -->
+    
+    <!-- Use these tags to output text to browser -->
+    <jsp:text>
+        <![CDATA[
+        <html>
+        <title>A sample title</title>
+        <body>
+        ]]>
+    </jsp:text>
+    
+    <!-- Page Directive -->
+    <!-- Use the following instead of: "<%@ page  autoflush="true" %>" -->
+    <jsp:directive.page   autoFlush="true" />
+    
+    <!-- function declaration sample -->
+    <!--Use the following instead of: "<%! public String f(int i) { if (i<3) return 0; } %>" -->
+    <jsp:declaration> 
+        <![CDATA[ public String f(int i) { if (i<3) return 0; } ]]> 
+    </jsp:declaration>
+    
+    <!-- Java Code Tags -->
+    <!--Use the following instead of: "<% ... %>" -->
+    <jsp:scriptlet>
+        String str="Hello";      
+    </jsp:scriptlet>
+    
+    <!--Use the following instead of: "<%= ... %>" -->
+    <jsp:expression>str</jsp:expression>
+    
+    <jsp:text>
+        <![CDATA[
+        </body>
+        </html>
+        ]]>
+    </jsp:text>
+    
+</jsp:root>

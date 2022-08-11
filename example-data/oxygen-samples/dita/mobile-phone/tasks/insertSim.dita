@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE task PUBLIC "-//OASIS//DTD DITA Task//EN" "task.dtd">
+<task id="task_5tn_3bl_wf">
+    <title>Inserting the SIM card</title>
+    <shortdesc/>
+    <taskbody>
+        <context>
+            <p>Make sure that your phone is turned off.</p>
+        </context>
+        <steps>
+            <step conref="removingBattery.dita#task_3ml_qm3_rf/firstStep"
+                conrefend="removingBattery.dita#task_3ml_qm3_rf/lastStep">
+                <cmd/>
+            </step>
+            <step>
+                <cmd>Insert the SIM card into the SIM card slot with the SIM card gold contacts
+                    facing down.<image href="../image/insertSim.jpg" id="image_443_m1d_rf"
+                        placement="break"/></cmd>
+            </step>
+            <step conref="insertBattery.dita#task_ww1_fh3_rf/firstStep"
+                conrefend="insertBattery.dita#task_ww1_fh3_rf/lastStep">
+                <cmd/>
+            </step>
+        </steps>
+    </taskbody>
+</task>

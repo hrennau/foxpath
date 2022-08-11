@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE task PUBLIC "-//OASIS//DTD DITA Task//EN" "task.dtd">
+<task id="task_lxf_bcp_tf">
+    <title>Sending files using Bluetooth&#174;</title>
+    <shortdesc> You can use Bluetooth&#174; to send your picture, videos, and audio files to another
+        Bluetooth&#174; enabled device such as a phone or notebook computer. </shortdesc>
+    <taskbody>
+        <context>
+            <p> Before you begin, make sure that the receiving device is set to discoverable mode </p>
+        </context>
+        <steps>
+            <step>
+                <cmd>From the phone menu, open the application that contains the file you want to
+                    send.</cmd>
+            </step>
+            <step>
+                <cmd>Select the media file and press the <term>Bluetooth</term>&#174; key.</cmd>
+            </step>
+            <step>
+                <cmd>If necessary turn on the <term>Bluetooth</term>&#174; device. </cmd>
+            </step>
+            <step>
+                <cmd>If you have not paired with the receiving device before, select <term>Scan for
+                        devices</term>.</cmd>
+            </step>
+            <step>
+                <cmd>Select the name of the receiving device </cmd>
+            </step>
+            <step>
+                <cmd>Press <term>Send</term> to sent the file. </cmd>
+            </step>
+        </steps>
+    </taskbody>
+</task>

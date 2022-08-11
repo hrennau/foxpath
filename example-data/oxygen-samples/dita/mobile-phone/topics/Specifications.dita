@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="topic_d5p_h3b_fg">
+  <title>Brief specifications</title>
+  <body>
+    <dl>
+      <dlentry>
+        <dt>Display</dt>
+        <dd product="X1000">2.10” screen, 320 x 240 resolution </dd>
+        <dd product="X2000">2.40” screen, 480 x 360 resolution</dd>
+      </dlentry>
+    </dl>
+    <dl>
+      <dlentry>
+        <dt>Dimensions</dt>
+        <dd>
+          <dl>
+            <dlentry>
+              <dt>Height</dt>
+              <dd><ph product="X1000">110 mm</ph></dd>
+              <dd><ph product="X2000">112.5 mm</ph></dd>
+            </dlentry>
+            <dlentry>
+              <dt>Width</dt>
+              <dd><ph product="X1000">56.9 mm</ph></dd>
+              <dd><ph product="X2000">61.2 mm</ph></dd>
+            </dlentry>
+            <dlentry>
+              <dt>Thickness</dt>
+              <dd><ph product="X1000">11.7 mm</ph></dd>
+              <dd><ph product="X2000">14 mm</ph></dd>
+            </dlentry>
+            <dlentry>
+              <dt>Weight</dt>
+              <dd><ph product="X1000">112 g</ph></dd>
+              <dd><ph product="X2000">120 g</ph></dd>
+            </dlentry>
+            <dlentry>
+              <dt>Volume</dt>
+              <dd><ph product="X1000">74 cc</ph></dd>
+              <dd><ph product="X2000">68 cc</ph></dd>
+            </dlentry>
+          </dl>
+        </dd>
+      </dlentry>
+      <dlentry>
+        <dt>Battery life</dt>
+        <dd product="X1000">About 5h talk time and 488h stand by time</dd>
+        <dd product="X2000">About 5.5h talk time and 488h stand by time</dd>
+      </dlentry>
+      <dlentry>
+        <dt>Camera</dt>
+        <dd product="X1000">4MP, 2x digital zoom</dd>
+        <dd product="X2000">5MP, 2x digital zoom</dd>
+      </dlentry>
+      <dlentry>
+        <dt>Memory</dt>
+        <dd>SDRAM Memory 32MB</dd>
+      </dlentry>
+      <dlentry>
+        <dt>Bluetooth</dt>
+        <dd product="X1000">N/A</dd>
+        <dd product="X2000">3.0</dd>
+      </dlentry>
+    </dl>
+  </body>
+</topic>

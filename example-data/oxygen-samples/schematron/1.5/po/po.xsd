@@ -1,0 +1,130 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<!-- see http://www.w3.org/TR/xmlschema-0/  -->
+	<!-- this is an example of a Schematron schema embedded
+      in a W3C XML Schemas schema.  In this case, it does
+      not do much, because most of the constraints are the 
+      same. -->
+	<xsd:annotation>
+		<xsd:documentation xml:lang="en">
+   Purchase order schema for Example.com.
+   Copyright 2000 Example.com. All rights reserved.
+  </xsd:documentation>
+	</xsd:annotation>
+	<xsd:element name="purchaseOrder" type="PurchaseOrderType"/>
+	<xsd:element name="comment" type="xsd:string">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<pattern xmlns="http://www.ascc.net/xml/schematron" name="Comment">
+					<rule context="comment">
+						<report test="child::*" icon="bug_7.gif">A comment should have no subelements</report>
+						<assert test="parent::item | parent::purchaseOrder " icon="bug_7.gif"
+						>A comment can only appear in an item or a purchase Order</assert>
+					</rule>
+				</pattern>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="PurchaseOrderType">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<pattern xmlns="http://www.ascc.net/xml/schematron" name="Purchase Orders">
+					<rule context="*[shipTo or billTo or items]">
+						<!-- This rule couples the elements of the address type together, so that
+			if one appears anywhere, the others must also. -->
+						<assert test="shipTo" icon="bug_10.gif">A purchase order should have a  shipTo element.</assert>
+						<assert test="billTo" icon="bug_10.gif">A purchase order should have a billTo element.</assert>
+						<assert test="items" icon="bug_10.gif">A purchase order should have an items element.</assert>
+						<assert test="@orderDate" icon="bug_10.gif">A purchase order should have an orderDate attribute.</assert>
+						<assert test="*//shipDate" icon="bug_10.gif">A purchase order should have an shipDate element.</assert>
+					</rule>
+					<rule context="/shipTo | /billTo | /items">
+						<report test="self::*" icon="bug_11.gif">The element <name/> is not expected
+			at the top of a document. It should be in
+			the body of a purchase order.</report>
+					</rule>
+				</pattern>
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="shipTo" type="USAddress"/>
+			<xsd:element name="billTo" type="USAddress"/>
+			<xsd:element ref="comment" minOccurs="0"/>
+			<xsd:element name="items" type="Items"/>
+		</xsd:sequence>
+		<xsd:attribute name="orderDate" type="xsd:date"/>
+	</xsd:complexType>
+	<xsd:complexType name="USAddress">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<pattern xmlns="http://www.ascc.net/xml/schematron" name="USAddress">
+					<!-- This pattern simulates complex types: we don't care about the
+                     element name, but we desire certain children -->
+					<rule context="*[name or street or  city or state or zip]">
+						<!-- This rule couples the elements of the address type together, so that
+			if one appears anywhere, the others must also. -->
+						<assert test="name" icon="bug_10.gif">An address should have a name.</assert>
+						<assert test="street" icon="bug_10.gif">An address should have a street.</assert>
+						<assert test="city" icon="bug_10.gif">An address should have a city.</assert>
+						<assert test="state" icon="bug_10.gif">An address should have a state.</assert>
+						<assert test="zip" icon="bug_10.gif">An address should have a zip.</assert>
+					</rule>
+					<rule context="/street | /name | /city | /state | /zip">
+						<report test="self::*" icon="bug_11.gif">The elements <name/> is not expected at
+			the top of a document. They form part of an address.</report>
+					</rule>
+				</pattern>
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="name" type="xsd:string"/>
+			<xsd:element name="street" type="xsd:string"/>
+			<xsd:element name="city" type="xsd:string"/>
+			<xsd:element name="state" type="xsd:string"/>
+			<xsd:element name="zip" type="xsd:decimal"/>
+		</xsd:sequence>
+		<xsd:attribute name="country" type="xsd:NMTOKEN" fixed="US"/>
+	</xsd:complexType>
+	<xsd:complexType name="Items">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<pattern xmlns="http://www.ascc.net/xml/schematron" name="Items">
+					<rule context="items">
+						<assert test="count(child::*) = count(child::item)" icon="bug_11.gif"
+						>The items element can only contain item elements</assert>
+					</rule>
+					<rule context="item">
+						<assert test="productName" icon="bug_10.gif">The item element should contain a product name. </assert>
+						<assert test="quantity" icon="bug_10.gif">The item element should contain a quantity element </assert>
+						<assert test="USPrice" icon="bug_10.gif">The item element should contain a USPrice element.  </assert>
+					</rule>
+				</pattern>
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="item" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="productName" type="xsd:string"/>
+						<xsd:element name="quantity">
+							<xsd:simpleType>
+								<xsd:restriction base="xsd:positiveInteger">
+									<xsd:maxExclusive value="100"/>
+								</xsd:restriction>
+							</xsd:simpleType>
+						</xsd:element>
+						<xsd:element name="USPrice" type="xsd:decimal"/>
+						<xsd:element ref="comment" minOccurs="0"/>
+						<xsd:element name="shipDate" type="xsd:date" minOccurs="0"/>
+					</xsd:sequence>
+					<xsd:attribute name="partNum" type="SKU" use="required"/>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- Stock Keeping Unit, a code for identifying products -->
+	<xsd:simpleType name="SKU">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="\d{3}-[A-Z]{2}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+</xsd:schema>

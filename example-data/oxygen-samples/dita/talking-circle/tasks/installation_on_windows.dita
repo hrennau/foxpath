@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE task PUBLIC "-//OASIS//DTD DITA Task//EN" "task.dtd">
+<task id="installation_on_windows">
+  <title>Installation on Windows</title>
+  <shortdesc>This task describes how to install the desktop version of the
+      <?oxy_comment_start author="dan" timestamp="20160601T141300+0300" comment="The target key should be &apos;product&apos;."?><keyword
+      keyref="product"/><?oxy_comment_end?> messenging application on Windows.</shortdesc>
+  <?oxy_comment_start author="dan" timestamp="20160601T114616+0300" comment="Add here indexterms in a keywords element: (installation( windows))."?>
+  <taskbody>
+    <?oxy_comment_end?>
+    <context>
+      <p>Follow the steps to install the software on a Windows 10 platform.</p>
+      <p id="unistall_advice"
+        ><?oxy_comment_start author="dan" timestamp="20160601T111915+0300" comment="This paragraph should be repeated in the installation tasks for other platforms. Use a conref."?>In
+        case you have an older version installed on your system, make sure you uninstall it first.
+        Leave the settings in place, as they are used by the newer version.<?oxy_comment_end?></p>
+    </context>
+    <steps>
+      <step>
+        <cmd>Download the installation kit <xref href="http://sample.talkingcircle.com"
+            format="html" scope="external"/></cmd>
+      </step>
+      <step>
+        <cmd>Extract the archive</cmd>
+      </step>
+      <step>
+        <cmd>Run the <filepath>talkingcircle.exe</filepath> installer</cmd>
+      </step>
+      <step>
+        <cmd>Choose <uicontrol>default</uicontrol> when asked for installation options.</cmd>
+      </step>
+    </steps>
+  </taskbody>
+  <related-links>
+    <link href="installation_on_mac.dita"/>
+  </related-links>
+</task>

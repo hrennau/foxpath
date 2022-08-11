@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+<!-- This file makes part of an XSL Test Suite -->
+<!-- Basic font styles test - Font weight  -->
+<!-- Use the macro.xsl file to generate the FO document. -->
+<!-- Example from: http://www.renderx.net
+    Copyright © 2004 RenderX, Inc.-->
+
+<plain-doc>
+
+  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+           xmlns:dcterms="http://purl.org/dc/terms/"
+           xmlns:dc="http://purl.org/dc/elements/1.1/"
+           xmlns:db="http://www.oasis-open.org/docbook/xml/4.2/">
+     <rdf:Description rdf:about="http://xep.xattic.com/testsuite/features/bold.xml">
+        <dc:title>  Basic Font Attributes - Font Weight </dc:title>
+        <dc:description>
+          <db:para>
+            Tests different font weights.
+          </db:para>
+        </dc:description>
+        <dc:date>2003-07-24</dc:date><dcterms:requires rdf:resource="http://xep.xattic.com/testsuite/features/macro.xsl"/>
+    </rdf:Description>
+  </rdf:RDF> 
+
+<!-- =============================================================== -->
+<!-- Content macro                                                   -->
+<!-- =============================================================== -->
+
+<define-macro name="normal">
+  <p font-weight="normal" space-before="6pt"> 
+      Default is normal:
+      <font font-weight="700">bold (weight=700)</font>
+      - normal -
+      <font font-weight="bold">bold (weight=bold)</font>
+      - normal -
+      <font font-weight="bolder">bold (weight=bolder)</font>
+      - normal.
+  </p>
+</define-macro>
+
+<define-macro name="bold">
+  <p font-weight="bold" space-before="6pt"> 
+      Default is bold:
+      <font font-weight="400">normal (weight=400)</font>
+      - bold -
+      <font font-weight="normal">normal (weight=normal)</font>
+      - bold -
+      <font font-weight="lighter">normal (weight=lighter)</font>
+      - bold.
+  </p>
+</define-macro>
+
+<define-macro name="progression">
+  <p font-weight="normal" space-before="6pt"> 
+      Font weight progression:
+      <font font-weight="100">100 (extra light)</font> -
+      <font font-weight="200">200</font> - 
+      <font font-weight="300">300</font> - 
+      <font font-weight="400">400 (normal)</font> - 
+      <font font-weight="500">500</font> - 
+      <font font-weight="600">600</font> - 
+      <font font-weight="700">700 (bold)</font> - 
+      <font font-weight="800">800</font> - 
+      <font font-weight="900">900 (extra bold)</font>
+  </p>
+</define-macro>
+
+
+<!-- Boldness test for a single font family -->
+
+<define-macro name="single-font-test">
+  <p text-align="start" font-family="$arg">
+    <p space-before.optimum="24pt"
+       keep-with-next.within-column="always"><u><b><arg/>:</b></u></p>
+      <macro name="normal"/>
+      <macro name="bold"/>
+      <macro name="progression"/>
+  </p>
+</define-macro>
+
+
+<!-- =============================================================== -->
+<!-- Document structure. Macro is repeated three times.              -->
+<!-- =============================================================== -->
+
+
+<title> Basic Font Attributes - Font Weight </title>
+
+<text> This test contains examples of different font weights. 
+  It is conceived as an exhaustive test of all ways 
+  of expressing font weight in XSL.
+</text>
+
+<macro name="single-font-test" arg="Helvetica"/>
+<macro name="single-font-test" arg="Times"/>
+<macro name="single-font-test" arg="Courier"/>
+
+<warning>
+  Please note that in the font weight progressions above,
+  we do not expect to have all weights different;
+  it depends on the availability of weight variants
+  for the specific font. Unless your renderer can provide
+  for automatic font thickening, you will see only two weight
+  grades: typically, all weights greater then 500 will be displayed 
+  as bold typeface, and all smaller weights will appear as normal. 
+  Such behaviour <b>is not an error</b>.
+</warning>
+
+</plain-doc>

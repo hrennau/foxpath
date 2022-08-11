@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This file is part of the DITA Open Toolkit project hosted on 
+     Sourceforge.net. See the accompanying license.txt file for 
+     applicable licenses.-->
+<!DOCTYPE task PUBLIC "-//OASIS//DTD DITA Task//EN"
+ "http://docs.oasis-open.org/dita/v1.1/OS/dtd/task.dtd">
+<!-- (C) Copyright IBM Corporation 2001, 2005. All Rights Reserved.
+ *-->
+<task id="washcar" xml:lang="en-us">
+<title>Washing the car</title>
+<shortdesc>Keep your car looking great by washing it regularly.</shortdesc>
+<taskbody>
+<steps>
+<step>
+        <cmd>Move the car onto the
+          driveway.<?oxy_insert_start author="Tom" timestamp="20160412T115943+0300"?> Avoid washing
+          the car in direct sunlight as this might damage the paint.<?oxy_insert_end?></cmd>
+      </step>
+<step>
+        <cmd>Attach the
+          <?oxy_comment_start author="Tom" timestamp="20160412T120150+0300" comment="A power washer might do the job better." id="c22_xsv_pv" flag="done" mid="1"?><?oxy_comment_start author="John" timestamp="20160412T120451+0300" comment="Agree, but I want to keep this task simple." parentID="c22_xsv_pv" flag="done"?>water
+          hose to a spout<?oxy_comment_end?><?oxy_comment_end mid="1"?> and pull the free end over
+          to the car.</cmd>
+      </step>
+<step><cmd>Fill a bucket with soapy water.</cmd></step>
+<step>
+        <cmd>Use a sponge to apply the soapy water to the car and
+          <?oxy_delete author="Tom" timestamp="20160412T120216+0300" content="scrub off"?><?oxy_insert_start author="Tom" timestamp="20160412T120221+0300"?>gently
+          remove<?oxy_insert_end?> the dirt.</cmd>
+      </step>
+<step><cmd>Rinse the car by spraying clean water
+from the hose.</cmd></step>
+<step><cmd>Dry the car using a dampened chamois.</cmd>
+</step>
+</steps>
+<result><p><image href="../image/carwash.jpg" alt="washing the car" height="171"
+width="249"/></p></result>
+</taskbody>
+<related-links>
+<link href="../concepts/waterhose.dita" format="dita" type="concept"></link>
+</related-links>
+</task>
+
+<?oxy_options track_changes="on"?>

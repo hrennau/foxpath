@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Total SYSTEM "percent.dtd">
+<?xml-model href="percent.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<Total>
+     <Percent>20</Percent>
+     <Percent>30</Percent>
+     <Percent>10</Percent>
+     <Percent>50</Percent>          
+</Total>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- Example from: http://www.renderx.net
+    Copyright © 2004 RenderX, Inc.-->
+
+<fo:root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+  <fo:layout-master-set>
+    <fo:simple-page-master master-name="my-page">
+      <fo:region-body margin="1in"/>
+    </fo:simple-page-master>
+  </fo:layout-master-set>
+  <fo:page-sequence master-reference="my-page">
+    <fo:flow flow-name="xsl-region-body" font="12pt Times">
+      <fo:block font="italic 24pt Helvetica">
+        <fo:inline color="red">F</fo:inline>ont
+        <fo:inline color="red">A</fo:inline>ttributes
+      </fo:block>
+      <fo:block>
+        The inherited font for this block is 12pt Times.
+      </fo:block>
+      <fo:block>
+        Font attributes:
+        <fo:inline color="red">colored</fo:inline>,
+        <fo:inline font-weight="bold">bold</fo:inline>,
+        <fo:inline font-style="italic">italic</fo:inline>,
+        <fo:inline font-size="75%">small</fo:inline>,
+        <fo:inline font-size="133%">large</fo:inline>.
+      </fo:block>
+      <fo:block>
+        Text attributes:
+        <fo:inline text-decoration="underline">underlined</fo:inline>,
+        <fo:inline letter-spacing="3pt"> expanded </fo:inline>,
+        <fo:inline word-spacing="6pt">
+          text with extra spacing between words
+        </fo:inline>,
+        <fo:inline text-transform="uppercase">all capitals</fo:inline>,
+        <fo:inline text-transform="capitalize">capitalized</fo:inline>,
+        text with <fo:inline baseline-shift="sub"
+          font-size="smaller">subscripts</fo:inline>
+        and <fo:inline baseline-shift="super"
+          font-size="smaller">superscripts</fo:inline>.
+      </fo:block>
+    </fo:flow>
+  </fo:page-sequence>
+</fo:root>

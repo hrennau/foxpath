@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Part of the CSS comes from the associated document type. 
+    It's path is ${frameworks}/samples/css/travel-guide.css. 
+
+    The XML Schema is provided by the "Travel Guide" framework. 
+    See Options > Document Types section.
+-->
+<?xml-stylesheet type="text/css" href="travel-guide.css"?>
+<travelGuide xmlns="http://www.oxygenxml.com/ns/samples/travel-guide">
+    <title>Santorini Island</title>
+    <header bgimage="images/city.jpg">
+        <information population="13670" area="90.69 km^2 (35 sq mi)" currency="Euro"/>
+    </header>
+    <section class="information">
+        <title>Short description</title>
+        <p>Santorini is a volcanic island in the Cyclades group of the Greek islands. It is famous
+            for dramatic views, stunning sunsets from <a href="#poi.oia">Oia town</a>, the strange
+            white aubergine (eggplant), the town of Thira and naturally its very own active <a href="#poi.volcano">volcano</a>. There are naturally fantastic beaches such as the
+            black sand beach of <a href="#poi.perissa">Perissa</a>, maybe the best beach in
+            Santorini.</p>
+    </section>
+    <section class="weather">
+        <title>Weather and temperatures</title>
+        <infoTable>
+            <tr>
+                <th>Month</th>
+                <th>Water temperature</th>
+                <th>Air temperature</th>
+            </tr>
+            <tr>
+                <month>January</month>
+                <waterT>16</waterT>
+                <airT>12</airT>
+            </tr>
+            <tr>
+                <month>February</month>
+                <waterT>15</waterT>
+                <airT>12</airT>
+            </tr>
+            <tr>
+                <month>March</month>
+                <waterT>15</waterT>
+                <airT>12</airT>
+            </tr>
+            <tr>
+                <month>April</month>
+                <waterT>16</waterT>
+                <airT>15</airT>
+            </tr>
+            <tr>
+                <month>May</month>
+                <waterT>19</waterT>
+                <airT>19</airT>
+            </tr>
+            <tr>
+                <month>June</month>
+                <waterT>22</waterT>
+                <airT>22</airT>
+            </tr>
+            <tr>
+                <month>July</month>
+                <waterT>24</waterT>
+                <airT>28</airT>
+            </tr>
+            <tr>
+                <month>August</month>
+                <waterT>25</waterT>
+                <airT>28</airT>
+            </tr>
+            <tr>
+                <month>September</month>
+                <waterT>23</waterT>
+                <airT>22</airT>
+            </tr>
+            <tr>
+                <month>October</month>
+                <waterT>21</waterT>
+                <airT>19</airT>
+            </tr>
+            <tr>
+                <month>November</month>
+                <waterT>19</waterT>
+                <airT>16</airT>
+            </tr>
+            <tr>
+                <month>December</month>
+                <waterT>17</waterT>
+                <airT>10</airT>
+            </tr>
+        </infoTable>
+    </section>
+    <section class="getting_by_plane">
+        <title>Arrive by plane</title>
+        <p>Santorini National Airport is an airport in Santorini/Thira, Greece (IATA: JTR, ICAO:
+            LGSR), located north of the village of Kamari. It has regular flights from Athens by
+            Olympic Air, Aegean Airlines and AirSea Lines (a seaplane airline). Flight duration from
+            Athens to Santorini is about 30 minutes. During summer, Sky Express connects Santorini
+            with other popular islands such as <place>Crete</place> (Heraklion),
+            <place>Rhodes</place> and <place>Mykonos</place>. From May till October charter airlines
+            fly directly to Santorini from many European airports. </p>
+        <planesSchedule>
+            <planeSchedule company="EasyJet" from="Milan"/>
+            <planeSchedule company="Condor" from="Dusseldorf"/>
+            <planeSchedule company="Germanwings" from="Munich"/>
+        </planesSchedule>
+    </section>
+    <section class="getting_by_sea">
+        <title>Arrive by sea</title>
+        <p>Take the ferry from <place>Piraeus</place> past <place>Paros</place> and <place>Naxos</place> to the new port on
+            Santorini. There is also daily connection between <place>Heraklion</place> (Crete) and Santorini
+            during high season. The trip from Pireaus to Santorini takes 4.5hrs with a high speed
+            ferry. Ferries dock at the port of <place>Athinios</place>, where buses and taxis meet each
+            arrival to transport passengers to <place>Oia</place>, <place>Fira</place>, and elsewhere.</p>
+        <ferriesSchedule>
+            <ferrySchedule company="EuroFast" from="Crete, Pireaus"/>
+            <ferrySchedule company="Apollon Hellas" from="Pireaus, Haifa"/>
+            <ferrySchedule company="Agios Georgios" from="Rhodes"/>
+        </ferriesSchedule>
+    </section>
+    <section>
+        <title>Points of interest</title>
+        <pointsOfInterest>
+            <pointOfInterest xml:id="poi.oia">
+                <name>Oia</name>
+                <address lat="36.46017824849352" lng="25.372959673404694"> Nik. Nomikou, Oía 847 02,
+                    Greece</address>
+                <data>
+                    <row>
+                        <description facilities="Bar,Club,Restaurant">
+                            <p><place>Ia</place> (Oia spelling in Greek) is a picturesque town beloved
+                                by artists and tourists alike. It is recommended to arrive in the early
+                                evening, allowing plenty of time to meander, shop and take photographs,
+                                then have a relaxing meal in a <place>Caldera</place> restaurant while
+                                watching one of the most beautiful sunsets. </p>
+                            <img href="images/oia_sunset.jpg">
+                                <caption>Sunset in Oia</caption>
+                            </img>
+                        </description>
+                        <info>
+                            <category type="town"/>
+                            <cost range="$$$$"/>
+                            <how-to-get-there reachableBy="Boat Bus"/>
+                            <contact>
+                                <phone>262/402-1234</phone>
+                                <email>tourist@info.oia.gr</email>
+                            </contact>
+                        </info>
+                    </row>
+                </data>
+            </pointOfInterest>
+            <pointOfInterest xml:id="poi.perissa">
+                <name>Perissa beach</name>
+                <address lat="36.353738" lng="25.473775">Perissa Black Sand Beach, Perissa
+                    847 03, Greece</address>
+                <data>
+                    <row>
+                    <description facilities="Umbrella,Chaise lounges,Bar,Club,Restaurant">
+                        <p><place>Perissa</place> is a sea-side village (or rather: tourist
+                            waterhole). It has a long black sand beach, which is great to look at
+                            and hot to lie on. There are all the usual water based activities plus a
+                            regular water taxi to take you round the headland to the neighboring
+                            town of <place>Kamari</place>.</p>
+                        <img href="images/perisa.jpg">
+                            <caption>The black sand beach of Perissa</caption>
+                        </img>
+                    </description>
+                    <info>
+                        <category type="beach"/>
+                        <cost range="$$"/>
+                        <how-to-get-there reachableBy="Bus Boat Car"/>
+                        <contact>
+                            <phone>262/402-1342</phone>
+                            <email>agios@santorini.mail.gr</email>
+                        </contact>
+                        <availability>Closed when windy</availability>
+                    </info>
+                    </row>
+                </data>
+            </pointOfInterest>
+            <pointOfInterest xml:id="poi.volcano">
+                <name>Volcano</name>
+                <address lat="36.399687788635795" lng="25.404746532440186">Unnamed Road, Santorini
+                    847 00, Greece</address>
+                <data>
+                    <row>
+                    <description facilities="Restaurant">
+                        <p>The nearly barren island <place>Nea Kameni</place> is visited daily by
+                            dozens of tourist boats throughout the summer. Visitors climb a gravel
+                            path to reach the top of the 130-meter-high volcanic crater, where it is
+                            possible to complete a full circuit of the rim. </p>
+                        <img href="images/volcano.jpg">
+                            <caption>Tourist boats docked on lava boulders.</caption>
+                        </img>
+                    </description>
+                    <info>
+                        <category type="landscape"/>
+                        <cost range="$"/>
+                        <how-to-get-there reachableBy="Boat"/>
+                        <contact>
+                            <phone>262/402-4321</phone>
+                            <email>volcano@santorini.mail.gr</email>                            
+                        </contact>
+                        <availability>Closed on bad weather</availability>
+                                                
+                    </info>
+                    </row>
+                </data>
+            </pointOfInterest>
+            <pointOfInterest xml:id="poi.fira">
+                <name>Fira</name>
+                <address lat="36.424166" lng="25.430986">25is Martiou 19, Thira 847 00,
+                    Greece</address>
+                <data>
+                    <row>
+                    <description facilities="Bar,Club,Restaurant">
+                        <p>The centre of activity on Santorini is <place>Fira Town</place>. This
+                            large island capital is perched precariously on the edge of the caldera
+                            rim, with a switchback staircase down the crater wall, and a cable car
+                            for those who don't care for the donkey rides or the 587 awkward steps.
+                            The great attraction in town is the view over the caldera and the
+                            volcano.</p>
+                        <img href="images/fira.jpg">
+                            <caption>Panoramic view of Fira town.</caption>
+                        </img>
+                    </description>
+                    <info>
+                        <category type="town"/>
+                        <cost range="$"/>
+                        <how-to-get-there reachableBy="Boat Car Bus"/>
+                        <contact>
+                            <phone>262/402-3214</phone>
+                            <email>fira@santorini.mail.gr</email>                            
+                        </contact>
+                    </info>
+                    </row>
+                </data>
+            </pointOfInterest>
+        </pointsOfInterest>
+    </section>
+    <section bgimage="images/windmill.jpg">
+        <title>References</title>
+        <external-links>
+            <a href="http://www.wikipedia.com">Wikipedia</a>
+            <a href="http://www.wikitravel.com">Wikitravel</a>
+        </external-links>
+    </section>
+</travelGuide>

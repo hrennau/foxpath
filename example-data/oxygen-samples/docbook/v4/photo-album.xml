@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+                         "http://www.docbook.org/xml/4.5/docbookx.dtd">
+<article>
+    <title>Installing the <emphasis>Photo Album Application</emphasis> on <phrase os="linux"
+            >Linux</phrase><phrase os="windows">Windows</phrase></title>
+    <sect1>
+        <title>Prerequisites</title>
+        <para>Before installing the photo album organizer you must check that your computer fulfills
+            some basic requirements.</para>
+        <orderedlist>
+            <listitem>
+                <para><emphasis>Disk Space</emphasis></para>
+                <para os="linux">The application needs at least 100MB free disk space. <phrase
+                        userlevel="beginner">Ask your system administrator for help</phrase>
+                    <phrase userlevel="advanced">To find the available free space on your disk, type
+                            <command>df</command> in a terminal and check that the partition where
+                        you want to install the program has at least 100 MB free space. You can see
+                        the free space in the <abbrev>Avail</abbrev>
+                    column.</phrase><screen userlevel="advanced">Filesystem            Size  Used Avail Use% Mounted on
+/dev/md0               73G   65G  4.3G  94% /
+/dev/sda2              92M  5.7M   81M   7% /boot
+/dev/sdd1             230G   31G  188G  15% /home
+/dev/sdd2             230G  153G   65G  71% /usr/local</screen></para>
+                <para os="windows">The free space must exceed 120 MB. Open the
+                        <command>Explorer</command>, by using <menuchoice>
+                        <guimenu>Start</guimenu>
+                        <guisubmenu>Run..</guisubmenu>
+                    </menuchoice>. Right-click on the drive where you want to install the program,
+                    and choose <menuchoice>
+                        <guimenu>Properties</guimenu>
+                    </menuchoice>. <figure>
+                        <title>Properties for a Windows Drive</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="images/drive-properties.jpg" scale="75"/>
+                            </imageobject>
+                        </mediaobject>
+                    </figure></para>
+            </listitem>
+            <listitem>
+                <para><emphasis>Physical Memory</emphasis></para>
+                <para os="linux">The application needs at lest 1GB of total memory. </para>
+                <para os="windows">Use <menuchoice>
+                        <guimenu>Control Panel</guimenu>
+                        <guisubmenu>System and Maintenance</guisubmenu>
+                        <guisubmenu>System</guisubmenu>
+                    </menuchoice> to see basic informations about your computer. Check the value
+                    reported by <guilabel>Memory (RAM)</guilabel> to be above 1GB.<figure>
+                        <title>System Information</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="images/control-panel.jpg" scale="75"/>
+                            </imageobject>
+                        </mediaobject>
+                    </figure></para>
+            </listitem>
+            <listitem>
+                <para>CPU</para>
+                <para>The CPU must be at least <phrase os="linux">dual</phrase><phrase os="windows"
+                        >quad</phrase> core at minimum <phrase os="linux">1.5</phrase><phrase
+                        os="windows">2</phrase>GHz.</para>
+            </listitem>
+        </orderedlist>
+    </sect1>
+    <sect1>
+        <title>Installing</title>
+        <para>To install the program follow these steps.</para>
+        <para>
+            <orderedlist os="linux">
+                <listitem>
+                    <para>Download the <emphasis>Linux</emphasis> archive, then run the
+                            <command>md5</command> utility over the downloaded file to check its
+                        integrity.</para>
+                </listitem>
+                <listitem>
+                    <para>Using a terminal, change directory to <filename>/usr/local</filename>.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>Make a directory <filename>photo-album</filename>, then extract the
+                        downloaded file here, using <command>tar</command> command.</para>
+                </listitem>
+                <listitem>
+                    <para>Create a symbolic link from your Desktop to the executable script
+                            <filename>photo-album.sh</filename></para>
+                </listitem>
+            </orderedlist>
+            <orderedlist os="windows">
+                <listitem>
+                    <para>Download the <emphasis>Windows</emphasis> installer executable:
+                            <filename>photo-album-install.exe</filename></para>
+                </listitem>
+                <listitem>
+                    <para>Start the installer, then follow the instructions displayed on
+                        screen.</para>
+                </listitem>
+            </orderedlist>
+        </para>
+    </sect1>
+</article>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN" "map.dtd">
+<map collection-type="sequence">
+    <title>Syncro Phone User Guide</title>
+    <topicref href="topics/gettingStarted.dita" collection-type="sequence">
+        <topicref href="topics/introduction.dita"/>
+        <topicref href="topics/Specifications.dita"/>
+        <topicref href="tasks/insertBattery.dita"/>
+        <topicref href="tasks/removingBattery.dita"/>
+        <topicref href="tasks/insertSim.dita"/>
+        <topicref href="topics/importantKeys.dita"/>
+    </topicref>
+    <topicref href="topics/phoneBasics.dita" collection-type="sequence">
+        <topicref href="tasks/makeACall.dita"/>
+        <topicref href="tasks/makeConferenceCall.dita"/>
+        <topicref href="topics/adjustVolume.dita"/>
+        <topicref href="tasks/lockKeys.dita"/>
+    </topicref>
+  <topicref href="topics/setup.dita">
+    <topicref href="topics/email.dita" collection-type="sequence">
+      <topicref href="tasks/setUpEmail.dita"/>
+      <topicref href="tasks/composeSendEmail.dita"/>
+      <topicref href="topics/deleteEmails.dita"/>
+    </topicref>
+    <topicref href="concepts/Bluetooth.dita" product="X2000">
+      <topicref href="tasks/turnBluetoothOnOff.dita"/>
+      <topicref href="tasks/sendFileBluetooth.dita"/>
+      <topicref href="tasks/receiveFilesBluetooth.dita"/>
+    </topicref>
+  </topicref>
+    <topicref href="topics/serviceAndTroubleshooting.dita" audience="Technician">
+      <topicmeta>
+        <data name="wh-tile">
+          <data name="hide" value="yes"/>        
+        </data>
+      </topicmeta>
+        <topicref href="topics/repairingThePhone.dita"/>
+        <topicref href="topics/runDiagnosticReport.dita"/>
+    </topicref>
+    <topicref href="productSbjSchemeVals.ditamap" format="ditamap" type="subjectScheme"/>
+</map>

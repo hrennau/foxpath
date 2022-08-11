@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE AAA SYSTEM "present.dtd">
+<?xml-model href="present.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<AAA>
+     <BBB>
+          <CCC/>
+          <CCC/>
+     </BBB>
+     <CCC name="c1"/>
+     <CCC name="c2"/>
+</AAA>

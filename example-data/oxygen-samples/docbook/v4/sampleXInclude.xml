@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+                         "http://www.docbook.org/xml/4.5/docbookx.dtd" [
+<!ENTITY % xinclude SYSTEM "http://www.docbook.org/xml/4.4/xinclude.mod" >
+%xinclude;
+<!ENTITY % local.common.attrib "xml:base CDATA #IMPLIED" >
+]>
+<!-- Please make sure the XInclude support in enabled! -->
+<!-- To do that check that the Enable XInclude processing option is enabled in the -->
+<!-- XML - XML Parser Properties page in the application Options/Preferences dialog -->
+<article>
+    <title>Welcome to Docbook</title>
+    <xi:include href="section1.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="section2.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="section3.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</article>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE task PUBLIC "-//OASIS//DTD DITA Task//EN" "task.dtd">
+<task id="task_ws1_v2g_2g">
+    <title>Composing and sending email messages</title>
+    <shortdesc/>
+    <taskbody>
+        <context/>
+        <steps>
+            <step>
+                <cmd>On the home screen, click the <term>Messages</term> icon.</cmd>
+            </step>
+            <step>
+                <cmd>Press <term>Compose Email</term> key.</cmd>
+            </step>
+            <step>
+                <cmd>In the <term>To</term> field, fill in one or more recipients. typing an email
+                    address or a contact name. You can enter more than one email addresses separated
+                    by comma. As you enter email addresses, any matching addresses from your
+                    contacts list are displayed. You can also type as recipients a contact name or
+                    contact groups.</cmd>
+            </step>
+            <step>
+                <cmd>Select the Show <term>Cc</term>/<term>Bcc</term> icon if you want to fill in
+                    the <term>Cc</term> or a <term>Bcc</term> fields.</cmd>
+            </step>
+            <step>
+                <cmd>Enter the subject, and then compose your message. </cmd>
+            </step>
+            <step>
+                <cmd>To send the message, press the <term>Send</term> key.</cmd>
+            </step>
+        </steps>
+    </taskbody>
+</task>

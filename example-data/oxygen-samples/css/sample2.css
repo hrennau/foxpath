@@ -1,0 +1,77 @@
+/* Valid CSS using "CSS2" profile and "ALL" medium */
+a.menu {
+    color: black;
+    background-color:white;
+}
+a.menu:hover {
+    color: red;
+    background-color:yellow;
+}
+td.left {
+    color:black;
+    background-color:#B1A8A8;
+    width: 13px;
+    height: 25px;
+    padding: 0px;
+    margin: 0px;
+    background-repeat: no-repeat;
+}
+td.middle {
+    background-repeat: repeat-x;
+    height: 25px;
+    padding: 0px 10px 0px 10px;
+    margin: 0px;
+    font-family: Arial, Sans-serif;
+    color: black;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 25px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    font-size: 14pt;
+    border-collapse: collapse;
+    border-width: 1px;
+    empty-cells: show;
+    background-color:#B1A8A8;
+}
+td.middleBad {
+    background-repeat: repeat-x;
+    height: 25px;
+    padding: 0px 10px 0px 10px;
+    margin: 0px;
+    font-family: Arial, Sans-serif;
+    color: black;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 25px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    font-size: 14pt;
+    empty-cells: show;
+    background-color:#B1A8A8;
+}
+td.middle:hover {
+    border-width: 1px;
+    border-color: white black white black;
+    border-style: none solid none solid;
+    color:yellow;
+    background-color:blue;
+}
+td.middleBad:hover {
+    border-width: 3px;
+    border-color: white black white black;
+    border-style: none solid none solid;
+    color:yellow;
+    background-color:red;
+}
+td.right {
+    width: 13px;
+    height: 25px;
+    padding: 0px;
+    margin: 0px;
+    color:blue;
+    background-color: #B1A8A8;
+    background-repeat: no-repeat;
+}

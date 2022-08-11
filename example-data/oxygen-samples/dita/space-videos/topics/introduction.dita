@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="topic_jnc_5lv_kx">
+    <title>Introduction</title>
+    <body>
+        <p>This is a sample showing how media files can be added to DITA topics using oXygen XML
+            Editor.</p>
+        <p>In this sample, the NASA movies we refer are published on YouTube, under Standard YouTube
+            License.</p>
+    </body>
+</topic>

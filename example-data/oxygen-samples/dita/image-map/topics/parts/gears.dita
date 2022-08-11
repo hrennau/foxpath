@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="gears_topic">
+  <title>Gears</title>
+  <body>
+    <p> The <b>gear pump</b> uses two identical gears rotating against each other. One gear is
+      driven by a motor and it in turn drives the other gear. Each gear is supported by a shaft with
+        <xref href="bushings.dita#bushings_topic"><term>bushings</term></xref> on both sides of the
+      gear.</p>
+    <section id="drive_gear">
+      <title>Drive Gear (Rotor)</title>
+      <p>The <term>drive gear</term> in the <b>gear pump</b> is the gear that is driven by the
+        motor.</p>
+    </section>
+    <section id="idler_gear">
+      <title>Idler Gear</title>
+      <p>The <term>idler gear</term> is the gear that is driven by the <term>drive gear</term>.</p>
+    </section>
+  </body>
+</topic>

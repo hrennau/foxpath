@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="drive_shaft_topic">
+ <title>Drive Shaft</title>
+ <body>
+  <section id="drive_shaft">
+   <title>Drive Shaft</title>
+   <p>A <term>drive shaft</term> is a mechanical component for transmitting torque and rotation,
+    usually used to connect other components of a drive train that cannot be connected directly
+    because of distance or the need to allow for relative movement between them..</p>
+  </section>
+ </body>
+</topic>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--    Sample from Zvon XSLT tutorial (www.zvon.org)   -->
+<source>
+    <text size="H1">Header1</text>
+    <text size="H3">Header3</text>
+    <text size="b">Bold text</text>
+    <text size="sub">Subscript</text>
+    <text size="sup">Superscript</text>
+</source>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE task PUBLIC "-//OASIS//DTD DITA Task//EN" "task.dtd">
+<task id="Untitled">
+    <!--This is an example document where placeholders are controlled with processing instructions. 
+See the source and look for the <?oxy-placeholder content="..."?> content.-->
+    <title><?oxy-placeholder content="Enter the task title"?></title>
+    <shortdesc><?oxy-placeholder content="Describe in less than 50 words what this task does"?></shortdesc>
+    <taskbody>
+        <context>
+            <p><?oxy-placeholder content="Specify the task context"?></p>
+        </context>
+        <steps>
+            <step>
+                <cmd><?oxy-placeholder content="Enter the step action"?></cmd>
+            </step>
+        </steps>
+    </taskbody>
+</task>

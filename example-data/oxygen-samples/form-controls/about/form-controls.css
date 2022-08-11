@@ -1,0 +1,400 @@
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+
+formControls{
+    font-family:arial, sans-serif, 'times new roman';
+    font-size:0.8em;
+    line-height:1.2;
+    
+    width: 800px;
+    margin: 0 auto;
+    padding: 2em;
+    border: 1px solid;
+}
+
+*{
+    display:block;
+    margin-top:5px;
+}
+
+section{
+    margin-left:10px;
+}
+
+pre{
+    display:block;
+    margin:1.2em;
+    padding:1em;
+
+    font-family:monospace;
+    white-space:pre;
+    visibility:-oxy-collapse-text;
+}
+
+pre:before{
+    content:oxy_textArea(edit, '#text', contentType, 'text/css', fontInherit, true, 
+rows, 10, columns, 80);
+}
+
+/* Common Form Controls spacing and styling */
+text:before,
+textWithCC:before,
+checkBox:before,
+checkBox2:before,
+multipleCheckBox:before,
+multipleCheckBox2:before,
+comboBox:before,
+comboBoxWithSchemaValues:before,
+comboBoxWithRemove:before,
+popupWithSingleSelection:before,
+popupWithMultipleSelection:before,
+datePicker:before,
+dateTimePicker:before,
+datePickerCustom:before,
+urlChooser:before,
+button:before,
+buttongroup:before{
+    display:block;
+    margin:0.5em;
+    padding:1em;
+    background-color:#ecf5fc;
+}
+
+checkBox:after,
+checkBox2:after,
+multipleCheckBox:after,
+multipleCheckBox2:after,
+comboBox:after,
+comboBoxWithRemove:after,
+popupWithSingleSelection:after,
+popupWithMultipleSelection:after,
+datePicker:after,
+dateTimePicker:after,
+datePickerCustom:after{
+    display:block;
+    content:oxy_label(text, "Current attribute value: ", width, 150px, text-align, left) attr(attribute);
+    margin:0.5em;
+    padding:1em;
+    background-color:#fdf3eb;
+}
+
+
+/* Specific Form Controls  set-up */
+text:before{
+    content:oxy_label(text, "Text field:", width, 120px, text-align, left)
+ oxy_textfield(
+edit, "#text", 
+values, "first, second, third");
+    visibility:visible;
+}
+
+text{
+    display:inline;
+    visibility:-oxy-collapse-text;
+}
+
+textWithCC:before{
+    content:oxy_label(text, "Text field:", width, 120px, text-align, left)
+ oxy_textfield(edit, "#text", 
+columns, 40);
+    visibility:visible;
+}
+
+textWithCC{
+    visibility:-oxy-collapse-text;
+}
+
+textArea{
+    visibility:-oxy-collapse-text;
+    white-space:pre;
+}
+textArea > oxy|entity{
+    display:none !important;
+}
+
+textArea[language = "CSS"]:before{
+    content:oxy_textArea(
+edit, '#text', 
+contentType, 'text/css');
+}
+
+textArea[language = "XML"]:before{
+    content:oxy_textArea(
+edit, '#text', 
+contentType, 'text/xml', 
+rows, 10, 
+columns, 30);
+}
+
+checkBox:before{
+    content:
+    oxy_label(text, "Checkbox:", width, 150px, text-align, left)
+ oxy_checkbox(
+edit, "@attribute", 
+values, "on", 
+uncheckedValues, "off", 
+labels, "On/Off");
+}
+
+
+checkBox2:before{
+    content:
+    oxy_label(text, "Checkbox:", width, 150px, text-align, left)
+ oxy_checkbox(
+edit, "@attribute", 
+labels, "Active");
+}
+
+multipleCheckBox:before{
+    content:
+    oxy_label(text, "Checkbox:", width, 150px, text-align, left)
+ oxy_checkbox(
+edit, "@attribute", 
+values, "true, yes, on", 
+uncheckedValues, "false, no , off", 
+resultSeparator, ","
+ labels, "Present, Working, Started");
+}
+
+multipleCheckBox2:before{
+    content:
+    oxy_label(text, "Checkbox:", width, 120px, text-align, left)
+ oxy_checkbox(
+edit, "@attribute", 
+values, "v1, v2, v3", 
+labels, "Value1, Value2, Value3");
+}
+
+comboBox:before{
+    content:
+    oxy_label(text, "Combobox:", width, 120px, text-align, left)
+ oxy_combobox(
+edit, "@attribute", 
+editable, true, 
+values, "value1, value2, value3");
+}
+
+comboBoxWithSchemaValues:before{
+    content:
+    oxy_label(text, "Combobox:", width, 120px, text-align, left)
+ oxy_combobox(
+edit, "#text", 
+editable, false);
+    visibility:visible;
+}
+
+comboBoxWithSchemaValues{
+    display:block;
+    visibility:-oxy-collapse-text;
+}
+
+comboBoxWithRemove:before{
+    content:
+    oxy_label(text, "Combobox:", width, 120px, text-align, left)
+ oxy_combobox(
+edit, "@attribute", 
+editable, false)
+ oxy_button(actionID, 'remove.attribute', color, red, transparent, true);
+}
+
+urlChooser:before{
+    content:
+    oxy_label(text, "URL chooser:", width, 120px, text-align, left)
+ oxy_urlChooser(
+edit, "@file", 
+columns, 25);
+}
+
+popupWithSingleSelection:before{
+    content:
+    oxy_label(text, "Pop-up window:", width, 150px, text-align, left)
+ oxy_popup(
+edit, "@attribute", 
+values, "value1, value2, value3, value4, value5", 
+columns, 10, 
+rows, 3, 
+selectionMode, "single");
+}
+
+popupWithMultipleSelection:before{
+    content:
+    oxy_label(text, "Pop-up window:", width, 150px, text-align, left)
+ oxy_popup(
+edit, "@attribute", 
+values, "value1, value2, value3, value4, value5", 
+labels, "Value no1, Value no2, Value no3, Value no4, Value no5", 
+resultSeparator, "|", 
+columns, 30, 
+selectionMode, "multiple");
+}
+
+datePicker:before{
+    content:
+    oxy_label(text, "Date attribute defined in the schema: ", width, 300px)
+ oxy_datePicker(
+columns, 16, 
+edit, "@attribute")
+}
+
+dateTimePicker{
+    content:
+    oxy_label(text, "Date time attribute defined in the schema: ", width, 300px)
+ oxy_datePicker(
+columns, 16, 
+edit, "@attribute");
+}
+
+datePickerCustom{
+    content:
+    oxy_label(text, "Date time attribute with format defined in CSS: ", width, 300px)
+ oxy_datePicker(
+columns, 16, 
+edit, "@attribute", 
+format, "yyyy-MM-dd");
+}
+
+
+
+button:before{
+    /* 
+    The actual button to action mapping is defined in the file:
+        
+    ${frameworks}/sample_frameworks/css/form-controls.css
+    
+    The action is defined in the "Form Controls" framework. See Options > Document Types
+*/
+}
+
+buttongroup:before{
+    content:
+    oxy_label(text, "Button Group:", width, 150px, text-align, left)
+ oxy_buttonGroup(
+label, 'A group of actions', 
+/* The action IDs are declared in the document type associated with the XML document. */ 
+actionIDs, "insert.popupWithMultipleSelection,insert.popupWithSingleSelection", 
+actionStyle, "both");
+}
+
+audio:before {
+    content: 
+    oxy_audio(
+        href, attr(href), 
+        width, 800px
+    );
+}
+
+video:before {
+    content: 
+    oxy_video(
+        href, attr(href), 
+        width, 800px, 
+        height, 600px
+    );
+}
+
+browser:before {
+    content: 
+    oxy_browser(
+        href, attr(href), 
+        width, 800px, 
+        height, 600px
+    );
+}
+
+b{
+    display:inline;
+    font-weight:bold;
+}
+
+i{
+    display:inline;
+    font-style:italic;
+}
+
+
+u{
+    display:inline;
+    text-decoration:underline;
+}
+
+
+/*
+----------------------------------------
+    Titles and counters for the sections.
+----------------------------------------
+*/
+title{
+    font-weight:bold;
+}
+
+formControls > title{
+    font-size:2em;
+}
+
+formControls{
+    counter-reset:sect1_count;
+}
+
+section > title{
+    font-size:1.8em;
+}
+formControls > section > title:before{
+    content:counter(sect1_count, decimal) ". ";
+}
+formControls > section{
+    counter-increment:sect1_count;
+    counter-reset:sect2_count;
+}
+
+section section > title{
+    font-size:1.5em;
+}
+section section > title:before{
+    content:counter(sect1_count, decimal) "." counter(sect2_count, decimal) ". ";
+}
+section section{
+    counter-increment:sect2_count;
+    counter-reset:none;
+}
+
+
+@media oxygen-high-contrast-black, oxygen-dark-theme{
+    text:before,
+    textWithCC:before,
+    checkBox:before,
+    checkBox2:before,
+    multipleCheckBox:before,
+    multipleCheckBox2:before,
+    comboBox:before,
+    comboBoxWithSchemaValues:before,
+    comboBoxWithRemove:before,
+    popupWithSingleSelection:before,
+    popupWithMultipleSelection:before,
+    datePicker:before,
+    dateTimePicker:before,
+    datePickerCustom:before,
+    urlChooser:before,
+    button:before,
+    buttongroup:before{
+        background-color:transparent;
+    }
+
+
+    checkBox:after,
+    checkBox2:after,
+    multipleCheckBox:after,
+    multipleCheckBox2:after,
+    comboBox:after,
+    comboBoxWithRemove:after,
+    popupWithSingleSelection:after,
+    popupWithMultipleSelection:after,
+    datePicker:after,
+    dateTimePicker:after,
+    datePickerCustom:after{
+        background-color:transparent;
+    }
+}
+
+li {
+    display:list-item;
+    margin-left:2em;
+}

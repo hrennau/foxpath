@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--    Sample from Zvon XSLT tutorial (www.zvon.org)   -->
+<source>
+    <number>6</number>
+    <number>3.8</number>
+    <number>1.234</number>
+    <number>-6</number>
+    <number>-3.8</number>
+    <number>-1.234</number>
+</source>

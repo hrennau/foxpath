@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sect1 PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+                         "http://www.docbook.org/xml/4.5/docbookx.dtd">
+<sect1>
+    <title>Second section</title>
+    <para>In order to preview this text in the integrated browser, you have to choose the
+        &quot;docbook/xsl/xhtml/docbook.xsl&quot; stylesheet. For this press the "T.."
+        button, then click on the button in the right of the XSL url field and select the file.
+        Press "Ok".</para>
+    <para>To apply the stylesheet you have to press the &quot;T&quot; button or to press
+        CTRL+SHIFT+T, or on Mac OS X, META+SHIFT+T. </para>
+    <para>Here are some useful links, regarding XML:</para>
+    <itemizedlist>
+        <listitem>
+            <para>
+                <ulink url="http://www.xml.com">http://www.xml.com</ulink>
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                <ulink url="http://www.xml.org">http://www.xml.org</ulink>
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                <ulink url="http://www.w3c.org">http://www.w3c.org</ulink>
+            </para>
+        </listitem>
+    </itemizedlist>
+</sect1>

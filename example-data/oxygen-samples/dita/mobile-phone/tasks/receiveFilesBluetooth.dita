@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE task PUBLIC "-//OASIS//DTD DITA Task//EN" "task.dtd">
+<task id="task_yjv_ttp_tf">
+    <title>Receiving files using Bluetooth&#174;</title>
+    <shortdesc> When a file is sent to your phone using Bluetooth&#174; technology, a dialog box
+        appears on your phone screen. </shortdesc>
+    <taskbody>
+        <context>
+            <p>To perform this task, the Bluetooth&#174; must be turned on. See <xref
+                    href="../tasks/turnBluetoothOnOff.dita"/></p>
+        </context>
+        <steps>
+            <step>
+                <cmd>In the dialog box that appears on your device, asking if you accept the
+                    transfer click <term>Yes</term>. </cmd>
+            </step>
+            <step>
+                <cmd>Choose a location where to save the file.</cmd>
+            </step>
+            <step>
+                <cmd>Click <term>Save</term>.</cmd>
+            </step>
+            <step>
+                <cmd>When the file is transferred, a notification message is displayed.</cmd>
+            </step>
+        </steps>
+    </taskbody>
+</task>

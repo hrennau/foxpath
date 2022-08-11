@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Metal rates-->
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+    xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+    xmlns:s0="http://www.xignite.com/services/" 
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:s="http://www.w3.org/2001/XMLSchema" 
+    xmlns="http://schemas.xmlsoap.org/wsdl/" 
+    targetNamespace="http://www.xignite.com/services/">
+    <types>
+        <s:schema elementFormDefault="qualified" targetNamespace="http://www.xignite.com/services/">
+            <s:element name="GetLastLondonFixing">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="Type" type="s0:FixingTypes"/>
+                        <s:element minOccurs="1" maxOccurs="1" name="Currency" type="s0:FixingCurrencyTypes"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:simpleType name="FixingTypes">
+                <s:restriction base="s:string">
+                    <s:enumeration value="LondonGold"/>
+                    <s:enumeration value="LondonSilver"/>
+                </s:restriction>
+            </s:simpleType>
+            <s:simpleType name="FixingCurrencyTypes">
+                <s:restriction base="s:string">
+                    <s:enumeration value="USD"/>
+                    <s:enumeration value="GBP"/>
+                    <s:enumeration value="EURO"/>
+                </s:restriction>
+            </s:simpleType>
+            <s:element name="GetLastLondonFixingResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetLastLondonFixingResult" type="s0:LondonFixing"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="LondonFixing">
+                <s:complexContent mixed="false">
+                    <s:extension base="s0:Common">
+                        <s:sequence>
+                            <s:element minOccurs="1" maxOccurs="1" name="Type" type="s0:FixingTypes"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="Currency" type="s0:FixingCurrencyTypes"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="Period" type="s0:PeriodType"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Date" type="s:string"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="Value" type="s:double"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Text" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Source" type="s:string"/>
+                        </s:sequence>
+                    </s:extension>
+                </s:complexContent>
+            </s:complexType>
+            <s:complexType name="Common">
+                <s:sequence>
+                    <s:element minOccurs="1" maxOccurs="1" name="Outcome" type="s0:OutcomeTypes"/>
+                    <s:element minOccurs="0" maxOccurs="1" name="Message" type="s:string"/>
+                    <s:element minOccurs="0" maxOccurs="1" name="Identity" type="s:string"/>
+                    <s:element minOccurs="1" maxOccurs="1" name="Delay" type="s:double"/>
+                </s:sequence>
+            </s:complexType>
+            <s:simpleType name="OutcomeTypes">
+                <s:restriction base="s:string">
+                    <s:enumeration value="Success"/>
+                    <s:enumeration value="SystemError"/>
+                    <s:enumeration value="RequestError"/>
+                    <s:enumeration value="RegistrationError"/>
+                </s:restriction>
+            </s:simpleType>
+            <s:simpleType name="PeriodType">
+                <s:restriction base="s:string">
+                    <s:enumeration value="Morning"/>
+                    <s:enumeration value="Evening"/>
+                </s:restriction>
+            </s:simpleType>
+            <s:element name="Header" type="s0:Header"/>
+            <s:complexType name="Header">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="1" name="Username" type="s:string"/>
+                    <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string"/>
+                    <s:element minOccurs="0" maxOccurs="1" name="Tracer" type="s:string"/>
+                </s:sequence>
+            </s:complexType>
+            <s:element name="GetRealTimeMetalQuote">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="Type" type="s0:MetalTypes"/>
+                        <s:element minOccurs="1" maxOccurs="1" name="Currency" type="s0:MetalCurrencyTYpes"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:simpleType name="MetalTypes">
+                <s:restriction base="s:string">
+                    <s:enumeration value="ARE"/>
+                    <s:enumeration value="AUN"/>
+                    <s:enumeration value="BRI"/>
+                    <s:enumeration value="DOW"/>
+                    <s:enumeration value="FRN"/>
+                    <s:enumeration value="KRU"/>
+                    <s:enumeration value="MAL"/>
+                    <s:enumeration value="M5P"/>
+                    <s:enumeration value="NBL"/>
+                    <s:enumeration value="OSO"/>
+                    <s:enumeration value="NSO"/>
+                    <s:enumeration value="VRL"/>
+                    <s:enumeration value="VRN"/>
+                    <s:enumeration value="XAU"/>
+                    <s:enumeration value="XPD"/>
+                    <s:enumeration value="XPT"/>
+                    <s:enumeration value="XAG"/>
+                </s:restriction>
+            </s:simpleType>
+            <s:simpleType name="MetalCurrencyTYpes">
+                <s:restriction base="s:string">
+                    <s:enumeration value="USD"/>
+                    <s:enumeration value="AUD"/>
+                    <s:enumeration value="CHF"/>
+                    <s:enumeration value="EUR"/>
+                    <s:enumeration value="GBP"/>
+                    <s:enumeration value="HKD"/>
+                    <s:enumeration value="ZAR"/>
+                </s:restriction>
+            </s:simpleType>
+            <s:element name="GetRealTimeMetalQuoteResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetRealTimeMetalQuoteResult" type="s0:MetalQuote"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="MetalQuote">
+                <s:complexContent mixed="false">
+                    <s:extension base="s0:Common">
+                        <s:sequence>
+                            <s:element minOccurs="0" maxOccurs="1" name="Symbol" type="s:string"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="Type" type="s0:MetalTypes"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="Currency" type="s0:MetalCurrencyTYpes"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Date" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Time" type="s:string"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="Rate" type="s:double"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="Bid" type="s:double"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="BidTime" type="s:string"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="Ask" type="s:double"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="AskTime" type="s:string"/>
+                        </s:sequence>
+                    </s:extension>
+                </s:complexContent>
+            </s:complexType>
+            <s:element name="LondonFixing" nillable="true" type="s0:LondonFixing"/>
+            <s:element name="MetalQuote" nillable="true" type="s0:MetalQuote"/>
+        </s:schema>
+    </types>
+    <message name="GetLastLondonFixingSoapIn">
+        <part name="parameters" element="s0:GetLastLondonFixing"/>
+    </message>
+    <message name="GetLastLondonFixingSoapOut">
+        <part name="parameters" element="s0:GetLastLondonFixingResponse"/>
+    </message>
+    <message name="GetLastLondonFixingHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetRealTimeMetalQuoteSoapIn">
+        <part name="parameters" element="s0:GetRealTimeMetalQuote"/>
+    </message>
+    <message name="GetRealTimeMetalQuoteSoapOut">
+        <part name="parameters" element="s0:GetRealTimeMetalQuoteResponse"/>
+    </message>
+    <message name="GetRealTimeMetalQuoteHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetLastLondonFixingHttpGetIn">
+        <part name="Type" type="s:string"/>
+        <part name="Currency" type="s:string"/>
+    </message>
+    <message name="GetLastLondonFixingHttpGetOut">
+        <part name="Body" element="s0:LondonFixing"/>
+    </message>
+    <message name="GetRealTimeMetalQuoteHttpGetIn">
+        <part name="Type" type="s:string"/>
+        <part name="Currency" type="s:string"/>
+    </message>
+    <message name="GetRealTimeMetalQuoteHttpGetOut">
+        <part name="Body" element="s0:MetalQuote"/>
+    </message>
+    <message name="GetLastLondonFixingHttpPostIn">
+        <part name="Type" type="s:string"/>
+        <part name="Currency" type="s:string"/>
+    </message>
+    <message name="GetLastLondonFixingHttpPostOut">
+        <part name="Body" element="s0:LondonFixing"/>
+    </message>
+    <message name="GetRealTimeMetalQuoteHttpPostIn">
+        <part name="Type" type="s:string"/>
+        <part name="Currency" type="s:string"/>
+    </message>
+    <message name="GetRealTimeMetalQuoteHttpPostOut">
+        <part name="Body" element="s0:MetalQuote"/>
+    </message>
+    <portType name="XigniteMetalsSoap">
+        <operation name="GetLastLondonFixing">
+            <documentation>Returns last UK Gold or Silver Fixings.</documentation>
+            <input message="s0:GetLastLondonFixingSoapIn"/>
+            <output message="s0:GetLastLondonFixingSoapOut"/>
+        </operation>
+        <operation name="GetRealTimeMetalQuote">
+            <documentation>Returns a real-time quote for a supported metal or coin.</documentation>
+            <input message="s0:GetRealTimeMetalQuoteSoapIn"/>
+            <output message="s0:GetRealTimeMetalQuoteSoapOut"/>
+        </operation>
+    </portType>
+    <portType name="XigniteMetalsHttpGet">
+        <operation name="GetLastLondonFixing">
+            <documentation>Returns last UK Gold or Silver Fixings.</documentation>
+            <input message="s0:GetLastLondonFixingHttpGetIn"/>
+            <output message="s0:GetLastLondonFixingHttpGetOut"/>
+        </operation>
+        <operation name="GetRealTimeMetalQuote">
+            <documentation>Returns a real-time quote for a supported metal or coin.</documentation>
+            <input message="s0:GetRealTimeMetalQuoteHttpGetIn"/>
+            <output message="s0:GetRealTimeMetalQuoteHttpGetOut"/>
+        </operation>
+    </portType>
+    <portType name="XigniteMetalsHttpPost">
+        <operation name="GetLastLondonFixing">
+            <documentation>Returns last UK Gold or Silver Fixings.</documentation>
+            <input message="s0:GetLastLondonFixingHttpPostIn"/>
+            <output message="s0:GetLastLondonFixingHttpPostOut"/>
+        </operation>
+        <operation name="GetRealTimeMetalQuote">
+            <documentation>Returns a real-time quote for a supported metal or coin.</documentation>
+            <input message="s0:GetRealTimeMetalQuoteHttpPostIn"/>
+            <output message="s0:GetRealTimeMetalQuoteHttpPostOut"/>
+        </operation>
+    </portType>
+    <binding name="XigniteMetalsSoap" type="s0:XigniteMetalsSoap">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <operation name="GetLastLondonFixing">
+            <soap:operation soapAction="http://www.xignite.com/services/GetLastLondonFixing" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetLastLondonFixingHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetRealTimeMetalQuote">
+            <soap:operation soapAction="http://www.xignite.com/services/GetRealTimeMetalQuote" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetRealTimeMetalQuoteHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+    <binding name="XigniteMetalsHttpGet" type="s0:XigniteMetalsHttpGet">
+        <http:binding verb="GET"/>
+        <operation name="GetLastLondonFixing">
+            <http:operation location="/GetLastLondonFixing"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetRealTimeMetalQuote">
+            <http:operation location="/GetRealTimeMetalQuote"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+    </binding>
+    <binding name="XigniteMetalsHttpPost" type="s0:XigniteMetalsHttpPost">
+        <http:binding verb="POST"/>
+        <operation name="GetLastLondonFixing">
+            <http:operation location="/GetLastLondonFixing"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetRealTimeMetalQuote">
+            <http:operation location="/GetRealTimeMetalQuote"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+    </binding>
+    <service name="XigniteMetals">
+        <documentation>Provide information about the price of precious metals and coins.</documentation>
+        <port name="XigniteMetalsSoap" binding="s0:XigniteMetalsSoap">
+            <soap:address location="http://www.xignite.com/xMetals.asmx"/>
+        </port>
+        <port name="XigniteMetalsHttpGet" binding="s0:XigniteMetalsHttpGet">
+            <http:address location="http://www.xignite.com/xMetals.asmx"/>
+        </port>
+        <port name="XigniteMetalsHttpPost" binding="s0:XigniteMetalsHttpPost">
+            <http:address location="http://www.xignite.com/xMetals.asmx"/>
+        </port>
+    </service>
+</definitions>

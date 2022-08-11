@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml"
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Digital Facsimile Sample</title>
+      </titleStmt>
+      <publicationStmt>
+        <p>This sample contains a TEI digital facsimile to test the support that Oxygen provides for
+          editing such facsimiles.</p>
+      </publicationStmt>
+      <sourceDesc>
+        <p>This sample is extracted from chapter <ref
+            target="http://www.tei-c.org/release/doc/tei-p5-doc/en/html/PH.html">Representation of
+            Primary Sources</ref> of <title>P5: Guidelines for Electronic Text Encoding and
+            Interchange </title>.</p>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <facsimile>
+    <surface lry="800" lrx="566" uly="0" ulx="0">
+      <graphic url="Bovelles-49r.png"/>
+      <zone xml:id="B49rHead" lry="133" lrx="499" uly="63" ulx="80"/>
+      <zone xml:id="B49rPara2" lry="497" lrx="495" uly="209" ulx="85"/>
+      <zone xml:id="B49rFig1" lry="432" lrx="488" uly="218" ulx="282"/>
+      <zone xml:id="B49rW457" lry="364" lrx="166" uly="343" ulx="114"/>
+    </surface>
+  </facsimile>
+  <text>
+    <body>
+      <pb facs="#B49r"/>
+      <fw>De Geometrie 49</fw>
+      <head facs="#B49rHead"> DU SON ET ACCORD DES CLOCHES ET <lb/> des alleures des chevaulx,
+        chariotz &amp; charges, des fontaines:&amp; <lb/> encyclie du monde, &amp; de la dimension
+        du corps humain.<lb/> Chapitre septiesme</head>
+      <div n="1">
+        <p>Le son &amp; accord des cloches pendans en ung mesme <lb/> axe, est faict en contraires
+          parties.</p>
+        <p rend="it" facs="#B49rPara2">LEs cloches ont quasi fi<lb/>gures de rondes pyra<lb/>mides
+          imperfaictes &amp; <lb/> irregulieres: &amp; leur accord se <lb/> fait par reigle
+          geometrique. Com<lb/>me si les deux cloches C &amp; D <lb/> sont <w facs="#B49rW457"
+            >pendans</w> à ung mesme axe <lb/> ou essieu A B: je dis que leur ac<lb/>cord se fera en
+            co<ex>n</ex>traires parties<lb/> co<ex>m</ex>me voyez icy figuré. Car qua<ex>n</ex>d
+          <lb/> lune sera en hault, laultre declinera embas. Aultrement si elles decli<lb/>nent
+          toutes deux ensembles en une mesme partie, elles seront discord, <lb/> &amp; sera leur
+          sonnerie mal plaisante à oyr. </p>
+      </div>
+    </body>
+  </text>
+</TEI>

@@ -1,0 +1,56 @@
+{"personnel": {"person": [
+    {
+        "id": "Big.Boss",
+        "name": {
+            "family": "Boss",
+            "given": "Big"
+        },
+        "email": "chief@oxygenxml.com",
+        "link": {"subordinates": "one.worker two.worker three.worker four.worker five.worker"}
+    },
+    {
+        "id": "one.worker",
+        "name": {
+            "family": "Worker",
+            "given": "One"
+        },
+        "email": "one@oxygenxml.com",
+        "link": {"manager": "Big.Boss"}
+    },
+    {
+        "id": "two.worker",
+        "name": {
+            "family": "Worker",
+            "given": "Two"
+        },
+        "email": "two@oxygenxml.com",
+        "link": {"manager": "Big.Boss"}
+    },
+    {
+        "id": "three.worker",
+        "name": {
+            "family": "Worker",
+            "given": "Three"
+        },
+        "email": "three@oxygenxml.com",
+        "link": {"manager": "Big.Boss"}
+    },
+    {
+        "id": "four.worker",
+        "name": {
+            "family": "Worker",
+            "given": "Four"
+        },
+        "email": "four@oxygenxml.com",
+        "link": {"manager": "Big.Boss"}
+    },
+    {
+        "id": "five.worker",
+        "name": {
+            "family": "Worker",
+            "given": "Five"
+        },
+        "email": "five@oxygenxml.com",
+        "link": {"manager": "Big.Boss"}
+    }
+]}}

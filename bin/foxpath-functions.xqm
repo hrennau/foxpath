@@ -646,7 +646,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 foxf:frequencies($values, $min, $max, 'count', $order, $format)
 
         else if ($fname = ('ftree', 'ftree-ec')) then
-            let $da := if (ends-with($fname, '-ec')) then 1 else 0        
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
             let $args := $call/*[not(@ignore eq 'true')]        
             let $rootFolders := 
                 if ($da eq 1) then $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
@@ -656,9 +656,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return foxf:ftree($rootFolders, $fileProperties, $exprTrees)    
             
         else if ($fname = ('ftree-selective', 'ftree-selective-ec')) then
-            let $da := if (ends-with($fname, '-ec')) then 1 else 0        
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
             let $args := $call/*[not(@ignore eq 'true')]        
-            let $narg := count($args)
             let $rootFolders := 
                 if ($da eq 1) then $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
                 else $context
@@ -668,14 +667,11 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $exprTrees := $call/_parsed            
             return foxf:ftreeSelective($rootFolders, (), $descendantNames, $folderNames, $fileProperties, $exprTrees, ())
             
-        else if ($fname = ('ftree-view', 'ftree-view-ec')) then
-            let $args := $call/*[not(@ignore eq 'true')]        
-            let $narg := count($args)
-            let $da := if (ends-with($fname, '-ec')) then 1 else 0            
+        else if ($fname = 'ftree-view') then
+            let $args := $call/*[not(@ignore eq 'true')]
             let $exprTrees := $call/_parsed        
             let $uris := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $fileProperties := subsequence($args, 2)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $_DEBUG := trace($fileProperties, '_PROP: ')
             return foxf:ftreeSelective((), $uris, (), (), $fileProperties, $exprTrees, ())
 
         (: function `ft-tokenize` 
@@ -1719,66 +1715,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
          
         (: function `zzz-fox-ancestor` 
            ====================== :)
-        (: function `zzz-fox-ancestor-or-self` 
-           =============================== :)
-        else if ($fname eq 'zzz-fox-ancestor' or $fname eq 'zzz-fox-ancestor-or-self') then
-            let $narg := count($call/*)
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 0]
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 1]
-            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 2]
-            let $arg4 := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 3]
-            let $arg5 := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 4]
-            let $uris :=
-                if ($narg eq 0) then $context else $arg1
-            let $names := $arg2
-            let $namesExcluded := $arg3
-            let $pselector := $arg4            
-            let $ignoreCase := $arg5
-            let $includeSelf := $fname eq 'fox-ancestor-or-self'
-            return
-                foxf:zzzFoxAncestor($uris, $names, $namesExcluded, $pselector, $ignoreCase, $includeSelf)
-
-        (: function `zzz-fox-child` 
-           ======================== :)
-        else if ($fname = ('zzz-fox-child', 'zzz-fchild')) then
-            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                foxf:zzzFoxChild($context, $names, $namesExcluded)
-
-        (: function `zzz-fox-descendant` 
-           ============================= :)
-        else if ($fname = ('zzz-fox-descendant', 'zzz-fdescendant')) then
-            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                foxf:zzzFoxDescendant($context, $names, $namesExcluded)
-
-        (: function `zzz-fox-descendant-or-self` 
-           ===================================== :)
-        else if ($fname = ('zzz-fox-descendant-or-self', 'zzz-fdescendant-or-self')) then
-            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                foxf:zzzFoxDescendantOrSelf($context, $names, $namesExcluded)
-
-        (: function `zzz-fox-parent` 
-           ========================= :)
-        else if ($fname = ('zzz-fox-parent', 'zzz-fparent')) then
-            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                foxf:zzzFoxParent($context, $names, $namesExcluded)
-                
-        (: function `zzz-fox-parent-sibling` 
-           ================================= :)
-        else if ($fname eq 'zzz-fox-parent-sibling') then
-            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded:= $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $from := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $to := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
-            return
-                foxf:zzzFoxParentSibling($context, $names, $namesExcluded, $from, $to)
 
         (: function `zzz-fox-self` 
            ======================= :)

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Learning Map//EN" "learningmap.dtd">
+<map id="learningsample" title="learning content">
+ <title>learning content samples</title>
+ <!-- learningObject clusters can appear anywhere in a map hierarchy but always
+     follow a consistent information pattern within the LO -->
+ <learningObject collection-type="sequence" href="topOverview.dita" type="learningOverview">
+  <learningPlanRef href="testlearningPlan.dita" type="learningPlan"> </learningPlanRef>
+  <learningOverviewRef href="testlearningOverview.dita" type="learningOverview"> </learningOverviewRef>
+  <learningContentRef href="testlearningContent.dita" type="learningContent"> </learningContentRef>
+  <learningPostAssessmentRef href="testlearningAssess.dita" type="learningAssessment"> </learningPostAssessmentRef>
+  <learningSummaryRef href="testlearningSummary.dita" type="learningSummary"> </learningSummaryRef>
+ </learningObject>
+</map>

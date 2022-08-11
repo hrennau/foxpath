@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE troubleshooting PUBLIC "-//OASIS//DTD DITA 1.3 Troubleshooting//EN" "troubleshooting.dtd">
+<troubleshooting id="troubleshooting">
+  <title>Troubleshooting</title>
+  <shortdesc>If you have any problms communicating with your team, read here for
+    solutions.</shortdesc>
+  <troublebody>
+    <condition>
+      <p>You cannot send or receive messages.</p>
+    </condition>
+    <troubleSolution>
+      <cause>
+        <title>You cannot login</title>
+        <p>The application rejects your login.</p>
+      </cause>
+      <remedy>
+        <responsibleParty>The user</responsibleParty>
+        <steps-unordered>
+          <step>
+            <cmd>Check that your CAPS key is not pressed</cmd>
+          </step>
+          <step>
+            <cmd>Reset your password</cmd>
+          </step>
+        </steps-unordered>
+      </remedy>
+    </troubleSolution>
+    <troubleSolution>
+      <cause>
+        <title>The application lost connectivity</title>
+        <p>You cannot see other's replies.</p>
+      </cause>
+      <remedy>
+        <responsibleParty>The user</responsibleParty>
+        <steps-unordered>
+          <step>
+            <cmd>Check the application proxy settings</cmd>
+          </step>
+          <step>
+            <cmd>Run a connectivity test</cmd>
+          </step>
+        </steps-unordered>
+      </remedy>
+    </troubleSolution>
+  </troublebody>
+</troubleshooting>

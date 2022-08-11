@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE task PUBLIC "-//OASIS//DTD DITA Task//EN" "task.dtd">
+<task id="task_bqt_sbm_5f">
+    <title>Setting up a conference call</title>
+    <shortdesc>You can easily set up a conference call with your family, friends, co-workers. Call
+        the first participant and then join calls together as described  in the following
+        procedure.</shortdesc>
+    <taskbody>
+        <context>
+            <p>Before starting, make sure that your <term>SIM card</term> is enabled for conference
+                calls service.</p>
+        </context>
+        <steps>
+            <step>
+                <cmd>Call the first participant. See <xref href="makeACall.dita"/></cmd>
+            </step>
+            <step>
+                <cmd>During the call, press <image href="../image/MakeConference.jpg"
+                        id="image_2tz_glm_5f" height="1em"/> key to add a participant. In this way
+                    the first participant in put on hold.</cmd>
+            </step>
+            <step>
+                <cmd>Type the participant phone number or search for in contacts.</cmd>
+            </step>
+            <step>
+                <cmd>Press the <image href="../image/call.svg" id="image_gl2_23v_qf" height="1em"/>
+                    key.</cmd>
+            </step>
+            <step>
+                <cmd>To join also the first contact to the conference call, press the <image
+                        href="../image/call.svg" height="1em" id="image_5d4_khv_2g"/> key again. </cmd>
+            </step>
+            <step>
+                <cmd>To join other contact to the conference, repeat steps 2 - 5.</cmd>
+            </step>
+        </steps>
+    </taskbody>
+</task>

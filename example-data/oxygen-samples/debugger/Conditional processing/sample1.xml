@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--    Sample from Zvon XSLT tutorial (www.zvon.org)   -->
+<source>
+    <list>
+        <entry name="A"/>
+        <entry name="B"/>
+        <entry name="C"/>
+        <entry name="D"/>
+    </list>
+</source>

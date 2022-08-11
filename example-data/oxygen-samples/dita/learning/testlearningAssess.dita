@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE learningAssessment PUBLIC "-//OASIS//DTD DITA Learning Assessment//EN" "learningAssessment.dtd">
+<learningAssessment id="testAssess">
+ <title>Certification Test</title>
+ <shortdesc>Pass this test, and you are a certified genius.</shortdesc>
+ <learningAssessmentbody>
+  <lcIntro>Here's your test, folks. Good luck!</lcIntro>
+  <lcInteraction>
+   <!-- ============================================= -->
+   <!--True - False Interaction                    -->
+   <!-- ============================================= -->
+   <lcTrueFalse id="tf1">
+    <title>True - False sun rising</title>
+    <lcQuestion>On Earth, the sun rises in the West and sets in the East.</lcQuestion>
+    <lcAsset>
+     <image
+      href="images/180px-Florida_Sunrise_099.JPG">
+      <alt>the sun rising on Earth</alt>
+     </image>
+    </lcAsset>
+    <lcAnswerOptionGroup>
+     <lcAnswerOption>
+      <lcAnswerContent>True</lcAnswerContent>
+      <lcFeedback>No, look to the East.</lcFeedback>
+     </lcAnswerOption>
+     <lcAnswerOption>
+      <lcAnswerContent>False</lcAnswerContent>
+      <lcCorrectResponse/>
+      <lcFeedback>Yes, look to the East.</lcFeedback>
+     </lcAnswerOption>
+    </lcAnswerOptionGroup>
+   </lcTrueFalse>
+   <!-- ============================================= -->
+   <!--Single select Interaction                      -->
+   <!-- ============================================= -->
+   <lcSingleSelect id="singleselect">
+    <title>Multiple Choice - IEEE standards trivia</title>
+    <lcQuestion>Which one of the listed standards committees is responsible for developing the token
+     ring specification?</lcQuestion>
+    <lcAnswerOptionGroup>
+     <lcAnswerOption>
+      <lcAnswerContent>IEEE 802.3</lcAnswerContent>
+      <lcFeedback>Sorry. A little low.</lcFeedback>
+     </lcAnswerOption>
+     <lcAnswerOption>
+      <lcAnswerContent>IEEE 802.5</lcAnswerContent>
+      <lcCorrectResponse/>
+      <lcFeedback>That's the one.</lcFeedback>
+     </lcAnswerOption>
+     <lcAnswerOption>
+      <lcAnswerContent>IEEE 802.6</lcAnswerContent>
+      <lcFeedback>Nope. Too high.</lcFeedback>
+     </lcAnswerOption>
+     <lcAnswerOption>
+      <lcAnswerContent>IEEE 802.11</lcAnswerContent>
+      <lcFeedback>Nope. Way too high.</lcFeedback>
+     </lcAnswerOption>
+    </lcAnswerOptionGroup>
+   </lcSingleSelect>
+   <!-- ============================================= -->
+   <!--Multiple select Interaction                    -->
+   <!-- ============================================= -->
+   <lcMultipleSelect id="ms1">
+    <title>Finding Major League Baseball logos</title>
+    <lcQuestion>Which one of the following is a logo of a Major League Baseball team? (You may
+     choose more than one.)</lcQuestion>
+    <lcAnswerOptionGroup>
+     <lcAnswerOption id="A">
+      <lcAnswerContent>
+       <image href="images/logo1.gif">
+        <alt>Indians logo</alt>
+       </image>
+      </lcAnswerContent>
+      <lcCorrectResponse/>
+      <lcFeedback>Yes, that's one.</lcFeedback>
+     </lcAnswerOption>
+     <lcAnswerOption id="B">
+      <lcAnswerContent>
+       <image href="images/logo2.gif">
+        <alt>Giants logo</alt>
+       </image>
+      </lcAnswerContent>
+      <lcCorrectResponse/>
+      <lcFeedback>Yes, that's one.</lcFeedback>
+     </lcAnswerOption>
+     <lcAnswerOption id="C">
+      <lcAnswerContent>
+       <image href="images/logo3.gif">
+        <alt>Hawks logo</alt>
+       </image>
+      </lcAnswerContent>
+      <lcFeedback>No, not that one. Sorry!</lcFeedback>
+     </lcAnswerOption>
+     <lcAnswerOption id="D">
+      <lcAnswerContent>
+       <image href="images/logo4.gif">
+        <alt>Orioles logo</alt>
+       </image>
+      </lcAnswerContent>
+      <lcCorrectResponse/>
+      <lcFeedback>Yes, that's one.</lcFeedback>
+     </lcAnswerOption>
+    </lcAnswerOptionGroup>
+   </lcMultipleSelect>
+   <!-- ============================================= -->
+   <!--Sequencing Interaction                    -->
+   <!-- ============================================= -->
+   <lcSequencing id="sequencing">
+    <title>Sequencing City Populations in the U.S.</title>
+    <lcQuestion>Order the following U.S. cities according to population, from largest to
+     smallest.</lcQuestion>
+    <lcSequenceOptionGroup>
+     <lcSequenceOption>
+      <lcAnswerContent>Portland, Oregon</lcAnswerContent>
+      <lcSequence name="lcSequence" value="2"/>
+     </lcSequenceOption>
+     <lcSequenceOption>
+      <lcAnswerContent>Chicago, Illinois</lcAnswerContent>
+      <lcSequence name="lcSequence" value="1"/>
+     </lcSequenceOption>
+     <lcSequenceOption>
+      <lcAnswerContent>Portland, Maine</lcAnswerContent>
+      <lcSequence name="lcSequence" value="4"/>
+     </lcSequenceOption>
+     <lcSequenceOption>
+      <lcAnswerContent>Syracuse, New York</lcAnswerContent>
+      <lcSequence name="lcSequence" value="3"/>
+     </lcSequenceOption>
+    </lcSequenceOptionGroup>
+    <lcFeedbackIncorrect>No, try again, please. </lcFeedbackIncorrect>
+    <lcFeedbackCorrect>Very good.</lcFeedbackCorrect>
+   </lcSequencing>
+   <!-- ============================================= -->
+   <!--Matching Interaction                    -->
+   <!-- ============================================= -->
+   <lcMatching id="matching">
+    <title>Matching teams with cities</title>
+    <lcQuestion>Match the team with the city.</lcQuestion>
+    <lcMatchTable>
+     <lcMatchingHeader>
+      <lcItem>Team</lcItem>
+      <lcMatchingItem>City</lcMatchingItem>
+     </lcMatchingHeader>
+     <lcMatchingPair>
+      <lcItem>Boston</lcItem>
+      <lcMatchingItem>Red Sox</lcMatchingItem>
+     </lcMatchingPair>
+     <lcMatchingPair>
+      <lcItem>San Francisco</lcItem>
+      <lcMatchingItem>Giants</lcMatchingItem>
+     </lcMatchingPair>
+     <lcMatchingPair>
+      <lcItem>Chicago</lcItem>
+      <lcMatchingItem>Cubs</lcMatchingItem>
+     </lcMatchingPair>
+     <lcMatchingPair>
+      <lcItem>Toronto</lcItem>
+      <lcMatchingItem>Blue Jays</lcMatchingItem>
+     </lcMatchingPair>
+    </lcMatchTable>
+   </lcMatching>
+   <!-- ============================================= -->
+   <!--Hotspot Interaction                    -->
+   <!-- ============================================= -->
+   <lcHotspot id="hotspots">
+    <title>Team logos hotspot</title>
+    <lcQuestion>Which of the following is the logo for the Cleveland Indians?</lcQuestion>
+    <lcHotspotMap>
+     <image href="images/hotlogos.gif"/>
+     <lcArea id="indians">
+      <lcAreaShape>rect</lcAreaShape>
+      <lcAreaCoords>0,0,50,50</lcAreaCoords>
+      <lcCorrectResponse value="indians"/>
+      <lcFeedback>Yes.</lcFeedback>
+     </lcArea>
+     <lcArea id="giants">
+      <lcAreaShape>rect</lcAreaShape>
+      <lcAreaCoords>50,0,100,50</lcAreaCoords>
+      <lcFeedback>No.</lcFeedback>
+     </lcArea>
+     <lcArea id="cardinals">
+      <lcAreaShape>rect</lcAreaShape>
+      <lcAreaCoords>0,50,50,100</lcAreaCoords>
+      <lcFeedback>No.</lcFeedback>
+     </lcArea>
+     <lcArea id="orioles">
+      <lcAreaShape>rect</lcAreaShape>
+      <lcAreaCoords>50,50,100,100</lcAreaCoords>
+      <lcFeedback>No.</lcFeedback>
+     </lcArea>
+    </lcHotspotMap>
+   </lcHotspot>
+  </lcInteraction>
+  <lcSummary>
+   <title>Summary</title> You are now certified. </lcSummary>
+ </learningAssessmentbody>
+</learningAssessment>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE subjectScheme PUBLIC "-//OASIS//DTD DITA Subject Scheme Map//EN" "map.dtd"> 
+<subjectScheme>
+    <subjectHead>
+        <subjectHeadMeta>
+            <navtitle>Phone Guide User Manual Controlled Values list</navtitle>
+        </subjectHeadMeta>
+    </subjectHead>
+    <hasInstance>
+        <subjectdef keys="productSbjKey">
+            <subjectdef keys="X2000">
+                <topicmeta>
+                    <navtitle>X2000 Phone Guide</navtitle>
+                </topicmeta>
+            </subjectdef>
+            <subjectdef keys="X1000">
+                <topicmeta>
+                    <navtitle>X1000 Phone Guide</navtitle>
+                </topicmeta>
+            </subjectdef>
+        </subjectdef>
+        <subjectdef keys="audienceSbjKey">
+            <subjectdef keys="Technician">
+                <topicmeta>
+                    <navtitle>Technician Level</navtitle>
+                </topicmeta>
+            </subjectdef>
+            <subjectdef keys="BasicUser">
+                <topicmeta>
+                    <navtitle>Basic User Level</navtitle>
+                </topicmeta>
+            </subjectdef>
+        </subjectdef>
+    </hasInstance>
+    <enumerationdef>
+        <attributedef name="product"/>
+        <subjectdef keyref="productSbjKey"/>
+    </enumerationdef>
+    <enumerationdef>
+        <attributedef name="audience"/>
+        <subjectdef keyref="audienceSbjKey"/>
+    </enumerationdef>
+    <!--Reject all possible values for other profiling attributes-->
+    <enumerationdef>
+        <attributedef name="platform"/>
+        <subjectdef/>
+    </enumerationdef>
+    <enumerationdef>
+        <attributedef name="props"/>
+        <subjectdef/>
+    </enumerationdef>
+    <enumerationdef>
+        <attributedef name="otherprops"/>
+        <subjectdef/>
+    </enumerationdef>
+    <enumerationdef>
+        <attributedef name="rev"/>
+        <subjectdef/>
+    </enumerationdef>
+</subjectScheme>

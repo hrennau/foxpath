@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--    Sample from Zvon XSLT tutorial (www.zvon.org)   -->
+<source>
+    <chapter>Chapter A</chapter>
+    <chapter>Chapter B</chapter>
+    <chapter>Chapter C</chapter>
+    <chapter>Chapter D</chapter>
+</source>

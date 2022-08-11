@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="topic_by5_mnv_kx">
+    <title>Deep Space Exploration</title>
+    <body>
+        <section>
+            <title>Animated Flyover of Pluto’s Icy Mountain and Plains </title>
+            <p>This simulated flyover of Pluto’s Norgay Montes (Norgay Mountains) and Sputnik Planum
+                (Sputnik Plain) was created from New Horizons closest-approach images. Norgay Montes
+                have been informally named for Tenzing Norgay, one of the first two humans to reach
+                the summit of Mount Everest. Sputnik Planum is informally named for Earth’s first
+                artificial satellite. The images were acquired by the Long Range Reconnaissance
+                Imager (LORRI) on July 14 from a distance of 48,000 miles (77,000 kilometers).
+                Features as small as a half-mile (1 kilometer) across are visible. Credit:
+                NASA/JHUAPL/SWRI</p>
+            <object data="https://www.youtube.com/embed/ydU-YrG_INk" outputclass="iframe"/>
+        </section>
+    </body>
+</topic>

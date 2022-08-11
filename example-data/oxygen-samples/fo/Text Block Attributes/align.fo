@@ -1,0 +1,825 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><!--
+    (c) RenderX, 2000
+    This file makes part of the RenderX XSL FO Test Suite. Permission is
+    granted to copy and modify this file as a whole or in part, provided
+    that any work derived from it bear a reference to the original
+    document.
+  -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xep="http://www.renderx.com/XEP/xep" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <fo:layout-master-set>
+      <fo:simple-page-master master-name="all-pages">
+         <fo:region-body region-name="xsl-region-body" margin="0.7in" column-gap="0.25in"/>
+         <fo:region-before region-name="xsl-region-before" extent="0.7in" display-align="after"/>
+         <fo:region-after region-name="xsl-region-after" extent="0.7in" display-align="before"/>
+      </fo:simple-page-master>
+   </fo:layout-master-set>
+   <fo:page-sequence master-reference="all-pages">
+      <fo:static-content flow-name="xsl-region-before">
+         <fo:list-block font="10pt Helvetica" provisional-distance-between-starts="5in" provisional-label-separation="0in">
+            <fo:list-item>
+               <fo:list-item-label end-indent="label-end()">
+                  <fo:block text-align="start" font-weight="bold"> Text Block Attributes - Alignment </fo:block>
+               </fo:list-item-label>
+               <fo:list-item-body start-indent="body-start()">
+                  <fo:block text-align="end">
+                Page <fo:page-number/>
+                  </fo:block>
+               </fo:list-item-body>
+            </fo:list-item>
+         </fo:list-block>
+      </fo:static-content>
+      <fo:static-content flow-name="xsl-region-after">
+         <fo:list-block font="9pt Times" provisional-distance-between-starts="3in" provisional-label-separation="0in">
+            <fo:list-item>
+               <fo:list-item-label end-indent="label-end()">
+                  <fo:block text-align="start" font-weight="bold">© <fo:basic-link external-destination="url(http://www.renderx.com/)" color="#0000C0" text-decoration="underline">Render<fo:wrapper font-weight="bold" color="#C00000">X</fo:wrapper>
+                     </fo:basic-link> 2000</fo:block>
+               </fo:list-item-label>
+               <fo:list-item-body start-indent="body-start()">
+                  <fo:block text-align="end" font-style="italic" color="#606060">
+                XSL Formatting Objects Test Suite
+              </fo:block>
+               </fo:list-item-body>
+            </fo:list-item>
+         </fo:list-block>
+      </fo:static-content>
+      <fo:static-content flow-name="xsl-footnote-separator">
+         <fo:block>
+            <fo:leader leader-pattern="rule" leader-length="100%" rule-thickness="0.5pt" rule-style="solid" color="black"/>
+         </fo:block>
+      </fo:static-content>
+      <fo:flow flow-name="xsl-region-body">
+         <fo:block>
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <fo:block font="bold 14pt Helvetica" color="black" space-before="18pt" space-before.conditionality="discard" space-after="6pt" keep-with-next.within-column="always" keep-together.within-column="always" text-align="center" padding="3pt" background-color="silver"> Text Block Attributes - Alignment </fo:block>
+
+            <fo:block font="bold 12pt Times" space-before="12pt" space-after="6pt" keep-with-next.within-column="always" keep-together.within-column="always" text-align="center">
+               <fo:wrapper text-decoration="underline"> Paragraph Alignment </fo:wrapper>
+            </fo:block>
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="start" text-indent="0in">
+    
+      
+  This text is left-justified (<fo:wrapper font-family="monospace">text-align="start"</fo:wrapper>). 
+
+      
+  The first line is indented by 0 inch.
+
+    
+      
+  This text is left-justified (<fo:wrapper font-family="monospace">text-align="start"</fo:wrapper>). 
+
+      
+  The first line is indented by 0 inch.
+
+    
+      
+  This text is left-justified (<fo:wrapper font-family="monospace">text-align="start"</fo:wrapper>). 
+
+      
+  The first line is indented by 0 inch.
+
+    
+      
+  This text is left-justified (<fo:wrapper font-family="monospace">text-align="start"</fo:wrapper>). 
+
+      
+  The first line is indented by 0 inch.
+
+    
+      
+  This text is left-justified (<fo:wrapper font-family="monospace">text-align="start"</fo:wrapper>). 
+
+      
+  The first line is indented by 0 inch.
+
+    
+      
+  This text is left-justified (<fo:wrapper font-family="monospace">text-align="start"</fo:wrapper>). 
+
+      
+  The first line is indented by 0 inch.
+
+      
+  </fo:block>
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="end" text-indent="0in">
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="end"</fo:wrapper>).
+
+      
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="end"</fo:wrapper>).
+
+      
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="end"</fo:wrapper>).
+
+      
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="end"</fo:wrapper>).
+
+      
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="end"</fo:wrapper>).
+
+      
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="end"</fo:wrapper>).
+
+      
+      
+  </fo:block>
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="left" text-indent="0.5in">
+    
+      
+  This text is left-justified (<fo:wrapper font-family="monospace">text-align="left"</fo:wrapper>). 
+
+      
+  The first line is indented by 0.5 inch.
+
+    
+      
+  This text is left-justified (<fo:wrapper font-family="monospace">text-align="left"</fo:wrapper>). 
+
+      
+  The first line is indented by 0.5 inch.
+
+    
+      
+  This text is left-justified (<fo:wrapper font-family="monospace">text-align="left"</fo:wrapper>). 
+
+      
+  The first line is indented by 0.5 inch.
+
+    
+      
+  This text is left-justified (<fo:wrapper font-family="monospace">text-align="left"</fo:wrapper>). 
+
+      
+  The first line is indented by 0.5 inch.
+
+    
+      
+  This text is left-justified (<fo:wrapper font-family="monospace">text-align="left"</fo:wrapper>). 
+
+      
+  The first line is indented by 0.5 inch.
+
+    
+      
+  This text is left-justified (<fo:wrapper font-family="monospace">text-align="left"</fo:wrapper>). 
+
+      
+  The first line is indented by 0.5 inch.
+
+      
+  </fo:block>
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="right" text-indent="0in">
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="right"</fo:wrapper>).
+
+      
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="right"</fo:wrapper>).
+
+      
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="right"</fo:wrapper>).
+
+      
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="right"</fo:wrapper>).
+
+      
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="right"</fo:wrapper>).
+
+      
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="right"</fo:wrapper>).
+
+      
+      
+  </fo:block>
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="justify" text-indent="0.5in">
+    
+      
+  This text is double-justified.
+
+      
+  The first line is indented by 0.5 inch.
+
+    
+      
+  This text is double-justified.
+
+      
+  The first line is indented by 0.5 inch.
+
+    
+      
+  This text is double-justified.
+
+      
+  The first line is indented by 0.5 inch.
+
+    
+      
+  This text is double-justified.
+
+      
+  The first line is indented by 0.5 inch.
+
+    
+      
+  This text is double-justified.
+
+      
+  The first line is indented by 0.5 inch.
+
+    
+      
+  This text is double-justified.
+
+      
+  The first line is indented by 0.5 inch.
+
+      
+  </fo:block>
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="center" text-indent="0in">
+    
+      
+  This text is centered. 
+
+      
+    
+      
+  This text is centered. 
+
+      
+    
+      
+  This text is centered. 
+
+      
+    
+      
+  This text is centered. 
+
+      
+    
+      
+  This text is centered. 
+
+      
+    
+      
+  This text is centered. 
+
+      
+      
+  </fo:block>
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="inside" text-indent="0in">
+    
+      
+  This text is aligned at the inside edge of the page. 
+
+      
+    
+      
+  This text is aligned at the inside edge of the page. 
+
+      
+    
+      
+  This text is aligned at the inside edge of the page. 
+
+      
+    
+      
+  This text is aligned at the inside edge of the page. 
+
+      
+    
+      
+  This text is aligned at the inside edge of the page. 
+
+      
+    
+      
+  This text is aligned at the inside edge of the page. 
+
+      
+      
+  </fo:block>
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="outside" text-indent="0in">
+    
+      
+  This text is aligned at the outside edge of the page. 
+
+      
+    
+      
+  This text is aligned at the outside edge of the page. 
+
+      
+    
+      
+  This text is aligned at the outside edge of the page. 
+
+      
+    
+      
+  This text is aligned at the outside edge of the page. 
+
+      
+    
+      
+  This text is aligned at the outside edge of the page. 
+
+      
+    
+      
+  This text is aligned at the outside edge of the page. 
+
+      
+      
+  </fo:block>
+
+
+
+            <fo:block font="bold 12pt Times" space-before="12pt" space-after="6pt" keep-with-next.within-column="always" keep-together.within-column="always" text-align="center">
+               <fo:wrapper text-decoration="underline"> Last Line Alignment</fo:wrapper>
+            </fo:block>
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="center" text-align-last="start">
+    
+      
+  This text is centered. 
+
+      
+  The last line of the paragraph is aligned to the left 
+  (<fo:wrapper font-family="monospace">text-align-last="start"</fo:wrapper>).
+
+    
+      
+  This text is centered. 
+
+      
+  The last line of the paragraph is aligned to the left 
+  (<fo:wrapper font-family="monospace">text-align-last="start"</fo:wrapper>).
+
+    
+      
+  This text is centered. 
+
+      
+  The last line of the paragraph is aligned to the left 
+  (<fo:wrapper font-family="monospace">text-align-last="start"</fo:wrapper>).
+
+    
+  </fo:block>
+
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="center" text-align-last="end">
+    
+      
+  This text is centered. 
+
+      
+  The last line of the paragraph is aligned to the right 
+  (<fo:wrapper font-family="monospace">text-align-last="end"</fo:wrapper>).
+
+    
+      
+  This text is centered. 
+
+      
+  The last line of the paragraph is aligned to the right 
+  (<fo:wrapper font-family="monospace">text-align-last="end"</fo:wrapper>).
+
+    
+      
+  This text is centered. 
+
+      
+  The last line of the paragraph is aligned to the right 
+  (<fo:wrapper font-family="monospace">text-align-last="end"</fo:wrapper>).
+
+    
+  </fo:block>
+
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="start" text-align-last="inside">
+    
+      
+  This text is left-justified (<fo:wrapper font-family="monospace">text-align="start"</fo:wrapper>). 
+
+      
+  The last line of the paragraph is aligned 
+  at the inside edge of the page.
+
+    
+      
+  This text is left-justified (<fo:wrapper font-family="monospace">text-align="start"</fo:wrapper>). 
+
+      
+  The last line of the paragraph is aligned 
+  at the inside edge of the page.
+
+    
+      
+  This text is left-justified (<fo:wrapper font-family="monospace">text-align="start"</fo:wrapper>). 
+
+      
+  The last line of the paragraph is aligned 
+  at the inside edge of the page.
+
+    
+  </fo:block>
+
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="end" text-align-last="start">
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="end"</fo:wrapper>).
+
+      
+  The last line of the paragraph is aligned to the left 
+  (<fo:wrapper font-family="monospace">text-align-last="start"</fo:wrapper>).
+
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="end"</fo:wrapper>).
+
+      
+  The last line of the paragraph is aligned to the left 
+  (<fo:wrapper font-family="monospace">text-align-last="start"</fo:wrapper>).
+
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="end"</fo:wrapper>).
+
+      
+  The last line of the paragraph is aligned to the left 
+  (<fo:wrapper font-family="monospace">text-align-last="start"</fo:wrapper>).
+
+    
+  </fo:block>
+
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="justify" text-align-last="center">
+    
+      
+  This text is double-justified.
+
+      
+  The last line of the paragraph is centered.
+
+    
+      
+  This text is double-justified.
+
+      
+  The last line of the paragraph is centered.
+
+    
+      
+  This text is double-justified.
+
+      
+  The last line of the paragraph is centered.
+
+    
+  </fo:block>
+
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="justify" text-align-last="justify">
+    
+      
+  This text is double-justified.
+
+      
+  The last line of the paragraph is double-justified.
+
+    
+      
+  This text is double-justified.
+
+      
+  The last line of the paragraph is double-justified.
+
+    
+      
+  This text is double-justified.
+
+      
+  The last line of the paragraph is double-justified.
+
+    
+  </fo:block>
+
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="center" text-align-last="outside">
+    
+      
+  This text is centered. 
+
+      
+  The last line of the paragraph is aligned 
+  at the outside edge of the page.
+
+    
+      
+  This text is centered. 
+
+      
+  The last line of the paragraph is aligned 
+  at the outside edge of the page.
+
+    
+      
+  This text is centered. 
+
+      
+  The last line of the paragraph is aligned 
+  at the outside edge of the page.
+
+    
+  </fo:block>
+
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="right" text-align-last="left">
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="right"</fo:wrapper>).
+
+      
+  The last line of the paragraph is aligned to the left 
+  (<fo:wrapper font-family="monospace">text-align-last="left"</fo:wrapper>).
+
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="right"</fo:wrapper>).
+
+      
+  The last line of the paragraph is aligned to the left 
+  (<fo:wrapper font-family="monospace">text-align-last="left"</fo:wrapper>).
+
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="right"</fo:wrapper>).
+
+      
+  The last line of the paragraph is aligned to the left 
+  (<fo:wrapper font-family="monospace">text-align-last="left"</fo:wrapper>).
+
+    
+  </fo:block>
+
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="start" text-align-last="end">
+    
+      
+  This text is left-justified (<fo:wrapper font-family="monospace">text-align="start"</fo:wrapper>). 
+
+      
+  The last line of the paragraph is aligned to the right 
+  (<fo:wrapper font-family="monospace">text-align-last="end"</fo:wrapper>).
+
+    
+      
+  This text is left-justified (<fo:wrapper font-family="monospace">text-align="start"</fo:wrapper>). 
+
+      
+  The last line of the paragraph is aligned to the right 
+  (<fo:wrapper font-family="monospace">text-align-last="end"</fo:wrapper>).
+
+    
+      
+  This text is left-justified (<fo:wrapper font-family="monospace">text-align="start"</fo:wrapper>). 
+
+      
+  The last line of the paragraph is aligned to the right 
+  (<fo:wrapper font-family="monospace">text-align-last="end"</fo:wrapper>).
+
+    
+  </fo:block>
+
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="outside" text-align-last="inside">
+    
+      
+  This text is aligned at the outside edge of the page. 
+
+      
+  The last line of the paragraph is aligned 
+  at the inside edge of the page.
+
+    
+      
+  This text is aligned at the outside edge of the page. 
+
+      
+  The last line of the paragraph is aligned 
+  at the inside edge of the page.
+
+    
+      
+  This text is aligned at the outside edge of the page. 
+
+      
+  The last line of the paragraph is aligned 
+  at the inside edge of the page.
+
+    
+  </fo:block>
+
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="justify" text-align-last="relative">
+    
+      
+  This text is double-justified.
+
+      
+  The last line of the paragraph is aligned 
+  in a default manner, based on the alignment
+  of the paragraph (<fo:wrapper font-family="monospace">text-align-last="relative"</fo:wrapper>).
+
+    
+      
+  This text is double-justified.
+
+      
+  The last line of the paragraph is aligned 
+  in a default manner, based on the alignment
+  of the paragraph (<fo:wrapper font-family="monospace">text-align-last="relative"</fo:wrapper>).
+
+    
+      
+  This text is double-justified.
+
+      
+  The last line of the paragraph is aligned 
+  in a default manner, based on the alignment
+  of the paragraph (<fo:wrapper font-family="monospace">text-align-last="relative"</fo:wrapper>).
+
+    
+  </fo:block>
+
+
+
+  
+            <fo:block space-before.optimum="12pt" text-align="end" text-align-last="relative">
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="end"</fo:wrapper>).
+
+      
+  The last line of the paragraph is aligned 
+  in a default manner, based on the alignment
+  of the paragraph (<fo:wrapper font-family="monospace">text-align-last="relative"</fo:wrapper>).
+
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="end"</fo:wrapper>).
+
+      
+  The last line of the paragraph is aligned 
+  in a default manner, based on the alignment
+  of the paragraph (<fo:wrapper font-family="monospace">text-align-last="relative"</fo:wrapper>).
+
+    
+      
+  This text is right-justified (<fo:wrapper font-family="monospace">text-align="end"</fo:wrapper>).
+
+      
+  The last line of the paragraph is aligned 
+  in a default manner, based on the alignment
+  of the paragraph (<fo:wrapper font-family="monospace">text-align-last="relative"</fo:wrapper>).
+
+    
+  </fo:block>
+
+
+
+
+         </fo:block>
+      </fo:flow>
+   </fo:page-sequence>
+</fo:root>

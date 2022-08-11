@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE task PUBLIC "-//OASIS//DTD DITA Task//EN" "task.dtd">
+<task id="task_egl_jxl_3g">
+    <title>Locking and unlocking your phone</title>
+    <shortdesc/>
+    <taskbody>
+        <context>
+            <p>You can lock the keyboard of your phone to avoid pressing keys or call
+                accidentally.</p>
+        </context>
+        <steps>
+            <step>
+                <cmd>To lock your phone, press the <term>Lock</term> key with this icon <image
+                        href="../image/Lock.jpg" id="image_pmp_g14_2g" height="1em"/>.</cmd>
+            </step>
+            <step>
+                <cmd>To unlock the keyboard, press the <term>Lock</term> key again.</cmd>
+            </step>
+        </steps>
+    </taskbody>
+</task>

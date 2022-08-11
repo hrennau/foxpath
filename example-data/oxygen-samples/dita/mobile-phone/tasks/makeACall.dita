@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE task PUBLIC "-//OASIS//DTD DITA Task//EN" "task.dtd">
+<task id="task_4dn_bhv_qf">
+    <title>Making a call</title>
+    <shortdesc/>
+    <taskbody>
+        <context>
+            <p>Make sure that your phone is unlocked, otherwise press the <term>Unlock</term>
+                key</p>
+        </context>
+        <steps>
+            <step>
+                <cmd>Type a phone number or a go to <term>Contacts</term> and search for contact
+                    name</cmd>
+            </step>
+            <step>
+                <cmd>Press the <term>Call</term> key.</cmd>
+            </step>
+            <step>
+                <cmd>To end your call, press the <term>Cancel</term> key.</cmd>
+            </step>
+        </steps>
+    </taskbody>
+</task>

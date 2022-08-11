@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.1/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.1/sch/docbook.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<topic version="5.1" xml:id="t1" xmlns="http://docbook.org/ns/docbook">
+    <title>First topic</title>
+    <para>This is a sample showing that &lt;oXygen/&gt; can be used to edit Docbook topics in conformity
+        with the Dockbook vocabulary.</para>
+</topic>

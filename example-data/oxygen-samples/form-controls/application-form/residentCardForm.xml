@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="residentCardForm.css"?>
+<form>
+    <title>Application to Replace Permanent Resident Card</title>
+    <personalInformation>
+        <gender>male</gender>
+        <classOfAddmission>T1 - 1ST PREF SELECTED ALIEN</classOfAddmission>
+        <dateOfBirth>01/11/1984</dateOfBirth>
+        <dateOfAdmission>01/02/2012</dateOfAdmission>
+        <cityOfBirth>Prague</cityOfBirth>
+        <usSocialNumber/>
+        <countryOfBirth>Czech Republic</countryOfBirth>
+    </personalInformation>
+    <applicationType>
+        <note>If your conditional status is expiring within the next 90 days, then do not file this
+            application. (See Form I-90 instructions for further information.)</note>
+        <status type="perm-cond"/>
+    </applicationType>
+</form>

@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+<!-- This file makes part of an XSL Test Suite -->
+<!-- Inlines: inhibit-line-break property      -->
+<!-- Use the macro.xsl file to generate the FO document. -->
+<!-- Example from: http://www.renderx.net
+    Copyright © 2004 RenderX, Inc.-->
+
+<plain-doc xmlns:fo="http://www.w3.org/1999/XSL/Format">
+  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+           xmlns:dcterms="http://purl.org/dc/terms/"
+           xmlns:dc="http://purl.org/dc/elements/1.1/"
+           xmlns:db="http://www.oasis-open.org/docbook/xml/4.2/">
+    <rdf:Description rdf:about="http://xep.xattic.com/testsuite/features/pagebreak.xml">
+        <dc:title> Advanced Paragraph Attributes - Page Break Control </dc:title>
+        <dc:description>
+          <db:para>
+            Tests page break control via
+            <db:sgmltag class='attribute'>keep-together</db:sgmltag> attribute.
+          </db:para>
+        </dc:description>
+        <dc:date>2003-07-25</dc:date><dcterms:requires rdf:resource="http://xep.xattic.com/testsuite/features/macro.xsl"/>
+    </rdf:Description>
+  </rdf:RDF> 
+
+<!-- ============================================= -->
+<!-- Auxiliary macros                              -->
+
+<define-macro name="keep-block">
+  <p start-indent="0.5in" space-before.optimum="6pt"
+     font="14pt Times" color="$arg"
+     keep-together.within-page="always">
+    <repeat times="15"> 
+      Page breaks should not split blocks.
+    </repeat> 
+  </p>
+</define-macro>
+
+<define-macro name="split-block">
+  <p start-indent="0.5in" space-before.optimum="6pt"
+     font="14pt Times" color="$arg"
+     keep-together.within-page="auto">
+    <repeat times="18"> 
+      Page breaks can split blocks. 
+    </repeat> 
+  </p>
+</define-macro>
+
+
+<!-- ============================================= -->
+<!-- Main macro                                    -->
+
+<define-macro name="line-break-value">
+  <p space-before.optimum="6pt" font-family="Times">
+    <repeat times="6">
+      <macro name="text-{$arg}" arg="#C00000"/>
+      <macro name="text-{$arg}" arg="#0000C0"/>
+    </repeat>
+  </p>
+
+  <p space-before.optimum="6pt" font-family="Times">
+    <repeat times="5">
+      <macro name="rule-sequence" arg="$arg" arg1="#C00000"/>
+      <macro name="rule-sequence" arg="$arg" arg1="#0000C0"/>
+    </repeat>
+  </p>
+
+</define-macro>
+
+<!-- ============================================= -->
+<!-- Document body                                 -->
+
+<title> Advanced Paragraph Attributes - Page Break Control</title>
+<text> 
+  This text tests <code>'keep-together.within-page'</code> attribute.
+</text>
+
+<h2>Subsequent blocks</h2>
+<text> 
+  Following paragraphs all have <code>'keep-together.within-page'</code>
+  attribute set to <code>"always"</code>. Therefore, page breaks
+  may occur only between paragraphs with different colors.
+</text>
+
+<repeat times="7">
+  <macro name="keep-block" arg="#C00000"/>
+  <macro name="keep-block" arg="#0000C0"/>
+</repeat>
+
+<text> 
+  Following paragraphs all have <code>'keep-together.within-page'</code>
+  attribute set to <code>"auto"</code>. It means that these
+  paragraphs may be split by a page break at any point.
+</text>
+
+<repeat times="7">
+  <macro name="split-block" arg="#C00000"/>
+  <macro name="split-block" arg="#0000C0"/>
+</repeat>
+
+</plain-doc>

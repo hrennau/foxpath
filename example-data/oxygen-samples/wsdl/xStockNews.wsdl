@@ -1,0 +1,726 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Stock news fetcher-->
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+    xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+    xmlns:s0="http://www.xignite.com/services/" 
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:s="http://www.w3.org/2001/XMLSchema" 
+    xmlns="http://schemas.xmlsoap.org/wsdl/" 
+    targetNamespace="http://www.xignite.com/services/">
+    <types>
+        <s:schema elementFormDefault="qualified" targetNamespace="http://www.xignite.com/services/">
+            <s:element name="GetBriefings">
+                <s:complexType/>
+            </s:element>
+            <s:element name="GetBriefingsResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetBriefingsResult" type="s0:ArrayOfBriefing"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="ArrayOfBriefing">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="Briefing" nillable="true" type="s0:Briefing"/>
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="Briefing">
+                <s:complexContent mixed="false">
+                    <s:extension base="s0:Common">
+                        <s:sequence>
+                            <s:element minOccurs="0" maxOccurs="1" name="Title" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Time" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Text" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Html" type="s:string"/>
+                        </s:sequence>
+                    </s:extension>
+                </s:complexContent>
+            </s:complexType>
+            <s:complexType name="Common">
+                <s:sequence>
+                    <s:element minOccurs="1" maxOccurs="1" name="Outcome" type="s0:OutcomeTypes"/>
+                    <s:element minOccurs="0" maxOccurs="1" name="Message" type="s:string"/>
+                    <s:element minOccurs="0" maxOccurs="1" name="Identity" type="s:string"/>
+                    <s:element minOccurs="1" maxOccurs="1" name="Delay" type="s:double"/>
+                </s:sequence>
+            </s:complexType>
+            <s:simpleType name="OutcomeTypes">
+                <s:restriction base="s:string">
+                    <s:enumeration value="Success"/>
+                    <s:enumeration value="SystemError"/>
+                    <s:enumeration value="RequestError"/>
+                    <s:enumeration value="RegistrationError"/>
+                </s:restriction>
+            </s:simpleType>
+            <s:element name="Header" type="s0:Header"/>
+            <s:complexType name="Header">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="1" name="Username" type="s:string"/>
+                    <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string"/>
+                    <s:element minOccurs="0" maxOccurs="1" name="Tracer" type="s:string"/>
+                </s:sequence>
+            </s:complexType>
+            <s:element name="GetLastBriefing">
+                <s:complexType/>
+            </s:element>
+            <s:element name="GetLastBriefingResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetLastBriefingResult" type="s0:Briefing"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetStockHeadlines">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="Symbols" type="s:string"/>
+                        <s:element minOccurs="1" maxOccurs="1" name="HeadlineCount" type="s:int"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetStockHeadlinesResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetStockHeadlinesResult" type="s0:ArrayOfStockNews"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="ArrayOfStockNews">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="StockNews" nillable="true" type="s0:StockNews"/>
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="StockNews">
+                <s:complexContent mixed="false">
+                    <s:extension base="s0:Common">
+                        <s:sequence>
+                            <s:element minOccurs="0" maxOccurs="1" name="Headline" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Ticker" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Date" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Time" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Source" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Url" type="s:string"/>
+                        </s:sequence>
+                    </s:extension>
+                </s:complexContent>
+            </s:complexType>
+            <s:element name="GetStockHeadlinesTopFromClass">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="Symbols" type="s0:ArrayOfTicker"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="ArrayOfTicker">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="Ticker" nillable="true" type="s0:Ticker"/>
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="Ticker">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="1" name="Symbol" type="s:string"/>
+                </s:sequence>
+            </s:complexType>
+            <s:element name="GetStockHeadlinesTopFromClassResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1"
+                            name="GetStockHeadlinesTopFromClassResult" type="s0:ArrayOfStockNews"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetStockHeadlinesFromClass">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="Symbols" type="s0:ArrayOfTicker"/>
+                        <s:element minOccurs="1" maxOccurs="1" name="HeadlineCount" type="s:int"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetStockHeadlinesFromClassResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1"
+                            name="GetStockHeadlinesFromClassResult" type="s0:ArrayOfStockNews"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetReutersMarketNewsHeadlines">
+                <s:complexType/>
+            </s:element>
+            <s:element name="GetReutersMarketNewsHeadlinesResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1"
+                            name="GetReutersMarketNewsHeadlinesResult" type="s0:ArrayOfMarketNews"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="ArrayOfMarketNews">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="MarketNews" nillable="true" type="s0:MarketNews"/>
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="MarketNews">
+                <s:complexContent mixed="false">
+                    <s:extension base="s0:Common">
+                        <s:sequence>
+                            <s:element minOccurs="0" maxOccurs="1" name="Headline" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Time" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Source" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Url" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Summary" type="s:string"/>
+                        </s:sequence>
+                    </s:extension>
+                </s:complexContent>
+            </s:complexType>
+            <s:element name="GetReutersMarketNewsDetails">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="Reference" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetReutersMarketNewsDetailsResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1"
+                            name="GetReutersMarketNewsDetailsResult" type="s0:MarketNewsItem"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="MarketNewsItem">
+                <s:complexContent mixed="false">
+                    <s:extension base="s0:Common">
+                        <s:sequence>
+                            <s:element minOccurs="0" maxOccurs="1" name="Headline" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Date" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Source" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Url" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Content" type="s:string"/>
+                        </s:sequence>
+                    </s:extension>
+                </s:complexContent>
+            </s:complexType>
+            <s:element name="GetEarningAnnouncements">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="AnnouncementDate" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetEarningAnnouncementsResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetEarningAnnouncementsResult" type="s0:ArrayOfEarningAnnouncement"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="ArrayOfEarningAnnouncement">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="EarningAnnouncement"
+                        nillable="true" type="s0:EarningAnnouncement"/>
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="EarningAnnouncement">
+                <s:complexContent mixed="false">
+                    <s:extension base="s0:Common">
+                        <s:sequence>
+                            <s:element minOccurs="0" maxOccurs="1" name="AnnouncementDate" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Symbol" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Company" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="EPSEstimate" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="AnnouncementTime" type="s:string"/>
+                        </s:sequence>
+                    </s:extension>
+                </s:complexContent>
+            </s:complexType>
+            <s:element name="ArrayOfBriefing" nillable="true" type="s0:ArrayOfBriefing"/>
+            <s:element name="Briefing" nillable="true" type="s0:Briefing"/>
+            <s:element name="ArrayOfStockNews" nillable="true" type="s0:ArrayOfStockNews"/>
+            <s:element name="ArrayOfMarketNews" nillable="true" type="s0:ArrayOfMarketNews"/>
+            <s:element name="MarketNewsItem" nillable="true" type="s0:MarketNewsItem"/>
+            <s:element name="ArrayOfEarningAnnouncement" nillable="true" type="s0:ArrayOfEarningAnnouncement"/>
+        </s:schema>
+    </types>
+    <message name="GetBriefingsSoapIn">
+        <part name="parameters" element="s0:GetBriefings"/>
+    </message>
+    <message name="GetBriefingsSoapOut">
+        <part name="parameters" element="s0:GetBriefingsResponse"/>
+    </message>
+    <message name="GetBriefingsHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetLastBriefingSoapIn">
+        <part name="parameters" element="s0:GetLastBriefing"/>
+    </message>
+    <message name="GetLastBriefingSoapOut">
+        <part name="parameters" element="s0:GetLastBriefingResponse"/>
+    </message>
+    <message name="GetLastBriefingHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetStockHeadlinesSoapIn">
+        <part name="parameters" element="s0:GetStockHeadlines"/>
+    </message>
+    <message name="GetStockHeadlinesSoapOut">
+        <part name="parameters" element="s0:GetStockHeadlinesResponse"/>
+    </message>
+    <message name="GetStockHeadlinesHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetStockHeadlinesTopFromClassSoapIn">
+        <part name="parameters" element="s0:GetStockHeadlinesTopFromClass"/>
+    </message>
+    <message name="GetStockHeadlinesTopFromClassSoapOut">
+        <part name="parameters" element="s0:GetStockHeadlinesTopFromClassResponse"/>
+    </message>
+    <message name="GetStockHeadlinesTopFromClassHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetStockHeadlinesFromClassSoapIn">
+        <part name="parameters" element="s0:GetStockHeadlinesFromClass"/>
+    </message>
+    <message name="GetStockHeadlinesFromClassSoapOut">
+        <part name="parameters" element="s0:GetStockHeadlinesFromClassResponse"/>
+    </message>
+    <message name="GetStockHeadlinesFromClassHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetReutersMarketNewsHeadlinesSoapIn">
+        <part name="parameters" element="s0:GetReutersMarketNewsHeadlines"/>
+    </message>
+    <message name="GetReutersMarketNewsHeadlinesSoapOut">
+        <part name="parameters" element="s0:GetReutersMarketNewsHeadlinesResponse"/>
+    </message>
+    <message name="GetReutersMarketNewsHeadlinesHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetReutersMarketNewsDetailsSoapIn">
+        <part name="parameters" element="s0:GetReutersMarketNewsDetails"/>
+    </message>
+    <message name="GetReutersMarketNewsDetailsSoapOut">
+        <part name="parameters" element="s0:GetReutersMarketNewsDetailsResponse"/>
+    </message>
+    <message name="GetReutersMarketNewsDetailsHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetEarningAnnouncementsSoapIn">
+        <part name="parameters" element="s0:GetEarningAnnouncements"/>
+    </message>
+    <message name="GetEarningAnnouncementsSoapOut">
+        <part name="parameters" element="s0:GetEarningAnnouncementsResponse"/>
+    </message>
+    <message name="GetEarningAnnouncementsHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetBriefingsHttpGetIn"/>
+    <message name="GetBriefingsHttpGetOut">
+        <part name="Body" element="s0:ArrayOfBriefing"/>
+    </message>
+    <message name="GetLastBriefingHttpGetIn"/>
+    <message name="GetLastBriefingHttpGetOut">
+        <part name="Body" element="s0:Briefing"/>
+    </message>
+    <message name="GetStockHeadlinesHttpGetIn">
+        <part name="Symbols" type="s:string"/>
+        <part name="HeadlineCount" type="s:string"/>
+    </message>
+    <message name="GetStockHeadlinesHttpGetOut">
+        <part name="Body" element="s0:ArrayOfStockNews"/>
+    </message>
+    <message name="GetReutersMarketNewsHeadlinesHttpGetIn"/>
+    <message name="GetReutersMarketNewsHeadlinesHttpGetOut">
+        <part name="Body" element="s0:ArrayOfMarketNews"/>
+    </message>
+    <message name="GetReutersMarketNewsDetailsHttpGetIn">
+        <part name="Reference" type="s:string"/>
+    </message>
+    <message name="GetReutersMarketNewsDetailsHttpGetOut">
+        <part name="Body" element="s0:MarketNewsItem"/>
+    </message>
+    <message name="GetEarningAnnouncementsHttpGetIn">
+        <part name="AnnouncementDate" type="s:string"/>
+    </message>
+    <message name="GetEarningAnnouncementsHttpGetOut">
+        <part name="Body" element="s0:ArrayOfEarningAnnouncement"/>
+    </message>
+    <message name="GetBriefingsHttpPostIn"/>
+    <message name="GetBriefingsHttpPostOut">
+        <part name="Body" element="s0:ArrayOfBriefing"/>
+    </message>
+    <message name="GetLastBriefingHttpPostIn"/>
+    <message name="GetLastBriefingHttpPostOut">
+        <part name="Body" element="s0:Briefing"/>
+    </message>
+    <message name="GetStockHeadlinesHttpPostIn">
+        <part name="Symbols" type="s:string"/>
+        <part name="HeadlineCount" type="s:string"/>
+    </message>
+    <message name="GetStockHeadlinesHttpPostOut">
+        <part name="Body" element="s0:ArrayOfStockNews"/>
+    </message>
+    <message name="GetReutersMarketNewsHeadlinesHttpPostIn"/>
+    <message name="GetReutersMarketNewsHeadlinesHttpPostOut">
+        <part name="Body" element="s0:ArrayOfMarketNews"/>
+    </message>
+    <message name="GetReutersMarketNewsDetailsHttpPostIn">
+        <part name="Reference" type="s:string"/>
+    </message>
+    <message name="GetReutersMarketNewsDetailsHttpPostOut">
+        <part name="Body" element="s0:MarketNewsItem"/>
+    </message>
+    <message name="GetEarningAnnouncementsHttpPostIn">
+        <part name="AnnouncementDate" type="s:string"/>
+    </message>
+    <message name="GetEarningAnnouncementsHttpPostOut">
+        <part name="Body" element="s0:ArrayOfEarningAnnouncement"/>
+    </message>
+    <portType name="XigniteNewsSoap">
+        <operation name="GetBriefings">
+            <documentation>Get market briefings from Briefing.Com.</documentation>
+            <input message="s0:GetBriefingsSoapIn"/>
+            <output message="s0:GetBriefingsSoapOut"/>
+        </operation>
+        <operation name="GetLastBriefing">
+            <documentation>Get last market briefing from Briefing.Com.</documentation>
+            <input message="s0:GetLastBriefingSoapIn"/>
+            <output message="s0:GetLastBriefingSoapOut"/>
+        </operation>
+        <operation name="GetStockHeadlines">
+            <documentation>Get headlines for a list of US Domestic equities.&amp;#183; Source:
+                &lt;b&gt;Yahoo! Finance&lt;/b&gt;. Also subject to their Terms of Use.&lt;br&gt;</documentation>
+            <input message="s0:GetStockHeadlinesSoapIn"/>
+            <output message="s0:GetStockHeadlinesSoapOut"/>
+        </operation>
+        <operation name="GetStockHeadlinesTopFromClass">
+            <documentation>Get top 5 recent headlines for a list of US Domestic equities.
+                &lt;b&gt;Soap Only&lt;/b&gt;&amp;#183; Source:
+                &lt;b&gt;Yahoo! Finance&lt;/b&gt;. Also subject to their Terms of Use.&lt;br&gt;</documentation>
+            <input message="s0:GetStockHeadlinesTopFromClassSoapIn"/>
+            <output message="s0:GetStockHeadlinesTopFromClassSoapOut"/>
+        </operation>
+        <operation name="GetStockHeadlinesFromClass">
+            <documentation>Get headlines for a list of US Domestic equities. &lt;b&gt;Soap
+                Only&lt;/b&gt;&amp;#183; Source: &lt;b&gt;Yahoo!
+                Finance&lt;/b&gt;. Also subject to their Terms of Use.&lt;br&gt;</documentation>
+            <input message="s0:GetStockHeadlinesFromClassSoapIn"/>
+            <output message="s0:GetStockHeadlinesFromClassSoapOut"/>
+        </operation>
+        <operation name="GetReutersMarketNewsHeadlines">
+            <documentation>&lt;br&gt;Get most recent market news headlines from
+                Reuters.&amp;#183; Source: &lt;b&gt;Yahoo! Finance&lt;/b&gt;.
+                Also subject to their Terms of Use.&lt;br&gt;</documentation>
+            <input message="s0:GetReutersMarketNewsHeadlinesSoapIn"/>
+            <output message="s0:GetReutersMarketNewsHeadlinesSoapOut"/>
+        </operation>
+        <operation name="GetReutersMarketNewsDetails">
+            <documentation>&lt;br&gt;Get the content of a market news item from Reuters
+                based on the reference provided in GetReutersMarketNewsHeadlines.&amp;#183;
+                Source: &lt;b&gt;Yahoo! Finance&lt;/b&gt;. Also subject to their
+                Terms of Use.&lt;br&gt;</documentation>
+            <input message="s0:GetReutersMarketNewsDetailsSoapIn"/>
+            <output message="s0:GetReutersMarketNewsDetailsSoapOut"/>
+        </operation>
+        <operation name="GetEarningAnnouncements">
+            <documentation>Get earning announcement summary for the previous and next few
+                days.&amp;#183; Source: &lt;b&gt;Yahoo! Finance&lt;/b&gt;. Also
+                subject to their Terms of Use.&lt;br&gt;</documentation>
+            <input message="s0:GetEarningAnnouncementsSoapIn"/>
+            <output message="s0:GetEarningAnnouncementsSoapOut"/>
+        </operation>
+    </portType>
+    <portType name="XigniteNewsHttpGet">
+        <operation name="GetBriefings">
+            <documentation>Get market briefings from Briefing.Com.</documentation>
+            <input message="s0:GetBriefingsHttpGetIn"/>
+            <output message="s0:GetBriefingsHttpGetOut"/>
+        </operation>
+        <operation name="GetLastBriefing">
+            <documentation>Get last market briefing from Briefing.Com.</documentation>
+            <input message="s0:GetLastBriefingHttpGetIn"/>
+            <output message="s0:GetLastBriefingHttpGetOut"/>
+        </operation>
+        <operation name="GetStockHeadlines">
+            <documentation>Get headlines for a list of US Domestic equities.&amp;#183; Source:
+                &lt;b&gt;Yahoo! Finance&lt;/b&gt;. Also subject to their Terms of Use.&lt;br&gt;</documentation>
+            <input message="s0:GetStockHeadlinesHttpGetIn"/>
+            <output message="s0:GetStockHeadlinesHttpGetOut"/>
+        </operation>
+        <operation name="GetReutersMarketNewsHeadlines">
+            <documentation>&lt;br&gt;Get most recent market news headlines from
+                Reuters.&amp;#183; Source: &lt;b&gt;Yahoo! Finance&lt;/b&gt;.
+                Also subject to their Terms of Use.&lt;br&gt;</documentation>
+            <input message="s0:GetReutersMarketNewsHeadlinesHttpGetIn"/>
+            <output message="s0:GetReutersMarketNewsHeadlinesHttpGetOut"/>
+        </operation>
+        <operation name="GetReutersMarketNewsDetails">
+            <documentation>&lt;br&gt;Get the content of a market news item from Reuters
+                based on the reference provided in GetReutersMarketNewsHeadlines.&amp;#183;
+                Source: &lt;b&gt;Yahoo! Finance&lt;/b&gt;. Also subject to their
+                Terms of Use.&lt;br&gt;</documentation>
+            <input message="s0:GetReutersMarketNewsDetailsHttpGetIn"/>
+            <output message="s0:GetReutersMarketNewsDetailsHttpGetOut"/>
+        </operation>
+        <operation name="GetEarningAnnouncements">
+            <documentation>Get earning announcement summary for the previous and next few
+                days.&amp;#183; Source: &lt;b&gt;Yahoo! Finance&lt;/b&gt;. Also
+                subject to their Terms of Use.&lt;br&gt;</documentation>
+            <input message="s0:GetEarningAnnouncementsHttpGetIn"/>
+            <output message="s0:GetEarningAnnouncementsHttpGetOut"/>
+        </operation>
+    </portType>
+    <portType name="XigniteNewsHttpPost">
+        <operation name="GetBriefings">
+            <documentation>Get market briefings from Briefing.Com.</documentation>
+            <input message="s0:GetBriefingsHttpPostIn"/>
+            <output message="s0:GetBriefingsHttpPostOut"/>
+        </operation>
+        <operation name="GetLastBriefing">
+            <documentation>Get last market briefing from Briefing.Com.</documentation>
+            <input message="s0:GetLastBriefingHttpPostIn"/>
+            <output message="s0:GetLastBriefingHttpPostOut"/>
+        </operation>
+        <operation name="GetStockHeadlines">
+            <documentation>Get headlines for a list of US Domestic equities.&amp;#183; Source:
+                &lt;b&gt;Yahoo! Finance&lt;/b&gt;. Also subject to their Terms of Use.&lt;br&gt;</documentation>
+            <input message="s0:GetStockHeadlinesHttpPostIn"/>
+            <output message="s0:GetStockHeadlinesHttpPostOut"/>
+        </operation>
+        <operation name="GetReutersMarketNewsHeadlines">
+            <documentation>&lt;br&gt;Get most recent market news headlines from
+                Reuters.&amp;#183; Source: &lt;b&gt;Yahoo! Finance&lt;/b&gt;.
+                Also subject to their Terms of Use.&lt;br&gt;</documentation>
+            <input message="s0:GetReutersMarketNewsHeadlinesHttpPostIn"/>
+            <output message="s0:GetReutersMarketNewsHeadlinesHttpPostOut"/>
+        </operation>
+        <operation name="GetReutersMarketNewsDetails">
+            <documentation>&lt;br&gt;Get the content of a market news item from Reuters
+                based on the reference provided in GetReutersMarketNewsHeadlines.&amp;#183;
+                Source: &lt;b&gt;Yahoo! Finance&lt;/b&gt;. Also subject to their
+                Terms of Use.&lt;br&gt;</documentation>
+            <input message="s0:GetReutersMarketNewsDetailsHttpPostIn"/>
+            <output message="s0:GetReutersMarketNewsDetailsHttpPostOut"/>
+        </operation>
+        <operation name="GetEarningAnnouncements">
+            <documentation>Get earning announcement summary for the previous and next few
+                days.&amp;#183; Source: &lt;b&gt;Yahoo! Finance&lt;/b&gt;. Also
+                subject to their Terms of Use.&lt;br&gt;</documentation>
+            <input message="s0:GetEarningAnnouncementsHttpPostIn"/>
+            <output message="s0:GetEarningAnnouncementsHttpPostOut"/>
+        </operation>
+    </portType>
+    <binding name="XigniteNewsSoap" type="s0:XigniteNewsSoap">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <operation name="GetBriefings">
+            <soap:operation soapAction="http://www.xignite.com/services/GetBriefings" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetBriefingsHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetLastBriefing">
+            <soap:operation soapAction="http://www.xignite.com/services/GetLastBriefing" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetLastBriefingHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetStockHeadlines">
+            <soap:operation soapAction="http://www.xignite.com/services/GetStockHeadlines" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetStockHeadlinesHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetStockHeadlinesTopFromClass">
+            <soap:operation
+                soapAction="http://www.xignite.com/services/GetStockHeadlinesTopFromClass" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetStockHeadlinesTopFromClassHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetStockHeadlinesFromClass">
+            <soap:operation soapAction="http://www.xignite.com/services/GetStockHeadlinesFromClass" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetStockHeadlinesFromClassHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetReutersMarketNewsHeadlines">
+            <soap:operation
+                soapAction="http://www.xignite.com/services/GetReutersMarketNewsHeadlines" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetReutersMarketNewsHeadlinesHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetReutersMarketNewsDetails">
+            <soap:operation soapAction="http://www.xignite.com/services/GetReutersMarketNewsDetails" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetReutersMarketNewsDetailsHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetEarningAnnouncements">
+            <soap:operation soapAction="http://www.xignite.com/services/GetEarningAnnouncements" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetEarningAnnouncementsHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+    <binding name="XigniteNewsHttpGet" type="s0:XigniteNewsHttpGet">
+        <http:binding verb="GET"/>
+        <operation name="GetBriefings">
+            <http:operation location="/GetBriefings"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetLastBriefing">
+            <http:operation location="/GetLastBriefing"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetStockHeadlines">
+            <http:operation location="/GetStockHeadlines"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetReutersMarketNewsHeadlines">
+            <http:operation location="/GetReutersMarketNewsHeadlines"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetReutersMarketNewsDetails">
+            <http:operation location="/GetReutersMarketNewsDetails"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetEarningAnnouncements">
+            <http:operation location="/GetEarningAnnouncements"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+    </binding>
+    <binding name="XigniteNewsHttpPost" type="s0:XigniteNewsHttpPost">
+        <http:binding verb="POST"/>
+        <operation name="GetBriefings">
+            <http:operation location="/GetBriefings"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetLastBriefing">
+            <http:operation location="/GetLastBriefing"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetStockHeadlines">
+            <http:operation location="/GetStockHeadlines"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetReutersMarketNewsHeadlines">
+            <http:operation location="/GetReutersMarketNewsHeadlines"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetReutersMarketNewsDetails">
+            <http:operation location="/GetReutersMarketNewsDetails"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetEarningAnnouncements">
+            <http:operation location="/GetEarningAnnouncements"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+    </binding>
+    <service name="XigniteNews">
+        <documentation>Provide stock and market news operations.</documentation>
+        <port name="XigniteNewsSoap" binding="s0:XigniteNewsSoap">
+            <soap:address location="http://www.xignite.com/xNews.asmx"/>
+        </port>
+        <port name="XigniteNewsHttpGet" binding="s0:XigniteNewsHttpGet">
+            <http:address location="http://www.xignite.com/xNews.asmx"/>
+        </port>
+        <port name="XigniteNewsHttpPost" binding="s0:XigniteNewsHttpPost">
+            <http:address location="http://www.xignite.com/xNews.asmx"/>
+        </port>
+    </service>
+</definitions>

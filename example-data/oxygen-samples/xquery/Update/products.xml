@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<products>
+  <product id="p1">
+    <name>Delta</name>
+    <price>800</price>
+    <stock>4</stock>
+    <country>Denmark</country>
+  </product>
+  <product id="p2">
+    <name>Golf</name>
+    <price>1000</price>
+    <stock>5</stock>
+    <country>Germany</country>
+  </product>
+  <product id="p3">
+    <name>Alfa</name>
+    <price>1200</price>
+    <stock>19</stock>
+    <country>Germany</country>
+  </product>
+  <product id="p4">
+    <name>Foxtrot</name>
+    <price>1500</price>
+    <stock>5</stock>
+    <country>Australia</country>
+  </product>
+  <product id="p5">
+    <name>Tango</name>
+    <price>1225</price>
+    <stock>3</stock>
+    <country>Japan</country>
+  </product>
+</products>

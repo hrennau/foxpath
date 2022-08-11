@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--    Sample from Zvon XSLT tutorial (www.zvon.org)   -->
+<source>
+    <AAA name="first">
+        <BBB name="first">11111</BBB>
+        <BBB name="second">22222</BBB>
+    </AAA>
+    <AAA name="second">
+        <BBB name="first">33333</BBB>
+        <BBB name="second">44444</BBB>
+    </AAA>
+</source>

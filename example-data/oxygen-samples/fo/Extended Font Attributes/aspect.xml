@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- This file makes part of an XSL Test Suite.   -->
+<!-- Use the macro.xsl file to generate the FO document. -->
+<!-- Extended font styles test: aspect-preserving -->
+<!-- font size adjustment                         -->
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+<!-- Example from: http://www.renderx.net
+    Copyright © 2004 RenderX, Inc.-->
+
+
+<plain-doc>
+
+
+  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+           xmlns:dc="http://purl.org/dc/elements/1.1/"
+           xmlns:dcterms="http://purl.org/dc/terms/"
+           xmlns:db="http://www.oasis-open.org/docbook/xml/4.2/">
+     <rdf:Description rdf:about="http://xep.xattic.com/testsuite/features/aspect.xml">
+        <dc:title>Extended Font Attributes - Font Aspect and X-Height Adjustment </dc:title>
+        <dc:description>
+          <db:para>
+     Demonstrates aspect-preserving font size adjustment.
+          </db:para>
+        </dc:description>
+        <dc:date>2003-07-24</dc:date><dcterms:requires rdf:resource="http://xep.xattic.com/testsuite/features/macro.xsl"/>
+    </rdf:Description>
+  </rdf:RDF> 
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- MACROS                                       --> 
+
+<!-- Single-font macro. Repeats the font name 10 times. -->
+<define-macro name="single-font-adjusted">
+  <font font-family="$arg" 
+        font-size-adjust="$arg1"><repeat times="10"><arg/> </repeat></font>
+</define-macro>
+
+<!-- Test for a single aspect value. Times, Helvetica, and Courier -->
+<!-- are compared, adjusted to the same aspect.                    -->
+<define-macro name="aspect-test">
+   <p font-size="14pt" 
+      space-before="12pt" 
+      space-after="12pt" 
+      text-align="start"
+      margin-left="0pt"
+      border-left="thick ridge silver"
+      padding-left="12pt"> 
+      <macro name="single-font-adjusted" arg="Times" arg1="$arg"/>
+      <macro name="single-font-adjusted" arg="Helvetica" arg1="$arg"/>
+      <macro name="single-font-adjusted" arg="Courier" arg1="$arg"/>
+   </p> 
+</define-macro>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- DOCUMENT BODY                                --> 
+
+
+<title> Extended Font Attributes - Font Aspect and X-Height Adjustment </title>
+
+<text>
+  <p>This test contains examples of aspect-preserving font size adjustment.
+  In this test, I assume the following aspect values for common fonts:</p>
+  <ul> 
+    <li>Times - 0.40; </li>
+    <li>Courier - 0.40;</li>
+    <li>Helvetica - 0.45;</li>
+  </ul>
+</text>
+
+<text> 
+  Unadjusted 14 pt fonts mixed in the same paragraph:  
+  Helvetica should be visibly greater then the other two.
+</text>
+<macro name="aspect-test" arg="none"/>
+
+<text> 
+  Same fonts adjusted to the aspect value of 0.25:
+  all fonts should have the same x-height. 
+  Their apparent size should be considerably smaller than above.
+</text>
+<macro name="aspect-test" arg="0.25"/>
+
+<text> 
+  Same fonts adjusted to the aspect value of 0.6:
+  all fonts should have the same x-height. 
+  Their apparent size should become considerably larger.
+</text>
+<macro name="aspect-test" arg="0.6"/>
+
+</plain-doc>
+

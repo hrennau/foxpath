@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Please make sure the XInclude support in enabled! -->
+<!-- To do that check that the Enable XInclude processing option is enabled in the -->
+<!-- XML - XML Parser Properties page in the application Options/Preferences dialog -->
+<article xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Welcome to Docbook</title>
+    <xi:include href="section1.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="section2.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="section3.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</article>

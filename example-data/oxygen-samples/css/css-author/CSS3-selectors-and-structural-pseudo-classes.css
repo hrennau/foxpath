@@ -1,0 +1,272 @@
+.sample {
+    width: 400px;
+    border: 2px solid black;
+    margin:1em auto;
+    padding:1em;
+}
+.sample div, 
+.sample p{
+    margin-left: 1em;
+}
+
+.rws {
+    width: 400px;
+    border: 2px solid #DDDDDD;
+    margin:1em auto;
+    padding: 1em;   
+}
+.rws:before {
+    content: "Real world sample:";
+    display:block;
+    font-size:1.3em;
+}
+
+/*
+=====================================================
+  :first-child
+  
+*/
+#first-child .sample div:first-child{
+    background-color:red;
+}
+#first-child .sample div:first-child div:first-child{
+    background-color:blue;
+}
+#first-child .rws p:first-child{
+    font-style:italic;
+}
+#first-child .rws p:first-child:before{
+    content: "\"";
+    color:#AA33AA;
+    background-color:inherit;
+}
+#first-child .rws p:first-child:after{
+    content: "\" \A[This is the first paragraph. You can add here more paragraphs ..]";
+    white-space:pre-wrap;
+    margin:1em auto;
+    color:#AA33AA;
+    background-color:inherit;
+}
+
+
+
+/*
+=====================================================
+  :last-child
+*/
+#last-child .sample div:last-child{
+    background-color:red;
+}
+#last-child .sample div:last-child div:last-child{
+    background-color:blue;
+}
+
+#last-child .rws p:last-child{
+    font-style:italic;
+}
+#last-child .rws p:last-child:before{
+    content: "\"";
+    color:#AA33AA;
+    background-color:inherit;
+}
+#last-child .rws p:last-child:after{
+    content: "\" \A[This was the last paragraph. You can add more paragraphs here..]";
+    white-space:pre-wrap;
+    margin:1em auto;
+    color:#AA33AA;
+    background-color:inherit;
+}
+
+
+
+/*
+=====================================================
+  :nth-child
+*/
+
+#nth-child .sample div:nth-child(3n+2){
+    background-color:red;
+}
+#nth-child .sample div div:nth-child(3n+2){
+    background-color:blue;
+}
+
+#nth-child .rws p:nth-child(4n){
+    background-color:#EEDDDD;
+    padding-left: 4em;
+}
+#nth-child .rws p:nth-child(4n+1){
+    background-color:#DDEEDD;
+    padding-left: 1em;
+}
+#nth-child .rws p:nth-child(4n+2){
+    background-color:#DDDDEE;
+    padding-left: 2em;
+}
+#nth-child .rws p:nth-child(4n+3){
+    background-color:#DDDEDE;
+    padding-left: 3em;
+}
+
+
+/*
+=====================================================
+  :nth-last-child
+*/
+#nth-last-child .sample div:nth-last-child(2){
+    background-color:red;
+}
+#nth-last-child .sample div div:nth-last-child(2){
+    background-color:blue;
+}
+#nth-last-child .rws p:nth-last-child(1){
+    color:#DDDDDD;
+    background-color:inherit;
+}
+#nth-last-child .rws p:nth-last-child(2){
+    color:#BBBBBB;
+    background-color:inherit;
+}
+#nth-last-child .rws p:nth-last-child(3){
+    color:#999999;
+    background-color:inherit;
+}
+#nth-last-child .rws p:nth-last-child(4){
+    color:#777777;
+    background-color:inherit;
+}
+#nth-last-child .rws p:nth-last-child(5){
+    color:#555555;
+    background-color:inherit;
+}
+
+/*
+=====================================================
+  :nth-of-type
+*/
+#nth-of-type .sample div:nth-of-type(3){
+    background-color:red;
+}
+#nth-of-type .sample p:nth-of-type(3){
+    background-color:blue;
+}
+#nth-of-type .rws tr:nth-of-type(3){
+    background-color:#FFDDDD;
+}
+#nth-of-type .rws td:nth-of-type(2){
+    background-color:#DDDDFF;
+}
+#nth-of-type .rws tr:nth-of-type(3) > td:nth-of-type(2){
+    background-color: #FFDDFF;
+}
+#nth-of-type .rws table {
+    margin:2em;
+}
+
+/*
+=====================================================
+  :nth-last-of-type
+*/
+#nth-last-of-type .sample div:nth-last-of-type(2){
+    background-color:red;
+}
+#nth-last-of-type .sample p:nth-last-of-type(2){
+    background-color:blue;
+}
+#nth-last-of-type .rws table td:nth-last-of-type(1){
+    background-color:#FFDDDD;
+}
+#nth-last-of-type .rws table tr:nth-last-of-type(1){
+    background-color:#FFDDDD;
+}
+
+/*
+=====================================================
+  :empty
+*/
+#empty .sample div:empty:before{
+    background-color:white;
+    color:red;
+    content:"EMPTY";
+}
+#empty .sample div:not(:empty):before{
+    background-color:white;
+    color:blue;
+    content:"NOT EMPTY";
+}
+#empty .rws p:empty:before{
+    background-color:silver;
+    color:white;
+    padding:1em;
+    font-style:italic;    
+    content:"[Empty paragraph, enter some text or remove it]";
+}
+
+
+
+
+/*
+=====================================================
+  :only-child
+*/
+#only-child .sample div:only-child{
+    background-color:red;
+}
+#only-child .rws h3:only-child:after{
+    font-size:medium;
+    font-weight:normal;
+    display:block;
+    background-color:silver;
+    color:white;
+    padding:1em;
+    font-style:italic;    
+    content:"[Section with just a title, enter some description or remove it]";
+}
+
+
+/*
+=====================================================
+  :only-of-type
+*/
+#only-of-type .sample div:only-of-type{
+    background-color:red;
+}
+#only-of-type .sample p:only-of-type{
+    background-color:blue;
+}
+
+#only-of-type .rws h3:not(:only-of-type):after{
+    font-size:medium;
+    font-weight:normal;
+    display:block;
+    background-color:silver;
+    color:white;
+    padding:1em;
+    font-style:italic;    
+    content:"[Multiple H3 in the same DIV. Consider splitting the DIV.]";
+}
+
+/*
+=====================================================
+  E ~ F
+*/
+
+#following-sibling .sample div~p{
+    background-color:red;
+
+}
+#following-sibling .rws div {
+    border: 1px solid gray;
+} 
+
+#following-sibling .rws p ~ h3:before{
+    display:block;
+    font-size:medium;
+    font-weight:normal;
+    color:red;
+    background-color:inherit;
+    padding:1em;
+    font-style:italic;   
+    margin: 1em;
+    content:"[Found a paragraph before the title. Move it below the title!]";
+}

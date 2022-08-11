@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE task PUBLIC "-//OASIS//DTD DITA Task//EN" "task.dtd">
+<task id="installation_on_mac">
+  <title>Installation on Mac</title>
+  <shortdesc>This task describes how to install the desktop version of the <keyword
+    keyref="product"/> messenging application.</shortdesc>
+  <prolog>
+    <metadata>
+      <keywords>
+        <indexterm>installation<indexterm>mac</indexterm></indexterm>       
+      </keywords>
+    </metadata>
+  </prolog>
+  <taskbody>
+    <context>
+      <p>Follow the steps to install the software on a Mac OS X platform.</p>
+      <p conref="installation_on_windows.dita#installation_on_windows/unistall_advice"/>
+      <?oxy_comment_start author="dan" timestamp="20160601T112216+0300" comment="Add a conref here to the uninstall paragraph from the Windows task"?>
+    </context>
+    <?oxy_comment_end?>
+    <steps>
+      <step>
+        <cmd>Download the installation kit <xref href="http://sample.talkingcircle.com"
+            format="html" scope="external"/></cmd>
+      </step>
+      <step>
+        <cmd>Extract the archive</cmd>
+      </step>
+      <step>
+        <cmd>Drag the application icon to your Applications folder</cmd>
+      </step>
+    </steps>
+  </taskbody>
+  <related-links>
+    <link href="installation_on_windows.dita"/>
+  </related-links>
+</task>

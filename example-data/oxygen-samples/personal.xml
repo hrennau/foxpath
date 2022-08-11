@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE personnel PUBLIC "PERSONNEL" "personal.dtd">
+<?xml-stylesheet type="text/css" href="personal.css"?>
+<personnel>
+    <person id="harris.anderson" photo="personal-images/harris.anderson.jpg">                
+        <name>
+            <given>Harris</given>
+            <family>Anderson</family>
+        </name>
+        <email>harris.anderson@example.com</email>
+        <link subordinates="robert.taylor helen.jackson michelle.taylor jason.chen harris.anderson brian.carter"/>
+        <url href="http://www.example.com/na/harris-anderson.html"/>
+    </person>
+    <person id="robert.taylor" photo="personal-images/robert.taylor.jpg">
+        <name>
+            <given>Robert</given>
+            <family>Taylor</family>
+        </name>
+        <email>robert.taylor@example.com</email>
+        <link manager="harris.anderson"/>
+        <url href="http://www.example.com/na/robert-taylor.html"/>
+    </person>
+    <person id="helen.jackson" photo="personal-images/helen.jackson.jpg">
+        <name>
+            <given>Helen</given>
+            <family>Jackson</family>
+        </name>        
+        <email>hellen.jackson@example.com</email>
+        <link manager="harris.anderson"/>
+        <url href="http://www.example.com/na/hellen-jackson.html"/>
+    </person>
+    <person id="michelle.taylor" photo="personal-images/michelle.taylor.jpg">
+        <name>
+            <given>Michelle</given>
+            <family>Taylor</family>
+        </name>
+        <email>michelle.taylor@example.com</email>
+        <link manager="harris.anderson"/>
+        <url href="http://www.example.com/na/michelle-taylor.html"/>
+    </person>
+    <person id="jason.chen" photo="personal-images/jason.chen.jpg">
+        <name>
+            <given>Jason</given>
+            <family>Chen</family>
+        </name>
+        <email>jason.chen@example.com</email>
+        <link manager="harris.anderson"/>
+        <url href="http://www.example.com/na/jason-chen.html"/>        
+    </person>
+    <person id="brian.carter" photo="personal-images/brian.carter.jpg" >
+        <name>
+            <given>Brian</given>
+            <family>Carter</family>
+        </name>
+        <email>brian.carter@example.com</email>
+        <link manager="harris.anderson"/>
+        <url href="http://www.example.com/na/brian-carter.html"/>
+    </person>
+</personnel>

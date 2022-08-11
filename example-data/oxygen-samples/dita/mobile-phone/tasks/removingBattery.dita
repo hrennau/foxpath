@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE task PUBLIC "-//OASIS//DTD DITA Task//EN" "task.dtd">
+<task id="task_3ml_qm3_rf">
+    <title>Removing the battery</title>
+    <shortdesc/>
+    <taskbody>
+        <context>
+            <p>Before proceeding with these steps, make sure that your mobile phone is turned
+                off.</p>
+        </context>
+        <steps>
+            <step id="firstStep">
+                <cmd>Remove the back cover. </cmd>
+            </step>
+            <step id="lastStep">
+                <cmd>Lift out the battery from the notch as per the following image: <image
+                        href="../image/removingBattery.jpg" id="image_cc3_mn3_rf" placement="break"
+                    /></cmd>
+            </step>
+        </steps>
+    </taskbody>
+</task>

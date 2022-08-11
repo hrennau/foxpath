@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+                         "http://www.docbook.org/xml/4.5/docbookx.dtd">
+<article>
+    <title>Welcome to Docbook Support in oXygen</title>
+    <sect1>
+        <title>Inline Markup and Images</title>
+        <para>This sample shows that &lt;oXygen/&gt; can be used to edit documents in conformity
+            with the
+            dockbookx.dtd<?oxy_delete author="Mary" timestamp="20120510T144707+0300" content=" " comment="We must not add extra spacing before and after punctuation marks."?>.</para>
+        <para>The following <code>Docbook</code> figure is inserted using the <code>imagedata</code>
+            tag:</para>
+        <figure>
+            <title>Lake in Fagaras</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/lake.jpeg" scale="100"/>
+                </imageobject>
+            </mediaobject>
+        </figure>
+        <para>In order to preview this text in a Web browser, choose the <code>Docbook HTML</code>
+            transformation scenario. For this press the <guibutton>Configure transformation
+                scenario</guibutton> button or the shortcut <keycap>CTRL+SHIFT+C</keycap> or
+                (<keycap>COMMAND+SHIFT+C</keycap> on Mac OS X), then select the scenario. Press
+                <guibutton>Ok</guibutton>.</para>
+        <para>To apply the stylesheet, press the "Apply transformation scenario" button or to press
+                <keycap>CTRL+SHIFT+T</keycap> (<keycap>COMMAND+SHIFT+T</keycap> on Mac OS X). </para>
+    </sect1>
+    <sect1>
+        <title><?oxy_comment_start author="John" timestamp="20120510T142724+0300" comment="Right. This section title should be changed to &quot;CALS and HTML tables&quot;"?>CALS
+            Tables and
+            <?oxy_comment_start author="Mary" timestamp="20120510T142621+0300" comment="The lists should be included in a separate section." mid="1"?>Lists<?oxy_comment_end?><?oxy_comment_end mid="1"?></title>
+        <para>Now some tables. To hide the <code>colspecs</code>, choose the <guilabel>Hide
+                colspec</guilabel> CSS from the <guimenu>CSS Alternatives</guimenu> toolbar.
+            <?oxy_comment_start author="John" timestamp="20120514T103618+0300" comment="This information is also available for HTML tables. We could add a new paragraph containing general information about Docbook table operations support in oXygen."?>The
+            column widths can be adjusted by dragging the column margins<?oxy_comment_end?>.</para>
+        <table>
+            <title>Sample CALS Table with no specified width and proportional column widths</title>
+            <tgroup cols="5" align="left" colsep="1" rowsep="1">
+                <colspec colnum="1" colname="c1" colwidth="0.32*"/>
+                <colspec colnum="2" colname="c2" colwidth="1.49*"/>
+                <colspec colnum="3" colname="c3" colwidth="1.15*"/>
+                <colspec colnum="4" colname="c4" colwidth="0.4*"/>
+                <colspec colnum="5" colname="c5" colwidth="1.67*"/>
+                <thead>
+                    <row>
+                        <entry namest="c1" nameend="c2" align="center">Horizontal Span</entry>
+                        <entry>a3</entry>
+                        <entry>a4</entry>
+                        <entry>a5</entry>
+                    </row>
+                </thead>
+                <tfoot>
+                    <row>
+                        <entry>f1</entry>
+                        <entry>f2</entry>
+                        <entry>f3</entry>
+                        <entry>f4</entry>
+                        <entry>f5</entry>
+                    </row>
+                </tfoot>
+                <tbody>
+                    <row>
+                        <entry>b1</entry>
+                        <entry>b2</entry>
+                        <entry>b3</entry>
+                        <entry>b4</entry>
+                        <entry morerows="1" valign="middle">
+                            <para>
+                                <emphasis role="bold">Vertical</emphasis> Span </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>c1</entry>
+                        <entry namest="c2" nameend="c3" align="center" morerows="1" valign="bottom"
+                            >Spans <emphasis role="bold">Both</emphasis> directions</entry>
+                        <entry>c4</entry>
+                    </row>
+                    <row>
+                        <entry>d1</entry>
+                        <entry>d4</entry>
+                        <entry>d5</entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+        <para>Docbook 4 also supports the <abbrev>HTML</abbrev> tables:</para>
+        <table width="350" frame="border" rules="all">
+            <caption>Sample HTML Table with fixed width.</caption>
+            <col width="80%"/>
+            <col width="20%"/>
+            <thead>
+                <tr>
+                    <th>Person Name</th>
+                    <th>Age</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Jane</td>
+                    <td>26</td>
+                </tr>
+                <tr>
+                    <td>Bart </td>
+                    <td>24</td>
+                </tr>
+                <tr>
+                    <td>Alexander</td>
+                    <td>22</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <emphasis role="italic">They are all students of the computer science
+                            department</emphasis>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <note>
+            <para>When you place the mouse cursor right above the first table row, the cursor is
+                changed and thdéve column under the mouse cursor is highlighted.
+                <?oxy_delete author="Matt" timestamp="20120514T091637+0300" content="If you click, the column is selected"?><?oxy_insert_start author="Matt" timestamp="20120514T091637+0300"?>Click
+                to select the column<?oxy_insert_end?>.</para>
+            <para>If you place the mouse cursor in the left side of the first table column, the
+                cursor is changed and the row placed to the right of the mouse cursor is
+                highlighted.
+                <?oxy_delete author="Matt" timestamp="20120514T091831+0300" content="If you click, the row is selected"?><?oxy_insert_start author="Matt" timestamp="20120514T091831+0300"?>Click
+                to select the row<?oxy_insert_end?>.</para>
+            <para>To select the entire table, click the top-left corner of the table.</para>
+        </note>
+        <para><?oxy_comment_start author="John" timestamp="20120510T152329+0300" comment="We should also say that the content of a table row or column can be deleted by selecting it and press DEL or Bacspace."?>Drag
+            and drop, cut, and copy operations are available on both CALS and HTML Docbook tables.
+            <?oxy_comment_end?></para>
+    </sect1>
+    <sect1>
+        <title>About Author Customization</title>
+        <para>The built-in <code>Docbook</code> support in <code>oXygen</code> includes a large set
+            of operations and functionality. However, there are situations in which you must extend
+            this set to match particular requirements.</para>
+        <para>The <code>oXygen</code>
+            <ulink url="http://www.oxygenxml.com/InstData/Editor/SDK/oxygenAuthorSDK.zip">Author
+                SDK</ulink> for JAVA developers allows you to add custom Author actions and
+            extensions for the <emphasis role="bold">Author</emphasis> visual mode of oXygen XML
+            Editor.</para>
+        <para>The following program listing represents the implementation of a sample extension
+            operation that selects the element at caret position:</para>
+        <programlisting language="java">
+/**
+ * Operation used to select the element at caret position.
+ */
+public class SelectElementAtCaretOperation implements AuthorOperation {
+
+  /**
+   * @see ro.sync.ecss.extensions.api.AuthorOperation#doOperation(
+   * ro.sync.ecss.extensions.api.AuthorAccess, 
+   * ro.sync.ecss.extensions.api.ArgumentsMap)
+   */
+  public void doOperation(AuthorAccess authorAccess, ArgumentsMap arguments) 
+    throws IllegalArgumentException, AuthorOperationException {
+    try {
+      int caretOffset = authorAccess.getEditorAccess().getCaretOffset();
+      // Get the node at caret offset
+      AuthorNode nodeAtCaret = authorAccess.getDocumentController()
+        .getNodeAtOffset(caretOffset);
+      if (nodeAtCaret != null) {
+        authorAccess.getEditorAccess().select(nodeAtCaret.getStartOffset(), 
+            nodeAtCaret.getEndOffset());
+      }
+    } catch (BadLocationException e) {
+      e.printStackTrace();
+    }
+  }
+  
+  /**
+   * @see ro.sync.ecss.extensions.api.Extension#getDescription()
+   */
+  public String getDescription() {
+    return "Select the element at caret position";
+  }
+
+  /**
+   * @see ro.sync.ecss.extensions.api.AuthorOperation#getArguments()
+   */
+  public ArgumentDescriptor[] getArguments() {
+    return null;
+  }
+}
+</programlisting>
+        <para>You can read more about the Author SDK here: <ulink
+                url="http://www.oxygenxml.com/oxygen_sdk.html"
+                >http://www.oxygenxml.com/oxygen_sdk.html</ulink>.</para>
+    </sect1>
+    <sect1>
+        <title>Useful Resources</title>
+        <para>Here is a list of useful <abbrev>XML</abbrev> links:</para>
+        <itemizedlist>
+            <listitem>
+                <para>
+                    <ulink url="http://www.xml.com">http://www.xml.com</ulink>
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <ulink url="http://www.xml.org">http://www.xml.org</ulink>
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <ulink url="http://www.w3c.org">http://www.w3c.org</ulink>
+                </para>
+            </listitem>
+            <?oxy_comment_start author="John" timestamp="20120510T152437+0300" comment="We should also add an ordered list sample."?>
+        </itemizedlist>
+        <?oxy_comment_end?>
+        <para>And here is the &lt;oXygen/&gt; web site: <ulink url="http://www.oxygenxml.com/"
+                >http://www.oxygenxml.com/</ulink>
+        </para>
+    </sect1>
+</article>

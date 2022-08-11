@@ -1,0 +1,1371 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Various statistics-->
+<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+    xmlns:s="http://www.w3.org/2001/XMLSchema"
+    xmlns:s0="http://www.xignite.com/services/"
+    xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+    targetNamespace="http://www.xignite.com/services/" 
+    xmlns="http://schemas.xmlsoap.org/wsdl/">
+    <types>
+        <s:schema elementFormDefault="qualified" targetNamespace="http://www.xignite.com/services/">
+            <s:element name="GetCategoriesAndTopics">
+                <s:complexType/>
+            </s:element>
+            <s:element name="GetCategoriesAndTopicsResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetCategoriesAndTopicsResult" type="s0:ArrayOfCategory"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="ArrayOfCategory">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="Category" nillable="true" type="s0:Category"/>
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="Category">
+                <s:complexContent mixed="false">
+                    <s:extension base="s0:Common">
+                        <s:sequence>
+                            <s:element minOccurs="0" maxOccurs="1" name="Code" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="TopicCollection" type="s0:ArrayOfTopic"/>
+                        </s:sequence>
+                    </s:extension>
+                </s:complexContent>
+            </s:complexType>
+            <s:complexType name="Common">
+                <s:sequence>
+                    <s:element minOccurs="1" maxOccurs="1" name="Outcome" type="s0:OutcomeTypes"/>
+                    <s:element minOccurs="0" maxOccurs="1" name="Message" type="s:string"/>
+                    <s:element minOccurs="0" maxOccurs="1" name="Identity" type="s:string"/>
+                    <s:element minOccurs="1" maxOccurs="1" name="Delay" type="s:double"/>
+                </s:sequence>
+            </s:complexType>
+            <s:simpleType name="OutcomeTypes">
+                <s:restriction base="s:string">
+                    <s:enumeration value="Success"/>
+                    <s:enumeration value="SystemError"/>
+                    <s:enumeration value="RequestError"/>
+                    <s:enumeration value="RegistrationError"/>
+                </s:restriction>
+            </s:simpleType>
+            <s:complexType name="Topic">
+                <s:complexContent mixed="false">
+                    <s:extension base="s0:Common">
+                        <s:sequence>
+                            <s:element minOccurs="0" maxOccurs="1" name="Code" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Frequency" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Units" type="s:string"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="Discontinued" type="s:boolean"/>
+                        </s:sequence>
+                    </s:extension>
+                </s:complexContent>
+            </s:complexType>
+            <s:complexType name="ArrayOfTopic">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="Topic" nillable="true" type="s0:Topic"/>
+                </s:sequence>
+            </s:complexType>
+            <s:element name="Header" type="s0:Header"/>
+            <s:complexType name="Header">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="1" name="Username" type="s:string"/>
+                    <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string"/>
+                    <s:element minOccurs="0" maxOccurs="1" name="Tracer" type="s:string"/>
+                </s:sequence>
+            </s:complexType>
+            <s:element name="GetCategories">
+                <s:complexType/>
+            </s:element>
+            <s:element name="GetCategoriesResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetCategoriesResult" type="s0:ArrayOfCategory"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetTopics">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="CategoryCode" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetTopicsResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetTopicsResult" type="s0:Category"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetTopicDetails">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="TopicCode" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetTopicDetailsResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetTopicDetailsResult" type="s0:TopicDetail"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="TopicDetail">
+                <s:complexContent mixed="false">
+                    <s:extension base="s0:Common">
+                        <s:sequence>
+                            <s:element minOccurs="0" maxOccurs="1" name="Code" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Source" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Release" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Adjustment" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Frequency" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Units" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="StartDate" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="EndDate" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="LastUpdated" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Notes" type="s:string"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="Discontinued" type="s:boolean"/>
+                        </s:sequence>
+                    </s:extension>
+                </s:complexContent>
+            </s:complexType>
+            <s:element name="GetTopicStatistics">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="TopicCode" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="StartDate" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="EndDate" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetTopicStatisticsResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetTopicStatisticsResult" type="s0:TopicStatistics"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="TopicStatistics">
+                <s:complexContent mixed="false">
+                    <s:extension base="s0:Common">
+                        <s:sequence>
+                            <s:element minOccurs="0" maxOccurs="1" name="Code" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Frequency" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Units" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="StartDate" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="EndDate" type="s:string"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="GrowthLow" type="s:double"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="GrowthHigh" type="s:double"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="Mean" type="s:double"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="StdDev" type="s:double"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="MeanOfRollingMean" type="s:double"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="StdDevOfRollingMean" type="s:double"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="MeanOfRollingStdDev" type="s:double"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="StdDevOfRollingStdDev" type="s:double"/>
+                        </s:sequence>
+                    </s:extension>
+                </s:complexContent>
+            </s:complexType>
+            <s:element name="GetTopicData">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="TopicCode" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="StartDate" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="EndDate" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetTopicDataResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetTopicDataResult" type="s0:TopicData"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="TopicData">
+                <s:complexContent mixed="false">
+                    <s:extension base="s0:Common">
+                        <s:sequence>
+                            <s:element minOccurs="0" maxOccurs="1" name="Code" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Frequency" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Units" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="StartDate" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="EndDate" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="DataCollection" type="s0:ArrayOfSeriesData"/>
+                        </s:sequence>
+                    </s:extension>
+                </s:complexContent>
+            </s:complexType>
+            <s:complexType name="ArrayOfSeriesData">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="SeriesData" nillable="true" type="s0:SeriesData"/>
+                </s:sequence>
+            </s:complexType>
+            <s:complexType name="SeriesData">
+                <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="1" name="Date" type="s:string"/>
+                    <s:element minOccurs="1" maxOccurs="1" name="Value" type="s:double"/>
+                    <s:element minOccurs="1" maxOccurs="1" name="Change" type="s:double"/>
+                    <s:element minOccurs="1" maxOccurs="1" name="PercentChange" type="s:double"/>
+                </s:sequence>
+            </s:complexType>
+            <s:element name="Reset">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="TopicCode" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="ResetResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="ResetResult" type="s0:TopicData"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetTopicChart">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="TopicCode" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="StartDate" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="EndDate" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="ChartWidth" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="ChartHeight" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetTopicChartResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetTopicChartResult" type="s0:TopicChart"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="TopicChart">
+                <s:complexContent mixed="false">
+                    <s:extension base="s0:Common">
+                        <s:sequence>
+                            <s:element minOccurs="0" maxOccurs="1" name="Code" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Frequency" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Units" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Imageurl" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="StartDate" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="EndDate" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="DataCollection" type="s0:ArrayOfSeriesData"/>
+                        </s:sequence>
+                    </s:extension>
+                </s:complexContent>
+            </s:complexType>
+            <s:element name="GetTopicChartCustom">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="TopicCode" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="StartDate" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="EndDate" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="ChartWidth" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="ChartHeight" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="Design" type="s0:StatisticsChartDesign"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="StatisticsChartDesign">
+                <s:complexContent mixed="false">
+                    <s:extension base="s0:Common">
+                        <s:sequence>
+                            <s:element minOccurs="0" maxOccurs="1" name="TextTitle" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="TextHeader" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="TextFooter" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="TextHighest" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="TextLowest" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="ColorDarkTone" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="ColorLightTone" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="ColorHighlight" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="ColorDataSeries" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="ColorTitle" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="ColorAxis" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="ColorGrid" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="ColorFonts" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="ColorFrame" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="ColorHigh" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="ColorLow" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="FormatDataSeries" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="FormatDate" type="s:string"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="GradeBackground" type="s:boolean"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="GradeBackwall" type="s:boolean"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="LineWidth" type="s:int"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="ShowHigh" type="s:boolean"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="ShowLow" type="s:boolean"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="FrameType" type="s0:ImageFrameType"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="LightScheme" type="s0:LightScheme"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="MarginTop" type="s:int"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="MarginBottom" type="s:int"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="MarginLeft" type="s:int"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="MarginRight" type="s:int"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="FontFamily" type="s:string"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="FontSizeLegend" type="s:int"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="FontSizeAxes" type="s:int"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="FontSizeTitle" type="s:int"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="FontSizeHeader" type="s:int"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="FontSizeFooter" type="s:int"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="Height" type="s:double"/>
+                            <s:element minOccurs="1" maxOccurs="1" name="Width" type="s:double"/>
+                        </s:sequence>
+                    </s:extension>
+                </s:complexContent>
+            </s:complexType>
+            <s:simpleType name="ImageFrameType">
+                <s:restriction base="s:string">
+                    <s:enumeration value="None"/>
+                    <s:enumeration value="Colonial"/>
+                    <s:enumeration value="Common"/>
+                    <s:enumeration value="Embed"/>
+                    <s:enumeration value="Emboss"/>
+                    <s:enumeration value="FrameOpenRight"/>
+                    <s:enumeration value="FrameOpenRL"/>
+                    <s:enumeration value="OneBarGradient"/>
+                    <s:enumeration value="RoundedUp"/>
+                    <s:enumeration value="SlimRoundedShadowed"/>
+                </s:restriction>
+            </s:simpleType>
+            <s:simpleType name="LightScheme">
+                <s:restriction base="s:string">
+                    <s:enumeration value="NorthernLights"/>
+                    <s:enumeration value="MetallicLustre"/>
+                    <s:enumeration value="ShinyTopRight"/>
+                    <s:enumeration value="ShinyFrontal"/>
+                    <s:enumeration value="ShinyTopLeft"/>
+                    <s:enumeration value="SoftTopRight"/>
+                    <s:enumeration value="SoftFrontal"/>
+                    <s:enumeration value="SoftTopLeft"/>
+                    <s:enumeration value="None"/>
+                </s:restriction>
+            </s:simpleType>
+            <s:element name="GetTopicChartCustomResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetTopicChartCustomResult" type="s0:TopicChart"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetTopicBinaryChart">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="TopicCode" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="StartDate" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="EndDate" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="ChartWidth" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="ChartHeight" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetTopicBinaryChartResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetTopicBinaryChartResult" type="s0:TopicChartBinary"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="TopicChartBinary">
+                <s:complexContent mixed="false">
+                    <s:extension base="s0:Common">
+                        <s:sequence>
+                            <s:element minOccurs="0" maxOccurs="1" name="Code" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Frequency" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Units" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="StartDate" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="EndDate" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Image" type="s:base64Binary"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="DataCollection" type="s0:ArrayOfSeriesData"/>
+                        </s:sequence>
+                    </s:extension>
+                </s:complexContent>
+            </s:complexType>
+            <s:element name="GetTopicBinaryChartCustom">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="TopicCode" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="StartDate" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="EndDate" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="ChartWidth" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="ChartHeight" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="Design" type="s0:StatisticsChartDesign"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetTopicBinaryChartCustomResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1"
+                            name="GetTopicBinaryChartCustomResult" type="s0:TopicChartBinary"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetChartUrl">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="TopicCode" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="StartDate" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="EndDate" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="ChartWidth" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="ChartHeight" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetChartUrlResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetChartUrlResult" type="s0:Chart"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="Chart">
+                <s:complexContent mixed="false">
+                    <s:extension base="s0:Common">
+                        <s:sequence>
+                            <s:element minOccurs="0" maxOccurs="1" name="Url" type="s:string"/>
+                            <s:element minOccurs="0" maxOccurs="1" name="Help" type="s:string"/>
+                        </s:sequence>
+                    </s:extension>
+                </s:complexContent>
+            </s:complexType>
+            <s:element name="GetChartUrlCustom">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="TopicCode" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="StartDate" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="EndDate" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="ChartWidth" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="ChartHeight" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="Design" type="s0:StatisticsChartDesign"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetChartUrlCustomResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetChartUrlCustomResult" type="s0:Chart"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetChartBinary">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="TopicCode" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="StartDate" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="EndDate" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="ChartWidth" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="ChartHeight" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetChartBinaryResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetChartBinaryResult" type="s0:ChartBinary"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:complexType name="ChartBinary">
+                <s:complexContent mixed="false">
+                    <s:extension base="s0:Common">
+                        <s:sequence>
+                            <s:element minOccurs="0" maxOccurs="1" name="ByteArray" type="s:base64Binary"/>
+                        </s:sequence>
+                    </s:extension>
+                </s:complexContent>
+            </s:complexType>
+            <s:element name="GetChartBinaryCustom">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="TopicCode" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="StartDate" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="EndDate" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="ChartWidth" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="ChartHeight" type="s:string"/>
+                        <s:element minOccurs="0" maxOccurs="1" name="Design" type="s0:StatisticsChartDesign"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetChartBinaryCustomResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetChartBinaryCustomResult" type="s0:ChartBinary"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="ArrayOfCategory" nillable="true" type="s0:ArrayOfCategory"/>
+            <s:element name="Category" nillable="true" type="s0:Category"/>
+            <s:element name="TopicDetail" nillable="true" type="s0:TopicDetail"/>
+            <s:element name="TopicStatistics" nillable="true" type="s0:TopicStatistics"/>
+            <s:element name="TopicData" nillable="true" type="s0:TopicData"/>
+            <s:element name="TopicChart" nillable="true" type="s0:TopicChart"/>
+            <s:element name="TopicChartBinary" nillable="true" type="s0:TopicChartBinary"/>
+            <s:element name="Chart" nillable="true" type="s0:Chart"/>
+            <s:element name="ChartBinary" nillable="true" type="s0:ChartBinary"/>
+        </s:schema>
+    </types>
+    <message name="GetCategoriesAndTopicsSoapIn">
+        <part name="parameters" element="s0:GetCategoriesAndTopics"/>
+    </message>
+    <message name="GetCategoriesAndTopicsSoapOut">
+        <part name="parameters" element="s0:GetCategoriesAndTopicsResponse"/>
+    </message>
+    <message name="GetCategoriesAndTopicsHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetCategoriesSoapIn">
+        <part name="parameters" element="s0:GetCategories"/>
+    </message>
+    <message name="GetCategoriesSoapOut">
+        <part name="parameters" element="s0:GetCategoriesResponse"/>
+    </message>
+    <message name="GetCategoriesHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetTopicsSoapIn">
+        <part name="parameters" element="s0:GetTopics"/>
+    </message>
+    <message name="GetTopicsSoapOut">
+        <part name="parameters" element="s0:GetTopicsResponse"/>
+    </message>
+    <message name="GetTopicsHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetTopicDetailsSoapIn">
+        <part name="parameters" element="s0:GetTopicDetails"/>
+    </message>
+    <message name="GetTopicDetailsSoapOut">
+        <part name="parameters" element="s0:GetTopicDetailsResponse"/>
+    </message>
+    <message name="GetTopicDetailsHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetTopicStatisticsSoapIn">
+        <part name="parameters" element="s0:GetTopicStatistics"/>
+    </message>
+    <message name="GetTopicStatisticsSoapOut">
+        <part name="parameters" element="s0:GetTopicStatisticsResponse"/>
+    </message>
+    <message name="GetTopicStatisticsHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetTopicDataSoapIn">
+        <part name="parameters" element="s0:GetTopicData"/>
+    </message>
+    <message name="GetTopicDataSoapOut">
+        <part name="parameters" element="s0:GetTopicDataResponse"/>
+    </message>
+    <message name="GetTopicDataHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="ResetSoapIn">
+        <part name="parameters" element="s0:Reset"/>
+    </message>
+    <message name="ResetSoapOut">
+        <part name="parameters" element="s0:ResetResponse"/>
+    </message>
+    <message name="ResetHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetTopicChartSoapIn">
+        <part name="parameters" element="s0:GetTopicChart"/>
+    </message>
+    <message name="GetTopicChartSoapOut">
+        <part name="parameters" element="s0:GetTopicChartResponse"/>
+    </message>
+    <message name="GetTopicChartHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetTopicChartCustomSoapIn">
+        <part name="parameters" element="s0:GetTopicChartCustom"/>
+    </message>
+    <message name="GetTopicChartCustomSoapOut">
+        <part name="parameters" element="s0:GetTopicChartCustomResponse"/>
+    </message>
+    <message name="GetTopicChartCustomHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetTopicBinaryChartSoapIn">
+        <part name="parameters" element="s0:GetTopicBinaryChart"/>
+    </message>
+    <message name="GetTopicBinaryChartSoapOut">
+        <part name="parameters" element="s0:GetTopicBinaryChartResponse"/>
+    </message>
+    <message name="GetTopicBinaryChartHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetTopicBinaryChartCustomSoapIn">
+        <part name="parameters" element="s0:GetTopicBinaryChartCustom"/>
+    </message>
+    <message name="GetTopicBinaryChartCustomSoapOut">
+        <part name="parameters" element="s0:GetTopicBinaryChartCustomResponse"/>
+    </message>
+    <message name="GetTopicBinaryChartCustomHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetChartUrlSoapIn">
+        <part name="parameters" element="s0:GetChartUrl"/>
+    </message>
+    <message name="GetChartUrlSoapOut">
+        <part name="parameters" element="s0:GetChartUrlResponse"/>
+    </message>
+    <message name="GetChartUrlHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetChartUrlCustomSoapIn">
+        <part name="parameters" element="s0:GetChartUrlCustom"/>
+    </message>
+    <message name="GetChartUrlCustomSoapOut">
+        <part name="parameters" element="s0:GetChartUrlCustomResponse"/>
+    </message>
+    <message name="GetChartUrlCustomHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetChartBinarySoapIn">
+        <part name="parameters" element="s0:GetChartBinary"/>
+    </message>
+    <message name="GetChartBinarySoapOut">
+        <part name="parameters" element="s0:GetChartBinaryResponse"/>
+    </message>
+    <message name="GetChartBinaryHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetChartBinaryCustomSoapIn">
+        <part name="parameters" element="s0:GetChartBinaryCustom"/>
+    </message>
+    <message name="GetChartBinaryCustomSoapOut">
+        <part name="parameters" element="s0:GetChartBinaryCustomResponse"/>
+    </message>
+    <message name="GetChartBinaryCustomHeader">
+        <part name="Header" element="s0:Header"/>
+    </message>
+    <message name="GetCategoriesAndTopicsHttpGetIn"/>
+    <message name="GetCategoriesAndTopicsHttpGetOut">
+        <part name="Body" element="s0:ArrayOfCategory"/>
+    </message>
+    <message name="GetCategoriesHttpGetIn"/>
+    <message name="GetCategoriesHttpGetOut">
+        <part name="Body" element="s0:ArrayOfCategory"/>
+    </message>
+    <message name="GetTopicsHttpGetIn">
+        <part name="CategoryCode" type="s:string"/>
+    </message>
+    <message name="GetTopicsHttpGetOut">
+        <part name="Body" element="s0:Category"/>
+    </message>
+    <message name="GetTopicDetailsHttpGetIn">
+        <part name="TopicCode" type="s:string"/>
+    </message>
+    <message name="GetTopicDetailsHttpGetOut">
+        <part name="Body" element="s0:TopicDetail"/>
+    </message>
+    <message name="GetTopicStatisticsHttpGetIn">
+        <part name="TopicCode" type="s:string"/>
+        <part name="StartDate" type="s:string"/>
+        <part name="EndDate" type="s:string"/>
+    </message>
+    <message name="GetTopicStatisticsHttpGetOut">
+        <part name="Body" element="s0:TopicStatistics"/>
+    </message>
+    <message name="GetTopicDataHttpGetIn">
+        <part name="TopicCode" type="s:string"/>
+        <part name="StartDate" type="s:string"/>
+        <part name="EndDate" type="s:string"/>
+    </message>
+    <message name="GetTopicDataHttpGetOut">
+        <part name="Body" element="s0:TopicData"/>
+    </message>
+    <message name="ResetHttpGetIn">
+        <part name="TopicCode" type="s:string"/>
+    </message>
+    <message name="ResetHttpGetOut">
+        <part name="Body" element="s0:TopicData"/>
+    </message>
+    <message name="GetTopicChartHttpGetIn">
+        <part name="TopicCode" type="s:string"/>
+        <part name="StartDate" type="s:string"/>
+        <part name="EndDate" type="s:string"/>
+        <part name="ChartWidth" type="s:string"/>
+        <part name="ChartHeight" type="s:string"/>
+    </message>
+    <message name="GetTopicChartHttpGetOut">
+        <part name="Body" element="s0:TopicChart"/>
+    </message>
+    <message name="GetTopicBinaryChartHttpGetIn">
+        <part name="TopicCode" type="s:string"/>
+        <part name="StartDate" type="s:string"/>
+        <part name="EndDate" type="s:string"/>
+        <part name="ChartWidth" type="s:string"/>
+        <part name="ChartHeight" type="s:string"/>
+    </message>
+    <message name="GetTopicBinaryChartHttpGetOut">
+        <part name="Body" element="s0:TopicChartBinary"/>
+    </message>
+    <message name="GetChartUrlHttpGetIn">
+        <part name="TopicCode" type="s:string"/>
+        <part name="StartDate" type="s:string"/>
+        <part name="EndDate" type="s:string"/>
+        <part name="ChartWidth" type="s:string"/>
+        <part name="ChartHeight" type="s:string"/>
+    </message>
+    <message name="GetChartUrlHttpGetOut">
+        <part name="Body" element="s0:Chart"/>
+    </message>
+    <message name="GetChartBinaryHttpGetIn">
+        <part name="TopicCode" type="s:string"/>
+        <part name="StartDate" type="s:string"/>
+        <part name="EndDate" type="s:string"/>
+        <part name="ChartWidth" type="s:string"/>
+        <part name="ChartHeight" type="s:string"/>
+    </message>
+    <message name="GetChartBinaryHttpGetOut">
+        <part name="Body" element="s0:ChartBinary"/>
+    </message>
+    <message name="GetCategoriesAndTopicsHttpPostIn"/>
+    <message name="GetCategoriesAndTopicsHttpPostOut">
+        <part name="Body" element="s0:ArrayOfCategory"/>
+    </message>
+    <message name="GetCategoriesHttpPostIn"/>
+    <message name="GetCategoriesHttpPostOut">
+        <part name="Body" element="s0:ArrayOfCategory"/>
+    </message>
+    <message name="GetTopicsHttpPostIn">
+        <part name="CategoryCode" type="s:string"/>
+    </message>
+    <message name="GetTopicsHttpPostOut">
+        <part name="Body" element="s0:Category"/>
+    </message>
+    <message name="GetTopicDetailsHttpPostIn">
+        <part name="TopicCode" type="s:string"/>
+    </message>
+    <message name="GetTopicDetailsHttpPostOut">
+        <part name="Body" element="s0:TopicDetail"/>
+    </message>
+    <message name="GetTopicStatisticsHttpPostIn">
+        <part name="TopicCode" type="s:string"/>
+        <part name="StartDate" type="s:string"/>
+        <part name="EndDate" type="s:string"/>
+    </message>
+    <message name="GetTopicStatisticsHttpPostOut">
+        <part name="Body" element="s0:TopicStatistics"/>
+    </message>
+    <message name="GetTopicDataHttpPostIn">
+        <part name="TopicCode" type="s:string"/>
+        <part name="StartDate" type="s:string"/>
+        <part name="EndDate" type="s:string"/>
+    </message>
+    <message name="GetTopicDataHttpPostOut">
+        <part name="Body" element="s0:TopicData"/>
+    </message>
+    <message name="ResetHttpPostIn">
+        <part name="TopicCode" type="s:string"/>
+    </message>
+    <message name="ResetHttpPostOut">
+        <part name="Body" element="s0:TopicData"/>
+    </message>
+    <message name="GetTopicChartHttpPostIn">
+        <part name="TopicCode" type="s:string"/>
+        <part name="StartDate" type="s:string"/>
+        <part name="EndDate" type="s:string"/>
+        <part name="ChartWidth" type="s:string"/>
+        <part name="ChartHeight" type="s:string"/>
+    </message>
+    <message name="GetTopicChartHttpPostOut">
+        <part name="Body" element="s0:TopicChart"/>
+    </message>
+    <message name="GetTopicBinaryChartHttpPostIn">
+        <part name="TopicCode" type="s:string"/>
+        <part name="StartDate" type="s:string"/>
+        <part name="EndDate" type="s:string"/>
+        <part name="ChartWidth" type="s:string"/>
+        <part name="ChartHeight" type="s:string"/>
+    </message>
+    <message name="GetTopicBinaryChartHttpPostOut">
+        <part name="Body" element="s0:TopicChartBinary"/>
+    </message>
+    <message name="GetChartUrlHttpPostIn">
+        <part name="TopicCode" type="s:string"/>
+        <part name="StartDate" type="s:string"/>
+        <part name="EndDate" type="s:string"/>
+        <part name="ChartWidth" type="s:string"/>
+        <part name="ChartHeight" type="s:string"/>
+    </message>
+    <message name="GetChartUrlHttpPostOut">
+        <part name="Body" element="s0:Chart"/>
+    </message>
+    <message name="GetChartBinaryHttpPostIn">
+        <part name="TopicCode" type="s:string"/>
+        <part name="StartDate" type="s:string"/>
+        <part name="EndDate" type="s:string"/>
+        <part name="ChartWidth" type="s:string"/>
+        <part name="ChartHeight" type="s:string"/>
+    </message>
+    <message name="GetChartBinaryHttpPostOut">
+        <part name="Body" element="s0:ChartBinary"/>
+    </message>
+    <portType name="XigniteStatisticsSoap">
+        <operation name="GetCategoriesAndTopics">
+            <documentation>Get categories and topics for statistics.</documentation>
+            <input message="s0:GetCategoriesAndTopicsSoapIn"/>
+            <output message="s0:GetCategoriesAndTopicsSoapOut"/>
+        </operation>
+        <operation name="GetCategories">
+            <documentation>Get valid categories.</documentation>
+            <input message="s0:GetCategoriesSoapIn"/>
+            <output message="s0:GetCategoriesSoapOut"/>
+        </operation>
+        <operation name="GetTopics">
+            <input message="s0:GetTopicsSoapIn"/>
+            <output message="s0:GetTopicsSoapOut"/>
+        </operation>
+        <operation name="GetTopicDetails">
+            <input message="s0:GetTopicDetailsSoapIn"/>
+            <output message="s0:GetTopicDetailsSoapOut"/>
+        </operation>
+        <operation name="GetTopicStatistics">
+            <documentation>Get statistics for a topic and a period.</documentation>
+            <input message="s0:GetTopicStatisticsSoapIn"/>
+            <output message="s0:GetTopicStatisticsSoapOut"/>
+        </operation>
+        <operation name="GetTopicData">
+            <documentation>Get time-series data for a topic.</documentation>
+            <input message="s0:GetTopicDataSoapIn"/>
+            <output message="s0:GetTopicDataSoapOut"/>
+        </operation>
+        <operation name="Reset">
+            <documentation>Get time-series data for a topic.</documentation>
+            <input message="s0:ResetSoapIn"/>
+            <output message="s0:ResetSoapOut"/>
+        </operation>
+        <operation name="GetTopicChart">
+            <documentation>Get time-series data and a URL to a chart for a topic.</documentation>
+            <input message="s0:GetTopicChartSoapIn"/>
+            <output message="s0:GetTopicChartSoapOut"/>
+        </operation>
+        <operation name="GetTopicChartCustom">
+            <documentation>Get time-series data and a URL to a custom chart for a topic.</documentation>
+            <input message="s0:GetTopicChartCustomSoapIn"/>
+            <output message="s0:GetTopicChartCustomSoapOut"/>
+        </operation>
+        <operation name="GetTopicBinaryChart">
+            <documentation>Get time-series and a chart in binary format for a topic.</documentation>
+            <input message="s0:GetTopicBinaryChartSoapIn"/>
+            <output message="s0:GetTopicBinaryChartSoapOut"/>
+        </operation>
+        <operation name="GetTopicBinaryChartCustom">
+            <documentation>Get time-series and a custom chart in binary format for a topic.</documentation>
+            <input message="s0:GetTopicBinaryChartCustomSoapIn"/>
+            <output message="s0:GetTopicBinaryChartCustomSoapOut"/>
+        </operation>
+        <operation name="GetChartUrl">
+            <documentation>Get chart url for a topic.</documentation>
+            <input message="s0:GetChartUrlSoapIn"/>
+            <output message="s0:GetChartUrlSoapOut"/>
+        </operation>
+        <operation name="GetChartUrlCustom">
+            <documentation>Get chart url for a topic.</documentation>
+            <input message="s0:GetChartUrlCustomSoapIn"/>
+            <output message="s0:GetChartUrlCustomSoapOut"/>
+        </operation>
+        <operation name="GetChartBinary">
+            <documentation>Get chart in binary format for a topic.</documentation>
+            <input message="s0:GetChartBinarySoapIn"/>
+            <output message="s0:GetChartBinarySoapOut"/>
+        </operation>
+        <operation name="GetChartBinaryCustom">
+            <documentation>Get chart in binary format for a topic.</documentation>
+            <input message="s0:GetChartBinaryCustomSoapIn"/>
+            <output message="s0:GetChartBinaryCustomSoapOut"/>
+        </operation>
+    </portType>
+    <portType name="XigniteStatisticsHttpGet">
+        <operation name="GetCategoriesAndTopics">
+            <documentation>Get categories and topics for statistics.</documentation>
+            <input message="s0:GetCategoriesAndTopicsHttpGetIn"/>
+            <output message="s0:GetCategoriesAndTopicsHttpGetOut"/>
+        </operation>
+        <operation name="GetCategories">
+            <documentation>Get valid categories.</documentation>
+            <input message="s0:GetCategoriesHttpGetIn"/>
+            <output message="s0:GetCategoriesHttpGetOut"/>
+        </operation>
+        <operation name="GetTopics">
+            <input message="s0:GetTopicsHttpGetIn"/>
+            <output message="s0:GetTopicsHttpGetOut"/>
+        </operation>
+        <operation name="GetTopicDetails">
+            <input message="s0:GetTopicDetailsHttpGetIn"/>
+            <output message="s0:GetTopicDetailsHttpGetOut"/>
+        </operation>
+        <operation name="GetTopicStatistics">
+            <documentation>Get statistics for a topic and a period.</documentation>
+            <input message="s0:GetTopicStatisticsHttpGetIn"/>
+            <output message="s0:GetTopicStatisticsHttpGetOut"/>
+        </operation>
+        <operation name="GetTopicData">
+            <documentation>Get time-series data for a topic.</documentation>
+            <input message="s0:GetTopicDataHttpGetIn"/>
+            <output message="s0:GetTopicDataHttpGetOut"/>
+        </operation>
+        <operation name="Reset">
+            <documentation>Get time-series data for a topic.</documentation>
+            <input message="s0:ResetHttpGetIn"/>
+            <output message="s0:ResetHttpGetOut"/>
+        </operation>
+        <operation name="GetTopicChart">
+            <documentation>Get time-series data and a URL to a chart for a topic.</documentation>
+            <input message="s0:GetTopicChartHttpGetIn"/>
+            <output message="s0:GetTopicChartHttpGetOut"/>
+        </operation>
+        <operation name="GetTopicBinaryChart">
+            <documentation>Get time-series and a chart in binary format for a topic.</documentation>
+            <input message="s0:GetTopicBinaryChartHttpGetIn"/>
+            <output message="s0:GetTopicBinaryChartHttpGetOut"/>
+        </operation>
+        <operation name="GetChartUrl">
+            <documentation>Get chart url for a topic.</documentation>
+            <input message="s0:GetChartUrlHttpGetIn"/>
+            <output message="s0:GetChartUrlHttpGetOut"/>
+        </operation>
+        <operation name="GetChartBinary">
+            <documentation>Get chart in binary format for a topic.</documentation>
+            <input message="s0:GetChartBinaryHttpGetIn"/>
+            <output message="s0:GetChartBinaryHttpGetOut"/>
+        </operation>
+    </portType>
+    <portType name="XigniteStatisticsHttpPost">
+        <operation name="GetCategoriesAndTopics">
+            <documentation>Get categories and topics for statistics.</documentation>
+            <input message="s0:GetCategoriesAndTopicsHttpPostIn"/>
+            <output message="s0:GetCategoriesAndTopicsHttpPostOut"/>
+        </operation>
+        <operation name="GetCategories">
+            <documentation>Get valid categories.</documentation>
+            <input message="s0:GetCategoriesHttpPostIn"/>
+            <output message="s0:GetCategoriesHttpPostOut"/>
+        </operation>
+        <operation name="GetTopics">
+            <input message="s0:GetTopicsHttpPostIn"/>
+            <output message="s0:GetTopicsHttpPostOut"/>
+        </operation>
+        <operation name="GetTopicDetails">
+            <input message="s0:GetTopicDetailsHttpPostIn"/>
+            <output message="s0:GetTopicDetailsHttpPostOut"/>
+        </operation>
+        <operation name="GetTopicStatistics">
+            <documentation>Get statistics for a topic and a period.</documentation>
+            <input message="s0:GetTopicStatisticsHttpPostIn"/>
+            <output message="s0:GetTopicStatisticsHttpPostOut"/>
+        </operation>
+        <operation name="GetTopicData">
+            <documentation>Get time-series data for a topic.</documentation>
+            <input message="s0:GetTopicDataHttpPostIn"/>
+            <output message="s0:GetTopicDataHttpPostOut"/>
+        </operation>
+        <operation name="Reset">
+            <documentation>Get time-series data for a topic.</documentation>
+            <input message="s0:ResetHttpPostIn"/>
+            <output message="s0:ResetHttpPostOut"/>
+        </operation>
+        <operation name="GetTopicChart">
+            <documentation>Get time-series data and a URL to a chart for a topic.</documentation>
+            <input message="s0:GetTopicChartHttpPostIn"/>
+            <output message="s0:GetTopicChartHttpPostOut"/>
+        </operation>
+        <operation name="GetTopicBinaryChart">
+            <documentation>Get time-series and a chart in binary format for a topic.</documentation>
+            <input message="s0:GetTopicBinaryChartHttpPostIn"/>
+            <output message="s0:GetTopicBinaryChartHttpPostOut"/>
+        </operation>
+        <operation name="GetChartUrl">
+            <documentation>Get chart url for a topic.</documentation>
+            <input message="s0:GetChartUrlHttpPostIn"/>
+            <output message="s0:GetChartUrlHttpPostOut"/>
+        </operation>
+        <operation name="GetChartBinary">
+            <documentation>Get chart in binary format for a topic.</documentation>
+            <input message="s0:GetChartBinaryHttpPostIn"/>
+            <output message="s0:GetChartBinaryHttpPostOut"/>
+        </operation>
+    </portType>
+    <binding name="XigniteStatisticsSoap" type="s0:XigniteStatisticsSoap">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <operation name="GetCategoriesAndTopics">
+            <soap:operation soapAction="http://www.xignite.com/services/GetCategoriesAndTopics" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetCategoriesAndTopicsHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetCategories">
+            <soap:operation soapAction="http://www.xignite.com/services/GetCategories" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetCategoriesHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetTopics">
+            <soap:operation soapAction="http://www.xignite.com/services/GetTopics" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetTopicsHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetTopicDetails">
+            <soap:operation soapAction="http://www.xignite.com/services/GetTopicDetails" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetTopicDetailsHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetTopicStatistics">
+            <soap:operation soapAction="http://www.xignite.com/services/GetTopicStatistics" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetTopicStatisticsHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetTopicData">
+            <soap:operation soapAction="http://www.xignite.com/services/GetTopicData" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetTopicDataHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="Reset">
+            <soap:operation soapAction="http://www.xignite.com/services/Reset" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:ResetHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetTopicChart">
+            <soap:operation soapAction="http://www.xignite.com/services/GetTopicChart" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetTopicChartHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetTopicChartCustom">
+            <soap:operation soapAction="http://www.xignite.com/services/GetTopicChartCustom" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetTopicChartCustomHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetTopicBinaryChart">
+            <soap:operation soapAction="http://www.xignite.com/services/GetTopicBinaryChart" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetTopicBinaryChartHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetTopicBinaryChartCustom">
+            <soap:operation soapAction="http://www.xignite.com/services/GetTopicBinaryChartCustom" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetTopicBinaryChartCustomHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetChartUrl">
+            <soap:operation soapAction="http://www.xignite.com/services/GetChartUrl" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetChartUrlHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetChartUrlCustom">
+            <soap:operation soapAction="http://www.xignite.com/services/GetChartUrlCustom" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetChartUrlCustomHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetChartBinary">
+            <soap:operation soapAction="http://www.xignite.com/services/GetChartBinary" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetChartBinaryHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="GetChartBinaryCustom">
+            <soap:operation soapAction="http://www.xignite.com/services/GetChartBinaryCustom" style="document"/>
+            <input>
+                <soap:body use="literal"/>
+                <soap:header message="s0:GetChartBinaryCustomHeader" part="Header" use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+    <binding name="XigniteStatisticsHttpGet" type="s0:XigniteStatisticsHttpGet">
+        <http:binding verb="GET"/>
+        <operation name="GetCategoriesAndTopics">
+            <http:operation location="/GetCategoriesAndTopics"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetCategories">
+            <http:operation location="/GetCategories"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetTopics">
+            <http:operation location="/GetTopics"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetTopicDetails">
+            <http:operation location="/GetTopicDetails"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetTopicStatistics">
+            <http:operation location="/GetTopicStatistics"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetTopicData">
+            <http:operation location="/GetTopicData"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="Reset">
+            <http:operation location="/Reset"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetTopicChart">
+            <http:operation location="/GetTopicChart"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetTopicBinaryChart">
+            <http:operation location="/GetTopicBinaryChart"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetChartUrl">
+            <http:operation location="/GetChartUrl"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetChartBinary">
+            <http:operation location="/GetChartBinary"/>
+            <input>
+                <http:urlEncoded/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+    </binding>
+    <binding name="XigniteStatisticsHttpPost" type="s0:XigniteStatisticsHttpPost">
+        <http:binding verb="POST"/>
+        <operation name="GetCategoriesAndTopics">
+            <http:operation location="/GetCategoriesAndTopics"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetCategories">
+            <http:operation location="/GetCategories"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetTopics">
+            <http:operation location="/GetTopics"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetTopicDetails">
+            <http:operation location="/GetTopicDetails"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetTopicStatistics">
+            <http:operation location="/GetTopicStatistics"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetTopicData">
+            <http:operation location="/GetTopicData"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="Reset">
+            <http:operation location="/Reset"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetTopicChart">
+            <http:operation location="/GetTopicChart"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetTopicBinaryChart">
+            <http:operation location="/GetTopicBinaryChart"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetChartUrl">
+            <http:operation location="/GetChartUrl"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+        <operation name="GetChartBinary">
+            <http:operation location="/GetChartBinary"/>
+            <input>
+                <mime:content type="application/x-www-form-urlencoded"/>
+            </input>
+            <output>
+                <mime:mimeXml part="Body"/>
+            </output>
+        </operation>
+    </binding>
+    <service name="XigniteStatistics">
+        <documentation>Delivers and charts more than 1400 economical time-series fom the Federal
+            Reserve Bank.</documentation>
+        <port name="XigniteStatisticsSoap" binding="s0:XigniteStatisticsSoap">
+            <soap:address location="http://www.xignite.com/xStatistics.asmx"/>
+        </port>
+        <port name="XigniteStatisticsHttpGet" binding="s0:XigniteStatisticsHttpGet">
+            <http:address location="http://www.xignite.com/xStatistics.asmx"/>
+        </port>
+        <port name="XigniteStatisticsHttpPost" binding="s0:XigniteStatisticsHttpPost">
+            <http:address location="http://www.xignite.com/xStatistics.asmx"/>
+        </port>
+    </service>
+</definitions>

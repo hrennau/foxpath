@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE task PUBLIC "-//OASIS//DTD DITA Task//EN" "task.dtd">
+<task id="task_ptr_12m_3g">
+    <title>Turning Bluetooth&#174; on and off</title>
+    <shortdesc>Turn off <term>Bluetooth</term> when you are not using it to save battery power.
+        Also, turned it off in places where using a wireless device is not allowed (for example on
+        board an aircraft). </shortdesc>
+    <taskbody>
+        <steps>
+            <step>
+                <cmd>From the home menu, select <term>Bluetooth</term> and then select
+                        <term>Settings</term> > <term>Wireless &amp; networks</term>.</cmd>
+            </step>
+            <step>
+                <cmd>Select or clear the <term>Bluetooth</term> check box.</cmd>
+            </step>
+        </steps>
+        
+    </taskbody>
+    
+</task>
+

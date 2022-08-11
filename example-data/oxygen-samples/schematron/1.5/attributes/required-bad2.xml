@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE AAA SYSTEM "required.dtd">
+<?xml-model href="required.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<AAA>
+     <CCC/>
+     <CCC/>
+     <BBB>
+          <CCC/>
+     </BBB>
+</AAA>

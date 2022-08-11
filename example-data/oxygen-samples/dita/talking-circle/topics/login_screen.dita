@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="login_screen">
+  <title>Talk Selection Screen</title>
+  <shortdesc>The login screen is the first screen of the application</shortdesc>
+  <prolog>
+    <metadata>
+      <keywords>
+        <indexterm>ui<indexterm>talk selection</indexterm></indexterm>
+      </keywords>
+    </metadata>
+    <resourceid id="tss20"/>
+  </prolog>
+  <body>
+    <p>The screen allows you to:</p>
+    <p>
+      <ol>
+        <li>Select the talk you want to enter</li>
+        <li>Specify credentials, if you are logging in for the first time.</li>
+      </ol>
+    </p>
+    <image href="../images/talk_selection_screen.png"/>
+    <p>In the <uicontrol>Select talk</uicontrol> combo box you can choose an existing, on-going
+      talk, or enter a name to start a new one.</p>
+  </body>
+</topic>

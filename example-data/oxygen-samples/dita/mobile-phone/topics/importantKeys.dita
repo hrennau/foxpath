@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="topic_4qz_gjm_2g">
+  <title>Important keys and shortcuts</title>
+  <body>
+    <p>The most important keys and shortcuts of your phone are listed here:</p>
+    <p>
+      <table frame="all" id="table_zxl_fkm_2g">
+        <title>Important keys</title>
+        <tgroup cols="3">
+          <colspec colname="c1" colnum="1" colwidth="47.4pt"/>
+          <colspec colname="c2" colnum="2" colwidth="57.6pt"/>
+          <colspec colname="c3" colnum="3" colwidth="195pt"/>
+          <thead>
+            <row>
+              <entry namest="c1" nameend="c3">Keys on your phone keyboard</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry align="center"><image href="../image/call.svg" id="image_wly_rlm_2g"
+                  height="1em"/></entry>
+              <entry><term>Send </term></entry>
+              <entry>
+                <ul id="ul_k4l_vlm_2g">
+                  <li>Make a call</li>
+                  <li>Answer a call</li>
+                </ul>
+              </entry>
+            </row>
+            <row>
+              <entry align="center"><image href="../image/endCall.jpg" id="image_jph_xlm_2g"
+                  height="1em"/></entry>
+              <entry><term>End</term>/<term>Power</term></entry>
+              <entry>
+                <ul id="ul_yk4_bmm_2g">
+                  <li>End a call</li>
+                  <li>Return to the home menu</li>
+                </ul>
+              </entry>
+            </row>
+            <row>
+              <entry align="center"><image href="../image/Lock.jpg" id="image_bz3_hmm_2g"
+                  height="1em"/></entry>
+              <entry><term>Lock</term></entry>
+              <entry>
+                <ul id="ul_yvq_wmm_2g">
+                  <li>Lock or unlock the phone </li>
+                </ul>
+              </entry>
+            </row>
+            <row>
+              <entry align="center"><image href="../image/Escape.jpg" id="image_rlm_qmm_2g"
+                  height="1em"/></entry>
+              <entry><term>Escape</term></entry>
+              <entry>
+                <ul id="ul_wkw_5mm_2g">
+                  <li>Close the menu</li>
+                  <li>Return to previous menu</li>
+                </ul>
+              </entry>
+            </row>
+            <row base="">
+              <entry align="center"><image href="../image/menu1.jpg" placement="inline"
+                  id="image_tnj_5nm_2g" product="X1000" height="1em"/><image
+                  href="../image/menu2.jpg" id="image_tfn_nb4_2g" product="X2000" height="1em"
+                /></entry>
+              <entry><term>Menu</term></entry>
+              <entry>
+                <ul id="ul_ldw_vnm_2g">
+                  <li>Open the main menu</li>
+                  <li>Select an item on click</li>
+                </ul>
+              </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </p>
+    <p>
+      <table frame="all" id="table_r1r_c4n_2g">
+        <title>Phone shortcuts</title>
+        <tgroup cols="2" align="center">
+          <colspec colname="c1" colnum="1" colwidth="141.6pt"/>
+          <colspec colname="c2" colnum="2" colwidth="291.6pt"/>
+          <thead>
+            <row>
+              <entry>Most used shortcuts</entry>
+              <entry/>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry> Check your voice mail </entry>
+              <entry> Press and hold <term>1</term>.</entry>
+            </row>
+            <row>
+              <entry> Change your ring tone </entry>
+              <entry> Press and hold <image href="../image/call.svg" id="image_p25_1pn_2g"
+                  height="1em"/> and then select <term>Phone Ring Tones</term>. </entry>
+            </row>
+            <row>
+              <entry> Turn on or turn off the speakers</entry>
+              <entry> Press the <image href="../image/speakerphone.jpg" id="image_1ql_hpn_2g"
+                  height="1em"/> key.</entry>
+            </row>
+            <row>
+              <entry> Set the device on silent mode</entry>
+              <entry> Press and hold the <image href="../image/volume_down.jpg"
+                  id="image_jzr_kb4_2g" height="1em"/> key.</entry>
+            </row>
+            <row>
+              <entry> Contact speed dial </entry>
+              <entry> Press and hold the key you would like to assign to contact for speed
+                dial.</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </p>
+    <p/>
+  </body>
+</topic>

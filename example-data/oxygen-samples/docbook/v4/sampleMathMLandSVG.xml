@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//POLYMTL//DTD DocBook MathML SVG Module V1.0//EN" "dbmmlsvg.dtd">
+<article>
+    <title>MathML and SVG</title>
+    <sect1>
+        <title>MathML</title>
+        <sect2>
+            <title>Embedded MathML </title>
+            <para>The equation as a block. A line of text.</para>
+            <equation>
+                <mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mml:mrow>
+                        <mml:msub>
+                            <mml:mi>f</mml:mi>
+                            <mml:mi>n</mml:mi>
+                        </mml:msub>
+                        <mml:mo>=</mml:mo>
+                        <mml:mfrac>
+                            <mml:mn>1</mml:mn>
+                            <mml:msqrt>
+                                <mml:mn>5</mml:mn>
+                            </mml:msqrt>
+                        </mml:mfrac>
+                        <mml:mrow>
+                            <mml:mo>[</mml:mo>
+                            <mml:mrow>
+                                <mml:msup>
+                                    <mml:mrow>
+                                        <mml:mo>(</mml:mo>
+                                        <mml:mfrac>
+                                            <mml:mrow>
+                                                <mml:mn>1</mml:mn>
+                                                <mml:mo>&plus;</mml:mo>
+                                                <mml:msqrt>
+                                                  <mml:mn>5</mml:mn>
+                                                </mml:msqrt>
+                                            </mml:mrow>
+                                            <mml:mn>2</mml:mn>
+                                        </mml:mfrac>
+                                        <mml:mo>)</mml:mo>
+                                    </mml:mrow>
+                                    <mml:mi>n</mml:mi>
+                                </mml:msup>
+                                <mml:mo>&minus;</mml:mo>
+                                <mml:msup>
+                                    <mml:mrow>
+                                        <mml:mo>(</mml:mo>
+                                        <mml:mfrac>
+                                            <mml:mrow>
+                                                <mml:mn>1</mml:mn>
+                                                <mml:mo>&minus;</mml:mo>
+                                                <mml:msqrt>
+                                                  <mml:mn>5</mml:mn>
+                                                </mml:msqrt>
+                                            </mml:mrow>
+                                            <mml:mn>2</mml:mn>
+                                        </mml:mfrac>
+                                        <mml:mo>)</mml:mo>
+                                    </mml:mrow>
+                                    <mml:mi>n</mml:mi>
+                                </mml:msup>
+                            </mml:mrow>
+                            <mml:mo>]</mml:mo>
+                        </mml:mrow>
+                    </mml:mrow>
+                </mml:math>
+            </equation>
+            <para>Another line of text.</para>
+            <para>Inline equation. The equation :<inlineequation><mml:math
+                        xmlns:mml="http://www.w3.org/1998/Math/MathML">
+                        <mml:mstyle>
+                            <mml:mrow>
+                                <mml:mfrac>
+                                    <mml:mrow>
+                                        <mml:mi>sin</mml:mi>
+                                        <mml:mo rspace="verythinmathspace">&#x2061;</mml:mo>
+                                        <mml:mi>θ</mml:mi>
+                                    </mml:mrow>
+                                    <mml:mi>π</mml:mi>
+                                </mml:mfrac>
+                            </mml:mrow>
+                        </mml:mstyle>
+                    </mml:math>
+                </inlineequation> followed by some more text.</para>
+        </sect2>
+        <sect2>
+            <title>External MathML Equation</title>
+            <para>Referred using the <sgmltag>imagedata</sgmltag> element.</para>
+            <para>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="../../mathml/sample.mathml"/>
+                    </imageobject>
+                </mediaobject>
+            </para>
+        </sect2>
+    </sect1>
+    <sect1>
+        <title>SVG</title>
+        <sect2>
+            <title>Embedded SVG Images</title>
+            <para>The SVG content is wrapped into an <sgmltag>imageobject</sgmltag> element.</para>
+            <figure>
+                <title>An SVG figure. </title>
+                <mediaobject>
+                    <imageobject>
+                        <svg:svg width="5cm" height="4cm" viewBox="0 0 500 400" version="1.1"
+                            xmlns:svg="http://www.w3.org/2000/svg">
+                            <svg:title>Example cubic01- cubic Bezier commands in path
+                                data</svg:title>
+                            <svg:desc>Picture showing a simple example of path data using both a "C"
+                                and an "S" command, along with annotations showing the control
+                                points and end points</svg:desc>
+                            <svg:style type="text/css"> .Border { fill:none; stroke:blue; stroke-width:1
+                                } .Connect { fill:none; stroke:#888888; stroke-width:2 } .SamplePath {
+                                fill:none; stroke:red; stroke-width:5 } .EndPoint { fill:none;
+                                stroke:#888888; stroke-width:2 } .CtlPoint { fill:#888888; stroke:none }
+                                .AutoCtlPoint { fill:none; stroke:blue; stroke-width:4 } .Label {
+                                font-size:22; font-family:Verdana } </svg:style>
+                            <svg:rect class="Border" x="1" y="1" width="498" height="398"/>
+                            <svg:polyline class="Connect" points="100,200 100,100"/>
+                            <svg:polyline class="Connect" points="250,100 250,200"/>
+                            <svg:polyline class="Connect" points="250,200 250,300"/>
+                            <svg:polyline class="Connect" points="400,300 400,200"/>
+                            <svg:path class="SamplePath"
+                                d="M100,200 C100,100 250,100 250,200 S400,300 400,200"/>
+                            <svg:circle class="EndPoint" cx="100" cy="200" r="10"/>
+                            <svg:circle class="EndPoint" cx="250" cy="200" r="10"/>
+                            <svg:circle class="EndPoint" cx="400" cy="200" r="10"/>
+                            <svg:circle class="CtlPoint" cx="100" cy="100" r="10"/>
+                            <svg:circle class="CtlPoint" cx="250" cy="100" r="10"/>
+                            <svg:circle class="CtlPoint" cx="400" cy="300" r="10"/>
+                            <svg:circle class="AutoCtlPoint" cx="250" cy="300" r="9"/>
+                            <svg:text class="Label" x="25" y="70">M100,200 C100,100 250,100
+                                250,200</svg:text>
+                            <svg:text class="Label" x="325" y="350" style="text-anchor:middle"
+                                >S400,300 400,200</svg:text>
+                        </svg:svg>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+            <para>This is an inline <inlinemediaobject><imageobject><svg:svg
+                            xmlns:svg="http://www.w3.org/2000/svg" width="3cm" height="3cm"
+                            viewBox="0 0 400 400">
+                            <svg:g style="fill-opacity:0.7; stroke:black; stroke-width:0.1cm;">
+                                <svg:circle cx="6cm" cy="2cm" r="100" style="fill:red;"
+                                    transform="translate(0,50)"/>
+                                <svg:circle cx="6cm" cy="2cm" r="100" style="fill:blue;"
+                                    transform="translate(70,150)"/>
+                                <svg:circle cx="6cm" cy="2cm" r="100" style="fill:green;"
+                                    transform="translate(-70,150)"/>
+                            </svg:g>
+                        </svg:svg></imageobject></inlinemediaobject> image.</para>
+        </sect2>
+        <sect2>
+            <title>External SVG Images</title>
+            <para>These images are referred using the <sgmltag class="attribute">fileref</sgmltag>
+                attribute of the <sgmltag>imageobject</sgmltag> element.</para>
+            <para>An image scaled down to 50%: <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="../../svg/shapes.svg" scale="50" format="SVG"/>
+                    </imageobject>
+                </mediaobject> A complex transparent image that is not scaled: <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="../../svg/blured-shapes.svg" format="SVG"/>
+                    </imageobject>
+                </mediaobject></para>
+        </sect2>
+    </sect1>
+</article>

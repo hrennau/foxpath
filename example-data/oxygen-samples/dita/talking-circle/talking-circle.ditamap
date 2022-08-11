@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN" "map.dtd">
+<map>
+ <title><ph keyref="product"/></title>
+ <keydef keys="product">
+  <topicmeta>
+   <keywords>
+    <keyword>Talking Circle®</keyword>
+   </keywords>
+  </topicmeta>
+ </keydef>
+ <topicref href="topics/installation.dita">
+  <topicref href="tasks/installation_on_windows.dita"/>
+  <topicref href="tasks/installation_on_mac.dita"/>
+ </topicref>
+ <topicref href="topics/ui.dita">
+  <topicref href="topics/login_screen.dita"/>
+  <topicref href="topics/talk_screen.dita"/>
+ </topicref>
+ <topicref href="topics/troubleshooting.dita"/>
+</map>

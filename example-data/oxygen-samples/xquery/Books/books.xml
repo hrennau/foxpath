@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library>
+    <publisher name="Wiley Group">
+        <book>
+            <title>The Green Mile</title>
+            <author>Stephen King</author>
+            <price>18</price>
+        </book>
+        <book>
+            <title>The Catcher in the Rye</title>
+            <author>J. D. Salinger</author>
+            <price>25</price>
+        </book>
+        <book>
+            <title>I, Robot</title>
+            <author>Issac Asimov</author>
+            <price>15</price>
+        </book>
+    </publisher>
+    <publisher name="Time Publishing">
+        <book>
+            <title>Foundation Novels</title>
+            <author>Isaac Asimov</author>
+            <price>30</price>
+        </book>
+        <book>
+            <title>Pygmalion</title>
+            <author>Oscar Wilde</author>
+            <price>10</price>
+        </book>
+    </publisher>
+    <publisher name="Amazon">
+        <book>
+            <title>Dune</title>
+            <author>Frank Herbert</author>
+            <price>25</price>
+        </book>
+        <book>
+            <title>Dune Messiah</title>
+            <author>Frank Herbert</author>
+            <price>12</price>
+        </book>
+    </publisher>
+</library>

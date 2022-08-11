@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE task PUBLIC "-//OASIS//DTD DITA Task//EN" "task.dtd">
+<task id="task_r33_mtl_3g">
+    <title>Setting up an e-mail address</title>
+    <shortdesc>You can use the Mail application to set up your email and other POP3 or IMAP email
+        accounts.</shortdesc>
+    <taskbody>
+        <context>
+            <p>From the home menu, select <term>Messaging -&gt; Options -&gt; Settings -&gt; Email
+                    -&gt; Mailboxes</term> and add a new mailbox. Then follow the wizard which walks
+                you through the process. First choose <term>Start</term> to begin the process
+                described below:</p>
+        </context>
+        <steps>
+            <step>
+                <cmd>Choose one of the options: If this is the first time your are setting up an
+                    e-mail account, select POP3/IMAP. If you have already added an email account,
+                    select <term>New account</term> and then select POP3/IMAP.</cmd>
+            </step>
+            <step>
+                <cmd>Type your email address and password and then press <term>Next</term>. </cmd>
+            </step>
+            <step>
+                <cmd> Enter your incoming mail server then choose
+                    <term>Next</term><?oxy_delete author="Mary" timestamp="20160328T111114+0300" content=" and your outgoing mail server then choose &lt;term&gt;Next&lt;/term&gt;." comment="This should be another step."?></cmd>
+            </step>
+            <step>
+                <cmd>Insert your name and the account name. Give this mailbox a name. Make it
+                    meaningful, for example ‘Gmail email’ if your email provider is Gmail. When this
+                    details have been entered, choose
+                        <term><?oxy_delete author="Tom" timestamp="20160328T111802+0300" content="Finish"?><?oxy_insert_start author="Tom" timestamp="20160328T111805+0300" comment="Someone please double check the name of this action." id="gsm_xkq_lv"?><?oxy_comment_start author="Mary" timestamp="20160328T111931+0300" comment="Yes, you are correct." parentID="gsm_xkq_lv"?>Done<?oxy_comment_end?><?oxy_insert_end?></term>
+                    and the following notification is displayed: ‘Setup complete. Settings can be
+                    edited in e-mail settings
+                    section’.<?oxy_comment_start author="Mary" timestamp="20160328T111628+0300" comment="The user has to test the connection before saving it, right?" id="ybq_rkq_lv"?><?oxy_comment_start author="Tom" timestamp="20160328T111748+0300" comment="Yes, you are right. There is a Test Connection button. John, can you please check that?" parentID="ybq_rkq_lv" id="zmc_kc2_mv" mid="3"?><?oxy_comment_start author="John" timestamp="20160330T082748+0300" comment="I&apos;ll take care of this." parentID="ybq_rkq_lv" mid="2"?>
+                    Click <term>OK</term>.
+                    <?oxy_comment_end mid="2"?><?oxy_comment_end mid="3"?><?oxy_comment_end?></cmd>
+            </step>
+            <step>
+                <cmd>After you have received this confirmation message, you can view and manage your
+                    email messages, from the home menu, select the <term>Messages</term> icon.</cmd>
+            </step>
+        </steps>
+    </taskbody>
+  </task>

@@ -1,0 +1,1210 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><!--
+    (c) RenderX, 2000
+    This file makes part of the RenderX XSL FO Test Suite. Permission is
+    granted to copy and modify this file as a whole or in part, provided
+    that any work derived from it bear a reference to the original
+    document.
+  -->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xep="http://www.renderx.com/XEP/xep" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <fo:layout-master-set>
+      <fo:simple-page-master master-name="all-pages">
+         <fo:region-body region-name="xsl-region-body" margin="0.7in" column-gap="0.25in"/>
+         <fo:region-before region-name="xsl-region-before" extent="0.7in" display-align="after"/>
+         <fo:region-after region-name="xsl-region-after" extent="0.7in" display-align="before"/>
+      </fo:simple-page-master>
+   </fo:layout-master-set>
+   <fo:page-sequence master-reference="all-pages">
+      <fo:static-content flow-name="xsl-region-before">
+         <fo:list-block font="10pt Helvetica" provisional-distance-between-starts="5in" provisional-label-separation="0in">
+            <fo:list-item>
+               <fo:list-item-label end-indent="label-end()">
+                  <fo:block text-align="start" font-weight="bold"> Advanced Paragraph Attributes - Page Break Control</fo:block>
+               </fo:list-item-label>
+               <fo:list-item-body start-indent="body-start()">
+                  <fo:block text-align="end">
+                Page <fo:page-number/>
+                  </fo:block>
+               </fo:list-item-body>
+            </fo:list-item>
+         </fo:list-block>
+      </fo:static-content>
+      <fo:static-content flow-name="xsl-region-after">
+         <fo:list-block font="9pt Times" provisional-distance-between-starts="3in" provisional-label-separation="0in">
+            <fo:list-item>
+               <fo:list-item-label end-indent="label-end()">
+                  <fo:block text-align="start" font-weight="bold">© <fo:basic-link external-destination="url(http://www.renderx.com/)" color="#0000C0" text-decoration="underline">Render<fo:wrapper font-weight="bold" color="#C00000">X</fo:wrapper>
+                     </fo:basic-link> 2000</fo:block>
+               </fo:list-item-label>
+               <fo:list-item-body start-indent="body-start()">
+                  <fo:block text-align="end" font-style="italic" color="#606060">
+                XSL Formatting Objects Test Suite
+              </fo:block>
+               </fo:list-item-body>
+            </fo:list-item>
+         </fo:list-block>
+      </fo:static-content>
+      <fo:static-content flow-name="xsl-footnote-separator">
+         <fo:block>
+            <fo:leader leader-pattern="rule" leader-length="100%" rule-thickness="0.5pt" rule-style="solid" color="black"/>
+         </fo:block>
+      </fo:static-content>
+      <fo:flow flow-name="xsl-region-body">
+         <fo:block>
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <fo:block font="bold 14pt Helvetica" color="black" space-before="18pt" space-before.conditionality="discard" space-after="6pt" keep-with-next.within-column="always" keep-together.within-column="always" text-align="center" padding="3pt" background-color="silver"> Advanced Paragraph Attributes - Page Break Control</fo:block>
+
+            <fo:block font="12pt Times" space-before="6pt" space-after="6pt"> 
+  This text tests <fo:wrapper font-family="monospace">'keep-together.within-page'</fo:wrapper> attribute.
+</fo:block>
+
+
+            <fo:block font="bold 12pt Times" space-before="12pt" space-after="6pt" keep-with-next.within-column="always" keep-together.within-column="always" text-align="center">
+               <fo:wrapper text-decoration="underline">Subsequent blocks</fo:wrapper>
+            </fo:block>
+
+            <fo:block font="12pt Times" space-before="6pt" space-after="6pt"> 
+  Following paragraphs all have <fo:wrapper font-family="monospace">'keep-together.within-page'</fo:wrapper>
+  attribute set to <fo:wrapper font-family="monospace">"always"</fo:wrapper>. Therefore, page breaks
+  may occur only between paragraphs with different colors.
+</fo:block>
+
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#C00000" keep-together.within-page="always">
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+  </fo:block>
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#0000C0" keep-together.within-page="always">
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+  </fo:block>
+
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#C00000" keep-together.within-page="always">
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+  </fo:block>
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#0000C0" keep-together.within-page="always">
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+  </fo:block>
+
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#C00000" keep-together.within-page="always">
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+  </fo:block>
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#0000C0" keep-together.within-page="always">
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+  </fo:block>
+
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#C00000" keep-together.within-page="always">
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+  </fo:block>
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#0000C0" keep-together.within-page="always">
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+  </fo:block>
+
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#C00000" keep-together.within-page="always">
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+  </fo:block>
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#0000C0" keep-together.within-page="always">
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+  </fo:block>
+
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#C00000" keep-together.within-page="always">
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+  </fo:block>
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#0000C0" keep-together.within-page="always">
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+  </fo:block>
+
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#C00000" keep-together.within-page="always">
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+  </fo:block>
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#0000C0" keep-together.within-page="always">
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+      Page breaks should not split blocks.
+     
+  </fo:block>
+
+
+
+
+            <fo:block font="12pt Times" space-before="6pt" space-after="6pt"> 
+  Following paragraphs all have <fo:wrapper font-family="monospace">'keep-together.within-page'</fo:wrapper>
+  attribute set to <fo:wrapper font-family="monospace">"auto"</fo:wrapper>. It means that these
+  paragraphs may be split by a page break at any point.
+</fo:block>
+
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#C00000" keep-together.within-page="auto">
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+  </fo:block>
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#0000C0" keep-together.within-page="auto">
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+  </fo:block>
+
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#C00000" keep-together.within-page="auto">
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+  </fo:block>
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#0000C0" keep-together.within-page="auto">
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+  </fo:block>
+
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#C00000" keep-together.within-page="auto">
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+  </fo:block>
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#0000C0" keep-together.within-page="auto">
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+  </fo:block>
+
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#C00000" keep-together.within-page="auto">
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+  </fo:block>
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#0000C0" keep-together.within-page="auto">
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+  </fo:block>
+
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#C00000" keep-together.within-page="auto">
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+  </fo:block>
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#0000C0" keep-together.within-page="auto">
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+  </fo:block>
+
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#C00000" keep-together.within-page="auto">
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+  </fo:block>
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#0000C0" keep-together.within-page="auto">
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+  </fo:block>
+
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#C00000" keep-together.within-page="auto">
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+  </fo:block>
+
+  
+  
+            <fo:block start-indent="0.5in" space-before.optimum="6pt" font="14pt Times" color="#0000C0" keep-together.within-page="auto">
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+      Page breaks can split blocks. 
+     
+  </fo:block>
+
+
+
+
+         </fo:block>
+      </fo:flow>
+   </fo:page-sequence>
+</fo:root>

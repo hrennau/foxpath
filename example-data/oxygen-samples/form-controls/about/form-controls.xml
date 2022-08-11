@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Part of the CSS comes from the associated document type. 
+    It's path is ${frameworks}/samples/css/form-controls.css. -->
+<?xml-stylesheet type="text/css" href="form-controls.css"?>
+
+<formControls xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.oxygenxml.com/ns/samples/form-controls form-controls.xsd"
+    xmlns="http://www.oxygenxml.com/ns/samples/form-controls">   
+    <title>Form controls</title>
+    <abstract>
+         <p>Form controls have been introduced to allow attribute values to be edited right into the
+             author area. A form control can be a text field, a check box, a combo box or a pop-up
+             selection window. Aside from these built-in types, you can also provide a custom
+             implementation to handle a specific use case.</p>
+         <p>To use a form control, the function <b>oxy_editor</b> must be used in the CSS. This function
+             can appear on the content property:</p>
+         <pre>text:before {
+         content: oxy_editor(type, text, edit, "#text");
+}</pre>
+         <p>The function signature consists in property name -> property value pairs. For the previous
+             example we have two properties: <b>type</b> with value <b>text</b> and <b>edit</b> with
+             value <b>#text</b>.</p>
+         <p>These form controls can also be used to edit the text value of an element. Assuming that the
+             text value is edited using a form control, the same value shouldn't be presented in the
+             content. To obtain this behaviour you can use the following rule to hide the text content of
+             an element that will be edited with a form control:</p>
+         <pre>text {
+        visibility:-oxy-collapse-text;
+}</pre>
+        <p>Either than using the generic <b>oxy_editor</b> function, the built-in form controls can
+            also be used though dedicated functions: <b>oxy_textfield</b>, <b>oxy_combobox</b>,
+                <b>oxy_checkbox</b>, <b>oxy_popup</b>, <b>oxy_datePicker</b> and
+                <b>oxy_urlChooser</b>.</p>
+    </abstract>
+    <section>
+        <title>Text field form control</title>
+        <section>
+            <title>Text field with content completion support from CSS</title>
+            <p>In this example we use a simple text field that edits<b/> the text value of an
+                element and provides content completion with values specified in the CSS. Content
+                completion is invoked automatically when a separator character is used (a space,
+                comma or semicolon) or on request through <b>CTRL+SPACE</b>.</p>
+            <text>Value</text>
+            <p>This form control is added through the following CSS rule. Note the <b>values</b>
+                argument of the function that specifies the content completion values:</p>
+            <pre>text:before {
+    content: 
+        oxy_textfield(
+            edit, "#text",
+            values, "first, second, third");
+}</pre>
+        </section>
+        
+        <section>
+            <title>Text field with content completion support from schema</title>
+            <p>In this example we edit the text value of an element but this time the content
+                completion values are collected from schema: </p>
+            <textWithCC>value1</textWithCC>
+            <p>Note the absence of the <b>values</b> parameter:</p>
+            <pre>textWithCC:before {
+    content:  
+        oxy_textfield(
+            edit, "#text", 
+            columns, 40);
+}</pre>
+        </section>
+    </section>
+    
+    <section>
+        <title>Check box form control</title>
+        <section>
+            <title>Simple check box editor </title>
+            <p>In this example we use a check box form control to edit an attribute with two
+                possible values: <b>On</b>/<b>Off</b> These values are specified in the CSS file,
+                although they could also come from the schema (like in example 2.2): </p>
+            <checkBox attribute="off"/>
+            <p>Note the arguments <b>values</b> and <b>uncheckedValues</b> that give the values for
+                the checked and unchecked check box states. The <b>labels</b> argument gives a user
+                friendly label description that will be associated visually with the checked state. </p>
+            <pre>checkBox:before {
+    content: 
+    oxy_checkbox(
+        edit, "@attribute", 
+        values, "On", 
+        uncheckedValues, "Off", 
+        labels, "On/Off");
+}</pre>
+        </section>
+        
+        <section>
+            <title>Check box with values collected from schema</title>
+            <p>In this example we have a check box similar with the one from the previous example
+                except that the values are detected from the schema: </p>
+            <checkBox2 attribute="false"/>
+            <p>Note that the <b>values</b> and the <b>uncheckedValues</b> arguments are missing:</p>
+            <pre>checkBox2:before {
+    content: 
+    oxy_checkbox(
+        edit, "@attribute", 
+        labels, "Active");
+}</pre>
+        </section>
+        
+        <section>
+            <title>A set of multiple check boxes</title>
+            <p>In this example we use multiple check boxes to edit a composed attribute value.
+                Depending whether the check box is selected or not a different value is
+                committed.</p>
+            <multipleCheckBox attribute="true,yes,on"/>
+            <p>Note that the <b>values</b> and the <b>uncheckedValues</b> arguments represent an
+                enumeration of comma separated values. The <b>resultSeparator</b> argument is used
+                to compose the attribute value from the states of the check boxes.</p>
+            <pre>multipleCheckBox:before {
+    content: 
+        oxy_checkbox(
+            edit, "@attribute", 
+            values, "true, yes, on", 
+            uncheckedValues, "false, no , off",
+            resultSeparator, ","
+            labels, "Present, Working, Started");
+}</pre>
+        </section>
+        
+        <section>
+            <title>Another set of multiple check boxes</title>
+            <p>In this example we will use multiple check boxes just like in the previous example
+                but this time <b>only the selected </b>checkboxes will commit a value: </p>
+            <multipleCheckBox2/>
+            <p>Note that the <b>uncheckedValues</b> property is missing.</p>
+            <pre>multipleCheckBox2:before {
+    content:  
+        oxy_checkbox(
+        edit, "@attribute", 
+        values, "v1, v2, v3", 
+        labels, "Value1, Value2, Value3");
+}</pre>
+        </section>
+    </section>
+    
+    <section>
+        <title>Combo box form control</title>
+        <section>
+            <title>Combo box with values provided by CSS</title>
+            <p>In this example we will use a combo box to edit an attribute value. The possible
+                values are provided from CSS, but these values can be further edited: </p>
+            <comboBox attribute="value1"/>
+            <p>Note the <b>values</b> argument that gives the content completion values.</p>
+            <pre>comboBox:before {
+    content:  
+        oxy_combobox(
+            edit, "@attribute", 
+            editable, true, 
+            values, "value1, value2, value3");
+}</pre>
+        </section>
+        
+        <section>
+            <title>Combo box with values provided by schema</title>
+            <p>In this example we will use a combo box to edit the text value of an element. This
+                time the content completion values are provided from the schema (XML Schema or DTD).
+                Also the combo is not editable in order to enforce only the correct values: </p>
+            <comboBoxWithSchemaValues>value1</comboBoxWithSchemaValues>
+            <p>Note the <b>values</b> argument is missing and that the <b>editable</b> argument is
+                    <b>false</b>.</p>
+            <pre>comboBoxWithSchemaValues:before {
+    content: 
+        oxy_combobox(
+            edit, "#text", 
+            editable, false);
+}</pre>
+        </section>
+        <section>
+            <title>Removing the attribute edited by a combo box</title>
+            <p>In order to delete the attribute edited by a combo box one can use an
+                    <b>oxy_button</b> next to the <b>oxy_combobox</b> like in the example below:</p>
+            <comboBoxWithRemove/>
+            <pre>comboBoxWithRemove:before {
+    content: 
+        oxy_label(text, "Combobox:", 
+            width, 120px,
+            text-align, left)
+        oxy_combobox(edit, "@attribute", 
+            editable, false)
+        oxy_button(actionID, 'remove.attribute', 
+            color, red, 
+            transparent, true);
+}</pre>
+        </section>
+    </section>
+    
+    <section>
+        <title>URL chooser form control</title>
+        <p>An URL chooser form control allows browsing for a local or remote URL. The selected URL
+            is made relative to the currently edited file: </p>
+        <urlChooser file="editors.xsd"/>
+        <p>We also impose a preferred width using the <b>columns</b> argument. </p>
+        <pre>urlChooser:before {
+    content:  
+        oxy_urlChooser(
+            edit, "@file", 
+            columns, 25);
+}</pre>
+    </section>
+    
+    <section>
+        <title>Pop-up form control</title>
+        <section>
+            <title>Pop-up with single selection</title>
+            <p>In this example we use a pop-up form control to edit an attribute value of an
+                element. The form control presents a list of possible values of which only one can
+                be selected. The possible values offered by content completion are specified in
+                CSS.</p>
+            <popupWithSingleSelection attribute="value1"/>
+            <p>Note the <b>values</b> argument that specifies the content completion values and the
+                    <b>selectionMode</b> argument which enforces the selection of a single item.
+                Also the <b>rows</b> argument imposes the number of visible items in the pop-up list
+                (a scroll bar will be used).</p>
+            <pre>popupWithSingleSelection:before {
+    content:  
+        oxy_popup(
+            edit, "@attribute",
+            values, "value1, value2, value3, value4, value5", 
+            columns, 10,
+            rows, 3,
+            selectionMode, "single");
+}</pre>
+        </section>
+        
+        <section>
+            <title>Pop-up with multiple selection</title>
+            <p>In this example we will use a pop-up form control to edit a composed attribute
+                value.</p>
+            <popupWithMultipleSelection attribute="value1|value2|value3|value4"/>
+            <p>Note the <b>values</b> argument that specifies the content completion values. If this
+                argument is missing the values will be taken from the associated schema. The
+                    <b>selectionMode</b> argument value is the one that imposes the multiple
+                selection from the form control (as opposed to the previous example). The argument
+                    <b>resultSeparator</b> will be used to compose all the selected values into the
+                final value that will be committed.</p>
+            <pre>popupWithMultipleSelection:before {
+    content: 
+        oxy_popup(
+            edit, "@attribute", 
+            values, "value1, value2, value3, value4, value5", 
+            labels, "Value no1, Value no2, Value no3, Value no4, Value no5",
+            resultSeparator, "|", 
+            columns, 10, 
+            selectionMode, "multiple");
+}</pre>
+        </section>
+    </section>
+        
+        <section>
+            <title>Date picker form control</title>
+    <section>
+            <title>Date picker for an xs:date type attribute</title>
+            <p>In this example we use a date picker form control to edit an attribute value. The
+                attribute is defined in the schema as having an xs:date type.</p>
+            <datePicker attribute="2012-10-04+03:00"/>
+            <pre>datePicker:before {
+    content: 
+        oxy_label(text, "Date attribute defined in the schema: ", width, 300px)
+        oxy_datePicker(
+            columns, 16, 
+            edit, "@attribute")
+}</pre>
+        </section>
+        
+        <section>
+            <title>Date picker for an xs:dateTime type attribute</title>
+            <p>In this example we will use a date picker form control to edit an attribute value.
+                The attribute is defined in the schema as having an xs:dateTime type.</p>
+            <dateTimePicker attribute="2012-10-02T14:52:00+03:00"/>
+            <pre>dateTimePicker {
+    content:
+        oxy_label(text, "Date time attribute defined in the schema: ", width, 300px)
+        oxy_datePicker(
+            columns, 16, 
+            edit, "@attribute");
+}</pre>
+        </section>
+        
+        <section>
+            <title>Date picker for a generic attribute</title>
+            <p>In this example we will use a date picker form control to edit an attribute value.
+                The attribute is defined in the schema as having an xs:string type. The format of
+                the attribute value is defined through the <b>format</b> argument value in the
+                CSS.</p>
+            <datePickerCustom attribute="2012-10-07"/>
+            <p>Note that the value of <b>format</b> argument must be a valid Java date format.</p>
+            <pre>datePickerCustom {
+    content:
+        oxy_label(text, "Date time attribute with format defined in CSS: ", width, 300px)
+        oxy_datePicker(
+            columns, 16, 
+            edit, "@attribute",
+            format, "yyyy-MM-dd");
+}</pre>
+        </section>
+        
+    </section>
+    
+    <section>
+        <title>Button</title>
+        <p>In this example we use a button form control<b/> that invokes an action declared in the
+                <b>Author > Actions</b> section of the associated <b>Document Type</b>. When pushed,
+            this button will insert another element, whose values are editable using a pop-up
+            window.</p>
+        <button/>
+        <p>Note the <b>actionID</b> argument that specifies the ID of the action that will be
+            executed.</p>
+        <pre>button:before {
+    content:  
+        oxy_button(
+            /* This action is declared in the document type associated with the XML document. */
+            actionID, "insert.popupWithMultipleSelection");
+}</pre>
+        <section>
+            <title>Action context</title>
+            <p>The action associated with the button form control is executed by default in the
+                context of the element on which it is bound to. If you use the <b>actionContext</b>
+                property you can instead execute it in the current selection context. </p>
+            <p editMode="true">Select words and apply styling on them using the small contextual
+                toolbar from above.</p>
+            <p>The CSS code that achieves that implements the toolbar is presented below. </p>
+            <pre>p[editMode]:before {
+    display:block;
+    background-color: #cccccc;
+    content: 
+        oxy_button(actionID, 'bold', transparent, true, actionContext, caret)
+        oxy_button(actionID, 'italic', transparent, true, actionContext, caret)
+        oxy_button(actionID, 'underline', transparent, true, actionContext, caret);
+}</pre>
+        </section>
+    </section>
+    <section>
+        <title>Button Group</title>
+        <p>In this example we use a button group form control that triggers a pop-up menu with a set
+            of actions. Each action is defined in the <b>Author > Actions</b> section of the
+            associated <b>Document Type</b>.</p>
+        <buttongroup/>
+        <p>Note the <b>actionIDs</b> is a comma separated list of actions to be included in the
+            pop-up menu.</p>
+        <pre>buttongroup:before {
+    content:  
+        oxy_editor(
+            type, buttonGroup,
+            label, 'A group of actions',
+            /* The action IDs are declared in the document type associated with the XML document. */
+            actionIDs, "insert.popupWithMultipleSelection,insert.popupWithSingleSelection",
+            actionStyle, "both");
+}</pre>
+    </section>
+    <section>
+        <title>Text area</title>
+        <p>The text area form control can be used to edit the text content of a node. It offers
+            optional syntax highlighting if a content type is specified as an editor property.</p>
+        <p>The first text area offsers syntax highlight for CSS content and resizes itself to fit
+            its content.</p>
+        <textArea language="CSS">@namespace oxy "http://www.oxygenxml.com/extensions/author";
+textArea {
+    visibility: -oxy-collapse-text;
+    white-space: pre;
+}
+/** 
+ * Do not render entities inside the textArea element. 
+ * They will be rendered by the text area form control.
+ */
+textArea > oxy|entity {
+    display:none !important;
+}
+
+textArea[language="CSS"]:before {
+    content: oxy_textArea(
+      edit, '#text',
+      contentType, 'text/css');
+}
+
+textArea[language="XML"]:before {
+    content: oxy_textArea(
+      edit, '#text',
+      contentType, 'text/xml',
+      rows, 10,
+      columns, 30);
+}</textArea>
+        <p>The text area below specifies the rows and column counts, so it has a fixed size and
+            offers syntax highlighting for XML content.</p>
+        <textArea language="XML">&lt;note
+&gt;&lt;to&gt;Tove&lt;/to&gt;
+  &lt;from&gt;Jani&lt;/from&gt;
+  &lt;heading&gt;Reminder&lt;/heading&gt;
+  &lt;body&gt;Don't forget me this weekend!&lt;/body&gt;
+&lt;/note&gt;</textArea>
+        <p>The text edited by the <b>oxy_textArea</b> can contain builtin character entities and the
+            corresponding character will be rendered instead of them.</p>
+    </section>
+    <section>
+        <title>Media files</title>
+        <p>The media form controls can be used to play media files directly in the editor page. </p>
+        <p>There are two media form controls available:</p>
+        <section>
+            <title>Audio player</title>
+        </section>
+        <p>This form control is able to play audio files. Please see
+                <b>https://docs.oracle.com/javafx/2/api/javafx/scene/media/package-summary.html#SupportedMediaTypes</b>
+            for supported media types.</p>
+        <p>   <audio href="http://www.nasa.gov/mp3/590318main_ringtone_135_launch.mp3"/></p>
+        <p>An audio player is added through the CSS extension function <b>oxy_audio</b>:</p>
+        <pre>object {
+    content: 
+    oxy_audio(
+            href, 
+            oxy_url(oxy_base-uri(),attr(data)), 
+            width, attr(width, length)
+        );
+}</pre>
+        <section>
+            <title>Video player</title>
+        </section>
+        <p>With this form control you can play the videos from your documention directly in the
+            document context. Please see
+                <b>https://docs.oracle.com/javafx/2/api/javafx/scene/media/package-summary.html#SupportedMediaTypes</b>
+            for supported media types. This form control supports YouTube™ videos.</p>
+        <p>
+            <video href="https://www.youtube.com/embed/m_vv2s5Trn4"/>
+        </p>
+        <p>Such a video player can be added using the CSS extension function <b>oxy_video</b>:</p>
+        <pre>video:before {
+    content: 
+        oxy_video(
+            href, 
+            oxy_url(oxy_base-uri(), attr(data)), 
+            width, attr(width, length), 
+            height, attr(height, length)
+    );
+}</pre>
+    </section>
+    <section>
+        <title>Browser</title>
+        <p>This type of form control allows you to integrate HTML pages directly in the document
+            area. </p>
+        <p>
+            <browser href="https://www.oxygenxml.com"/>
+        </p>
+        <p>The browser from control can be added through the CSS extension function
+                <b>oxy_browser</b></p>
+        <pre>browser:before {
+    content: 
+        oxy_browser(
+            href, 
+            oxy_url(oxy_base-uri(), attr(data)), 
+            width, attr(width, length), 
+            height, attr(height, length)
+    );
+}</pre>
+
+        <section>
+            <title>Interacting with the Oxygen Workspace</title>
+            <p>From JavaScript you can access the Oxygen API to perform changes in the document, to open resources, etc.</p>
+            <interaction counter="5" href="interaction.html"/>
+            <p>The Javascript loaded inside a browser form control can access the Oxygen environment
+                through these global variables:</p>
+            <ul>
+                <li>
+                    <p><b>authorAccess</b> - this object is an instance of <a
+                            href="https://www.oxygenxml.com/InstData/Editor/SDK/javadoc/ro/sync/ecss/extensions/api/AuthorAccess.html"
+                            >ro.sync.ecss.extensions.api.AuthorAccess</a>.</p>
+                </li>
+            </ul>
+            <ul>
+                <li>
+                    <p><b>contextElement</b> - an instance of <a
+                            href="https://www.oxygenxml.com/InstData/Editor/SDK/javadoc/ro/sync/ecss/extensions/api/node/AuthorNode.html"
+                            >ro.sync.ecss.extensions.api.node.AuthorNode</a>. The form control is
+                        added over this node.</p>
+                </li>
+            </ul>
+            <ul>
+                <li>
+                    <p><b>pluginWorkspace</b>- an instance of <a
+                            href="https://www.oxygenxml.com/InstData/Editor/SDK/javadoc/ro/sync/exml/workspace/api/standalone/StandalonePluginWorkspace.html"
+                            >ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace</a></p>
+                </li>
+            </ul>
+            <ul>
+                <li>
+                    <p><b>fcArguments</b> - a java.util.Map implementation with the property name ->
+                        property value pairs passed on the form control function.</p>
+                </li>
+            </ul>
+            <ul>
+                <li>
+                    <p><b>apiHelper</b> - A helper object for creating Java objects. These objects
+                        can afterwards be passed as arguments when calling Oxygen's Java API:</p>
+                </li>
+            </ul>
+            <pre>var newAttrValue = apiHelper.newInstance(
+           "ro.sync.ecss.extensions.api.node.AttrValue",
+           ["normalizedValue", "rawValue", true]);
+authorAccess.getDocumentController().setAttribute(
+        "counter", newAttrValue, contextElement);</pre>
+            <p>To log you can use console.log("message to present").</p>
+        </section>
+        
+                <section>
+            <title>SVG renderer</title>
+            <p>The browser form control can also render dynamic SVGs</p>
+            <p>
+                <browser href="sample.svg"/>
+            </p>
+        </section>
+    </section>
+</formControls>

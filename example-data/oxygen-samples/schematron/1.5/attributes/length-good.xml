@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE AAA SYSTEM "length.dtd">
+<?xml-model href="length.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<AAA>
+    <BBB bbb="CZ"/>
+</AAA>

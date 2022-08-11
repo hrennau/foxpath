@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <row DAY = "2008-04-01" UNIQUE_VISITORS = "1000" VISITORS = "1300">
+  </row>
+  <row DAY = "2008-04-02" UNIQUE_VISITORS = "1100" VISITORS = "1500">
+  </row>
+  <row DAY = "2008-04-01" UNIQUE_VISITORS = "1000" VISITORS = "1300">
+  </row>
+  <row DAY = "2008-04-02" UNIQUE_VISITORS = "1100" VISITORS = "1500">
+  </row>
+  <row DAY = "2008-04-03" UNIQUE_VISITORS = "2100" VISITORS = "2300">
+  </row>
+  <row DAY = "2008-04-04" UNIQUE_VISITORS = "2400" VISITORS = "3400">
+  </row>
+  <row DAY = "2008-04-05" UNIQUE_VISITORS = "2830" VISITORS = "3600">
+  </row>
+  <row DAY = "2008-04-06" UNIQUE_VISITORS = "2500" VISITORS = "3100">
+  </row>
+  <row DAY = "2008-04-07" UNIQUE_VISITORS = "2200" VISITORS = "2800">
+  </row>
+  <row DAY = "2008-04-08" UNIQUE_VISITORS = "900" VISITORS = "1100">
+  </row>
+  <row DAY = "2008-04-09" UNIQUE_VISITORS = "800" VISITORS = "1200">
+  </row>
+  <row DAY = "2008-04-10" UNIQUE_VISITORS = "2300" VISITORS = "3000">
+  </row>
+  <row DAY = "2008-04-11" UNIQUE_VISITORS = "2630" VISITORS = "3300">
+  </row>
+  <row DAY = "2008-04-12" UNIQUE_VISITORS = "3400" VISITORS = "3900">
+  </row>
+  <row DAY = "2008-04-13" UNIQUE_VISITORS = "2500" VISITORS = "2900">
+  </row>
+  <row DAY = "2008-04-14" UNIQUE_VISITORS = "2400" VISITORS = "2800">
+  </row>
+  <row DAY = "2008-04-15" UNIQUE_VISITORS = "1000" VISITORS = "1200">
+  </row>
+  <row DAY = "2008-04-16" UNIQUE_VISITORS = "930" VISITORS = "1300">
+  </row>
+  <row DAY = "2008-04-17" UNIQUE_VISITORS = "2100" VISITORS = "2800">
+  </row>
+  <row DAY = "2008-04-18" UNIQUE_VISITORS = "3700" VISITORS = "3000">
+  </row>
+  <row DAY = "2008-04-19" UNIQUE_VISITORS = "4300" VISITORS = "4900">
+  </row>
+  <row DAY = "2008-04-20" UNIQUE_VISITORS = "3500" VISITORS = "4000">
+  </row>
+  <row DAY = "2008-04-21" UNIQUE_VISITORS = "2800" VISITORS = "3500">
+  </row>
+  <row DAY = "2008-04-22" UNIQUE_VISITORS = "1300" VISITORS = "1900">
+  </row>
+  <row DAY = "2008-04-23" UNIQUE_VISITORS = "1200" VISITORS = "1400">
+  </row>
+  <row DAY = "2008-04-24" UNIQUE_VISITORS = "3100" VISITORS = "4500">
+  </row>
+  <row DAY = "2008-04-25" UNIQUE_VISITORS = "4100" VISITORS = "5530">
+  </row>
+  <row DAY = "2008-04-26" UNIQUE_VISITORS = "5100" VISITORS = "6550">
+  </row>
+  <row DAY = "2008-04-27" UNIQUE_VISITORS = "3100" VISITORS = "4530">
+  </row>
+  <row DAY = "2008-04-28" UNIQUE_VISITORS = "2100" VISITORS = "3510">
+  </row>
+  <row DAY = "2008-04-29" UNIQUE_VISITORS = "1300" VISITORS = "1800">
+  </row>
+  <row DAY = "2008-04-30" UNIQUE_VISITORS = "1200" VISITORS = "1700">
+  </row>
+ </root>

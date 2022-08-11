@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE learningContent PUBLIC "-//OASIS//DTD DITA Learning Content//EN" "learningContent.dtd">
+<learningContent id="learningcontent">
+ <title>Creating a memo</title>
+ <shortdesc>Creating a memo is easy and fun.</shortdesc>
+ <learningContentbody>
+  <lcIntro>You may need to create a memo from time to time. </lcIntro>
+  <lcDuration>
+   <lcTime value="00:05 min">5 minutes</lcTime>
+  </lcDuration>
+ </learningContentbody>
+ <task id="creatememo">
+  <title>Creating a memo</title>
+  <shortdesc>You could include this task with a conref - for direct reuse from an existing
+   task.</shortdesc>
+  <taskbody>
+   <steps>
+    <step>
+     <cmd>Open the inbox.</cmd>
+    </step>
+    <step>
+     <cmd>Click New Memo.</cmd>
+    </step>
+    <step>
+     <cmd>Type the memo.</cmd>
+    </step>
+    <step>
+     <cmd>Send the memo.</cmd>
+    </step>
+   </steps>
+  </taskbody>
+ </task>
+ <learningAssessment id="assessment">
+  <title>Assessment</title>
+  <learningAssessmentbody>
+   <lcInteraction>
+    <lcTrueFalse id="tf1">
+     <title>True - False</title>
+     <lcQuestion>You receive mail in your inbox</lcQuestion>
+     <lcAnswerOptionGroup>
+      <lcAnswerOption>
+       <lcAnswerContent>True</lcAnswerContent>
+      </lcAnswerOption>
+      <lcAnswerOption>
+       <lcAnswerContent>False</lcAnswerContent>
+       <lcCorrectResponse/>
+      </lcAnswerOption>
+     </lcAnswerOptionGroup>
+    </lcTrueFalse>
+   </lcInteraction>
+  </learningAssessmentbody>
+ </learningAssessment>
+ <learningSummary id="summary">
+  <title>Summary</title>
+  <learningSummarybody>
+   <lcSummary>Some summary section content.</lcSummary>
+   <lcObjectives>
+    <title>A recap of objectives, perhaps</title>
+    <lcObjectivesStem>You now know how to:</lcObjectivesStem>
+    <lcObjectivesGroup>
+     <lcObjective>Create a memo</lcObjective>
+    </lcObjectivesGroup>
+   </lcObjectives>
+   <lcReview>Maybe a review, if you really want to make the point, or it was a long
+    course.</lcReview>
+   <lcNextSteps>And there's always the ubiquitous next steps to suggest.</lcNextSteps>
+  </learningSummarybody>
+ </learningSummary>
+</learningContent>

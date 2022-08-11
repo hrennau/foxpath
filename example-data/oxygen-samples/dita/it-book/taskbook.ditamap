@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE bookmap PUBLIC "-//OASIS//DTD DITA BookMap//EN"
+ "http://docs.oasis-open.org/dita/v1.1/OS/dtd/bookmap.dtd">
+<!-- (c) Copyright IBM Corp. 2004, 2007 All Rights Reserved. -->
+<bookmap id="taskbook">
+    <booktitle>
+        <booklibrary>Retro Tools</booklibrary>
+        <mainbooktitle>Product tasks</mainbooktitle>
+        <booktitlealt>Tasks and what they can do</booktitlealt>
+    </booktitle>
+    <bookmeta>
+        <author>Howe Tuduit</author>
+        <bookid>
+            <isbn>071271271X</isbn>
+            <booknumber>SG99-9999-00</booknumber>
+            <maintainer>
+                <organization>Retro Tools</organization>
+                <person/>
+            </maintainer>
+        </bookid>
+        <bookrights>
+            <copyrfirst>
+                <year>2004</year>
+            </copyrfirst>
+            <copyrlast>
+                <year>2007</year>
+            </copyrlast>
+            <bookowner>
+                <organization>Retro Tools, Inc.</organization>
+            </bookowner>
+        </bookrights>
+    </bookmeta>
+    <frontmatter>
+        <booklists>
+            <toc/>
+        </booklists>
+        <bookabstract href="concepts/taskbook-abstract.dita"/>
+        <notices href="concepts/notices.dita">
+          <topicmeta>
+            <data name="wh-tile">
+              <data name="hide" value="yes"/>        
+            </data>
+          </topicmeta>
+            <topicref href="topics/trademarks.dita"/>
+        </notices>
+        <preface href="topics/task_preface.dita">
+          <topicmeta>
+            <data name="wh-tile">
+              <data name="hide" value="yes"/>        
+            </data>
+          </topicmeta>
+        </preface>
+    </frontmatter>
+    <chapter href="topics/installing.dita">
+        <topicref href="tasks/installstorage.dita">
+            <topicref href="tasks/unscrewcover.dita"/>
+            <topicref href="tasks/insertdrive.dita"/>
+            <topicref href="tasks/replacecover.dita"/>
+        </topicref>
+        <topicref href="tasks/installwebserver.dita">
+            <topicref href="tasks/closeprograms.dita"/>
+            <topicref href="tasks/runsetup.dita"/>
+            <topicref href="tasks/restart.dita"/>
+        </topicref>
+        <topicref href="tasks/installdb.dita"/>
+    </chapter>
+    <chapter href="tasks/configuring.dita">
+        <topicref href="tasks/configurestorage.dita"/>
+        <topicref href="tasks/configurewebserver.dita"/>
+        <topicref href="tasks/configuredatabase.dita"/>
+    </chapter>
+    <chapter href="tasks/maintaining.dita">
+        <topicref href="tasks/maintainstorage.dita"/>
+        <topicref href="tasks/maintainserver.dita"/>
+        <topicref href="tasks/maintaindatabase.dita"/>
+    </chapter>
+    <chapter href="tasks/troubleshooting.dita">
+        <topicref href="tasks/drivetrouble.dita"/>
+        <topicref href="tasks/webtrouble.dita"/>
+        <topicref href="tasks/databasetrouble.dita"/>
+    </chapter>
+    <appendix href="topics/task_appendix.dita"/>
+    <backmatter>
+        <booklists>
+            <!--
+        <topicref href="taskbook/otherbooks.dita" navtitle="Related Books"/>
+        <topicref href="taskbook/trademarks.dita" navtitle="Trademarks"/>
+        <topicref href="taskbook/Glossary.dita navtitle="Glossary"/>
+      -->
+            <indexlist/>
+        </booklists>
+    </backmatter>
+</bookmap>

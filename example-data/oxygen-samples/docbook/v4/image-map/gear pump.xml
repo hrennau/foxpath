@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+                         "http://www.docbook.org/xml/4.5/docbookx.dtd">
+<article>
+    <title>Welcome to ImageMap Support in oXygen</title>
+    <sect1>
+        <title>Gear Pump - Exploded View</title>
+        <para>Exploded view diagram of a gear pump.</para>
+        <mediaobject>
+            <imageobjectco>
+                <areaspec units="calspair">
+                    <area id="drive_gear_area" linkends="drive_gear" coords="2750,5875 4250,4188"/>
+                    <area id="idler_gear_area" linkends="idler_gear" coords="3000,4125 4250,2667"/>
+                    <area id="suction_port_area" linkends="suction_port"
+                        coords="4750,5750 5250,5292"/>
+                    <area id="pressure_port_area" linkends="pressure_port"
+                        coords="5765,5000 6250,4542"/>
+                    <area id="shaft_seal_area" linkends="shaft_seal" coords="6625,7250 7250,6438"/>
+                    <area id="mounting_flange_area" linkends="mounting_flange"
+                        coords="6500,6625 7250,5375"/>
+                    <area id="drive_shaft_area1" linkends="drive_shaft" coords="7125,7500 7515,6875"/>
+                    <area id="drive_shaft_area2" linkends="drive_shaft" coords="7515,7750 8000,7125"/>
+                    <area id="drive_shaft_area3" linkends="drive_shaft" coords="8000,7875 8375,7334"/>
+                    <area id="drive_shaft_area4" linkends="drive_shaft" coords="8375,8125 8875,7625"/>
+                    <area id="bushings_area1" linkends="bushings_section"
+                        coords="4875,6125 5375,5563"/>
+                    <area id="bushings_area2" linkends="bushings_section"
+                        coords="4750,4750 5265,4146"/>
+                    <area id="bushings_area3" linkends="bushings_section"
+                        coords="2375,4750 2875,4125"/>
+                    <area id="bushings_area4" linkends="bushings_section"
+                        coords="2500,3375 3000,2730"/>
+                    <area id="case_seal_area1" linkends="case_seal" coords="1750,5500 2625,5000"/>
+                    <area id="case_seal_area2" linkends="case_seal" coords="2500,4875 2875,3625"/>
+                    <area id="case_seal_area3" linkends="case_seal" coords="2625,3625 3000,2396"/>
+                    <area id="case_seal_area4" linkends="case_seal" coords="2375,2375 2875,1750"/>
+                </areaspec>
+                <imageobject>
+                    <imagedata fileref="Gear_pump_exploded.png"/>
+                </imageobject>
+            </imageobjectco>
+        </mediaobject>
+    </sect1>
+    <sect1 id="drive_shaft">
+        <title>Drive shaft</title>
+        <para>A drive shaft is a mechanical component for transmitting torque and rotation, usually
+            used to connect other components of a drive train that cannot be connected directly
+            because of distance or the need to allow for relative movement between them..</para>
+    </sect1>
+    <sect1 id="bushings_section">
+        <title>Bushings</title>
+        <para>A bushing, also known as a bush, is an independent plain bearing that is inserted into
+            a housing to provide a bearing surface for rotary applications. The bushings in the gear
+            pump provide a bearing surface for the drive gear and idler gear.</para>
+    </sect1>
+    <sect1 id="gears_section">
+        <title>Gears</title>
+        <para>The gear pump uses two identical gears rotating against each other. One gear is driven
+            by a motor and it in turn drives the other gear. Each gear is supported by a shaft with
+            bushings on both sides of the gear.</para>
+        <sect2 id="drive_gear">
+            <title>Drive Gear (Rotor)</title>
+            <para>The drive gear in the gear pump is the gear that is driven by the motor. </para>
+        </sect2>
+        <sect2 id="idler_gear">
+            <title>Idler Gear</title>
+            <para>The idler gear is the gear that is driven by the drive gear .</para>
+        </sect2>
+    </sect1>
+    <sect1 id="ports_section">
+        <title>Ports</title>
+        <sect2 id="suction_port">
+            <title>Suction Port</title>
+            <para>The liquid enters in the pump through the suction port.</para>
+        </sect2>
+        <sect2 id="pressure_port">
+            <title>Pressure Port</title>
+            <para>The liquid leaves the pump through the pressure port (or discharge port).</para>
+        </sect2>
+    </sect1>
+    <sect1 id="seals_section">
+        <title>Seals</title>
+        <sect2 id="shaft_seal">
+            <title>Shaft Seal</title>
+            <para>This is a seal that is placed between the drive
+                shaft and the main case of the gear pump.</para>
+        </sect2>
+        <sect2 id="case_seal">
+            <title>Case Seal</title>
+            <para>The case seal is placed between the main case and
+                the case cover.</para>
+        </sect2>
+    </sect1>
+    <sect1 id="mounting_flange_section">
+        <title>Mounting Flange</title>
+        <para id="mounting_flange">Mounting Flange - The mounting flange is used to fix the pump
+            on a support apparatus.</para>
+    </sect1>
+</article>

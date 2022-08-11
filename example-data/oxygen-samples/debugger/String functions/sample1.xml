@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--    Sample from Zvon XSLT tutorial (www.zvon.org)   -->
+<source>
+    <text>Welcome to XSL world.</text>
+    <string>XSL</string>
+    <start>4</start>
+    <end>10</end>
+</source>

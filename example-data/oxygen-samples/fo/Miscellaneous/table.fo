@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- Example from: http://www.renderx.net
+    Copyright © 2004 RenderX, Inc.-->
+
+<fo:root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+  <fo:layout-master-set>
+    <fo:simple-page-master master-name="my-page">
+      <fo:region-body margin="1in"/>
+    </fo:simple-page-master>
+  </fo:layout-master-set>
+  <fo:page-sequence master-reference="my-page">
+    <fo:flow flow-name="xsl-region-body">
+      <fo:table border="0.5pt solid black" text-align="center" border-spacing="3pt">
+        <fo:table-column column-width="1in"/>
+        <fo:table-column column-width="0.5in" number-columns-repeated="2"/>
+        <fo:table-header>
+          <fo:table-row>
+            <fo:table-cell padding="6pt" border="1pt solid blue" background-color="silver" number-columns-spanned="3">
+              <fo:block text-align="center" font-weight="bold"> Header </fo:block>
+            </fo:table-cell>
+          </fo:table-row>
+        </fo:table-header>
+        <fo:table-body>
+          <fo:table-row>
+            <fo:table-cell padding="6pt" border="1pt solid blue" background-color="silver" number-rows-spanned="2">
+              <fo:block text-align="end" font-weight="bold"> Items: </fo:block>
+            </fo:table-cell>
+            <fo:table-cell padding="6pt" border="0.5pt solid black">
+              <fo:block> 1 : 1 </fo:block>
+            </fo:table-cell>
+            <fo:table-cell padding="6pt" border="0.5pt solid black">
+              <fo:block> 1 : 2 </fo:block>
+            </fo:table-cell>
+          </fo:table-row>
+          <fo:table-row>
+            <fo:table-cell padding="6pt" border="0.5pt solid black">
+              <fo:block> 2 : 1 </fo:block>
+            </fo:table-cell>
+            <fo:table-cell padding="6pt" border="0.5pt solid black">
+              <fo:block> 2 : 2 </fo:block>
+            </fo:table-cell>
+          </fo:table-row>
+        </fo:table-body>
+      </fo:table>
+    </fo:flow>
+  </fo:page-sequence>
+</fo:root>

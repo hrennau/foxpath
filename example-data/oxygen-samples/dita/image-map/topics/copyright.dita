@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="copyright">
+    <title>Copyright</title>
+  <shortdesc>Legal stuff.</shortdesc>
+    <body>
+        <p>Most of the information in this guide was taken from <xref
+                href="http://www.wikipedia.com" format="html" scope="external">Wikipedia</xref>, the
+            free encyclopedia.</p>
+    </body>
+</topic>

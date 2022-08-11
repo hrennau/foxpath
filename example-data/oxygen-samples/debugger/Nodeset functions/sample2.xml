@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE source SYSTEM "sample2.dtd">
+<!--    Sample from Zvon XSLT tutorial (www.zvon.org)   -->
+<source>
+    <doc> This text <ref id="n3"/> demonstrates <ref id="n1"/> a possible usage of id function <ref id="n2"/>.</doc>
+    <note id="n1">Note n1</note>
+    <note id="n2">Note n2</note>
+    <note id="n3">Note n3</note>
+</source>

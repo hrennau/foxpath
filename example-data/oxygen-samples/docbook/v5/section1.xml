@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sect1 xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>First section</title>
+    <para>This is a sample showing that &lt;oXygen/&gt; can be used to edit documents in conformity
+        with the dockbookx.dtd.</para>
+</sect1>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<movies>
+    <movie id="1">
+        <title>The Green Mile</title>
+        <year>1999</year>
+    </movie>
+    <movie id="2">
+        <title>Taxi Driver</title>
+        <year>1976</year>
+    </movie>
+    <movie id="3">
+        <title>The Matrix: Revolutions</title>
+        <year>2004</year>
+    </movie>
+    <movie id="4">
+        <title>Shrek II</title>
+        <year>2004</year>
+    </movie>
+</movies>

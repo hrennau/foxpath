@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ........................................................
+POLYMTL DTD Driver including :
+        DocBook 4.2
+        SVG 1.1
+        MathML 2.0
+PUBLIC ID :
+        "-//POLYMTL//DTD DocBook MathML SVG Module V1.0//EN"
+SYSTEM ID :
+        "http://www.info.polymtl.ca/~nipil/dbmmlsvg/dbmmlsvg.dtd";               
+......................................................... -->
+<!-- MATHML : initialization -->
+        <!ENTITY % mathml-colon               ':'>
+        <!ENTITY % mathml-prefix              'mml'>
+        <!ENTITY % equation.content "(alt?, (graphic+|mediaobject+|mml:math))">
+        <!ENTITY % inlineequation.content "(alt?, (inlinegraphic+|inlinemediaobject+|mml:math))">
+
+<!-- SVG : Suppress the imageobject declaration -->
+        <!ENTITY % imageobject.element "IGNORE">
+
+<!-- DOCBOOK : Include the docbook DTD -->
+        <!ENTITY % docbook.dtd PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+                "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
+        %docbook.dtd;
+
+<!-- MATHML : prefixing and inclusion -->
+        <!ENTITY % NS.prefixed     "INCLUDE">
+        <!ENTITY % MATHML.prefix   "%mathml-prefix;">
+        <!ENTITY % NamespaceDecl.attrib "
+                xmlns:mml       CDATA   #FIXED 'http://www.w3.org/1998/Math/MathML'
+        ">
+
+        <!-- You must also include the MathML DTD -->
+        <!ENTITY % mathml PUBLIC "-//W3C//DTD MathML 2.0//EN"
+                "http://www.w3.org/Math/DTD/mathml2/mathml2.dtd">
+        %mathml;
+
+<!-- SVG : prefixing and inclusion -->
+        <!ENTITY % NS.prefixed "INCLUDE" >
+        <!ENTITY % SVG.prefix "svg">
+        <!ENTITY % svg.dtd PUBLIC "-//W3C//DTD SVG 1.1//EN"
+                "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+        %svg.dtd;
+
+<!-- SVG : Provide an alternate imageobject declaration -->
+<!ENTITY % docbook.imageobject.element "INCLUDE">
+<![%docbook.imageobject.element;[
+<!ELEMENT imageobject (objectinfo?, (imagedata|%SVG.svg.qname;))>
+]]>
+<!-- ........................................................ -->

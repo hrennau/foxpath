@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-model href="xhtml-xforms.nvdl" type="application/xml" schematypens="http://purl.oclc.org/dsdl/nvdl/ns/structure/1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:xforms="http://www.w3.org/2002/xforms"
+  xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:my="test"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <meta:meta xmlns:meta="http://www.xsmiles.org/2002/metadata" name="XForms Controls"
+    description="Tests all XForms controls in single document"/>
+  <head>
+    <link rel="stylesheet" type="text/css" href="xforms.css"/>
+    <title>Sample</title>
+    <xforms:model id="form1">
+      <xforms:submission id="submit1" method="post"
+        action="http://sinex.tml.hut.fi:8080/xforms/request"/>
+      <xforms:instance id="my" xmlns="">
+        <my>
+          <input>Initial input</input>
+          <secret>Initial secret</secret>
+          <output>Initial output</output>
+          <textarea>Initial textarea</textarea>
+          <range>5</range>
+          <select1>1</select1>
+          <select>1</select>
+          <message>Message read from the instance</message>
+          <upload xsi:type="xsd:base64Binary"/>
+        </my>
+      </xforms:instance>
+    </xforms:model>
+  </head>
+  <body>
+    <div>
+      <h1>All XForms form controls</h1>
+      <p class="headline">&lt;textarea&gt;</p>
+      <xforms:textarea ref="/my/textarea">
+        <xforms:label>Textarea Form Control</xforms:label>
+      </xforms:textarea>
+      <xforms:textarea ref="/my/textarea">
+        <xforms:label>Textarea Form Control</xforms:label>
+      </xforms:textarea>
+      
+      <p class="headline">&lt;input&gt;</p>
+      <p>
+        <xforms:input ref="/my/input" xmlns:my="test">
+          <xforms:label>Input Form Control</xforms:label>
+        </xforms:input>
+      </p>
+      <p class="headline">&lt;output&gt;</p>
+      <xforms:output ref="/my/output" xmlns:my="test">
+        <xforms:label>Input Form Control</xforms:label>
+      </xforms:output>
+      <p class="headline">&lt;secret&gt;</p>
+      <xforms:secret ref="/my/secret">
+        <xforms:label>Secret Form Control</xforms:label>
+      </xforms:secret>
+      <p class="headline">&lt;upload&gt;</p>
+      <xforms:upload ref="/my/upload">
+        <xforms:label>Select File</xforms:label>
+      </xforms:upload>
+      <p class="headline">&lt;select1&gt;</p>
+      <p>
+        <xforms:select1 ref="/my/select1" appearance="full">
+          <xforms:label>appearance="full"</xforms:label>
+          <xforms:item>
+            <xforms:label>1</xforms:label>
+            <xforms:value>1</xforms:value>
+          </xforms:item>
+          <xforms:item>
+            <xforms:label>2nd</xforms:label>
+            <xforms:value>2</xforms:value>
+          </xforms:item>
+          <xforms:item>
+            <xforms:label>3rd</xforms:label>
+            <xforms:value>3</xforms:value>
+          </xforms:item>
+        </xforms:select1>
+        <xforms:select1 ref="/my/select1" appearance="compact">
+          <xforms:label>appearance="compact"</xforms:label>
+          <xforms:item>
+            <xforms:label>1st</xforms:label>
+            <xforms:value>1</xforms:value>
+          </xforms:item>
+          <xforms:item>
+            <xforms:label>2nd</xforms:label>
+            <xforms:value>2</xforms:value>
+          </xforms:item>
+          <xforms:item>
+            <xforms:label>3rd</xforms:label>
+            <xforms:value>3</xforms:value>
+          </xforms:item>
+        </xforms:select1>
+        
+        <xforms:select1 ref="/my/select1" appearance="full">
+          <xforms:label>appearance="full"</xforms:label>
+          <xforms:item>
+            <xforms:label>1st</xforms:label>
+            <xforms:value>1</xforms:value>
+          </xforms:item>
+          <xforms:item>
+            <xforms:label>2nd</xforms:label>
+            <xforms:value>2</xforms:value>
+          </xforms:item>
+          <xforms:item>
+            <xforms:label>3rd</xforms:label>
+            <xforms:value>3</xforms:value>
+          </xforms:item>
+        </xforms:select1>
+        
+        <xforms:select1 ref="/my/select1" appearance="minimal">
+          <xforms:label>appearance="minimal"</xforms:label>
+          <xforms:item>
+            <xforms:label>1st</xforms:label>
+            <xforms:value>1</xforms:value>
+          </xforms:item>
+          <xforms:item>
+            <xforms:label>2nd</xforms:label>
+            <xforms:value>2</xforms:value>
+          </xforms:item>
+          <xforms:item>
+            <xforms:label>3rd</xforms:label>
+            <xforms:value>3</xforms:value>
+          </xforms:item>
+        </xforms:select1>
+      </p>
+      <p class="headline">&lt;select&gt;</p>
+      <p>
+        <xforms:select ref="/my/select">
+          <xforms:label>select Form Control</xforms:label>
+          <xforms:item>
+            <xforms:label>1st</xforms:label>
+            <xforms:value>1</xforms:value>
+          </xforms:item>
+          <xforms:item>
+            <xforms:label>2nd</xforms:label>
+            <xforms:value>2</xforms:value>
+          </xforms:item>
+          <xforms:item>
+            <xforms:label>3rd</xforms:label>
+            <xforms:value>3</xforms:value>
+          </xforms:item>
+        </xforms:select>
+      </p>
+      <p class="headline">&lt;button&gt;</p>
+      <xforms:trigger>
+        <xforms:label>Click Me</xforms:label>
+        <xforms:message level="ephemeral" ev:event="click" ref="/my/message"/>
+      </xforms:trigger>
+      <p class="headline">&lt;submit&gt;</p>
+      <xforms:submit submission="my">
+        <xforms:label>Submit Me</xforms:label>
+      </xforms:submit>
+      <p class="headline">&lt;reset&gt;</p>
+      <xforms:trigger>
+        <xforms:label>Reset</xforms:label>
+        <xforms:reset ev:event="DOMActivate"/>
+      </xforms:trigger>
+    </div>
+  </body>
+</html>

@@ -2607,17 +2607,15 @@ declare function f:parseNestedFoxpathCall($functionName as xs:string,
         return
             if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>            
     else if ($functionName = ('ftree-view')) then
-        let $_DEBUG := trace(count($arguments), '_CARG: ')
         let $ecShift := if (ends-with($functionName, '-ec')) then 1 else 0    
         let $useArgs := subsequence($arguments, 2 + $argShift + $ecShift)
-        let $_DEBUG := trace($useArgs, '_USE_ARGS: ')
         let $trees :=
             for $arg in $useArgs
             let $pname := replace($arg, '^.*?([\S]+?)\s*=.*', '$1') ! replace(., '^@', '')
+            let $pname := replace($pname, '/.*|\?$|\*$', '')            
             let $expr := replace($arg, '^.+?=\s*', '')
             let $tree := f:parseFoxpath($expr, $context)
-            return element {$pname} {$tree/*}
-        let $_DEBUG := trace($trees, '_TREES: ')            
+            return element {$pname} {$tree}
         return 
             if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>            
     else ()

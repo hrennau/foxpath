@@ -1,0 +1,292 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+<!-- This file makes part of an XSL Test Suite. -->
+<!-- Adobe standard character sets for PDF.     -->
+<!-- Use the macro.xsl file to generate the FO document. -->
+<!-- Example from: http://www.renderx.net
+    Copyright © 2004 RenderX, Inc.-->
+
+<plain-doc column-count="3" xmlns:fo="http://www.w3.org/1999/XSL/Format">
+
+  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+           xmlns:dc="http://purl.org/dc/elements/1.1/"
+           xmlns:dcterms="http://purl.org/dc/terms/"
+           xmlns:db="http://www.oasis-open.org/docbook/xml/4.2/">
+     <rdf:Description rdf:about="http://xep.xattic.com/testsuite/features/adobe-standard.xml">
+        <dc:title>Character Sets &#x2014; Adobe Standard</dc:title>
+        <dc:description>
+          <db:para>
+     Enumerates the glyph repertory of standard PDF Latin fonts (Adobe Extended Roman character set)
+     and lists Unicode values for glyphs therein.     
+          </db:para>
+        </dc:description>
+        <dc:date>2003-07-24</dc:date>
+        <dcterms:requires rdf:resource="http://xep.xattic.com/testsuite/features/macro.xsl"/>
+    </rdf:Description>
+  </rdf:RDF> 
+
+<!-- ===================================================== -->
+<!-- Content templates                                     -->
+
+
+<define-macro name="glyph">
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <p text-align="center"><arg1/></p>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <p>
+        <arg3/>
+        [<font font="bold 11pt Courier">x<arg2/></font>]
+      </p>
+    </fo:list-item-body>
+  </fo:list-item>
+</define-macro>    
+    
+<!-- ========================================== -->
+<!-- Document body                              -->
+
+<title>Character Sets &#x2014; Adobe Standard</title>
+
+  <p space-before="6pt" space-after="6pt" font="11pt Times">
+     This document tests Adobe Extended Roman glyph repertory.
+     It also lists Unicode values used to access respective glyphs
+     from XML documents.
+  </p>
+
+  <fo:list-block space-before="12pt"
+                 provisional-distance-between-starts="30pt"
+                 provisional-label-separation="6pt"
+                 font="11pt Times">
+<macro name="glyph" arg1="&#x0020;" arg2="0020" arg3="space"/>
+<macro name="glyph" arg1="&#x0021;" arg2="0021" arg3="exclam"/>
+<macro name="glyph" arg1="&#x0022;" arg2="0022" arg3="quotedbl"/>
+<macro name="glyph" arg1="&#x0023;" arg2="0023" arg3="numbersign"/>
+<macro name="glyph" arg1="&#x0024;" arg2="0024" arg3="dollar"/>
+<macro name="glyph" arg1="&#x0025;" arg2="0025" arg3="percent"/>
+<macro name="glyph" arg1="&#x0026;" arg2="0026" arg3="ampersand"/>
+<macro name="glyph" arg1="&#x0027;" arg2="0027" arg3="quotesingle"/>
+<macro name="glyph" arg1="&#x0028;" arg2="0028" arg3="parenleft"/>
+<macro name="glyph" arg1="&#x0029;" arg2="0029" arg3="parenright"/>
+<macro name="glyph" arg1="&#x002A;" arg2="002A" arg3="asterisk"/>
+<macro name="glyph" arg1="&#x002B;" arg2="002B" arg3="plus"/>
+<macro name="glyph" arg1="&#x002C;" arg2="002C" arg3="comma"/>
+<macro name="glyph" arg1="&#x002D;" arg2="002D" arg3="hyphen"/>
+<macro name="glyph" arg1="&#x002E;" arg2="002E" arg3="period"/>
+<macro name="glyph" arg1="&#x002F;" arg2="002F" arg3="slash"/>
+<macro name="glyph" arg1="&#x0030;" arg2="0030" arg3="zero"/>
+<macro name="glyph" arg1="&#x0031;" arg2="0031" arg3="one"/>
+<macro name="glyph" arg1="&#x0032;" arg2="0032" arg3="two"/>
+<macro name="glyph" arg1="&#x0033;" arg2="0033" arg3="three"/>
+<macro name="glyph" arg1="&#x0034;" arg2="0034" arg3="four"/>
+<macro name="glyph" arg1="&#x0035;" arg2="0035" arg3="five"/>
+<macro name="glyph" arg1="&#x0036;" arg2="0036" arg3="six"/>
+<macro name="glyph" arg1="&#x0037;" arg2="0037" arg3="seven"/>
+<macro name="glyph" arg1="&#x0038;" arg2="0038" arg3="eight"/>
+<macro name="glyph" arg1="&#x0039;" arg2="0039" arg3="nine"/>
+<macro name="glyph" arg1="&#x003A;" arg2="003A" arg3="colon"/>
+<macro name="glyph" arg1="&#x003B;" arg2="003B" arg3="semicolon"/>
+<macro name="glyph" arg1="&#x003C;" arg2="003C" arg3="less"/>
+<macro name="glyph" arg1="&#x003D;" arg2="003D" arg3="equal"/>
+<macro name="glyph" arg1="&#x003E;" arg2="003E" arg3="greater"/>
+<macro name="glyph" arg1="&#x003F;" arg2="003F" arg3="question"/>
+<macro name="glyph" arg1="&#x0040;" arg2="0040" arg3="at"/>
+<macro name="glyph" arg1="&#x0041;" arg2="0041" arg3="A"/>
+<macro name="glyph" arg1="&#x0042;" arg2="0042" arg3="B"/>
+<macro name="glyph" arg1="&#x0043;" arg2="0043" arg3="C"/>
+<macro name="glyph" arg1="&#x0044;" arg2="0044" arg3="D"/>
+<macro name="glyph" arg1="&#x0045;" arg2="0045" arg3="E"/>
+<macro name="glyph" arg1="&#x0046;" arg2="0046" arg3="F"/>
+<macro name="glyph" arg1="&#x0047;" arg2="0047" arg3="G"/>
+<macro name="glyph" arg1="&#x0048;" arg2="0048" arg3="H"/>
+<macro name="glyph" arg1="&#x0049;" arg2="0049" arg3="I"/>
+<macro name="glyph" arg1="&#x004A;" arg2="004A" arg3="J"/>
+<macro name="glyph" arg1="&#x004B;" arg2="004B" arg3="K"/>
+<macro name="glyph" arg1="&#x004C;" arg2="004C" arg3="L"/>
+<macro name="glyph" arg1="&#x004D;" arg2="004D" arg3="M"/>
+<macro name="glyph" arg1="&#x004E;" arg2="004E" arg3="N"/>
+<macro name="glyph" arg1="&#x004F;" arg2="004F" arg3="O"/>
+<macro name="glyph" arg1="&#x0050;" arg2="0050" arg3="P"/>
+<macro name="glyph" arg1="&#x0051;" arg2="0051" arg3="Q"/>
+<macro name="glyph" arg1="&#x0052;" arg2="0052" arg3="R"/>
+<macro name="glyph" arg1="&#x0053;" arg2="0053" arg3="S"/>
+<macro name="glyph" arg1="&#x0054;" arg2="0054" arg3="T"/>
+<macro name="glyph" arg1="&#x0055;" arg2="0055" arg3="U"/>
+<macro name="glyph" arg1="&#x0056;" arg2="0056" arg3="V"/>
+<macro name="glyph" arg1="&#x0057;" arg2="0057" arg3="W"/>
+<macro name="glyph" arg1="&#x0058;" arg2="0058" arg3="X"/>
+<macro name="glyph" arg1="&#x0059;" arg2="0059" arg3="Y"/>
+<macro name="glyph" arg1="&#x005A;" arg2="005A" arg3="Z"/>
+<macro name="glyph" arg1="&#x005B;" arg2="005B" arg3="bracketleft"/>
+<macro name="glyph" arg1="&#x005C;" arg2="005C" arg3="backslash"/>
+<macro name="glyph" arg1="&#x005D;" arg2="005D" arg3="bracketright"/>
+<macro name="glyph" arg1="&#x005E;" arg2="005E" arg3="asciicircum"/>
+<macro name="glyph" arg1="&#x005F;" arg2="005F" arg3="underscore"/>
+<macro name="glyph" arg1="&#x0060;" arg2="0060" arg3="grave"/>
+<macro name="glyph" arg1="&#x0061;" arg2="0061" arg3="a"/>
+<macro name="glyph" arg1="&#x0062;" arg2="0062" arg3="b"/>
+<macro name="glyph" arg1="&#x0063;" arg2="0063" arg3="c"/>
+<macro name="glyph" arg1="&#x0064;" arg2="0064" arg3="d"/>
+<macro name="glyph" arg1="&#x0065;" arg2="0065" arg3="e"/>
+<macro name="glyph" arg1="&#x0066;" arg2="0066" arg3="f"/>
+<macro name="glyph" arg1="&#x0067;" arg2="0067" arg3="g"/>
+<macro name="glyph" arg1="&#x0068;" arg2="0068" arg3="h"/>
+<macro name="glyph" arg1="&#x0069;" arg2="0069" arg3="i"/>
+<macro name="glyph" arg1="&#x006A;" arg2="006A" arg3="j"/>
+<macro name="glyph" arg1="&#x006B;" arg2="006B" arg3="k"/>
+<macro name="glyph" arg1="&#x006C;" arg2="006C" arg3="l"/>
+<macro name="glyph" arg1="&#x006D;" arg2="006D" arg3="m"/>
+<macro name="glyph" arg1="&#x006E;" arg2="006E" arg3="n"/>
+<macro name="glyph" arg1="&#x006F;" arg2="006F" arg3="o"/>
+<macro name="glyph" arg1="&#x0070;" arg2="0070" arg3="p"/>
+<macro name="glyph" arg1="&#x0071;" arg2="0071" arg3="q"/>
+<macro name="glyph" arg1="&#x0072;" arg2="0072" arg3="r"/>
+<macro name="glyph" arg1="&#x0073;" arg2="0073" arg3="s"/>
+<macro name="glyph" arg1="&#x0074;" arg2="0074" arg3="t"/>
+<macro name="glyph" arg1="&#x0075;" arg2="0075" arg3="u"/>
+<macro name="glyph" arg1="&#x0076;" arg2="0076" arg3="v"/>
+<macro name="glyph" arg1="&#x0077;" arg2="0077" arg3="w"/>
+<macro name="glyph" arg1="&#x0078;" arg2="0078" arg3="x"/>
+<macro name="glyph" arg1="&#x0079;" arg2="0079" arg3="y"/>
+<macro name="glyph" arg1="&#x007A;" arg2="007A" arg3="z"/>
+<macro name="glyph" arg1="&#x007B;" arg2="007B" arg3="braceleft"/>
+<macro name="glyph" arg1="&#x007C;" arg2="007C" arg3="bar"/>
+<macro name="glyph" arg1="&#x007D;" arg2="007D" arg3="braceright"/>
+<macro name="glyph" arg1="&#x007E;" arg2="007E" arg3="asciitilde"/>
+<macro name="glyph" arg1="&#x00A1;" arg2="00A1" arg3="exclamdown"/>
+<macro name="glyph" arg1="&#x00A2;" arg2="00A2" arg3="cent"/>
+<macro name="glyph" arg1="&#x00A3;" arg2="00A3" arg3="sterling"/>
+<macro name="glyph" arg1="&#x00A4;" arg2="00A4" arg3="currency"/>
+<macro name="glyph" arg1="&#x00A5;" arg2="00A5" arg3="yen"/>
+<macro name="glyph" arg1="&#x00A6;" arg2="00A6" arg3="brokenbar"/>
+<macro name="glyph" arg1="&#x00A7;" arg2="00A7" arg3="section"/>
+<macro name="glyph" arg1="&#x00A8;" arg2="00A8" arg3="dieresis"/>
+<macro name="glyph" arg1="&#x00A9;" arg2="00A9" arg3="copyright"/>
+<macro name="glyph" arg1="&#x00AA;" arg2="00AA" arg3="ordfeminine"/>
+<macro name="glyph" arg1="&#x00AB;" arg2="00AB" arg3="guillemotleft"/>
+<macro name="glyph" arg1="&#x00AC;" arg2="00AC" arg3="logicalnot"/>
+<macro name="glyph" arg1="&#x00AE;" arg2="00AE" arg3="registered"/>
+<macro name="glyph" arg1="&#x00AF;" arg2="00AF" arg3="macron"/>
+<macro name="glyph" arg1="&#x00B0;" arg2="00B0" arg3="degree"/>
+<macro name="glyph" arg1="&#x00B1;" arg2="00B1" arg3="plusminus"/>
+<macro name="glyph" arg1="&#x00B2;" arg2="00B2" arg3="twosuperior"/>
+<macro name="glyph" arg1="&#x00B3;" arg2="00B3" arg3="threesuperior"/>
+<macro name="glyph" arg1="&#x00B4;" arg2="00B4" arg3="acute"/>
+<macro name="glyph" arg1="&#x00B5;" arg2="00B5" arg3="mu"/>
+<macro name="glyph" arg1="&#x00B6;" arg2="00B6" arg3="paragraph"/>
+<macro name="glyph" arg1="&#x00B7;" arg2="00B7" arg3="periodcentered"/>
+<macro name="glyph" arg1="&#x00B8;" arg2="00B8" arg3="cedilla"/>
+<macro name="glyph" arg1="&#x00B9;" arg2="00B9" arg3="onesuperior"/>
+<macro name="glyph" arg1="&#x00BA;" arg2="00BA" arg3="ordmasculine"/>
+<macro name="glyph" arg1="&#x00BB;" arg2="00BB" arg3="guillemotright"/>
+<macro name="glyph" arg1="&#x00BC;" arg2="00BC" arg3="onequarter"/>
+<macro name="glyph" arg1="&#x00BD;" arg2="00BD" arg3="onehalf"/>
+<macro name="glyph" arg1="&#x00BE;" arg2="00BE" arg3="threequarters"/>
+<macro name="glyph" arg1="&#x00BF;" arg2="00BF" arg3="questiondown"/>
+<macro name="glyph" arg1="&#x00C0;" arg2="00C0" arg3="Agrave"/>
+<macro name="glyph" arg1="&#x00C1;" arg2="00C1" arg3="Aacute"/>
+<macro name="glyph" arg1="&#x00C2;" arg2="00C2" arg3="Acircumflex"/>
+<macro name="glyph" arg1="&#x00C3;" arg2="00C3" arg3="Atilde"/>
+<macro name="glyph" arg1="&#x00C4;" arg2="00C4" arg3="Adieresis"/>
+<macro name="glyph" arg1="&#x00C5;" arg2="00C5" arg3="Aring"/>
+<macro name="glyph" arg1="&#x00C6;" arg2="00C6" arg3="AE"/>
+<macro name="glyph" arg1="&#x00C7;" arg2="00C7" arg3="Ccedilla"/>
+<macro name="glyph" arg1="&#x00C8;" arg2="00C8" arg3="Egrave"/>
+<macro name="glyph" arg1="&#x00C9;" arg2="00C9" arg3="Eacute"/>
+<macro name="glyph" arg1="&#x00CA;" arg2="00CA" arg3="Ecircumflex"/>
+<macro name="glyph" arg1="&#x00CB;" arg2="00CB" arg3="Edieresis"/>
+<macro name="glyph" arg1="&#x00CC;" arg2="00CC" arg3="Igrave"/>
+<macro name="glyph" arg1="&#x00CD;" arg2="00CD" arg3="Iacute"/>
+<macro name="glyph" arg1="&#x00CE;" arg2="00CE" arg3="Icircumflex"/>
+<macro name="glyph" arg1="&#x00CF;" arg2="00CF" arg3="Idieresis"/>
+<macro name="glyph" arg1="&#x00D0;" arg2="00D0" arg3="Eth"/>
+<macro name="glyph" arg1="&#x00D1;" arg2="00D1" arg3="Ntilde"/>
+<macro name="glyph" arg1="&#x00D2;" arg2="00D2" arg3="Ograve"/>
+<macro name="glyph" arg1="&#x00D3;" arg2="00D3" arg3="Oacute"/>
+<macro name="glyph" arg1="&#x00D4;" arg2="00D4" arg3="Ocircumflex"/>
+<macro name="glyph" arg1="&#x00D5;" arg2="00D5" arg3="Otilde"/>
+<macro name="glyph" arg1="&#x00D6;" arg2="00D6" arg3="Odieresis"/>
+<macro name="glyph" arg1="&#x00D7;" arg2="00D7" arg3="multiply"/>
+<macro name="glyph" arg1="&#x00D8;" arg2="00D8" arg3="Oslash"/>
+<macro name="glyph" arg1="&#x00D9;" arg2="00D9" arg3="Ugrave"/>
+<macro name="glyph" arg1="&#x00DA;" arg2="00DA" arg3="Uacute"/>
+<macro name="glyph" arg1="&#x00DB;" arg2="00DB" arg3="Ucircumflex"/>
+<macro name="glyph" arg1="&#x00DC;" arg2="00DC" arg3="Udieresis"/>
+<macro name="glyph" arg1="&#x00DD;" arg2="00DD" arg3="Yacute"/>
+<macro name="glyph" arg1="&#x00DE;" arg2="00DE" arg3="Thorn"/>
+<macro name="glyph" arg1="&#x00DF;" arg2="00DF" arg3="germandbls"/>
+<macro name="glyph" arg1="&#x00E0;" arg2="00E0" arg3="agrave"/>
+<macro name="glyph" arg1="&#x00E1;" arg2="00E1" arg3="aacute"/>
+<macro name="glyph" arg1="&#x00E2;" arg2="00E2" arg3="acircumflex"/>
+<macro name="glyph" arg1="&#x00E3;" arg2="00E3" arg3="atilde"/>
+<macro name="glyph" arg1="&#x00E4;" arg2="00E4" arg3="adieresis"/>
+<macro name="glyph" arg1="&#x00E5;" arg2="00E5" arg3="aring"/>
+<macro name="glyph" arg1="&#x00E6;" arg2="00E6" arg3="ae"/>
+<macro name="glyph" arg1="&#x00E7;" arg2="00E7" arg3="ccedilla"/>
+<macro name="glyph" arg1="&#x00E8;" arg2="00E8" arg3="egrave"/>
+<macro name="glyph" arg1="&#x00E9;" arg2="00E9" arg3="eacute"/>
+<macro name="glyph" arg1="&#x00EA;" arg2="00EA" arg3="ecircumflex"/>
+<macro name="glyph" arg1="&#x00EB;" arg2="00EB" arg3="edieresis"/>
+<macro name="glyph" arg1="&#x00EC;" arg2="00EC" arg3="igrave"/>
+<macro name="glyph" arg1="&#x00ED;" arg2="00ED" arg3="iacute"/>
+<macro name="glyph" arg1="&#x00EE;" arg2="00EE" arg3="icircumflex"/>
+<macro name="glyph" arg1="&#x00EF;" arg2="00EF" arg3="idieresis"/>
+<macro name="glyph" arg1="&#x00F0;" arg2="00F0" arg3="eth"/>
+<macro name="glyph" arg1="&#x00F1;" arg2="00F1" arg3="ntilde"/>
+<macro name="glyph" arg1="&#x00F2;" arg2="00F2" arg3="ograve"/>
+<macro name="glyph" arg1="&#x00F3;" arg2="00F3" arg3="oacute"/>
+<macro name="glyph" arg1="&#x00F4;" arg2="00F4" arg3="ocircumflex"/>
+<macro name="glyph" arg1="&#x00F5;" arg2="00F5" arg3="otilde"/>
+<macro name="glyph" arg1="&#x00F6;" arg2="00F6" arg3="odieresis"/>
+<macro name="glyph" arg1="&#x00F7;" arg2="00F7" arg3="divide"/>
+<macro name="glyph" arg1="&#x00F8;" arg2="00F8" arg3="oslash"/>
+<macro name="glyph" arg1="&#x00F9;" arg2="00F9" arg3="ugrave"/>
+<macro name="glyph" arg1="&#x00FA;" arg2="00FA" arg3="uacute"/>
+<macro name="glyph" arg1="&#x00FB;" arg2="00FB" arg3="ucircumflex"/>
+<macro name="glyph" arg1="&#x00FC;" arg2="00FC" arg3="udieresis"/>
+<macro name="glyph" arg1="&#x00FD;" arg2="00FD" arg3="yacute"/>
+<macro name="glyph" arg1="&#x00FE;" arg2="00FE" arg3="thorn"/>
+<macro name="glyph" arg1="&#x00FF;" arg2="00FF" arg3="ydieresis"/>
+<macro name="glyph" arg1="&#x0131;" arg2="0131" arg3="dotlessi"/>
+<macro name="glyph" arg1="&#x0141;" arg2="0141" arg3="Lslash"/>
+<macro name="glyph" arg1="&#x0142;" arg2="0142" arg3="lslash"/>
+<macro name="glyph" arg1="&#x0152;" arg2="0152" arg3="OE"/>
+<macro name="glyph" arg1="&#x0153;" arg2="0153" arg3="oe"/>
+<macro name="glyph" arg1="&#x0160;" arg2="0160" arg3="Scaron"/>
+<macro name="glyph" arg1="&#x0161;" arg2="0161" arg3="scaron"/>
+<macro name="glyph" arg1="&#x0178;" arg2="0178" arg3="Ydieresis"/>
+<macro name="glyph" arg1="&#x017D;" arg2="017D" arg3="Zcaron"/>
+<macro name="glyph" arg1="&#x017E;" arg2="017E" arg3="zcaron"/>
+<macro name="glyph" arg1="&#x0192;" arg2="0192" arg3="florin"/>
+<macro name="glyph" arg1="&#x02C6;" arg2="02C6" arg3="circumflex"/>
+<macro name="glyph" arg1="&#x02C7;" arg2="02C7" arg3="caron"/>
+<macro name="glyph" arg1="&#x02D8;" arg2="02D8" arg3="breve"/>
+<macro name="glyph" arg1="&#x02D9;" arg2="02D9" arg3="dotaccent"/>
+<macro name="glyph" arg1="&#x02DA;" arg2="02DA" arg3="ring"/>
+<macro name="glyph" arg1="&#x02DB;" arg2="02DB" arg3="ogonek"/>
+<macro name="glyph" arg1="&#x02DC;" arg2="02DC" arg3="tilde"/>
+<macro name="glyph" arg1="&#x02DD;" arg2="02DD" arg3="hungarumlaut"/>
+<macro name="glyph" arg1="&#x2013;" arg2="2013" arg3="endash"/>
+<macro name="glyph" arg1="&#x2014;" arg2="2014" arg3="emdash"/>
+<macro name="glyph" arg1="&#x2018;" arg2="2018" arg3="quoteleft"/>
+<macro name="glyph" arg1="&#x2019;" arg2="2019" arg3="quoteright"/>
+<macro name="glyph" arg1="&#x201A;" arg2="201A" arg3="quotesinglbase"/>
+<macro name="glyph" arg1="&#x201C;" arg2="201C" arg3="quotedblleft"/>
+<macro name="glyph" arg1="&#x201D;" arg2="201D" arg3="quotedblright"/>
+<macro name="glyph" arg1="&#x201E;" arg2="201E" arg3="quotedblbase"/>
+<macro name="glyph" arg1="&#x2020;" arg2="2020" arg3="dagger"/>
+<macro name="glyph" arg1="&#x2021;" arg2="2021" arg3="daggerdbl"/>
+<macro name="glyph" arg1="&#x2022;" arg2="2022" arg3="bullet"/>
+<macro name="glyph" arg1="&#x2026;" arg2="2026" arg3="ellipsis"/>
+<macro name="glyph" arg1="&#x2030;" arg2="2030" arg3="perthousand"/>
+<macro name="glyph" arg1="&#x2039;" arg2="2039" arg3="guilsinglleft"/>
+<macro name="glyph" arg1="&#x203A;" arg2="203A" arg3="guilsinglright"/>
+<macro name="glyph" arg1="&#x2044;" arg2="2044" arg3="fraction"/>
+<macro name="glyph" arg1="&#x20AC;" arg2="20AC" arg3="Euro"/>
+<macro name="glyph" arg1="&#x2122;" arg2="2122" arg3="trademark"/>
+<macro name="glyph" arg1="&#xFB01;" arg2="FB01" arg3="fi"/>
+<macro name="glyph" arg1="&#xFB02;" arg2="FB02" arg3="fl"/>
+  </fo:list-block>
+
+</plain-doc>
+

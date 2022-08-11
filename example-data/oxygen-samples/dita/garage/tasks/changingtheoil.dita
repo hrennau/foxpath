@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE task PUBLIC "-//OASIS//DTD DITA Task//EN"
+ "http://docs.oasis-open.org/dita/v1.1/OS/dtd/task.dtd">
+<!-- This file is part of the DITA Open Toolkit project hosted on 
+     Sourceforge.net. See the accompanying license.txt file for 
+     applicable licenses.-->
+<!-- (C) Copyright IBM Corporation 2001, 2005. All Rights Reserved.
+ *-->
+<task id="changeoil" xml:lang="en-us">
+<title>Changing the oil in your car</title>
+<shortdesc>Once every 6000 kilometers or three months, change the oil in
+your car.</shortdesc>
+<taskbody>
+<context><p>Changing the oil regularly 
+will help keep the engine in good condition. </p></context>
+<steps>
+      <stepsection>To change the oil:</stepsection>
+      <step>
+        <cmd>Remove the old oil filter.</cmd>
+      </step>
+      <step>
+        <cmd><?oxy_comment_start author="John" timestamp="20160412T114826+0300" comment="Oil is extremely pollutant so it is highly advisable to recycle it." id="ytn_1rv_pv"?><?oxy_comment_start author="Tom" timestamp="20160412T115037+0300" comment="I added a step about this." parentID="ytn_1rv_pv" mid="1"?>Drain
+          the old oil.<?oxy_comment_end mid="1"?><?oxy_comment_end?></cmd>
+      </step>
+      <step>
+        <cmd><?oxy_insert_start author="Tom" timestamp="20160412T115013+0300"?>Recycle the oil and
+          oil filter by taking them to the nearest service station or auto
+          shop.<?oxy_insert_end?></cmd>
+      </step>
+      <?oxy_insert_start author="Tom" timestamp="20160412T115005+0300"?>
+      <step>
+        <cmd>Install the drain plug.</cmd>
+      </step>
+      <?oxy_insert_end?>
+      <step>
+        <cmd><?oxy_comment_start author="John" timestamp="20160412T114231+0300" comment="We should warn the readers that overtightening the filter will damage the filter&apos;s gasket."?>Install
+          a new oil filter and
+          gasket.<?oxy_comment_end?><?oxy_insert_start author="Tom" timestamp="20160412T115150+0300"?>
+          Most oil filters need to be tightened by hand. Overtightening them might damage the
+          gasket.<?oxy_insert_end?></cmd>
+      </step>
+      <step>
+        <cmd>Add new oil to the engine.</cmd>
+      </step>
+      <step>
+        <cmd>Check the air filter and replace or clean it.</cmd>
+      </step>
+      <step>
+        <cmd>Top up the windshield washer fluid.</cmd>
+      </step>
+    </steps>
+</taskbody>
+<related-links>
+<link href="../concepts/oil.dita" format="dita" type="concept"></link>
+<link href="../concepts/wwfluid.dita" format="dita" type="concept"></link>
+</related-links>
+</task>
+
+<?oxy_options track_changes="on"?>

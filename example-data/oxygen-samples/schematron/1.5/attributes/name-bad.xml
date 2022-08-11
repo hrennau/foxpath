@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE AAA SYSTEM "name.dtd">
+<?xml-model href="name.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<AAA name="aaa">
+    <BBB id="bbb"/>
+    <CCC color="ccc"/>
+</AAA>

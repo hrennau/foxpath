@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+    targetNamespace="http://www.oxygenxml.com/ns/samples/form-controls"
+    xmlns="http://www.oxygenxml.com/ns/samples/form-controls">
+
+    <xs:element name="formControls" type="sectionBaseCT"> </xs:element>
+    <xs:element name="title" type="xs:string"/>
+    <xs:element name="p">
+        <xs:complexType mixed="true">
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="0" ref="styling"/>
+                <xs:element minOccurs="0" name="audio">
+                    <xs:complexType>
+                        <xs:attribute name="href"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element minOccurs="0" name="video">
+                    <xs:complexType>
+                        <xs:attribute name="href"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element minOccurs="0" name="browser">
+                    <xs:complexType>
+                        <xs:attribute name="href"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="editMode" type="xs:boolean"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="ul">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="li">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element maxOccurs="unbounded" ref="p"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="pre" type="xs:string"/>
+    <xs:element name="section" type="sectionCT"> </xs:element>
+    <xs:complexType name="sectionBaseCT">
+        <xs:sequence>
+            <xs:element ref="title"/>
+            <xs:element ref="abstract"/>
+            <xs:group maxOccurs="unbounded" minOccurs="0" ref="common"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="sectionCT">
+        <xs:sequence>
+            <xs:element ref="title" maxOccurs="1"/>
+            <xs:choice maxOccurs="unbounded" minOccurs="0">
+                <xs:group maxOccurs="unbounded" minOccurs="0" ref="common"/>
+                <xs:element ref="p"/>
+                <xs:element ref="pre"/>
+                <xs:element name="text" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="textWithCC" minOccurs="0" maxOccurs="1">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="value1"/>
+                            <xs:enumeration value="value2"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="checkBox" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:attribute name="attribute">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="on"/>
+                                    <xs:enumeration value="off"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="checkBox2" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:attribute name="attribute">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="true"/>
+                                    <xs:enumeration value="false"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="multipleCheckBox" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:attribute name="attribute" type="xs:string"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="multipleCheckBox2" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:attribute name="attribute" type="xs:string"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="comboBox" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:attribute name="attribute"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="comboBoxWithSchemaValues" minOccurs="0" maxOccurs="1">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="value1"/>
+                            <xs:enumeration value="value2"/>
+                            <xs:enumeration value="value3"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="comboBoxWithRemove" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:attribute name="attribute">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="value1"/>
+                                    <xs:enumeration value="value2"/>
+                                    <xs:enumeration value="value3"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="urlChooser" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:attribute name="file"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="popupWithSingleSelection" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="popupWithMultipleSelection" minOccurs="0" maxOccurs="1"/>
+                <xs:element minOccurs="0" name="datePicker">
+                    <xs:complexType>
+                        <xs:attribute name="attribute" type="xs:date"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element minOccurs="0" name="dateTimePicker">
+                    <xs:complexType>
+                        <xs:attribute name="attribute" type="xs:dateTime"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element minOccurs="0" name="datePickerCustom">
+                    <xs:complexType>
+                        <xs:attribute name="attribute" type="xs:string"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="button" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="buttongroup" minOccurs="0" maxOccurs="1"/>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="textArea">
+                    <xs:complexType mixed="true">
+                        <xs:attribute name="language">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:enumeration value="CSS"/>
+                                    <xs:enumeration value="XML"/>
+                                    <xs:enumeration value="JSON"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element minOccurs="0" ref="ul"/>
+                <xs:element minOccurs="0" name="interaction">
+                    <xs:complexType>
+                        <xs:attribute name="href"/>
+                        <xs:attribute name="counter"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:group name="common">
+        <xs:choice>
+            <xs:element ref="section" minOccurs="0"/>
+        </xs:choice>
+    </xs:group>
+    <xs:element name="abstract" type="abstractCT"/>
+    <xs:complexType name="abstractCT">
+        <xs:choice maxOccurs="unbounded">
+            <xs:element ref="p"/>
+            <xs:element ref="pre"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:element name="i" substitutionGroup="styling"/>
+    <xs:element name="b" substitutionGroup="styling"/>
+    <xs:element name="u" substitutionGroup="styling"/>
+    <xs:element name="a" substitutionGroup="styling">
+        <xs:complexType mixed="true">
+            <xs:attribute name="href"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element abstract="true" name="styling"/>
+</xs:schema>

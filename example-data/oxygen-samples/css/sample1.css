@@ -1,0 +1,58 @@
+/* Valid CSS using "CSS2" profile and "ALL" medium */
+table.forTable {
+    border: 2px solid #CC0000;
+    margin: 2px;
+}
+tr.color_one {
+    color: black;
+    background-color: #DBDBDB;
+}
+tr.color_two {
+    color: black;
+    background-color: white;
+}
+tr.color_one:hover, tr.color_two:hover {
+    color:blue;
+    background-color: yellow;
+}
+td {
+    border-style: solid;
+    border-color: transparent;
+    border-width: 2px;
+}
+tr.color_one:hover td:hover {
+    border-style: solid;
+    border-color: white green white green;
+    border-width: 2px;
+}
+tr.color_two:hover td:hover {
+    border-style: solid;
+    border-color: maroon white maroon white;
+    border-width: 2px;
+}
+input, textarea, select {
+    font-weight: 400;
+    color: red;
+    background-color: #DBDBDB;
+    font-size: .8em;
+    line-height: 1.2em;
+}
+textarea:focus, input:focus, select:focus {
+    color:blue;
+    background-color: #FFFFCC;
+}
+input[type="submit"] {
+    color: white;
+    font-weight: bold;
+    line-height: 1.2em;
+    background-color: navy;
+    font-size: 1em;
+    border-style: outset;
+    border-width: 3px;
+    border-color: black;
+}
+input[type="submit"]:hover {
+    border-style: inset;
+    border-width: 3px;
+    border-color: black;
+}

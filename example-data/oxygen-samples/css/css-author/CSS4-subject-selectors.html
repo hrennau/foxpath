@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="CSS4-subject-selectors.css"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Showcase for the subject-selector defined in CSS Level 4</title>
+        <link rel="stylesheet" type="text/css" href="CSS4-subject-selectors.css" />
+    </head>
+    <body><a href="http://dev.w3.org/csswg/selectors4/"
+            >http://dev.w3.org/csswg/selectors4/</a><section id="subject"><h1>A! > B</h1><p>A nested
+                list of DIV-s, the ones containing grand-children having a
+            border.</p><pre>div! > div > div {
+    border: 4px solid red;
+}</pre>When hovering a
+            grand-child, the grand-parent div shows a message in
+                yellow.<pre>div:after! > div > div:hover{
+    display:block;
+    content: "Too many nested DIVs.";
+    background-color:yellow;
+    padding:1em;
+}</pre><div
+                class="sample">
+                <div>1
+                    <div>1.1</div><div>
+                        <div>Nested 1</div>
+                        <div>Nested 2</div>
+                    </div><div>1.2</div><div>1.3</div></div><div>2</div><div>
+                    <div>3.1</div>
+                    <div>3.2</div>
+                    <div>3.3</div>
+                </div></div></section></body>
+</html>

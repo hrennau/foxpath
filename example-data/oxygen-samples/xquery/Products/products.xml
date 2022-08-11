@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<products>
+    <product>
+        <productId>1</productId>
+        <productName>Wave Runner XLT800</productName>
+        <productSpec>120 HP; 1000 cc</productSpec>
+    </product>
+    <product>
+        <productId>2</productId>
+        <productName>Tea Cup</productName>
+        <productSpec>100 ml; navy blue</productSpec>
+    </product>
+    <product>
+        <productId>3</productId>
+        <productName>Plastic Pen</productName>
+        <productSpec>0.5 soft tip</productSpec>
+    </product>
+</products>

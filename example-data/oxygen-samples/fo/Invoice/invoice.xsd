@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:element name="invoice">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="payment-method"/>
+                <xs:element ref="date"/>
+                <xs:element ref="delivery"/>
+                <xs:element ref="checked-by"/>
+                <xs:element ref="customer"/>
+                <xs:element ref="products"/>
+            </xs:sequence>
+            <xs:attribute name="currency" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="EUR"/>
+                        <xs:enumeration value="USD"/>
+                        <xs:enumeration value="GBP"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="number" use="required" type="xs:integer"/>
+            <xs:attribute name="type" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="quote"/>
+                        <xs:enumeration value="proforma"/>
+                        <xs:enumeration value="normal"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="payment-method" type="xs:string"/>
+    <xs:element name="date" type="xs:string"/>
+    <xs:element name="delivery" type="xs:NCName"/>
+    <xs:element name="checked-by" type="xs:string"/>
+    <xs:element name="customer">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="block"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="block" type="xs:string"/>
+    <xs:element name="products">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="product"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="product">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="quantity"/>
+                <xs:element ref="description"/>
+                <xs:element ref="unit-cost"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="quantity" type="xs:integer"/>
+    <xs:element name="description" type="xs:string"/>
+    <xs:element name="unit-cost" type="xs:float"/>
+</xs:schema>

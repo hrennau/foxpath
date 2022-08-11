@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="main_talk_screen">
+  <title>Main Talk Screen</title>
+  <shortdesc>The main screen of the application, allow the user interaction.</shortdesc>
+  <prolog>
+    <metadata>
+      <keywords>
+        <indexterm>ui<indexterm>main talk
+          screen</indexterm><?oxy_comment_start author="dan" timestamp="20160601T114527+0300" comment="This goes to the index terms page."?></indexterm>
+        <?oxy_comment_end?>
+      </keywords>
+    </metadata>
+  </prolog>
+  <body>
+    <fig>
+      <title>The Talk Dialog</title>
+      <image href="../images/talk_screen.png"/>
+    </fig>
+    <p>Once you entered one of the talks, you will see the users that participate. Each of them is
+      represented by a small circle, arranged around a discussion table.</p>
+    <p>The messages are colored in the color assigned to each of the user, and arranged in callouts.
+      For instance the messages from <uicontrol>JD</uicontrol> appear like this:</p>
+    <image href="../images/talk_callout.png"/>
+    <p>To enter a message:<ol>
+        <li>Click into the text field from the bottom of the dialog</li>
+        <li>Press the
+          <?oxy_comment_start author="dan" timestamp="20160601T114027+0300" comment="Use uicontrol here."?>Send<?oxy_comment_end?>
+          button.</li>
+      </ol></p>
+    <p>To terminate a discussion, press the <uicontrol>Leave</uicontrol> button. The remaining users
+      will be notified of you leaving the discussion.</p>
+  </body>
+</topic>

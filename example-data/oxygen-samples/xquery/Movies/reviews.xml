@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<reviews>
+    <review id="100" movie-id="1">
+        <rating>5</rating>
+        <comment>It is made after a great Stephen King book.</comment>
+        <author>Paul</author>
+    </review>
+    <review id="101" movie-id="1">
+        <rating>3</rating>
+        <comment>Tom Hanks does a really nice acting.</comment>
+        <author>Beatrice</author>
+    </review>
+    <review id="102" movie-id="2">
+        <rating>2</rating>
+        <comment>This is a movie you must see.</comment>
+        <author>Andrew</author>
+    </review>
+    <review id="104" movie-id="2">
+        <rating>4</rating>
+        <comment>Robert De Niro is my favorite actor.</comment>
+        <author>Maria</author>
+    </review>    
+    <review id="103" movie-id="3">
+        <rating>4</rating>
+        <comment>I expected more from this.</comment>
+        <author>Alex</author>
+    </review>
+    <review id="103" movie-id="3">
+        <rating>3</rating>
+        <comment>The machines are the best part in this movie.</comment>
+        <author>Stan</author>
+    </review>
+</reviews>

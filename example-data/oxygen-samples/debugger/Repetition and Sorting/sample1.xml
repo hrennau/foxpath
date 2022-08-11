@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--    Sample from Zvon XSLT tutorial (www.zvon.org)   -->
+<source>
+    <car id="11"/>
+    <car id="6"/>
+    <car id="105"/>
+    <car id="28"/>
+    <car id="9"/>
+</source>

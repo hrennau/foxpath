@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN" "map.dtd">
+<!-- Example showing how key scopes and branch filtering can be used to combine two versions of 
+  the same manual in a single publication. -->
+<!-- Please enable DITA 1.3 support from the Preferences->DITA page. -->
+<map>
+ <title>Catalog with all available mobile phone variants.</title>
+ <topicref href="overview.dita" keyscope="x1000">
+  <keydef keys="phoneName">
+   <topicmeta>
+    <keywords>
+     <keyword>X1000</keyword>
+    </keywords>
+   </topicmeta>
+  </keydef>
+  <topicref href="mobilePhone.ditamap" format="ditamap">
+   <ditavalref href="ditaval/x1000.ditaval"/>
+  </topicref>
+ </topicref>
+
+ <topicref href="overview.dita" keyscope="x2000">
+  <keydef keys="phoneName">
+   <topicmeta>
+    <keywords>
+     <keyword>X2000</keyword>
+    </keywords>
+   </topicmeta>
+  </keydef>
+  <topicref href="mobilePhone.ditamap" format="ditamap">
+   <ditavalref href="ditaval/x2000.ditaval"/>
+  </topicref>
+ </topicref>
+</map>

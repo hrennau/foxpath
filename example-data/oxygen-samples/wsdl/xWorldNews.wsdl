@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--World news fetcher-->
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+  xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" 
+  xmlns:s0="http://www.xignite.com/services/"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+  xmlns:s="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://schemas.xmlsoap.org/wsdl/" 
+  targetNamespace="http://www.xignite.com/services/">
+  <types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.xignite.com/services/">
+      <s:element name="GetCriteria">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CriteriaType" type="s0:CriteriaTypes"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:simpleType name="CriteriaTypes">
+        <s:restriction base="s:string">
+          <s:enumeration value="Region"/>
+          <s:enumeration value="Division"/>
+          <s:enumeration value="SubDivision"/>
+          <s:enumeration value="City"/>
+          <s:enumeration value="Source"/>
+          <s:enumeration value="Language"/>
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="GetCriteriaResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetCriteriaResult" type="s0:Criteria"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Criteria">
+        <s:complexContent mixed="false">
+          <s:extension base="s0:Common">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Type" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="CriteriaCollection" type="s0:ArrayOfCriterion"/>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Common">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="Outcome" type="s0:OutcomeTypes"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Message" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Identity" type="s:string"/>
+          <s:element minOccurs="1" maxOccurs="1" name="Delay" type="s:double"/>
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="OutcomeTypes">
+        <s:restriction base="s:string">
+          <s:enumeration value="Success"/>
+          <s:enumeration value="SystemError"/>
+          <s:enumeration value="RequestError"/>
+          <s:enumeration value="RegistrationError"/>
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="ArrayOfCriterion">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Criterion" nillable="true" type="s0:Criterion"/>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Criterion">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string"/>
+          <s:element minOccurs="1" maxOccurs="1" name="Count" type="s:int"/>
+        </s:sequence>
+      </s:complexType>
+      <s:element name="Header" type="s0:Header"/>
+      <s:complexType name="Header">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Username" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Tracer" type="s:string"/>
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetStatistics">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CriteriaType" type="s0:CriteriaTypes"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetStatisticsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetStatisticsResult" type="s0:Statistics"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Statistics">
+        <s:complexContent mixed="false">
+          <s:extension base="s0:Common">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="StatisticCollection" type="s0:ArrayOfStatistic"/>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ArrayOfStatistic">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Statistic" nillable="true" type="s0:Statistic"/>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Statistic">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Period" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string"/>
+          <s:element minOccurs="1" maxOccurs="1" name="Count" type="s:int"/>
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetArticle">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ArticleId" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetArticleResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetArticleResult" type="s0:Article"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Article">
+        <s:complexContent mixed="false">
+          <s:extension base="s0:Common">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="ArticleId" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="InsertDate" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="PublishDate" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Region" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Division" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="SubDivision" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Title" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="SubTitle" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Source" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="SourceDescription" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="City" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Language" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Notice" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Inquiries" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Content" type="s:string"/>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="Search">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="PublishedAfterDate" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="PublishedBeforeDate" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="Region" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="Division" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="SubDivision" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="Title" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="SubTitle" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="City" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="Source" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="Language" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SearchResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SearchResult" type="s0:Stories"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Stories">
+        <s:complexContent mixed="false">
+          <s:extension base="s0:Common">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Abstracts" type="s0:ArrayOfAbstract"/>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ArrayOfAbstract">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Abstract" nillable="true" type="s0:Abstract"/>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Abstract">
+        <s:complexContent mixed="false">
+          <s:extension base="s0:Common">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="ArticleId" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="InsertDate" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="PublishDate" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Region" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Division" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="SubDivision" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Title" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="SubTitle" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Source" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="City" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Language" type="s:string"/>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="GetTopStories">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CriteriaType" type="s0:CriteriaTypes"/>
+            <s:element minOccurs="0" maxOccurs="1" name="CategoryName" type="s:string"/>
+            <s:element minOccurs="1" maxOccurs="1" name="StoryCount" type="s:int"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetTopStoriesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetTopStoriesResult" type="s0:TopStories"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="TopStories">
+        <s:complexContent mixed="false">
+          <s:extension base="s0:Common">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Categories" type="s0:ArrayOfCategory"/>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ArrayOfCategory">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Category" nillable="true" type="s0:Category"/>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Category">
+        <s:complexContent mixed="false">
+          <s:extension base="s0:Common">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string"/>
+              <s:element minOccurs="0" maxOccurs="1" name="Abstracts" type="s0:ArrayOfAbstract"/>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="Criteria" nillable="true" type="s0:Criteria"/>
+      <s:element name="Statistics" nillable="true" type="s0:Statistics"/>
+      <s:element name="Article" nillable="true" type="s0:Article"/>
+      <s:element name="Stories" nillable="true" type="s0:Stories"/>
+      <s:element name="TopStories" nillable="true" type="s0:TopStories"/>
+    </s:schema>
+  </types>
+  <message name="GetCriteriaSoapIn">
+    <part name="parameters" element="s0:GetCriteria"/>
+  </message>
+  <message name="GetCriteriaSoapOut">
+    <part name="parameters" element="s0:GetCriteriaResponse"/>
+  </message>
+  <message name="GetCriteriaHeader">
+    <part name="Header" element="s0:Header"/>
+  </message>
+  <message name="GetStatisticsSoapIn">
+    <part name="parameters" element="s0:GetStatistics"/>
+  </message>
+  <message name="GetStatisticsSoapOut">
+    <part name="parameters" element="s0:GetStatisticsResponse"/>
+  </message>
+  <message name="GetStatisticsHeader">
+    <part name="Header" element="s0:Header"/>
+  </message>
+  <message name="GetArticleSoapIn">
+    <part name="parameters" element="s0:GetArticle"/>
+  </message>
+  <message name="GetArticleSoapOut">
+    <part name="parameters" element="s0:GetArticleResponse"/>
+  </message>
+  <message name="GetArticleHeader">
+    <part name="Header" element="s0:Header"/>
+  </message>
+  <message name="SearchSoapIn">
+    <part name="parameters" element="s0:Search"/>
+  </message>
+  <message name="SearchSoapOut">
+    <part name="parameters" element="s0:SearchResponse"/>
+  </message>
+  <message name="SearchHeader">
+    <part name="Header" element="s0:Header"/>
+  </message>
+  <message name="GetTopStoriesSoapIn">
+    <part name="parameters" element="s0:GetTopStories"/>
+  </message>
+  <message name="GetTopStoriesSoapOut">
+    <part name="parameters" element="s0:GetTopStoriesResponse"/>
+  </message>
+  <message name="GetTopStoriesHeader">
+    <part name="Header" element="s0:Header"/>
+  </message>
+  <message name="GetCriteriaHttpGetIn">
+    <part name="CriteriaType" type="s:string"/>
+  </message>
+  <message name="GetCriteriaHttpGetOut">
+    <part name="Body" element="s0:Criteria"/>
+  </message>
+  <message name="GetStatisticsHttpGetIn">
+    <part name="CriteriaType" type="s:string"/>
+  </message>
+  <message name="GetStatisticsHttpGetOut">
+    <part name="Body" element="s0:Statistics"/>
+  </message>
+  <message name="GetArticleHttpGetIn">
+    <part name="ArticleId" type="s:string"/>
+  </message>
+  <message name="GetArticleHttpGetOut">
+    <part name="Body" element="s0:Article"/>
+  </message>
+  <message name="SearchHttpGetIn">
+    <part name="PublishedAfterDate" type="s:string"/>
+    <part name="PublishedBeforeDate" type="s:string"/>
+    <part name="Region" type="s:string"/>
+    <part name="Division" type="s:string"/>
+    <part name="SubDivision" type="s:string"/>
+    <part name="Title" type="s:string"/>
+    <part name="SubTitle" type="s:string"/>
+    <part name="City" type="s:string"/>
+    <part name="Source" type="s:string"/>
+    <part name="Language" type="s:string"/>
+  </message>
+  <message name="SearchHttpGetOut">
+    <part name="Body" element="s0:Stories"/>
+  </message>
+  <message name="GetTopStoriesHttpGetIn">
+    <part name="CriteriaType" type="s:string"/>
+    <part name="CategoryName" type="s:string"/>
+    <part name="StoryCount" type="s:string"/>
+  </message>
+  <message name="GetTopStoriesHttpGetOut">
+    <part name="Body" element="s0:TopStories"/>
+  </message>
+  <message name="GetCriteriaHttpPostIn">
+    <part name="CriteriaType" type="s:string"/>
+  </message>
+  <message name="GetCriteriaHttpPostOut">
+    <part name="Body" element="s0:Criteria"/>
+  </message>
+  <message name="GetStatisticsHttpPostIn">
+    <part name="CriteriaType" type="s:string"/>
+  </message>
+  <message name="GetStatisticsHttpPostOut">
+    <part name="Body" element="s0:Statistics"/>
+  </message>
+  <message name="GetArticleHttpPostIn">
+    <part name="ArticleId" type="s:string"/>
+  </message>
+  <message name="GetArticleHttpPostOut">
+    <part name="Body" element="s0:Article"/>
+  </message>
+  <message name="SearchHttpPostIn">
+    <part name="PublishedAfterDate" type="s:string"/>
+    <part name="PublishedBeforeDate" type="s:string"/>
+    <part name="Region" type="s:string"/>
+    <part name="Division" type="s:string"/>
+    <part name="SubDivision" type="s:string"/>
+    <part name="Title" type="s:string"/>
+    <part name="SubTitle" type="s:string"/>
+    <part name="City" type="s:string"/>
+    <part name="Source" type="s:string"/>
+    <part name="Language" type="s:string"/>
+  </message>
+  <message name="SearchHttpPostOut">
+    <part name="Body" element="s0:Stories"/>
+  </message>
+  <message name="GetTopStoriesHttpPostIn">
+    <part name="CriteriaType" type="s:string"/>
+    <part name="CategoryName" type="s:string"/>
+    <part name="StoryCount" type="s:string"/>
+  </message>
+  <message name="GetTopStoriesHttpPostOut">
+    <part name="Body" element="s0:TopStories"/>
+  </message>
+  <portType name="XigniteWorldNewsSoap">
+    <operation name="GetCriteria">
+      <documentation>Returns a list of valid values for a search criteria.</documentation>
+      <input message="s0:GetCriteriaSoapIn"/>
+      <output message="s0:GetCriteriaSoapOut"/>
+    </operation>
+    <operation name="GetStatistics">
+      <documentation>Returns statistics about stories available in the database.</documentation>
+      <input message="s0:GetStatisticsSoapIn"/>
+      <output message="s0:GetStatisticsSoapOut"/>
+    </operation>
+    <operation name="GetArticle">
+      <documentation>Get an article.</documentation>
+      <input message="s0:GetArticleSoapIn"/>
+      <output message="s0:GetArticleSoapOut"/>
+    </operation>
+    <operation name="Search">
+      <documentation>Search news based on criteria.</documentation>
+      <input message="s0:SearchSoapIn"/>
+      <output message="s0:SearchSoapOut"/>
+    </operation>
+    <operation name="GetTopStories">
+      <documentation>Returns top stories sorted by criteria.</documentation>
+      <input message="s0:GetTopStoriesSoapIn"/>
+      <output message="s0:GetTopStoriesSoapOut"/>
+    </operation>
+  </portType>
+  <portType name="XigniteWorldNewsHttpGet">
+    <operation name="GetCriteria">
+      <documentation>Returns a list of valid values for a search criteria.</documentation>
+      <input message="s0:GetCriteriaHttpGetIn"/>
+      <output message="s0:GetCriteriaHttpGetOut"/>
+    </operation>
+    <operation name="GetStatistics">
+      <documentation>Returns statistics about stories available in the database.</documentation>
+      <input message="s0:GetStatisticsHttpGetIn"/>
+      <output message="s0:GetStatisticsHttpGetOut"/>
+    </operation>
+    <operation name="GetArticle">
+      <documentation>Get an article.</documentation>
+      <input message="s0:GetArticleHttpGetIn"/>
+      <output message="s0:GetArticleHttpGetOut"/>
+    </operation>
+    <operation name="Search">
+      <documentation>Search news based on criteria.</documentation>
+      <input message="s0:SearchHttpGetIn"/>
+      <output message="s0:SearchHttpGetOut"/>
+    </operation>
+    <operation name="GetTopStories">
+      <documentation>Returns top stories sorted by criteria.</documentation>
+      <input message="s0:GetTopStoriesHttpGetIn"/>
+      <output message="s0:GetTopStoriesHttpGetOut"/>
+    </operation>
+  </portType>
+  <portType name="XigniteWorldNewsHttpPost">
+    <operation name="GetCriteria">
+      <documentation>Returns a list of valid values for a search criteria.</documentation>
+      <input message="s0:GetCriteriaHttpPostIn"/>
+      <output message="s0:GetCriteriaHttpPostOut"/>
+    </operation>
+    <operation name="GetStatistics">
+      <documentation>Returns statistics about stories available in the database.</documentation>
+      <input message="s0:GetStatisticsHttpPostIn"/>
+      <output message="s0:GetStatisticsHttpPostOut"/>
+    </operation>
+    <operation name="GetArticle">
+      <documentation>Get an article.</documentation>
+      <input message="s0:GetArticleHttpPostIn"/>
+      <output message="s0:GetArticleHttpPostOut"/>
+    </operation>
+    <operation name="Search">
+      <documentation>Search news based on criteria.</documentation>
+      <input message="s0:SearchHttpPostIn"/>
+      <output message="s0:SearchHttpPostOut"/>
+    </operation>
+    <operation name="GetTopStories">
+      <documentation>Returns top stories sorted by criteria.</documentation>
+      <input message="s0:GetTopStoriesHttpPostIn"/>
+      <output message="s0:GetTopStoriesHttpPostOut"/>
+    </operation>
+  </portType>
+  <binding name="XigniteWorldNewsSoap" type="s0:XigniteWorldNewsSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <operation name="GetCriteria">
+      <soap:operation soapAction="http://www.xignite.com/services/GetCriteria" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+        <soap:header message="s0:GetCriteriaHeader" part="Header" use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="GetStatistics">
+      <soap:operation soapAction="http://www.xignite.com/services/GetStatistics" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+        <soap:header message="s0:GetStatisticsHeader" part="Header" use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="GetArticle">
+      <soap:operation soapAction="http://www.xignite.com/services/GetArticle" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+        <soap:header message="s0:GetArticleHeader" part="Header" use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="Search">
+      <soap:operation soapAction="http://www.xignite.com/services/Search" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+        <soap:header message="s0:SearchHeader" part="Header" use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="GetTopStories">
+      <soap:operation soapAction="http://www.xignite.com/services/GetTopStories" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+        <soap:header message="s0:GetTopStoriesHeader" part="Header" use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <binding name="XigniteWorldNewsHttpGet" type="s0:XigniteWorldNewsHttpGet">
+    <http:binding verb="GET"/>
+    <operation name="GetCriteria">
+      <http:operation location="/GetCriteria"/>
+      <input>
+        <http:urlEncoded/>
+      </input>
+      <output>
+        <mime:mimeXml part="Body"/>
+      </output>
+    </operation>
+    <operation name="GetStatistics">
+      <http:operation location="/GetStatistics"/>
+      <input>
+        <http:urlEncoded/>
+      </input>
+      <output>
+        <mime:mimeXml part="Body"/>
+      </output>
+    </operation>
+    <operation name="GetArticle">
+      <http:operation location="/GetArticle"/>
+      <input>
+        <http:urlEncoded/>
+      </input>
+      <output>
+        <mime:mimeXml part="Body"/>
+      </output>
+    </operation>
+    <operation name="Search">
+      <http:operation location="/Search"/>
+      <input>
+        <http:urlEncoded/>
+      </input>
+      <output>
+        <mime:mimeXml part="Body"/>
+      </output>
+    </operation>
+    <operation name="GetTopStories">
+      <http:operation location="/GetTopStories"/>
+      <input>
+        <http:urlEncoded/>
+      </input>
+      <output>
+        <mime:mimeXml part="Body"/>
+      </output>
+    </operation>
+  </binding>
+  <binding name="XigniteWorldNewsHttpPost" type="s0:XigniteWorldNewsHttpPost">
+    <http:binding verb="POST"/>
+    <operation name="GetCriteria">
+      <http:operation location="/GetCriteria"/>
+      <input>
+        <mime:content type="application/x-www-form-urlencoded"/>
+      </input>
+      <output>
+        <mime:mimeXml part="Body"/>
+      </output>
+    </operation>
+    <operation name="GetStatistics">
+      <http:operation location="/GetStatistics"/>
+      <input>
+        <mime:content type="application/x-www-form-urlencoded"/>
+      </input>
+      <output>
+        <mime:mimeXml part="Body"/>
+      </output>
+    </operation>
+    <operation name="GetArticle">
+      <http:operation location="/GetArticle"/>
+      <input>
+        <mime:content type="application/x-www-form-urlencoded"/>
+      </input>
+      <output>
+        <mime:mimeXml part="Body"/>
+      </output>
+    </operation>
+    <operation name="Search">
+      <http:operation location="/Search"/>
+      <input>
+        <mime:content type="application/x-www-form-urlencoded"/>
+      </input>
+      <output>
+        <mime:mimeXml part="Body"/>
+      </output>
+    </operation>
+    <operation name="GetTopStories">
+      <http:operation location="/GetTopStories"/>
+      <input>
+        <mime:content type="application/x-www-form-urlencoded"/>
+      </input>
+      <output>
+        <mime:mimeXml part="Body"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="XigniteWorldNews">
+    <documentation>Provides translated news articles from hundreds of international sources.</documentation>
+    <port name="XigniteWorldNewsSoap" binding="s0:XigniteWorldNewsSoap">
+      <soap:address location="http://www.xignite.com/xWorldNews.asmx"/>
+    </port>
+    <port name="XigniteWorldNewsHttpGet" binding="s0:XigniteWorldNewsHttpGet">
+      <http:address location="http://www.xignite.com/xWorldNews.asmx"/>
+    </port>
+    <port name="XigniteWorldNewsHttpPost" binding="s0:XigniteWorldNewsHttpPost">
+      <http:address location="http://www.xignite.com/xWorldNews.asmx"/>
+    </port>
+  </service>
+</definitions>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="topic_tkt_t4v_kx">
+    <title>Sounds</title>
+    <body>
+        <p>Starting with oXygen XML Editor 18.1 you can link to media files, including sounds, in
+            your topic files.</p>
+        <p>Here is a DITA <xmlelement>object</xmlelement> referring an <term>mp3</term> file from
+                <xref href="http://www.nasa.gov/connect/sounds/index.html" format="html"
+                scope="external"/>.</p>
+        <p>oXygen can also play other formats, such as <term>mp4</term>, <term>wav</term> and
+                <term>ogg</term>.</p>
+        <p><object data="http://www.nasa.gov/mp3/590318main_ringtone_135_launch.mp3"
+                outputclass="audio"/></p>
+    </body>
+</topic>

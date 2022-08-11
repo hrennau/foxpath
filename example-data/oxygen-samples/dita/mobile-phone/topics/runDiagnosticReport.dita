@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="topic_jtn_y2c_fg">
+  <title>Running problem diagnostic report</title>
+  <body>
+    <p>If you have connectivity problems, you can run a diagnostic report that helps you to identity
+      the issues the phone might have. To run the report, follow this procedure:<ol
+        id="ol_m5n_wfc_fg">
+        <li>Select <term>Menu</term> > <term>Settings</term>.</li>
+        <li>Choose <term>Advanced Settings</term> > <term>Problem diagnostic</term>.</li>
+        <li>Press <term>Run</term>.</li>
+        <li>Look for out of range data.</li>
+      </ol></p>
+  </body>
+</topic>

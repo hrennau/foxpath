@@ -1,0 +1,202 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+<!-- This file makes part of an XSL Test Suite -->
+<!-- Border's style test  -->
+<!-- Use the macro.xsl file to generate the FO document. -->
+<!-- Example from: http://www.renderx.net
+    Copyright © 2004 RenderX, Inc.-->
+    
+<plain-doc xmlns:fo="http://www.w3.org/1999/XSL/Format">
+
+  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+           xmlns:dcterms="http://purl.org/dc/terms/"
+           xmlns:dc="http://purl.org/dc/elements/1.1/"
+           xmlns:db="http://www.oasis-open.org/docbook/xml/4.2/">
+     <rdf:Description rdf:about="http://xep.xattic.com/testsuite/features/borders.xml">
+        <dc:title> Block Properties - Borders </dc:title>
+        <dc:description>
+          <db:para>
+            Shows border attributes: colors, widths and styles.
+          </db:para>
+        </dc:description>
+        <dc:date>2003-07-24</dc:date><dcterms:requires rdf:resource="http://xep.xattic.com/testsuite/features/macro.xsl"/>
+    </rdf:Description>
+  </rdf:RDF> 
+
+<title>   Block Properties - Borders  </title>
+<frame padding="9pt"
+       margin-left="0pt" margin-right="0pt"
+       border-width="3pt"
+       border-style="solid"
+       border-color="black"
+       border-left-color="red"
+       border-right-color="red">
+  This paragraph should have a solid border, 3 pt thick.
+  Top and bottom edges are black, and left and right edges are red.
+  The text is black on white.
+</frame>
+
+<frame padding="9pt"
+       margin-left="0pt" margin-right="0pt"
+       border-width="0.5pt"
+       border-style="dashed"
+       border-color="red"
+       background="#D0D0D0"
+       color="#000080">
+  This paragraph should have a thin red dashed border, 0.5 pt thick.
+  Background color is light grey, and text color is dark blue.
+</frame>
+
+<frame padding="9pt"
+       margin-left="0pt" margin-right="0pt"
+       border-width="2pt"
+       border-style="dotted"
+       border-color="blue"
+       border-left-width="12pt"
+       border-left-color="green"
+       border-left-style="solid"
+       border-right-width="12pt"
+       border-right-color="green"
+       border-right-style="solid">
+  This text is rendered in default colors (black on white). As for the
+  border, we should have a thin (2pt) dotted blue line above and below,
+  and a thick (12pt) solid green bars on the right and on the left.
+</frame>
+
+<frame padding="9pt"
+       margin-left="0pt" margin-right="0pt"
+       border-top-width="6pt"
+       border-top-color="red"
+       border-top-style="double"
+       border-bottom-width="6pt"
+       border-bottom-color="green"
+       border-bottom-style="double"
+       border-left-width="6pt"
+       border-left-color="blue"
+       border-left-style="solid"
+       border-right-width="6pt"
+       border-right-color="#FF00FF"
+       border-right-style="solid">
+  This text is rendered in default colors (black on white). All borders
+  have the same thickness of 6 pt. Colors and styles are:
+
+  <define-macro name="color-list-item">
+    <fo:list-item>
+      <fo:list-item-label end-indent="label-end()">
+        <p text-align="end" font-weight="bold"><arg/>:</p>
+      </fo:list-item-label>
+      <fo:list-item-body start-indent="body-start()">
+        <p text-align="start" color="$arg1"><arg2/></p>
+      </fo:list-item-body>
+    </fo:list-item>
+  </define-macro>
+  
+  <ul provisional-distance-between-starts="1.5in"
+      provisional-label-separation="0.1in">  
+    <macro name="color-list-item" arg="Top" arg1="red" arg2="double red"/>
+    <macro name="color-list-item" arg="Bottom" arg1="green" arg2="double green"/>
+    <macro name="color-list-item" arg="Right" arg1="#FF00FF" arg2="solid purple"/>
+    <macro name="color-list-item" arg="Left" arg1="blue" arg2="solid blue"/>
+  </ul>
+</frame>
+
+<frame padding="9pt" margin-left="0pt" margin-right="0pt"
+       border-width="2pt"
+       border-style="hidden"
+       border-color="green"
+       background="#0000FF"
+       color="yellow"
+       font-weight="bold">
+  Though the border color of this paragraph is set to green, it should
+  not be visible, since the border style is set to <i>hidden</i>.
+  Background color is blue, and text color is yellow. The text is printed
+  in bold typeface.
+</frame>
+
+<frame padding="9pt" margin-left="0pt" margin-right="0pt"
+       border-width="3pt"
+       border-style="groove"
+       border-color="#808080"
+       color="blue">
+  This text should be rendered blue on white, and surrounded
+  by a grey groove, 3pt thick.
+</frame>
+
+<frame padding="9pt" margin-left="0pt" margin-right="0pt"
+       border-width="3pt"
+       border-style="ridge"
+       border-color="blue"
+       color="black">
+  This text should be rendered black on white, and surrounded
+  by a blue ridge of the same thickness as above (3pt).
+</frame>
+
+<frame border-width="2pt" border-style="solid" border-color="red">
+  <frame border-width="2pt" border-style="solid" border-color="blue" margin="0pt">
+    <frame border-width="2pt" border-style="solid" border-color="red" margin="0pt">
+      <frame border-width="2pt" border-style="solid" border-color="blue" margin="0pt">
+        <frame border-width="2pt" border-style="solid" border-color="red" margin="0pt">
+          <frame border-width="2pt" border-style="solid" border-color="blue" margin="0pt">
+            <frame border-width="2pt" border-style="solid" border-color="red" margin="0pt">
+              <frame border-width="2pt" border-style="solid" border-color="blue" margin="0pt">
+                <frame border-width="2pt" border-style="solid" border-color="red" margin="0pt">
+                  <frame border-width="2pt" border-style="solid" border-color="blue" margin="0pt" padding="9pt">
+  This text is included into 10 solid  frames of 2pt each, with alternated
+  colors: red/blue. So you should have a 20 pt striped border, made of 5
+  red stripes and 5 blue ones. The outermost stripe is red, and the innermost stripe is blue.
+                  </frame>
+                </frame>
+              </frame>
+            </frame>
+          </frame>
+        </frame>
+      </frame>
+    </frame>
+  </frame>
+</frame>
+
+
+<frame padding="9pt" margin-left="0pt" margin-right="0pt" border-width="3pt"
+       border-style="inset"
+       background="#E0E0FF"
+       color="#000080"
+       border-color="#000080">
+This text should be sunken into the page; frame thickness is 3 pt.
+Frame color and text color are dark blue; background color
+is very light blue. <i>Oh, blues, deep sorrow... </i> :-(
+</frame>
+
+<frame padding="9pt" margin-left="0pt" margin-right="0pt" border-width="3pt"
+       border-style="outset"
+       background="#FFFFD0"
+       color="green"
+       border-color="red">
+This text should be raised above the page; frame thickness is also 3 pt.
+Frame color is red, and text color is green;
+background color is very light yellow. <i>Smile, baby...</i> :-)
+</frame>
+
+
+<frame padding="9pt" margin-left="0pt" margin-right="0pt" border-width="thin"
+       border-style="solid"
+       border-color="red">
+  This text tests predefined values for border thickness.
+  It is surrounded by a <b>thin</b> red solid frame.
+</frame>
+
+
+<frame padding="9pt" margin-left="0pt" margin-right="0pt" border-width="medium"
+       border-style="solid"
+       border-color="green">
+  Test for predefined values continued: the text
+  is surrounded by a <b>medium</b> green solid frame.
+</frame>
+
+<frame padding="9pt" margin-left="0pt" margin-right="0pt" border-width="thick"
+       border-style="solid"
+       border-color="blue">
+  Test for predefined values comes to <b>The End</b>: the text
+  is surrounded by a <b>thick</b> blue solid frame.
+</frame>
+
+</plain-doc>

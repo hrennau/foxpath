@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE task PUBLIC "-//OASIS//DTD DITA Task//EN" "task.dtd">
+<task id="task_ww1_fh3_rf">
+    <title>Inserting the battery</title>
+    <shortdesc/>
+    <taskbody>
+        <context>
+            <p>Before proceeding with these steps, make sure that your mobile phone is turned
+                off.</p>
+        </context>
+        <steps>
+            <step id="firstStep">
+                <cmd> Insert the battery into the battery compartment. See the following image:
+                        <image href="../image/insertBattery.jpg" id="image_j5s_bnl_wf"
+                        placement="break"/></cmd>
+            </step>
+            <step id="lastStep">
+                <cmd>Put the back cover on. Make sure it is closed firmly.</cmd>
+            </step>
+        </steps>
+    </taskbody>
+</task>

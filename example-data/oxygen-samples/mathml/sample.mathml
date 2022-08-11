@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE m:math PUBLIC "-//W3C//DTD MathML 2.0//EN" 
+    "http://www.w3.org/Math/DTD/mathml2/mathml2.dtd"[
+    <!ENTITY % MATHML.prefixed "INCLUDE">
+    <!ENTITY % MATHML.prefix "m">]>
+<m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+    <m:mrow>
+        <m:mfrac>
+            <m:mrow>
+                <m:mi>x</m:mi>
+                <m:mo>&plus;</m:mo>
+                <m:msup>
+                    <m:mi>y</m:mi>
+                    <m:mn>2</m:mn>
+                </m:msup>
+            </m:mrow>
+            <m:mrow>
+                <m:mi>k</m:mi>
+                <m:mo>&plus;</m:mo>
+                <m:mn>1</m:mn>
+            </m:mrow>
+        </m:mfrac>
+    </m:mrow>
+    <m:mrow>
+        <m:apply>
+            <m:power/>
+            <m:apply>
+                <m:plus/>
+                <m:ci>a</m:ci>
+                <m:ci>b</m:ci>
+            </m:apply>
+            <m:cn>2</m:cn>
+        </m:apply>
+    </m:mrow>
+</m:math>
