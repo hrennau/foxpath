@@ -2319,15 +2319,22 @@ declare function f:nameCompare($docs as item()*,
  : use node names as specified by $nameKind. The comparison is defined 
  : by the comparison type ($cmpType). Supported types:
  :
- : - plain - compares plain paths (without index), report paths not common to
+ : - path - compares plain paths (without index), report paths not common to
  :     both documents (default style of comparison) 
- : - plain-count - compare plain paths (without index) and their frequencies,
+ : - path-count - compare plain paths (without index) and their frequencies,
  :     report paths not common to both documents or with different
  :     frequencies in both documents
  : - indexed - compares indexed paths (without index), containing for each
  :     element step the index of the respective element (e.g. /a[1]/b[2]/c[1]/@d.
  : - indexed-value - compares indexed paths (without index), accompanied (in
  :     case of attributes or elements with text children) by their string value
+ :
+ : Options:
+ : - selecting the comparison type (plain, plain-count, indexed, indexed-value)
+ : - selecting the name kind used when comparing (name, jname, lname)
+ : - keep-ws - suppress preliminary removal of pretty print text nodes
+ : - fname - the report identifies the documents by file names, rather than URIs 
+ : - always - return a report element also if no difference has been detedted 
  :
  : @param doc1 a document, or its document URI
  : @param doc2 another document, or its document URI
@@ -2347,15 +2354,30 @@ declare function f:pathCompare($doc1 as item(),
         if ($ops = 'name') then function($node) {$node/name(.)}
         else if ($ops = 'jname') then function($node) {$node/local-name(.) ! convert:decode-key(.)}
         else function($node) {$node/local-name(.)}
-    let $cmpType := $ops[. = ('plain-count', 'indexed-value', 'plain', 'indexed')][1]        
+    let $cmpType := ($ops[. = ('path', 'path-count', 'indexed', 'indexed-value')][1], 'path')[1]        
     let $nameKind := ($ops[. = ('lname', 'name', 'jname')][1], 'lname')[1]
-    
+    let $keepws := $ops = 'keep-ws'
+    let $useFname := $ops = 'fname'    
+    let $reportAlways := $ops = 'always'
     let $d1 := if ($doc1 instance of node()) then $doc1 else i:fox-doc($doc1, ())
     let $d2 := if ($doc2 instance of node()) then $doc2 else i:fox-doc($doc2, ())
+    
+    let $d1 := if ($keepws) then $d1 else $d1 ! util:prettyNode(., ())
+    let $d2 := if ($keepws) then $d2 else $d2 ! util:prettyNode(., ())
     return if (deep-equal($d1, $d2)) then () else
     
+    let $docids :=
+        let $baseUris := ($d1, $d2)/base-uri(.) return
+            if ($useFname) then (
+                $baseUris[1] ! replace(., '.*/', '') ! attribute fileName1 {.},
+                $baseUris[2] ! replace(., '.*/', '') ! attribute fileName2 {.}
+            ) else (
+                $baseUris[1] ! attribute uri1 {.},
+                $baseUris[2] ! attribute uri2 {.}
+            )            
+    let $reportContent :=     
         switch($cmpType)
-        case "plain-count" return
+        case "path-count" return
             let $paths1 :=
                 for $item in $d1/f:allDescendants(.)
                 group by $path := f:namePath($item, (), $nameKind)
@@ -2383,28 +2405,30 @@ declare function f:pathCompare($doc1 as item(),
                         <loc path="{$pathNA}" count1="{$anno1}" count2="{$anno2}"/>
             return
                 if (empty(($only1, $only2, $annoDiff))) then ()
-                else
-                    <deviations uri1="{$d1/base-uri(.)}"  uri2="{$d2/base-uri(.)}">{                    
-                        if (empty($only1)) then () else
-                        <only1 count="{count($only1)}">{$only1 ! <loc path="{.}"/>}</only1>,
-                        if (empty($only2)) then () else
-                        <only2 count="{count($only2)}">{$only2 ! <loc path="{.}"/>}</only2>,
-                        if (empty($annoDiff)) then () else
-                        <pathCountDiff>{
-                            $annoDiff
-                        }</pathCountDiff>
-                        
-                    }</deviations>
+                else (
+                    if (empty($only1)) then () else
+                    <only1 count="{count($only1)}">{$only1 ! <loc path="{.}"/>}</only1>,
+                    if (empty($only2)) then () else
+                    <only2 count="{count($only2)}">{$only2 ! <loc path="{.}"/>}</only2>,
+                    if (empty($annoDiff)) then () else
+                    <pathCountDiff>{
+                        $annoDiff
+                    }</pathCountDiff>                        
+                )
 
         case "indexed-value" return
             let $paths1 :=
                 for $item in $d1/f:allDescendants(.)
                 let $path := f:indexedNamePath($item, (), $nameKind)
-                return $path||$item[self::attribute() or text()]/concat('#', .)
+                return
+                    if ($path instance of attribute()) then $path||$item/concat('#', .)
+                    else $path||$item[text()]/concat('#', string-join(text(), ''))
             let $paths2 :=
                 for $item in $d2/f:allDescendants(.)
                 let $path := f:indexedNamePath($item, (), $nameKind)
-                return $path||$item[self::attribute() or text()]/concat('#', .)
+                return
+                    if ($path instance of attribute()) then $path||$item/concat('#', .)
+                    else $path||$item[text()]/concat('#', string-join(text(), ''))
             let $paths1NA := $paths1 ! replace(., '^(.*?)#.*', '$1', 's')                
             let $paths2NA := $paths2 ! replace(., '^(.*?)#.*', '$1', 's')
             let $only1 := $paths1NA[not(. = $paths2NA)]
@@ -2422,35 +2446,37 @@ declare function f:pathCompare($doc1 as item(),
                         <loc path="{$pathNA}" value1="{$anno1}" value2="{$anno2}"/>
             return
                 if (empty(($only1, $only2, $annoDiff))) then ()
-                else
-                    <deviations uri1="{$d1/base-uri(.)}"  uri2="{$d2/base-uri(.)}">{                    
-                        if (empty($only1)) then () else
-                        <only1 count="{count($only1)}">{$only1 ! <loc path="{.}"/>}</only1>,
-                        if (empty($only2)) then () else
-                        <only2 count="{count($only2)}">{$only2 ! <loc path="{.}"/>}</only2>,
-                        if (empty($annoDiff)) then () else
-                        <pathValueDiff>{
-                            $annoDiff
-                        }</pathValueDiff>
-                        
-                    }</deviations>
+                else (
+                    if (empty($only1)) then () else
+                    <only1 count="{count($only1)}">{$only1 ! <loc path="{.}"/>}</only1>,
+                    if (empty($only2)) then () else
+                    <only2 count="{count($only2)}">{$only2 ! <loc path="{.}"/>}</only2>,
+                    if (empty($annoDiff)) then () else
+                    <pathValueDiff>{
+                        $annoDiff
+                    }</pathValueDiff>
+                )                        
 
-        (: plain | indexed :)
+        (: path | indexed :)
         default return
-            let $_DEBUG := trace($cmpType, '_COMP_TYPE: ')
             let $fnNamePath := if ($cmpType eq 'indexed') then f:indexedNamePath#3 else f:namePath#3
             let $paths1 := $d1/f:allDescendants(.)/$fnNamePath(., (), $nameKind) => distinct-values() => sort()
             let $paths2 := $d2/f:allDescendants(.)/$fnNamePath(., (), $nameKind) => distinct-values() => sort()
             let $only1 := $paths1[not(. = $paths2)]
-            let $only2 := $paths2[not(. = $paths1)]
+            let $only2 := $paths2[not(. = $paths1)]            
             return
-                if (empty($only1) and empty($only2)) then () else
-                <deviations uri1="{$d1/base-uri(.)}"  uri2="{$d2/base-uri(.)}">{
+                if (empty($only1) and empty($only2)) then () else (
                     if (empty($only1)) then () else
                     <only1 count="{count($only1)}">{$only1 ! <loc path="{.}"/>}</only1>,
                     if (empty($only2)) then () else
                     <only2 count="{count($only2)}">{$only2 ! <loc path="{.}"/>}</only2>
-                }</deviations>
+                )
+    return
+        if (empty($reportContent) and not($reportAlways)) then () else
+        <deviations comparisonType="{$cmpType}">{
+            $docids,
+            $reportContent
+        }</deviations>
 };
 
 (:~

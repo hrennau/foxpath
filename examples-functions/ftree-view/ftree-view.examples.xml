@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<examples function="ftree-view">
+<function-usage-examples function="ftree-view">
     <testenviron>
         In order to try out the examples, start a command shell and 
         move to folder $FOXPATH/example-data/oxygen-samples.
@@ -44,4 +44,4 @@
     <seealso>
         For more examples of how to define file properties, look at the examples for function ftree().
     </seealso>
-</examples>
+</function-usage-examples>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage-examples function="path-compare">
+    <testenviron>
+        In order to try out the examples, start a command shell and 
+        move to folder $FOXPATH/examples-functions/path-compare/data.
+    </testenviron>
+    <examples>
+        <example>
+            <description>
+                Check if two documents contain the same data paths, ignoring their
+                frequencies and ignoring data.
+            </description>
+            <code>
+                fox "airports.xml/path-compare(../airports.renamed-elem.xml)"
+            </code>
+        </example>
+        <example>
+            <description>
+                Check if two documents contain the same data paths with the same
+                frequencies.
+            </description>
+            <code>
+                fox "airports.xml/path-compare(../airports.repeated-elem.xml, 'path-count')"
+            </code>
+        </example>
+        <example>
+            <description>
+                Check if two documents contain the same indexed data paths.
+            </description>
+            <code>
+                fox "airports.xml/path-compare(../airports.repeated-elem.xml, 'indexed')"
+            </code>
+        </example>
+        <example>
+            <description>
+                Check if two documents contain the same indexed data paths and each
+                path the same data value.
+            </description>
+            <code>
+                fox "airports.xml/path-compare(../airports.changed-value.xml, 'indexed-value')"
+            </code>
+        </example>
+        <example>
+            <description>
+                Check if two documents contain the same indexed data paths and each path
+                the same data value. As you are expecting mixed content, do not ignore
+                whitespace text nodes.
+            </description>
+            <code>
+                fox "gardenPreparation.dita/path-compare(../gardenPreparation.changed-ws.dita, 'indexed-value keep-ws')"
+            </code>
+        </example>
+        <example>
+            <description>
+                Check if two documents contain the same data paths, using lexical names
+                rather than local names. Lexical names may contain a prefix. Note however, 
+                that in case of deep equality of the input nodes, no differences will be 
+                reported.
+            </description>
+            <code>
+                fox "doc-with-prefix-a.xml/path-compare(../doc-with-prefix-b.xml, 'name')"
+            </code>
+        </example>
+        <example>
+            <description>
+                Compare two documents; the report should described the documents by their
+                file names, rather than their document URIs.
+            </description>
+            <code>
+                fox "airports.xml/path-compare(../airports.new-elem.xml, 'fname')"
+            </code>
+        </example>
+    </examples>        
+    <seealso>
+        Related functions are name-compare, node-deep-equal and node-deep-similar.
+    </seealso>
+</function-usage-examples>
