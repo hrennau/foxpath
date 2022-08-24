@@ -254,7 +254,10 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $names := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $quotes := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             let $backslashes := $call/*[6]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                
+            let $_DEBUG := trace($context, '_CONTEXT: ')
+            let $_DEBUG := trace($uri, '_URI: ')
+            let $_DEBUG := trace($header, '_HEADER: ') 
+            let $_DEBUG := trace($separator, '_SEPARATOR: ')
             return
                 if (empty($separator)) then i:fox-csv-doc($uri, $options)
                 else if (empty($header)) then i:fox-csv-doc($uri, $separator, $options)
@@ -1145,7 +1148,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ======================= :)
         else if ($fname = (
                 'path-compare', 'pathcmp', 'path-compare-ec', 'pathcmp-ec')) then
-            let $da := if (ends-with($fname, '-ec')) then 1 else 0                
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0                 
             let $item1 := if ($da eq 0) then $context else
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $item2 := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -1157,7 +1160,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `path-multi-compare` 
            ============================= :)
         else if ($fname = ('path-multi-compare', 'path-multi-compare-ec')) then   
-            let $da := if (ends-with($fname, '-ec')) then 1 else 0    
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0   
             let $items := (
                 $context[$da eq 0],
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
@@ -1437,13 +1440,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `truncate` 
            =================== :)
-        else if ($fname = ('truncate', 'trunc')) then
+        else if ($fname = ('truncate', 'truncate-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $arg3 := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $string := if (count($call/*) eq 1) then $context else $arg1
-            let $len := if (count($call/*) eq 1) then $arg1 else $arg2               
-            let $flags := $arg3
+            let $string := if ($da) then $arg1 else $context
+            let $len := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $flags := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:truncate($string, $len, $flags)
 

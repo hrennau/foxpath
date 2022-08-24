@@ -1696,7 +1696,11 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
     (: parse initial root step (/ or \) 
        ================================ :) 
     let $root :=
-        if (starts-with($text, 'http://')) then 
+        if (starts-with($text, 'file:/')) then
+            let $p1 := replace($text, '^(file:/+[a-zA-Z]:/)($|[^/].*)', '$1')[. ne $text]
+            let $p := if ($p1) then $p1 else replace($text, '^(file:/*/).*', '$1')
+            return <foxRoot path="{$p}"/>
+        else if (starts-with($text, 'http://')) then 
             <foxRoot path="http://"/>        
         else if (starts-with($text, 'https://')) then 
             <foxRoot path="https://"/>        
@@ -1717,7 +1721,7 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
         else if (starts-with($text, $FOXSTEP_SEPERATOR)) then <foxRoot path="/"/>
         else if (starts-with($text, $NODESTEP_SEPERATOR)) then <root/>
         else ()
-
+    
     (: parse steps etc
        =============== :) 
     let $stepsEtc :=
@@ -1738,7 +1742,6 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
                 else if ($startHerePrefix) then substring($text, 1 + string-length($startHerePrefix))
                 else $text
             , '^\s+', '')[string()]
-    
         (: 
            update context component IS_CONTEXT_URI:
              if the initial operator is \: true 

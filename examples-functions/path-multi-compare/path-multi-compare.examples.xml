@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="path-multi-compare">
+    <testenviron>
+        In order to try out the examples, start a command shell and 
+        move to folder $FOXPATH/examples-functions/path-compare-multi.
+    </testenviron>
+    <examples>
+        <example>
+            <description>
+                Check a set of documents for common/uncommon data paths.
+            </description>
+            <code>
+                fox "data/airports*.xml => path-multi-compare()"
+            </code>
+        </example>
+        <example>
+            <description>
+                Restrict the report to paths not occurring in all documents.
+            </description>
+            <code>
+                fox "data/airports*.xml => path-multi-compare('uncommon')"
+            </code>
+        </example>
+        <example>
+            <description>
+                Restrict the report to details about the individual documents - the paths
+                contained and not contained by all other paths.
+            </description>
+            <code>
+                fox "data/airports*.xml => path-multi-compare('details')"
+            </code>
+        </example>
+        <example>
+            <description>
+                Report indexed paths, rather than index-less paths.
+            </description>
+            <code>
+                fox "data/airports*.xml => path-multi-compare('indexed uncommon')"
+            </code>
+        </example>
+        <example>
+            <description>
+                Get a complete report in which documents are described by file names, rather than URIs.
+            </description>
+            <code>
+                fox "data/airports*.xml => path-multi-compare('fname')"
+            </code>
+        </example>
+    </examples>        
+    <seealso>
+        Related functions are path-compare, node-deep-equal and node-deep-similar.
+    </seealso>
+</function-usage>

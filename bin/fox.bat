@@ -10,7 +10,9 @@ set HERE=%XERE:\=/%
 ::     evaluate options
 ::
 :: ====================================================================================
-
+REM echo "INPUT1: %1"
+REM echo "INPUT2: %2"
+REM echo "=========="
 :: defaults
 set PARSE=
 set ISFILE=

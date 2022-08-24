@@ -2521,16 +2521,25 @@ declare function f:pathMultiCompare($items as item()*,
     let $scopePlus := if (exists($scope)) then $scope else $scopeDefault
     let $scopeMinus := $options[starts-with(., '~')] ! substring(., 2)
     let $scope := $scopePlus[not(. = $scopeMinus)]
+    let $indexed := $options = 'indexed'
+    let $useFname := $options = 'fname'
+    
+    let $fnPath := 
+        if ($indexed) then f:indexedNamePath#3
+        else f:namePath#3
     
     let $fnFragmentPath := function($doc) {
         $doc[..]/f:indexedNamePath(., (), $nameKind)}
         
+    let $fnUri :=
+        if ($useFname) then function($node) {$node/base-uri(.) ! replace(., '.*/', '') ! attribute file-name {.}}
+        else function($node) {$node/base-uri(.) ! attribute uri {.}}
     let $docs := $items ! 
         (typeswitch(.) case node() return . default return i:fox-doc(., ()))
     
     let $pathArrays := 
         for $doc at $pos in $docs
-        let $paths := $doc/f:allDescendants(.)/f:namePath(., (), $nameKind) 
+        let $paths := $doc/f:allDescendants(.)/$fnPath(., (), $nameKind) 
                       => distinct-values() => sort()
         return array{$paths}
         
@@ -2540,7 +2549,7 @@ declare function f:pathMultiCompare($items as item()*,
         <documents count="{count($docs)}">{
             for $doc in $docs
             let $uri := $doc/root()/base-uri(.)
-            return $doc/<document uri="{base-uri(.)}">{$fnFragmentPath(.) ! attribute fragmentPath {.}}</document>
+            return $doc/<document>{root()/$fnUri(.), $fnFragmentPath(.) ! attribute fragmentPath {.}}</document>
         }</documents>    
         [$scope = 'docs']
     let $reportPathsInAll :=
@@ -2554,7 +2563,7 @@ declare function f:pathMultiCompare($items as item()*,
         let $pathsNotCommon := $paths[not(. = $commonPaths)]
         return if (empty($pathsNotCommon)) then () else
             <document nr="{$i}">{
-                $docs[$i]/base-uri(.) ! attribute uri {.},
+                $docs[$i]/$fnUri(.),
                 $docs[$i]/$fnFragmentPath(.) ! attribute fragmentPath {.},
                 <pathsNotInAll count="{count($pathsNotCommon)}">{
                     if ($options = 'counts') then () else
@@ -3364,8 +3373,9 @@ declare function f:textToCodepoints($text as xs:string*) as xs:string+ {
  : @param name a lexical QName
  : @return the name with the prefix removed
  :)
-declare function f:truncate($string as xs:string?, $len as xs:integer, $flags as xs:string?)
+declare function f:truncate($string as xs:string?, $len as xs:integer?, $flags as xs:string?)
         as xs:string? {
+    let $len := ($len, 80)[1]
     let $evenLength := $flags = 'e'
     let $actlen := string-length($string)
     return

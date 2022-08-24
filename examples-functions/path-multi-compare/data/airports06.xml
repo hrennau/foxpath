@@ -1,0 +1,341 @@
+<airports country="Finland" count="51">
+  <airport id="417" iata="ENF" icao="EFET" latitude="68.362602233887" longitude="23.424299240112" href="finland/airport-enf.xml"/>
+  <airport id="418" icao="EFEU">
+    <name>Eura Airport</name>
+    <city>Eura</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>61.1161003112793</latitude>
+      <longitude>22.201400756835938</longitude>
+      <altitude>259</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="419" iata="KEV" icao="EFHA" latitude="61.856039" longitude="24.786686" href="finland/airport-kev.xml"/>
+  <airport id="420" iata="HEM" icao="EFHF" latitude="60.254600524902344" longitude="25.042800903320312" href="finland/airport-hem.xml"/>
+  <airport id="421" iata="HEL" icao="EFHK" latitude="60.317199707031" longitude="24.963300704956" href="finland/airport-hel.xml"/>
+  <airport id="422" icao="EFHM">
+    <name>Hameenkyro Airport</name>
+    <city>Hameenkyro</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>61.689701080322266</latitude>
+      <longitude>23.073699951171875</longitude>
+      <altitude>449</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="423" icao="EFHN">
+    <name>Hanko Airport</name>
+    <city>Hanko</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>59.848899841308594</latitude>
+      <longitude>23.083599090576172</longitude>
+      <altitude>20</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="424" iata="HYV" icao="EFHV" latitude="60.6543998718" longitude="24.8810997009" href="finland/airport-hyv.xml"/>
+  <airport id="425" icao="EFIK">
+    <name>Kiikala Airport</name>
+    <city>Kikala</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>60.4625015259</latitude>
+      <longitude>23.6525001526</longitude>
+      <altitude>381</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="426" icao="EFIM">
+    <name>Immola Airport</name>
+    <city>Immola</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>61.24919891357422</latitude>
+      <longitude>28.90369987487793</longitude>
+      <altitude>338</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="427" iata="KTQ" icao="EFIT" latitude="62.1661" longitude="30.073601" href="finland/airport-ktq.xml"/>
+  <airport id="428" iata="IVL" icao="EFIV" latitude="68.607299804688" longitude="27.405300140381" href="finland/airport-ivl.xml"/>
+  <airport id="429" iata="JOE" icao="EFJO" latitude="62.662899017334" longitude="29.607500076294" href="finland/airport-joe.xml"/>
+  <airport id="430" iata="JYV" icao="EFJY" latitude="62.399501800537" longitude="25.678300857544" href="finland/airport-jyv.xml"/>
+  <airport id="431" iata="KAU" icao="EFKA" latitude="63.127102" longitude="23.051399" href="finland/airport-kau.xml"/>
+  <airport id="432" iata="KEM" icao="EFKE" latitude="65.778701782227" longitude="24.582099914551" href="finland/airport-kem.xml"/>
+  <airport id="433" iata="KAJ" icao="EFKI" latitude="64.285499572754" longitude="27.692399978638" href="finland/airport-kaj.xml"/>
+  <airport id="434" iata="KHJ" icao="EFKJ" latitude="62.4625015259" longitude="22.3931007385" href="finland/airport-khj.xml"/>
+  <airport id="435" iata="KOK" icao="EFKK" latitude="63.721199035645" longitude="23.143100738525" href="finland/airport-kok.xml"/>
+  <airport id="436" icao="EFKM">
+    <name>Kemijarvi Airport</name>
+    <city>Kemijarvi</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>66.712898</latitude>
+      <longitude>27.156799</longitude>
+      <altitude>692</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="437" iata="KAO" icao="EFKS" latitude="65.987602233887" longitude="29.239400863647" href="finland/airport-kao.xml"/>
+  <airport id="438" iata="KTT" icao="EFKT" latitude="67.700996398926" longitude="24.846799850464" href="finland/airport-ktt.xml"/>
+  <airport id="439" iata="KUO" icao="EFKU" latitude="63.007099151611" longitude="27.797800064087" href="finland/airport-kuo.xml"/>
+  <airport id="440" iata="QLF" icao="EFLA" latitude="61.144199" longitude="25.693501" href="finland/airport-qlf.xml"/>
+  <airport id="441" iata="LPP" icao="EFLP" latitude="61.044601" longitude="28.144743" href="finland/airport-lpp.xml"/>
+  <airport id="442" iata="MHQ" icao="EFMA" latitude="60.122200012207" longitude="19.898199081421" href="finland/airport-mhq.xml"/>
+  <airport id="443" icao="EFME">
+    <name>Menkijarvi Airport</name>
+    <city>Menkijarvi</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>62.94670104980469</latitude>
+      <longitude>23.51889991760254</longitude>
+      <altitude>331</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="444" iata="MIK" icao="EFMI" latitude="61.6866" longitude="27.201799" href="finland/airport-mik.xml"/>
+  <airport id="445" icao="EFNU">
+    <name>Nummela Airport</name>
+    <city>Nummela</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>60.333900451699996</latitude>
+      <longitude>24.2964000702</longitude>
+      <altitude>367</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="446" iata="OUL" icao="EFOU" latitude="64.930099487305" longitude="25.354600906372" href="finland/airport-oul.xml"/>
+  <airport id="447" icao="EFPI">
+    <name>Piikajarvi Airport</name>
+    <city>Piikajarvi</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>61.245601654052734</latitude>
+      <longitude>22.19339942932129</longitude>
+      <altitude>148</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="448" iata="POR" icao="EFPO" latitude="61.461700439453" longitude="21.799999237061" href="finland/airport-por.xml"/>
+  <airport id="449" icao="EFPU">
+    <name>Pudasjärvi Airport</name>
+    <city>Pudasjarvi</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>65.4021987915</latitude>
+      <longitude>26.946899414100002</longitude>
+      <altitude>397</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="450" icao="EFPY">
+    <name>Pyhäsalmi Airport</name>
+    <city>Pyhasalmi</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>63.7318992615</latitude>
+      <longitude>25.926300048799998</longitude>
+      <altitude>528</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="451" icao="EFRH">
+    <name>Raahe Pattijoki Airport</name>
+    <city>Pattijoki</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>64.6881027222</latitude>
+      <longitude>24.6958007812</longitude>
+      <altitude>118</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="452" icao="EFRN">
+    <name>Rantasalmi Airport</name>
+    <city>Rantasalmi</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>62.0654983521</latitude>
+      <longitude>28.3565006256</longitude>
+      <altitude>292</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="453" iata="RVN" icao="EFRO" latitude="66.564796447754" longitude="25.830400466919" href="finland/airport-rvn.xml"/>
+  <airport id="454" icao="EFRY">
+    <name>Rayskala Airport</name>
+    <city>Rayskala</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>60.74470138549805</latitude>
+      <longitude>24.107799530029297</longitude>
+      <altitude>407</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="455" iata="SVL" icao="EFSA" latitude="61.943099975586" longitude="28.945100784302" href="finland/airport-svl.xml"/>
+  <airport id="456" icao="EFSE">
+    <name>Selanpaa Airport</name>
+    <city>Selanpaa</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>61.062400817871094</latitude>
+      <longitude>26.798900604248047</longitude>
+      <altitude>417</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="457" iata="SOT" icao="EFSO" latitude="67.3949966431" longitude="26.6191005707" href="finland/airport-sot.xml"/>
+  <airport id="458" iata="TMP" icao="EFTP" latitude="61.414100646973" longitude="23.604400634766" href="finland/airport-tmp.xml"/>
+  <airport id="459" icao="EFTS">
+    <name>Teisko Airport</name>
+    <city>Teisko</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>61.7733</latitude>
+      <longitude>24.027</longitude>
+      <altitude>515</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="460" iata="TKU" icao="EFTU" latitude="60.514099121094" longitude="22.262800216675" href="finland/airport-tku.xml"/>
+  <airport id="461" iata="UTI" icao="EFUT" latitude="60.89640045166" longitude="26.938400268555" href="finland/airport-uti.xml"/>
+  <airport id="462" iata="VAA" icao="EFVA" latitude="63.050701141357" longitude="21.762199401855" href="finland/airport-vaa.xml"/>
+  <airport id="463" iata="VRK" icao="EFVR" latitude="62.171100616455" longitude="27.868600845337" href="finland/airport-vrk.xml"/>
+  <airport id="464" iata="YLI" icao="EFYL" latitude="64.0547222" longitude="24.7252778" href="finland/airport-yli.xml"/>
+  <airport id="5560" iata="SJY" icao="EFSI" latitude="62.692101" longitude="22.8323" href="finland/airport-sjy.xml"/>
+  <airport id="7725" icao="EFHE">
+    <name>Hernesaari Heliport</name>
+    <city>Helsinki</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>60.14777755737305</latitude>
+      <longitude>24.9244441986084</longitude>
+      <altitude>7</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+  <airport id="10295" icao="EFKY">
+    <name>Kymi Airport</name>
+    <city>Kotka</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>60.5713996887207</latitude>
+      <longitude>26.896099090576172</longitude>
+      <altitude>223</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>\N</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+</airports>
