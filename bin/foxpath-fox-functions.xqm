@@ -1650,6 +1650,26 @@ declare function f:median($values as xs:anyAtomicType*)
 };
 
 (:~
+ : Returns name strings. Dependen on $nameKind, the name
+ : string expresses the lexical name, the local name or
+ : the JSON name. If the node is an attribute node, an
+ : @ character is prepended.
+ :)
+declare function f:nameString($nodes as node()*, 
+                              $nameKind as xs:string?,
+                              $options as xs:string?)
+        as xs:string* {
+    (:
+    let $ops := $options ! tokenize(.)        
+    return
+     :)
+        switch($nameKind)
+        case 'name' return $nodes/concat(self::attribute()/'@', name(.))
+        case 'jname' return $nodes/concat(self::attribute()/'@', f:unescapeJsonName(local-name(.)))
+        default return $nodes/concat(self::attribute()/'@', local-name(.))
+};        
+
+(:~
  : Returns for given nodes their plain name paths.
  :
  : @param nodes a set of nodes
@@ -2519,43 +2539,69 @@ declare function f:pathMultiCompare($items as item()*,
     let $scopeDefault := ('docs', 'common', 'uncommon', 'details')
     let $scope := $options[. = $scopeDefault]
     let $scopePlus := if (exists($scope)) then $scope else $scopeDefault
-    let $scopeMinus := $options[starts-with(., '~')] ! substring(., 2)
-    let $scope := $scopePlus[not(. = $scopeMinus)]
+    let $minusOptions := $options[starts-with(., '~')] ! substring(., 2)
+    let $scope := $scopePlus[not(. = $minusOptions)]
     let $indexed := $options = 'indexed'
+    let $reportNames := $options = 'report-names'
     let $useFname := $options = 'fname'
     
+    let $elemName_inAll := 
+        if ($reportNames) then 'namesInAll'
+        else 'pathsInAll'
+    let $elemName_notInAll := 
+        if ($reportNames) then 'namesNotInAll'
+        else 'pathsNotInAll'
+    let $elemName_root :=
+        if ($reportNames) then 'nameMultiCompare'
+        else 'pathMultiCompare'
+        
     let $fnPath := 
         if ($indexed) then f:indexedNamePath#3
+        else if ($reportNames) then f:nameString#3
         else f:namePath#3
+        
+    let $fnPathElem := 
+        if ($reportNames) then function ($name) {<item name="{$name}"/>}
+        else function($path) {<path p="{$path}"/>} 
     
+    let $fnGetPaths :=
+        if ($reportNames) then function($nodes) {$nodes//item/@name}
+        else function($nodes) {$nodes//path/@p}
+        
     let $fnFragmentPath := function($doc) {
         $doc[..]/f:indexedNamePath(., (), $nameKind)}
         
     let $fnUri :=
-        if ($useFname) then function($node) {$node/base-uri(.) ! replace(., '.*/', '') ! attribute file-name {.}}
-        else function($node) {$node/base-uri(.) ! attribute uri {.}}
+        if ($useFname) then function($node) 
+            {$node/base-uri(.) ! replace(., '.*/', '') ! attribute file-name {.}}
+        else function($node) 
+            {$node/base-uri(.) ! attribute uri {.}}
     let $docs := $items ! 
         (typeswitch(.) case node() return . default return i:fox-doc(., ()))
     
     let $pathArrays := 
         for $doc at $pos in $docs
-        let $paths := $doc/f:allDescendants(.)/$fnPath(., (), $nameKind) 
-                      => distinct-values() => sort()
+        let $alldesc := $doc/f:allDescendants(.)
+        let $paths := (
+            if ($reportNames) then $alldesc/$fnPath(., $nameKind, ())
+            else $alldesc/$fnPath(., (), $nameKind)
+        ) => distinct-values() => sort()
         return array{$paths}
         
     let $commonPaths := util:atomIntersection($pathArrays)
     
     let $reportDocs :=
         <documents count="{count($docs)}">{
-            for $doc in $docs
-            let $uri := $doc/root()/base-uri(.)
-            return $doc/<document>{root()/$fnUri(.), $fnFragmentPath(.) ! attribute fragmentPath {.}}</document>
+            $docs/<document>{root()/$fnUri(.), 
+                $fnFragmentPath(.)! attribute fragmentPath {.}
+            }</document>
         }</documents>    
         [$scope = 'docs']
     let $reportPathsInAll :=
-        <pathsInAll count="{count($commonPaths)}">{
-            $commonPaths ! <path p="{.}"/>
-        }</pathsInAll>   
+        element {$elemName_inAll} {
+            attribute count {count($commonPaths)},
+            $commonPaths ! $fnPathElem(.)            
+        }
         [$scope = 'common']
     let $reportDocDetails :=    
         for $i in 1 to $count
@@ -2565,27 +2611,30 @@ declare function f:pathMultiCompare($items as item()*,
             <document nr="{$i}">{
                 $docs[$i]/$fnUri(.),
                 $docs[$i]/$fnFragmentPath(.) ! attribute fragmentPath {.},
-                <pathsNotInAll count="{count($pathsNotCommon)}">{
+                element {$elemName_notInAll} {
+                    attribute count {count($pathsNotCommon)},
                     if ($options = 'counts') then () else
-                    ($pathsNotCommon => sort()) ! <path p="{.}"/>
-                }</pathsNotInAll>            
+                    ($pathsNotCommon => sort()) ! $fnPathElem(.)
+                }
              }</document>
     let $reportPathsNotInAll := if (not($reportDocDetails)) then () else
-        let $paths := $reportDocDetails//path/@p => distinct-values()
+        let $paths := $fnGetPaths($reportDocDetails) => distinct-values() => sort()
         return
-            <pathsNotInAll count="{count($paths)}">{
-                $paths ! <path p="{.}"/>
-            }</pathsNotInAll>
+            element {$elemName_notInAll} {
+                attribute count {count($paths)},
+                $paths ! $fnPathElem(.)
+            }
             [$scope = 'uncommon']
     return
-        <pathMultiCompare scope="{$scope}">{
+        element {$elemName_root} {
+            attribute scope {$scope},
             $reportDocs,
             $reportPathsInAll,
             $reportPathsNotInAll,
             <documentDetails count="{count($reportDocDetails)}">{
                 $reportDocDetails
             }</documentDetails>[$reportDocDetails][$scope = 'details']
-        }</pathMultiCompare>
+        }
 };
 
 (:~

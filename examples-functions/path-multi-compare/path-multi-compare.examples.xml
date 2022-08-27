@@ -2,7 +2,7 @@
 <function-usage function="path-multi-compare">
     <testenviron>
         In order to try out the examples, start a command shell and 
-        move to folder $FOXPATH/examples-functions/path-compare-multi.
+        move to folder $FOXPATH/examples-functions/path-multi-compare.
     </testenviron>
     <examples>
         <example>
@@ -24,7 +24,7 @@
         <example>
             <description>
                 Restrict the report to details about the individual documents - the paths
-                contained and not contained by all other paths.
+                contained and not contained by all other documents.
             </description>
             <code>
                 fox "data/airports*.xml => path-multi-compare('details')"
@@ -48,6 +48,6 @@
         </example>
     </examples>        
     <seealso>
-        Related functions are path-compare, node-deep-equal and node-deep-similar.
+        Related functions are name-multi-compare, path-compare, node-deep-equal and node-deep-similar.
     </seealso>
 </function-usage>

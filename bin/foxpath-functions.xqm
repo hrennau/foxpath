@@ -969,6 +969,28 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:nameContent($contextNodes, $namesFilter, $options)
 
+        (: function `name-compare` 
+           ======================= :)
+        else if ($fname = (
+                'name-compare', 'name-compare-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0
+            let $items := (
+                $context[$da eq 0],
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
+            let $fnOptions := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:nameCompare($items, $fnOptions)
+
+        (: function `name-multi-compare` 
+           ============================= :)
+        else if ($fname = ('name-multi-compare', 'name-multi-compare-ec')) then   
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0   
+            let $items := (
+                $context[$da eq 0],
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
+            let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $options := string-join(($options, 'report-names'), ' ')
+            return foxf:pathMultiCompare($items, $options)
+
         (: function `name-path` 
            =================== :)
         else if ($fname = ('name-path', 'name-path-ec')) then  
@@ -1132,18 +1154,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:parentName($node, 'name')            
 :)
-        (: function `name-compare` 
-           ======================= :)
-        else if ($fname = (
-                'name-compare', 'name-compare-ec')) then
-            let $da := if (ends-with($fname, '-ec')) then 1 else 0
-            let $items := (
-                $context[$da eq 0],
-                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
-            let $fnOptions := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:nameCompare($items, $fnOptions)
-
-
         (: function `path-compare` 
            ======================= :)
         else if ($fname = (
