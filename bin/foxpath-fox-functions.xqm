@@ -2335,9 +2335,8 @@ declare function f:nameCompare($docs as item()*,
 
 (:~
  : Compares two documents or nodes with respect to the data paths which
- : they contain. The paths
- : use node names as specified by $nameKind. The comparison is defined 
- : by the comparison type ($cmpType). Supported types:
+ : they contain. The paths use node names as specified by $nameKind. The comparison 
+ : is defined by the comparison type ($cmpType). Supported types:
  :
  : - path - compares plain paths (without index), report paths not common to
  :     both documents (default style of comparison) 
@@ -2365,9 +2364,9 @@ declare function f:nameCompare($docs as item()*,
  :   the paths occurring only in document 1 or 2, respectively
  : 
  :)
-declare function f:pathCompare($doc1 as item(),
-                               $doc2 as item(),
-                               $options as xs:string?)
+declare function f:pathDiff($doc1 as item(),
+                            $doc2 as item(),
+                            $options as xs:string?)
         as item()? {
     let $ops := $options ! tokenize(.)        
     let $fn_name := 
@@ -2493,10 +2492,10 @@ declare function f:pathCompare($doc1 as item(),
                 )
     return
         if (empty($reportContent) and not($reportAlways)) then () else
-        <deviations comparisonType="{$cmpType}">{
+        <pathDiff comparisonType="{$cmpType}">{
             $docids,
             $reportContent
-        }</deviations>
+        }</pathDiff>
 };
 
 (:~

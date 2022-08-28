@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<function-usage-examples function="path-compare">
+<function-usage function="path-diff">
     <testenviron>
         In order to try out the examples, start a command shell and 
-        move to folder $FOXPATH/examples-functions/path-compare/data.
+        move to folder $FOXPATH/examples-functions/path-compare.
     </testenviron>
     <examples>
         <example>
@@ -11,7 +11,7 @@
                 frequencies and ignoring data.
             </description>
             <code>
-                fox "airports.xml/path-compare(../airports.renamed-elem.xml)"
+                fox "data/airports.xml/path-diff(../airports.renamed-elem.xml)"
             </code>
         </example>
         <example>
@@ -20,7 +20,7 @@
                 frequencies.
             </description>
             <code>
-                fox "airports.xml/path-compare(../airports.repeated-elem.xml, 'path-count')"
+                fox "data/airports.xml/path-diff(../airports.repeated-elem.xml, 'path-count')"
             </code>
         </example>
         <example>
@@ -28,7 +28,7 @@
                 Check if two documents contain the same indexed data paths.
             </description>
             <code>
-                fox "airports.xml/path-compare(../airports.repeated-elem.xml, 'indexed')"
+                fox "data/airports.xml/path-diff(../airports.repeated-elem.xml, 'indexed')"
             </code>
         </example>
         <example>
@@ -37,7 +37,7 @@
                 path the same data value.
             </description>
             <code>
-                fox "airports.xml/path-compare(../airports.changed-value.xml, 'indexed-value')"
+                fox "data/airports.xml/path-diff(../airports.changed-value.xml, 'indexed-value')"
             </code>
         </example>
         <example>
@@ -47,7 +47,7 @@
                 whitespace text nodes.
             </description>
             <code>
-                fox "gardenPreparation.dita/path-compare(../gardenPreparation.changed-ws.dita, 'indexed-value keep-ws')"
+                fox "data/gardenPreparation.dita/path-diff(../gardenPreparation.changed-ws.dita, 'indexed-value keep-ws')"
             </code>
         </example>
         <example>
@@ -58,20 +58,20 @@
                 reported.
             </description>
             <code>
-                fox "doc-with-prefix-a.xml/path-compare(../doc-with-prefix-b.xml, 'name')"
+                fox "data/doc-with-prefix-a.xml/path-diff(../doc-with-prefix-b.xml, 'name')"
             </code>
         </example>
         <example>
             <description>
-                Compare two documents; the report should described the documents by their
+                Compare two documents; the report should describe the documents by their
                 file names, rather than their document URIs.
             </description>
             <code>
-                fox "airports.xml/path-compare(../airports.new-elem.xml, 'fname')"
+                fox "data/airports.xml/path-diff(../airports.new-elem.xml, 'fname')"
             </code>
         </example>
     </examples>        
     <seealso>
-        Related functions are name-compare, node-deep-equal and node-deep-similar.
+        Related functions are name-diff, path-multi-diff, node-deep-equal and node-deep-similar.
     </seealso>
-</function-usage-examples>
+</function-usage>

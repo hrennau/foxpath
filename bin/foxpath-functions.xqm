@@ -1154,10 +1154,10 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:parentName($node, 'name')            
 :)
-        (: function `path-compare` 
+        (: function `path-diff` 
            ======================= :)
         else if ($fname = (
-                'path-compare', 'pathcmp', 'path-compare-ec', 'pathcmp-ec')) then
+                'path-diff', 'path-diff-ec')) then
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0                 
             let $item1 := if ($da eq 0) then $context else
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -1165,7 +1165,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             (: options: name lname jname 
                         plain indexed plain-count indexed-value :)
             let $options:= $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:pathCompare($item1, $item2, $options)
+            return foxf:pathDiff($item1, $item2, $options)
 
         (: function `path-multi-compare` 
            ============================= :)
