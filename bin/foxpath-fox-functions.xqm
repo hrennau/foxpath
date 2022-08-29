@@ -2274,8 +2274,8 @@ declare function f:parentName($node as node(),
  :   describing the differences
  : 
  :)
-declare function f:nameCompare($docs as item()*,
-                                $options as xs:string?)
+declare function f:nameDiff($docs as item()*,
+                            $options as xs:string?)
         as item()? {
     if (count($docs) gt 2) then error(QName((), 'INVALID_CALL'), 
         'INVALID_CALL; names-compare cannot compare more than two documents; #documents: '||count($docs))        
@@ -2322,7 +2322,7 @@ declare function f:nameCompare($docs as item()*,
             )
         
     return
-        <namesCompare scope="{$scope}">{
+        <nameDiff scope="{$scope}">{
             $docids,
             if (empty($only1) or not($scope = ('only1', 'uncommon'))) then () else
             <only1 count="{count($only1)}">{$only1 ! <loc name="{.}"/>}</only1>,
@@ -2330,7 +2330,7 @@ declare function f:nameCompare($docs as item()*,
             <only2 count="{count($only2)}">{$only2 ! <loc name="{.}"/>}</only2>,
             if (not($scope = 'common')) then () else
             <common count="{count($common)}">{$common ! <loc name="{.}"/>}</common>
-        }</namesCompare>
+        }</nameDiff>
 };
 
 (:~
@@ -2527,8 +2527,8 @@ declare function f:pathDiff($doc1 as item(),
  :   ~uncommon - exclude: data paths not contained by all input nodes
  :   ~details - exclude: for each input node the uncommon paths it contains
  :)
-declare function f:pathMultiCompare($items as item()*,
-                                    $options as xs:string?)
+declare function f:pathMultiDiff($items as item()*,
+                                 $options as xs:string?)
         as item()? {
     let $count := count($items)
     return if ($count lt 2) then () else
@@ -2551,8 +2551,8 @@ declare function f:pathMultiCompare($items as item()*,
         if ($reportNames) then 'namesNotInAll'
         else 'pathsNotInAll'
     let $elemName_root :=
-        if ($reportNames) then 'nameMultiCompare'
-        else 'pathMultiCompare'
+        if ($reportNames) then 'nameMultiDiff'
+        else 'pathMultiDiff'
         
     let $fnPath := 
         if ($indexed) then f:indexedNamePath#3

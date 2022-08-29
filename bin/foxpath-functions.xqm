@@ -969,27 +969,26 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:nameContent($contextNodes, $namesFilter, $options)
 
-        (: function `name-compare` 
-           ======================= :)
-        else if ($fname = (
-                'name-compare', 'name-compare-ec')) then
+        (: function `name-diff` 
+           ==================== :)
+        else if ($fname = ('name-diff', 'name-diff-ec')) then
             let $da := if (ends-with($fname, '-ec')) then 1 else 0
             let $items := (
                 $context[$da eq 0],
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
             let $fnOptions := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:nameCompare($items, $fnOptions)
+            return foxf:nameDiff($items, $fnOptions)
 
-        (: function `name-multi-compare` 
-           ============================= :)
-        else if ($fname = ('name-multi-compare', 'name-multi-compare-ec')) then   
+        (: function `name-multi-diff` 
+           ========================== :)
+        else if ($fname = ('name-multi-diff', 'name-multi-diff-ec')) then   
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0   
             let $items := (
                 $context[$da eq 0],
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
             let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $options := string-join(($options, 'report-names'), ' ')
-            return foxf:pathMultiCompare($items, $options)
+            return foxf:pathMultiDiff($items, $options)
 
         (: function `name-path` 
            =================== :)
@@ -1144,16 +1143,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:parentName($node, 'lname')            
 
-        (: function `parent-name` 
-           ====================== :)
-        (:
-        else if ($fname eq 'parent-name') then
-            let $node := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]
-            return
-                foxf:parentName($node, 'name')            
-:)
         (: function `path-diff` 
            ======================= :)
         else if ($fname = (
@@ -1167,15 +1156,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $options:= $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return foxf:pathDiff($item1, $item2, $options)
 
-        (: function `path-multi-compare` 
-           ============================= :)
-        else if ($fname = ('path-multi-compare', 'path-multi-compare-ec')) then   
+        (: function `path-multi-diff` 
+           ========================== :)
+        else if ($fname = ('path-multi-diff', 'path-multi-diff-ec')) then   
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0   
             let $items := (
                 $context[$da eq 0],
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
             let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:pathMultiCompare($items, $options)
+            return foxf:pathMultiDiff($items, $options)
 
         (: function `path-content` 
            ======================= :)

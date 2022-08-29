@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="name-diff">
+    <testenviron> In order to try out the examples, start a command shell and move to folder
+        $FOXPATH/examples-functions/name-diff. </testenviron>
+    <examples>
+        <example>
+            <description> 
+                Compare two sibling files. 
+            </description>
+            <code> 
+                fox "data/msg1.xml/name-diff(../msg2.xml)" 
+            </code>
+        </example>
+        <example>
+            <description> 
+                Equivalent to the first example. </description>
+            <code> 
+                fox "data/(msg1.xml, msg2.xml) => name-diff-ec()" 
+            </code>
+        </example>
+        <example>
+            <description> 
+                Get a list of names used in both files. 
+            </description>
+            <code> 
+                fox "data/(msg1.xml, msg2.xml) => name-diff-ec('common')" 
+            </code>
+        </example>
+        <example>
+            <description> 
+                Get a list of names used in both files, as well as names used in only one
+                file. 
+            </description>
+            <code> 
+                fox "data/(msg1.xml, msg2.xml) => name-diff-ec('common uncommon')" 
+            </code>
+        </example>
+        <example>
+            <description> 
+                Get a list of names used only in the second file. 
+            </description>
+            <code> 
+                fox "data/(msg1.xml, msg2.xml) => name-diff-ec('only2')" 
+            </code>
+        </example>
+    </examples>
+</function-usage>

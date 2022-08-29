@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<function-usage function="path-multi-compare">
+<function-usage function="path-multi-diff">
     <testenviron>
         In order to try out the examples, start a command shell and 
-        move to folder $FOXPATH/examples-functions/path-multi-compare.
+        move to folder $FOXPATH/examples-functions/path-multi-diff.
     </testenviron>
     <examples>
         <example>
@@ -10,7 +10,7 @@
                 Check a set of documents for common/uncommon data paths.
             </description>
             <code>
-                fox "data/airports*.xml => path-multi-compare()"
+                fox "data/airports*.xml => path-multi-diff()"
             </code>
         </example>
         <example>
@@ -18,7 +18,7 @@
                 Restrict the report to paths not occurring in all documents.
             </description>
             <code>
-                fox "data/airports*.xml => path-multi-compare('uncommon')"
+                fox "data/airports*.xml => path-multi-diff('uncommon')"
             </code>
         </example>
         <example>
@@ -27,7 +27,7 @@
                 contained and not contained by all other documents.
             </description>
             <code>
-                fox "data/airports*.xml => path-multi-compare('details')"
+                fox "data/airports*.xml => path-multi-diff('details')"
             </code>
         </example>
         <example>
@@ -35,7 +35,7 @@
                 Report indexed paths, rather than index-less paths.
             </description>
             <code>
-                fox "data/airports*.xml => path-multi-compare('indexed uncommon')"
+                fox "data/airports*.xml => path-multi-diff('indexed uncommon')"
             </code>
         </example>
         <example>
@@ -43,11 +43,11 @@
                 Get a complete report in which documents are described by file names, rather than URIs.
             </description>
             <code>
-                fox "data/airports*.xml => path-multi-compare('fname')"
+                fox "data/airports*.xml => path-multi-diff('fname')"
             </code>
         </example>
     </examples>        
     <seealso>
-        Related functions are name-multi-compare, path-compare, node-deep-equal and node-deep-similar.
+        Related functions are name-multi-diff, path-diff, node-deep-equal and node-deep-similar.
     </seealso>
 </function-usage>
