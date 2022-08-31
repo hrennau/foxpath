@@ -2267,18 +2267,21 @@ declare function f:parentName($node as node(),
 (:~
  : Compares two documents or nodes with respect to the names which they contain.
  :
- : @param doc1 a document, or its document URI
- : @param doc2 another document, or its document URI
+ : Options: name, lname, jname, only1, only2, uncommon, common, fname.
+ :
+ : @param docs two nodes or document URIs
  : @param options options controling the comparison 
  : @return if no difference, the empty sequence; otherwise a report
  :   describing the differences
  : 
  :)
 declare function f:nameDiff($docs as item()*,
-                            $options as xs:string?)
+                            $options as xs:string?,
+                            $extFuncName as xs:string?)
         as item()? {
     if (count($docs) gt 2) then error(QName((), 'INVALID_CALL'), 
-        'INVALID_CALL; names-compare cannot compare more than two documents; #documents: '||count($docs))        
+        'INVALID_CALL; name-diff cannot compare more than two documents; '||
+        '#documents: '||count($docs))        
     else
 
     let $d1 := $docs[1] ! (if (. instance of node()) then . else i:fox-doc(., ()))
@@ -2287,12 +2290,16 @@ declare function f:nameDiff($docs as item()*,
         if (count(($d1, $d2)) lt 2) then () 
         else if (deep-equal($d1, $d2)) then () else
     
-    let $ops := $options ! tokenize(.) ! lower-case(.)
+    let $ops := f:getOptions($options, 
+        ('lname', 'jname', 'name', 'all', 'only1', 'only2', 'common', 'uncommon', 'fname'),
+        $extFuncName)
     let $fname := $ops = 'fname'
     let $nameKind := ($ops[. = ('lname', 'jname', 'name')][1], 'lname')[1]  
     let $scope := 
-        let $raw := $ops[. = ('only1', 'only2', 'common', 'uncommon')]
-        return if (exists($raw)) then $raw else 'uncommon'    
+        if ($ops = 'all') then ('only1', 'only2', 'common', 'uncommon')
+        else
+            let $raw := $ops[. = ('only1', 'only2', 'common', 'uncommon')]
+            return if (exists($raw)) then $raw else 'uncommon'    
     let $fn_name := 
         if ($nameKind eq 'name') then f:aname#1
         else if ($nameKind eq 'jname') then f:jname#1
@@ -2300,13 +2307,11 @@ declare function f:nameDiff($docs as item()*,
     let $names1 :=
         for $item in $d1/f:allDescendants(.)
         group by $name := $item/$fn_name(.)
-        order by $name
-        return $name
+        order by $name return $name
     let $names2 :=
         for $item in $d2/f:allDescendants(.)
         group by $name := $item/$fn_name(.)
-        order by $name
-        return $name
+        order by $name return $name
     let $common := $names1[. = $names2]
     let $only1 := $names1[not(. = $names2)]
     let $only2 := $names2[not(. = $names1)]
@@ -2325,11 +2330,11 @@ declare function f:nameDiff($docs as item()*,
         <nameDiff scope="{$scope}">{
             $docids,
             if (empty($only1) or not($scope = ('only1', 'uncommon'))) then () else
-            <only1 count="{count($only1)}">{$only1 ! <loc name="{.}"/>}</only1>,
+            <only1 count="{count($only1)}">{$only1 ! <item name="{.}"/>}</only1>,
             if (empty($only2) or not($scope = ('only2', 'uncommon'))) then () else
-            <only2 count="{count($only2)}">{$only2 ! <loc name="{.}"/>}</only2>,
+            <only2 count="{count($only2)}">{$only2 ! <item name="{.}"/>}</only2>,
             if (not($scope = 'common')) then () else
-            <common count="{count($common)}">{$common ! <loc name="{.}"/>}</common>
+            <common count="{count($common)}">{$common ! <item name="{.}"/>}</common>
         }</nameDiff>
 };
 
@@ -2364,11 +2369,36 @@ declare function f:nameDiff($docs as item()*,
  :   the paths occurring only in document 1 or 2, respectively
  : 
  :)
-declare function f:pathDiff($doc1 as item(),
-                            $doc2 as item(),
-                            $options as xs:string?)
+declare function f:pathDiff($docs as item()*,
+                            $options as xs:string?,
+                            $extFuncName as xs:string?)
         as item()? {
-    let $ops := $options ! tokenize(.)        
+    if (count($docs) ne 2) then 
+        let $msg :=
+            if (count($docs) eq 1) then (
+                'Function '||$extFuncName||' compares two documents, but only '||
+                'one document has been supplied')
+            else (
+                'Function '||$extFuncName||' compares exactly two documents, '||
+                'but more documents have been supplied ('||count($docs)||').')
+ 
+        return error(QName((), 'INVALID_CALL'), $msg)        
+    else
+
+    let $d1 := $docs[1] ! (if (. instance of node()) then . else i:fox-doc(., ()))
+    let $d2 := $docs[2] ! (if (. instance of node()) then . else i:fox-doc(., ()))
+        
+    let $ops := f:getOptions($options, 
+        ('lname', 'jname', 'name', 
+         'path', 'path-count', 'indexed', 'indexed-value',
+         'all', 'common', 'uncommon',
+         'keep-ws', 'fname', 'always'),
+        $extFuncName)
+        
+    let $scope := 
+        let $raw := $ops[. = ('all', 'common', 'uncommon')]
+        return if (exists($raw)) then $raw else 'uncommon'    
+        
     let $fn_name := 
         if ($ops = 'name') then function($node) {$node/name(.)}
         else if ($ops = 'jname') then function($node) {$node/local-name(.) ! convert:decode-key(.)}
@@ -2377,14 +2407,9 @@ declare function f:pathDiff($doc1 as item(),
     let $nameKind := ($ops[. = ('lname', 'name', 'jname')][1], 'lname')[1]
     let $keepws := $ops = 'keep-ws'
     let $useFname := $ops = 'fname'    
-    let $reportAlways := $ops = 'always'
-    let $d1 := if ($doc1 instance of node()) then $doc1 else i:fox-doc($doc1, ())
-    let $d2 := if ($doc2 instance of node()) then $doc2 else i:fox-doc($doc2, ())
-    
+    let $reportAlways := 'always'    
     let $d1 := if ($keepws) then $d1 else $d1 ! util:prettyNode(., ())
     let $d2 := if ($keepws) then $d2 else $d2 ! util:prettyNode(., ())
-    return if (deep-equal($d1, $d2)) then () else
-    
     let $docids :=
         let $baseUris := ($d1, $d2)/base-uri(.) return
             if ($useFname) then (
@@ -2409,9 +2434,11 @@ declare function f:pathDiff($doc1 as item(),
                 return $path||'#'||count($item)
             let $paths1NA := $paths1 ! replace(., '#\d+$', '')                
             let $paths2NA := $paths2 ! replace(., '#\d+$', '')
-            let $only1 := $paths1NA[not(. = $paths2NA)]
-            let $only2 := $paths2NA[not(. = $paths1NA)]
-            let $annoDiff :=
+            let $only1 := if (not($scope = ('all', 'uncommon'))) then () 
+                          else $paths1NA[not(. = $paths2NA)]
+            let $only2 := if (not($scope = ('all', 'uncommon'))) then () 
+                          else $paths2NA[not(. = $paths1NA)]
+            let $annoDiff := if (not($scope = ('all', 'uncommon'))) then () else
                 for $path in $paths1
                 let $pathNA := $path ! replace(., '#\d+$', '')
                 where not($pathNA = $only1)
@@ -2421,38 +2448,45 @@ declare function f:pathDiff($doc1 as item(),
                     let $anno2 := replace($path2, '.+#', '')
                     where $anno1 ne $anno2
                     return
-                        <loc path="{$pathNA}" count1="{$anno1}" count2="{$anno2}"/>
-            return
+                        <item path="{$pathNA}" count1="{$anno1}" count2="{$anno2}"/>
+            let $common := if (not($scope = ('all', 'common'))) then () else
+                    for $path in $paths1[. = $paths2]
+                    let $pathNA := replace($path, '#.*', '')
+                    let $count := substring-after($path, '#')
+                    return <item path="{$pathNA}" count="{$count}"/>
+            return (
                 if (empty(($only1, $only2, $annoDiff))) then ()
                 else (
                     if (empty($only1)) then () else
-                    <only1 count="{count($only1)}">{$only1 ! <loc path="{.}"/>}</only1>,
+                    <only1 count="{count($only1)}">{$only1 ! <item path="{.}"/>}</only1>,
                     if (empty($only2)) then () else
-                    <only2 count="{count($only2)}">{$only2 ! <loc path="{.}"/>}</only2>,
+                    <only2 count="{count($only2)}">{$only2 ! <item path="{.}"/>}</only2>,
                     if (empty($annoDiff)) then () else
-                    <pathCountDiff>{
-                        $annoDiff
-                    }</pathCountDiff>                        
-                )
+                    <pathCountDiff>{$annoDiff}</pathCountDiff>                        
+                ),
+                if (not($common)) then () else <common>{$common}</common>
+           )
 
         case "indexed-value" return
             let $paths1 :=
                 for $item in $d1/f:allDescendants(.)
                 let $path := f:indexedNamePath($item, (), $nameKind)
                 return
-                    if ($path instance of attribute()) then $path||$item/concat('#', .)
+                    if ($item instance of attribute()) then $path||$item/concat('#', .)
                     else $path||$item[text()]/concat('#', string-join(text(), ''))
             let $paths2 :=
                 for $item in $d2/f:allDescendants(.)
                 let $path := f:indexedNamePath($item, (), $nameKind)
                 return
-                    if ($path instance of attribute()) then $path||$item/concat('#', .)
+                    if ($item instance of attribute()) then $path||$item/concat('#', .)
                     else $path||$item[text()]/concat('#', string-join(text(), ''))
             let $paths1NA := $paths1 ! replace(., '^(.*?)#.*', '$1', 's')                
             let $paths2NA := $paths2 ! replace(., '^(.*?)#.*', '$1', 's')
-            let $only1 := $paths1NA[not(. = $paths2NA)]
-            let $only2 := $paths2NA[not(. = $paths1NA)]
-            let $annoDiff :=
+            let $only1 := if (not($scope = ('all', 'uncommon'))) then ()
+                          else $paths1NA[not(. = $paths2NA)]
+            let $only2 := if (not($scope = ('all', 'uncommon'))) then ()
+                          else $paths2NA[not(. = $paths1NA)]
+            let $annoDiff := if (not($scope = ('all', 'uncommon'))) then () else
                 for $path in $paths1
                 let $pathNA := $path ! replace(., '^(.*?)#.*', '$1', 's')
                 where not($pathNA = $only1)
@@ -2463,7 +2497,12 @@ declare function f:pathDiff($doc1 as item(),
                     where ($path||$path2) ! contains(., '#') and $anno1 ne $anno2
                     return
                         <loc path="{$pathNA}" value1="{$anno1}" value2="{$anno2}"/>
-            return
+            let $common := if (not($scope = ('all', 'common'))) then () else
+                    for $path in $paths1[. = $paths2]
+                    let $pathNA := replace($path, '#.*', '')
+                    let $value := substring-after($path, '#')
+                    return <item path="{$pathNA}" value="{$value}"/>                        
+            return (
                 if (empty(($only1, $only2, $annoDiff))) then ()
                 else (
                     if (empty($only1)) then () else
@@ -2474,22 +2513,31 @@ declare function f:pathDiff($doc1 as item(),
                     <pathValueDiff>{
                         $annoDiff
                     }</pathValueDiff>
-                )                        
+                ),
+                if (not($common)) then () else <common>{$common}</common>
+           )
 
         (: path | indexed :)
         default return
             let $fnNamePath := if ($cmpType eq 'indexed') then f:indexedNamePath#3 else f:namePath#3
             let $paths1 := $d1/f:allDescendants(.)/$fnNamePath(., (), $nameKind) => distinct-values() => sort()
             let $paths2 := $d2/f:allDescendants(.)/$fnNamePath(., (), $nameKind) => distinct-values() => sort()
-            let $only1 := $paths1[not(. = $paths2)]
-            let $only2 := $paths2[not(. = $paths1)]            
-            return
+            let $only1 := if (not($scope = ('all', 'uncommon'))) then ()
+                          else $paths1[not(. = $paths2)]
+            let $only2 := if (not($scope = ('all', 'uncommon'))) then ()
+                          else $paths2[not(. = $paths1)]   
+            let $common :=
+                if (not($scope = ('all', 'common'))) then () 
+                else $paths1[. = $paths2] ! <item path="{.}"/>
+            return (
                 if (empty($only1) and empty($only2)) then () else (
                     if (empty($only1)) then () else
                     <only1 count="{count($only1)}">{$only1 ! <loc path="{.}"/>}</only1>,
                     if (empty($only2)) then () else
                     <only2 count="{count($only2)}">{$only2 ! <loc path="{.}"/>}</only2>
-                )
+                ),
+                if (not($common)) then () else <common>{$common}</common>
+            )                
     return
         if (empty($reportContent) and not($reportAlways)) then () else
         <pathDiff comparisonType="{$cmpType}">{
@@ -2527,13 +2575,18 @@ declare function f:pathDiff($doc1 as item(),
  :   ~uncommon - exclude: data paths not contained by all input nodes
  :   ~details - exclude: for each input node the uncommon paths it contains
  :)
-declare function f:pathMultiDiff($items as item()*,
-                                 $options as xs:string?)
+declare function f:pathMultiDiff($items as item()*,                                 
+                                 $options as xs:string?, 
+                                 $extFuncName as xs:string)
         as item()? {
     let $count := count($items)
-    return if ($count lt 2) then () else
+    return if ($count lt 2) then () else    
     
-    let $options := $options ! tokenize(.) ! lower-case(.)
+    let $options := f:getOptions($options, 
+        ('lname', 'jname', 'name', 
+         'docs', 'common', 'uncommon', 'details', '~docs', '~common', '~uncommon', '~details',
+         'indexed', 'fname'),
+        $extFuncName)
     let $nameKind := ($options[. = ('lname', 'jname', 'name')][1], 'lname')[1]  
     let $scopeDefault := ('docs', 'common', 'uncommon', 'details')
     let $scope := $options[. = $scopeDefault]
@@ -3452,6 +3505,7 @@ declare function f:writeDoc($item as item()*,
                             $filePath as xs:string?,
                             $options as xs:string?)
         as empty-sequence() {
+    let $_DEBUG := trace($filePath, '_FILEPATH: ')        
     let $ops := $options ! tokenize(.)        
     let $inputNode :=
         if ($item instance of node()) then $item else i:fox-doc($item, ())
@@ -3870,9 +3924,12 @@ declare function f:xwrap($items as item()*,
 (:~
  : Validates a set of documents against an XSD.
  :)
-declare function f:xsdValidate($docs as item()+,
-                               $xsds as item()+)
+declare function f:xsdValidate($docs as item()*,
+                               $xsds as item()*)
         as element() {
+    if (empty($xsds)) then error(QName((), 'INVALID_CALL'), 'Function validate-xsd - no XSDs specified')
+    else
+    
     let $xsdNodes :=
         for $xsd in $xsds return 
             if ($xsd instance of node()) then descendant-or-self::xs:schema[1]
@@ -3884,9 +3941,13 @@ declare function f:xsdValidate($docs as item()+,
             else doc($doc)/*
         let $uri := $docNode/namespace-uri(.)
         let $lname := $docNode/local-name(.)
-        let $myxsds := $xsdNodes
-            [if (not($uri)) then not(@targetNamespace) else $uri eq @targetNamespace]
-            [xs:element/@name = $lname]
+        let $myxsds := 
+            let $raw := $xsdNodes
+                [if (not($uri)) then not(@targetNamespace) else $uri eq @targetNamespace]
+                [xs:element/@name = $lname]
+            return
+                if (exists($raw)) then $raw else $xsdNodes[1]
+        let $_DEBUG := trace($myxsds/base-uri(.), '#XSD-BASEURI: ')                
         let $result :=
             if (count($myxsds) gt 1) then <status>xsd_ambiguous</status>
             else if (not($myxsds)) then <status>xsd_nofind</status>
@@ -4250,6 +4311,21 @@ declare function f:getUserInputAttributes($options as map(*)) as attribute()* {
     map:keys($options)[not(starts-with(., '_'))] ! attribute {.} {$options(.)}
 };
 
+declare function f:getOptions($options as xs:string*, 
+                              $validOptions as xs:string*,
+                              $functionName as xs:string)
+        as xs:string* {
+    let $ops := $options ! tokenize(.) ! lower-case(.)        
+    let $invalid := $ops[not(. = $validOptions)]
+    return
+        if (empty($invalid)) then $ops else
+            let $text1 :=
+                if (count($invalid) eq 1) then 'invalid option ('||$invalid||')'
+                else 'invalid options ('||string-join($invalid, ', ')||')'
+            return error(QName((), 'UNKNOWN_OPTION'), concat(
+                'Function "', $functionName, '" - ', $text1,  
+                '; valid options: ', string-join($validOptions, ', '), '.'))
+};        
 
 (:
 ##################################################################################################

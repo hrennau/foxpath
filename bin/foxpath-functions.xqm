@@ -245,21 +245,29 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `csv-doc` 
            =================== :)
-        else if ($fname = ('csv-doc', 'cdoc')) then        
-            let $uri := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]
-            let $separator := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $header := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
-            let $names := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $quotes := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
-            let $backslashes := $call/*[6]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $_DEBUG := trace($context, '_CONTEXT: ')
-            let $_DEBUG := trace($uri, '_URI: ')
-            let $_DEBUG := trace($header, '_HEADER: ') 
-            let $_DEBUG := trace($separator, '_SEPARATOR: ')
+        else if ($fname = ('csv-doc', 'cdoc', 'csv-doc-ec', 'cdoc-ec', 'csv-parse', 'csv-parse-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0
+            let $parse := contains($fname, 'parse')
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $uriOrText := if ($da) then $arg1 else $context
+            let $uri := if ($parse) then () else $uriOrText
+            let $text := if (not($parse)) then () else $uriOrText
+            let $separator := $call/*[$da + 1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $header := $call/*[$da + 2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $names := $call/*[$da + 3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $quotes := $call/*[$da + 4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $backslashes := $call/*[$da + 5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                if (empty($separator)) then i:fox-csv-doc($uri, $options)
+                if ($parse) then
+                    let $funcOps := map:merge((
+                        $separator ! map:entry('separator', .),
+                        $header ! map:entry('header', .),
+                        $names ! map:entry('format', .),
+                        $quotes ! map:entry('quotes', .),
+                        $backslashes ! map:entry('backslashes', .)
+                    ))
+                    return csv:parse($text, $funcOps)
+                else if (empty($separator)) then i:fox-csv-doc($uri, $options)
                 else if (empty($header)) then i:fox-csv-doc($uri, $separator, $options)
                 else if (empty($names)) then i:fox-csv-doc($uri, $separator, $header, $options)
                 else if (empty($quotes)) then i:fox-csv-doc($uri, $separator, $header, $names, $options)
@@ -977,7 +985,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 $context[$da eq 0],
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
             let $fnOptions := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:nameDiff($items, $fnOptions)
+            return foxf:nameDiff($items, $fnOptions, $fname)
 
         (: function `name-multi-diff` 
            ========================== :)
@@ -988,7 +996,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
             let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $options := string-join(($options, 'report-names'), ' ')
-            return foxf:pathMultiDiff($items, $options)
+            return foxf:pathMultiDiff($items, $options, $fname)
 
         (: function `name-path` 
            =================== :)
@@ -1147,14 +1155,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
            ======================= :)
         else if ($fname = (
                 'path-diff', 'path-diff-ec')) then
-            let $da := if (f:hasExplicitContext($fname)) then 1 else 0                 
-            let $item1 := if ($da eq 0) then $context else
-                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $item2 := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            (: options: name lname jname 
-                        plain indexed plain-count indexed-value :)
-            let $options:= $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:pathDiff($item1, $item2, $options)
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0 
+            let $items := (
+                $context[$da eq 0],
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
+            let $fnOptions := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:pathDiff($items, $fnOptions, $fname)
 
         (: function `path-multi-diff` 
            ========================== :)
@@ -1164,7 +1170,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 $context[$da eq 0],
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
             let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:pathMultiDiff($items, $options)
+            return foxf:pathMultiDiff($items, $options, $fname)
 
         (: function `path-content` 
            ======================= :)

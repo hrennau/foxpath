@@ -43,5 +43,14 @@
                 fox "data/(msg1.xml, msg2.xml) => name-diff-ec('only2')" 
             </code>
         </example>
+        <example type="tip">
+            <desceiption>
+                Compare two files, ignoring attributes. Such restricted comparisons
+                can be achieved by applying to the input nodes function 'delete-nodes'.
+            </desceiption>
+            <code>
+                fox "data/(msg1.xml, msg2.xml)/delete-nodes('\\@*') => name-diff-ec()"
+            </code>
+        </example>
     </examples>
 </function-usage>

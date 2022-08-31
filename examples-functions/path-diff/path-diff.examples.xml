@@ -70,6 +70,23 @@
                 fox "data/airports.xml/path-diff(../airports.new-elem.xml, 'fname')"
             </code>
         </example>
+        <example>
+            <description>
+                Compare two documents, report only the paths which they have in common.
+            </description>
+            <code>
+                fox "data/airports.xml/path-diff(../airports.renamed-elem.xml, 'common')"
+            </code>
+        </example>
+        <example>
+            <description>
+                Compare two documents, report the paths found in only one of them, as well
+                as the paths found in both.
+            </description>
+            <code>
+                fox "data/airports.xml/path-diff(../airports.renamed-elem.xml, 'all')"
+            </code>
+        </example>
     </examples>        
     <seealso>
         Related functions are name-diff, path-multi-diff, node-deep-equal and node-deep-similar.

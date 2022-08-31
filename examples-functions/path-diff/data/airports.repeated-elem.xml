@@ -2,6 +2,7 @@
   <airport id="417" iata="ENF" icao="EFET" latitude="68.362602233887" longitude="23.424299240112" href="finland/airport-enf.xml"/>
   <airport id="418" icao="EFEU">
     <name>Eura Airport</name>
+    <alias>EAport</alias>
     <city>Eura</city>
     <country>Finland</country>
     <geo>
