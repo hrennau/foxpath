@@ -13,6 +13,15 @@
                 fox "data/airports01.xml/xsd-validate(../../xsd/airports.xsd)"
             </code>
         </example>
+        <example tag="single-doc-multiple-schema">
+            <description>
+                Validate a single document against a set of schemas. The
+                appropriate schema is selected automatically.
+            </description>
+            <code>
+                fox "data/airports01.xml/xsd-validate(../../xsd/*.xsd)"
+            </code>
+        </example>
     </examples>        
     <seealso>
     </seealso>
