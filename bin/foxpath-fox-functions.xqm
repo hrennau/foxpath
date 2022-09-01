@@ -3947,7 +3947,6 @@ declare function f:xsdValidate($docs as item()*,
                 [xs:element/@name = $lname]
             return
                 if (exists($raw)) then $raw else $xsdNodes[1]
-        let $_DEBUG := trace($myxsds/base-uri(.), '#XSD-BASEURI: ')                
         let $result :=
             if (count($myxsds) gt 1) then <status>xsd_ambiguous</status>
             else if (not($myxsds)) then <status>xsd_nofind</status>

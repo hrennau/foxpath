@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="xsd-validate">
+    <testenviron>
+        In order to try out the examples, start a command shell and 
+        move to folder $FOXPATH/examples-functions/xsd-validate.
+    </testenviron>
+    <examples>
+        <example tag="single-doc-single-schema">
+            <description>
+                Validate a single document against a single schema.
+            </description>
+            <code>
+                fox "data/airports01.xml/xsd-validate(../../xsd/airports.xsd)"
+            </code>
+        </example>
+    </examples>        
+    <seealso>
+    </seealso>
+</function-usage>

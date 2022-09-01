@@ -980,7 +980,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `name-diff` 
            ==================== :)
         else if ($fname = ('name-diff', 'name-diff-ec')) then
-            let $da := if (ends-with($fname, '-ec')) then 1 else 0
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
             let $items := (
                 $context[$da eq 0],
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
@@ -1681,10 +1681,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
             
         (: function `xsd-validate` 
            ===================== :)
-        else if ($fname = ('xsd-validate', 'xval')) then
+        else if ($fname = ('xsd-validate', 'xval', 'xsd-validate-ec', 'xval-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)  
-            return foxf:xsdValidate($arg1, $arg2)
+            let $docs := if ($da) then $arg1 else $context
+            let $xsds := if (not($da)) then $arg1 else
+                         $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)  
+            return foxf:xsdValidate($docs, $xsds)
             
         (: function `xwrap` 
            ==================== :)
