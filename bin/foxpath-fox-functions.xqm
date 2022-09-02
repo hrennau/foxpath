@@ -3925,21 +3925,28 @@ declare function f:xwrap($items as item()*,
  : Validates a set of documents against an XSD.
  :)
 declare function f:xsdValidate($docs as item()*,
-                               $xsds as item()*)
+                               $xsds as item()*,
+                               $options as xs:string?)
         as element() {
     if (empty($xsds)) then error(QName((), 'INVALID_CALL'), 'Function validate-xsd - no XSDs specified')
     else
-    
+
+    let $ops := f:getOptions($options, ('fname'), 'xsd-validate')
+    let $useFname := $ops = 'fname'    
+    let $fnIdentAtt :=
+        if ($useFname) then function($uri) {attribute file-name {replace($uri, '.*/', '')}}
+        else function($uri) {attribute uri {$uri}}
     let $xsdNodes :=
         for $xsd in $xsds return 
-            if ($xsd instance of node()) then descendant-or-self::xs:schema[1]
+            if ($xsd instance of node()) then $xsd/descendant-or-self::xs:schema[1]
             else doc($xsd)/*
     let $reports := 
         for $doc in $docs
         let $docNode :=
-            if ($doc instance of node()) then descendant-or-self::xs:schema[1]
+            if ($doc instance of node()) then $doc
             else doc($doc)/*
         let $uri := $docNode/namespace-uri(.)
+        let $docPath := $doc[. instance of node()]/f:indexedNamePath($doc, (), ())
         let $lname := $docNode/local-name(.)
         let $myxsds := 
             let $raw := $xsdNodes
@@ -3950,18 +3957,19 @@ declare function f:xsdValidate($docs as item()*,
         let $result :=
             if (count($myxsds) gt 1) then <status>xsd_ambiguous</status>
             else if (not($myxsds)) then <status>xsd_nofind</status>
-            else validate:xsd-report($doc, $myxsds/base-uri(.))
+            else validate:xsd-report($doc, $myxsds/base-uri(.))/*
         let $docuri := if (not($doc instance of node())) then $doc else base-uri($doc)
         return 
-            <validationReport doc="{$docuri}" xsd="{$myxsds/base-uri(.)}">{
-                if ($result/self::status) then $result
-                else $result/*
+            <validationReport>{
+                $fnIdentAtt($docuri),
+                $docPath ! attribute nodePath {.}, 
+                attribute xsd {$myxsds/base-uri(.)},
+                $result
             }</validationReport>
     let $messagesDistinct :=
         for $message in $reports//message
         group by $text := string($message)
-        return
-            <message count="{count($message)}">{$text}</message>
+        return <message count="{count($message)}">{$text}</message>
     let $reports2 :=
         if (count($reports) gt 1) then 
             let $invalid := $reports[status eq 'invalid']
@@ -3979,16 +3987,26 @@ declare function f:xsdValidate($docs as item()*,
                     <distinctMessages count="{count($messagesDistinct)}">{$messagesDistinct}</distinctMessages>,
                     if (count($reports) eq 1) then $reports
                     else (
-                        <invalid count="{count($invalid)}">{$invalid}</invalid>[count($invalid) gt 0],
+                        <invalid count="{count($invalid)}">{
+                            for $doc in $invalid 
+                            let $ename := if ($doc/@nodePath) then 'node' else 'doc'
+                            return element {$ename} {$doc/(@uri, @file-name, @nodePath, $doc/*)}
+                        }</invalid>[count($invalid) gt 0],
                         <valid count="{count($valid)}">{
-                            $valid/@doc ! <doc>{string()}</doc>
+                            for $doc in $valid 
+                            let $ename := if ($doc/@nodePath) then 'node' else 'doc'
+                            return element {$ename} {$doc/(@uri, @file-name, @nodePath)}
                         }</valid>,
                         if (empty($nofind)) then () else
                         <nofind count="{count($nofind)}">{
-                            $nofind/@doc ! <doc>{string()}</doc>
+                            for $doc in $nofind 
+                            let $ename := if ($doc/@nodePath) then 'node' else 'doc'
+                            return element {$ename} {$doc/(@uri, @file-name, @nodePath)}
                         }</nofind>,
                         <ambiguous count="{count($ambiguous)}">{
-                            $ambiguous/@doc ! <doc>{string()}</doc>
+                            for $doc in $ambiguous 
+                            let $ename := if ($doc/@nodePath) then 'node' else 'doc'
+                            return element {$ename} {$doc/(@uri, @file-name,  @nodePath)}
                         }</ambiguous>
                     )
                 }</validationReports>

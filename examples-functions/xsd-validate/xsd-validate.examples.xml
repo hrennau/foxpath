@@ -5,7 +5,7 @@
         move to folder $FOXPATH/examples-functions/xsd-validate.
     </testenviron>
     <examples>
-        <example tag="single-doc-single-schema">
+        <example tag="Single doc, single schema">
             <description>
                 Validate a single document against a single schema.
             </description>
@@ -13,13 +13,55 @@
                 fox "data/airports01.xml/xsd-validate(../../xsd/airports.xsd)"
             </code>
         </example>
-        <example tag="single-doc-multiple-schema">
+        <example tag="Single doc, multiple schemas">
             <description>
                 Validate a single document against a set of schemas. The
                 appropriate schema is selected automatically.
             </description>
             <code>
                 fox "data/airports01.xml/xsd-validate(../../xsd/*.xsd)"
+            </code>
+        </example>
+        <example tag="Multiple docs, multiple schemas">
+            <description>
+                Validate a set of documents against a set of schemas. For each
+                document, the appropriate schema is selected automatically.
+            </description>
+            <code>
+                fox "data/airport*.xml => xsd-validate-ec(xsd/*.xsd)"
+            </code>
+        </example>
+        <example tag="Schema nodes, not URIs">
+            <description>
+                Validate a set of documents against a set of schema nodes,
+                supplied as nodes, rather than URIs.
+            </description>
+            <code>
+                fox "data/airport*.xml => xsd-validate-ec(xsd/*.xsd\xs:schema)"
+            </code>
+        </example>
+        <example tag="Display file name">
+            <description>
+                Validate documents; the report should use file names, rather than URIs.
+            </description>
+            <code>
+                fox "data/airport*.xml => xsd-validate-ec(xsd/*.xsd, 'fname')"
+            </code>
+        </example>
+        <example tag="Validate inner nodes">
+            <description>
+                Validate selected inner nodes, not documents.
+            </description>
+            <code>
+                fox "data/airports02.xml\\airport[*] => xsd-validate-ec(xsd/*.xsd, 'fname')"
+            </code>
+        </example>
+        <example tag="Validate inner nodes from multiple documents">
+            <description>
+                Validate selected inner nodes extracted from multiple documents.
+            </description>
+            <code>
+                fox "data/airports*.xml\\airport[city = 'Kikala'] => xsd-validate-ec(xsd/*.xsd, 'fname')"
             </code>
         </example>
     </examples>        

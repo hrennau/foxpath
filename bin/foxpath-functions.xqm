@@ -1686,8 +1686,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $docs := if ($da) then $arg1 else $context
             let $xsds := if (not($da)) then $arg1 else
-                         $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)  
-            return foxf:xsdValidate($docs, $xsds)
+                         $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:xsdValidate($docs, $xsds, $fnOptions)
             
         (: function `xwrap` 
            ==================== :)
