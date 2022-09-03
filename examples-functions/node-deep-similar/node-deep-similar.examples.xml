@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="node-deep-similar">
+    <testenviron> In order to try out the examples, start a command shell and move to folder
+        $FOXPATH/examples-functions/node-deep-similar. </testenviron>
+    <examples>        
+        <example tag="Without exclusion">
+            <description>
+                Compare two sibling files. The function treats the context item as an input item and the argument 
+                as other items with which to compare. As we do not yet exclude any nodes from the comparison,
+                the call is equivalent to a call of function node-deep-equal.
+            </description>
+            <code>
+                fox "msgs/msg1.xml/node-deep-similar(../msg2.xml)"
+            </code>
+        </example>
+        <example tag="One excluding expression">
+            <description>
+                Compare two sibling files. When comparing, ignore any @latitude attributes.
+            </description>
+            <code>
+                fox "msgs/msg1.xml/node-deep-similar(../msg2.xml, '\\@latitude')"
+            </code>
+        </example>
+        <example tag="Two excluding expressions">
+            <description>
+                Compare two sibling files. When comparing, ignore any @latitude attributes,
+                also ignore the 'airport' element with @icao equal 'EKAC'.
+            </description>
+            <code>
+                fox "msgs/msg1.xml/node-deep-similar(../msg3.xml, '\\@latitude', '\\airport[@icao eq """"EKAC""""]')"
+            </code>
+        </example>
+        <example tag="Compare multiple documents, using several excluding expressions.">
+            <description>
+                Compare a set of documents, ignoring (a) airports/@variant, (b) airport/@source2, (c) all 'city' 
+                child elements of 'airport' except of the first one.            
+            </description>
+            <code>
+                fox "airports/*.xml => node-deep-similar-ec('\airports\@variant', '\\airport\source2', '\\airport\city[position() gt 1]')"
+            </code>
+        </example>
+    </examples>
+</function-usage>

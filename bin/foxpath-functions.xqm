@@ -1029,7 +1029,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 $context[$da eq 0],
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
             let $excludeExprs := 
-                $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                for $i in 2 to count($call/*) return
+                    $call/*[$i]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:nodesDeepSimilar($items, $excludeExprs, $options)
                             

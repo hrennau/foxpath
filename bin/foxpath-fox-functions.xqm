@@ -484,8 +484,8 @@ declare function f:nodePairDeepSimilar($node1 as node(),
                     delete nodes $delNodes
         return $node_
     }
-    let $n1 := $fnPrune($node1)
-    let $n2 := $fnPrune($node2)
+    let $n1 := $fnPrune($node1) ! util:prettyNode(., ())
+    let $n2 := $fnPrune($node2) ! util:prettyNode(., ())
     return deep-equal($n1, $n2)                    
 };
 
