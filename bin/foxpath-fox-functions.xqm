@@ -86,7 +86,7 @@ declare function f:annotate($value as item()?,
 };        
 
 (:~
- : Augments a document by inserting content. The receiving nodes are selected 
+ : Inserts nodes into a document. The receiving nodes are selected 
  : by an expression evaluated in the context of the input node, or the 
  : document node in case of an input URI. The received content is provided 
  : by an expression evaluated in the context of the receiving node. Optionally, 
@@ -110,49 +110,47 @@ declare function f:annotate($value as item()?,
  : @param processingOptions options controling the Foxpath processor 
  : @return the augmented document
  :)
-declare function f:augmentDoc($item as item()?,
-                              $insertWhereExpr as xs:string,
-                              $insertWhatExpr as xs:string,
-                              $wrapExpr as xs:string?,
-                              $options as xs:string?,
-                              $processingOptions as map(*))
+declare function f:insertNodes($items as item()*,
+                               $insertWhereExpr as xs:string,
+                               $insertWhatExpr as xs:string,
+                               $nodeName as xs:string?,
+                               $options as xs:string?,
+                               $processingOptions as map(*))
         as node()* {
-    let $node := if ($item instance of node()) then $item else i:fox-doc($item, ())
+    if (empty($items)) then () else
+    
+    let $nodes := 
+        for $item in $items
+        return if ($item instance of node()) then $item else i:fox-doc($item, ())
     let $ops := $options ! tokenize(.)
     let $insertionPoint := ($ops[. = ('first', 'last', 'before', 'after')], 'last')[1]
     let $nodeKind := ($ops[. = ('elem', 'att')], 'elem')[1]
     let $withBaseUri := $ops = 'base'
+    let $foreach := $ops = 'foreach'
+    for $node in $nodes
     let $resultDoc :=  
         copy $node_ := $node
-        modify (
+        modify
             let $receivingNodes := f:resolveFoxpath($node_, $insertWhereExpr, (), $processingOptions)
             for $rnode in $receivingNodes
-            let $newContent := f:resolveFoxpath($rnode, $insertWhatExpr, (), $processingOptions)
-            let $newNode :=
-                if (not($wrapExpr)) then () else
-                    let $wrapperName := f:resolveFoxpath($rnode, $wrapExpr, (), $processingOptions)
-                    return 
-                        if ($nodeKind eq 'att') then attribute {$wrapperName} {$newContent} 
-                        else element {$wrapperName} {$newContent}
-            return
-                if ($newNode) then 
-                    switch($insertionPoint)
-                    case 'first' return insert node $newNode as first into $rnode 
-                    case 'before' return insert node $newNode before $rnode
-                    case 'after' return insert node $newNode after $rnode
-                    default return insert node $newNode as last into $rnode
-                else if ($rnode instance of attribute()) then
-                    replace value of node $rnode with $newContent
+            let $ivalue := f:resolveFoxpath($rnode, $insertWhatExpr, (), $processingOptions)
+            let $inodes :=
+                if (not($nodeName)) then 
+                    for $item in $ivalue
+                    return if ($item instance of node()) then $item else text {$item}
                 else
-                    for $item in $newContent
-                    let $item :=
-                        typeswitch($item)
-                        case document-node() return $item/*
-                        case node() return $item
-                        default return text {$item}
-                    return
-                        if ($insertionPoint eq 'first') then insert node $item as first into $rnode
-                        else insert node $item as last into $rnode,
+                    if ($nodeKind eq 'att') then attribute {$nodeName} {$ivalue} 
+                    else if ($foreach) then $ivalue ! element {$nodeName} {.}
+                    else element {$nodeName} {$ivalue}
+            return (
+                for $inode in $inodes
+                return
+                    switch($insertionPoint)
+                    case 'first' return insert node $inode as first into $rnode 
+                    case 'before' return insert node $inode before $rnode
+                    case 'after' return insert node $inode after $rnode
+                    default return insert node $inode as last into $rnode
+                ,
                 if (not($withBaseUri)) then () else
                     let $targetElem := $node_/root()/descendant-or-self::*[1] (: /ancestor-or-self::*[last()] :)
                     return
@@ -3717,8 +3715,7 @@ declare function f:xattribute($content as item()*, $name as xs:string)
 
 
 (:~
- : Constructs an element with content given by $content. Each pair of items in $atts
- : provides the name and value of an attribute to be added.
+ : Constructs an element with given content and name.
  :
  : @param content the element content
  : @param name the element name

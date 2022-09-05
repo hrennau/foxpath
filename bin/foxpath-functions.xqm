@@ -108,23 +108,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:nodeNavigation($contextNodes, $axis, $namesFilter, $pselector, $controlOptions)
 
-        (: function `augment-doc` 
-           ===================== :)
-        else if ($fname = ('augment-doc', 'augment-doc-ec')) then
-            let $da := if (ends-with($fname, '-ec')) then 1 else 0        
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
-            let $doc := if ($da) then $arg1 else $context
-            let $insertWhereExpr :=
-                if (not($da)) then $arg1 else                
-                $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $insertWhatExpr :=
-                $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $wrapExpr :=
-                $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $fnOptions :=
-                $call/*[4 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:augmentDoc($doc, $insertWhereExpr, $insertWhatExpr, $wrapExpr, $fnOptions, $options)
-                        
         (: function `back-slash` 
            ===================== :)
         else if ($fname eq 'back-slash' or $fname eq 'bslash') then
@@ -786,6 +769,23 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:inScopeNamespacesDescriptor($elem)
 
+        (: function `insert-nodes` 
+           ======================= :)
+        else if ($fname = ('insert-nodes', 'insert-nodes-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0        
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $doc := if ($da) then $arg1 else $context
+            let $insertWhereExpr :=
+                if (not($da)) then $arg1 else                
+                $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $insertWhatExpr :=
+                $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $wrapExpr :=
+                $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions :=
+                $call/*[4 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:insertNodes($doc, $insertWhereExpr, $insertWhatExpr, $wrapExpr, $fnOptions, $options)
+                        
         (: function `is-dir` 
            ================= :)
         else if ($fname = ('is-dir', 'isDir')) then

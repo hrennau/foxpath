@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="name-diff">
+    <testenviron> In order to try out the examples, start a command shell and move to folder
+        $FOXPATH/examples-functions/insert-nodes. </testenviron>
+    <examples>
+        <example>
+            <description> 
+                Insert into the root element a 'count' attribute containing the number of airports. 
+            </description>
+            <code> 
+                fox "airports/airports.xml/insert-nodes('\airports', 'count(airport)', 'count', 'att')" 
+            </code>
+        </example>
+        <example>
+            <description>
+                Augment each 'geo' element with a further child element 'coordinates', containing the latitude and longitude
+                rounded to 3 fractional digits.
+            </description>
+            <code>
+                fox "airports/airports.xml/insert-nodes('\\geo', 'round(latitude, 3)||""""/""""||round(longitude, 3)', 'coordinates')/pretty-node()"                
+            </code>
+        </example>
+        <example>
+            <description>
+                As the preceding example, but insert new elements as first child of their parent. 
+            </description>
+            <code>
+                fox "airports/airports.xml/insert-nodes('\\geo', 'round(latitude, 3)||""""/""""||round(longitude, 3)', 'coordinates', 'first')/pretty-node()"                
+            </code>
+        </example>
+        <example>
+            <description>
+                Insert after every 'temporal' element an element 'temporal' containing copies of the child nodes of 'temporal', exception 'dst'.
+            </description>
+            <code>
+                fox "airports/airports.xml/insert-nodes('\\temporal', '* except dst', 'temporal2', 'after')/pretty-node()"                
+            </code>
+        </example>
+        <example>
+            <description>
+                Chaining two insertions.
+            </description>
+            <code>
+                fox "airports/airports.xml/insert-nodes('\\temporal', '* except dst', 'temporal2', 'after')/insert-nodes('\airports', 'count(airport)', 'count', 'att')/pretty-node()"                
+            </code>
+        </example>
+    </examples>
+</function-usage>
