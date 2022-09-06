@@ -1291,6 +1291,21 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:removePrefix($name)            
                             
+        (: function `rename-nodes` 
+           ========================= :)
+        else if ($fname = ('rename-nodes', 'rename-nodes-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0        
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $doc := if ($da) then $arg1 else $context
+            let $targetNodesExpr :=
+                if (not($da)) then $arg1 else                
+                $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $nameExpr :=
+                $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions :=
+                $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:renameNodes($doc, $targetNodesExpr, $nameExpr, $fnOptions, $options)
+                        
         (: function `repeat` 
            ================= :)
         else if ($fname eq 'repeat') then
@@ -1299,9 +1314,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:repeat($string, $count)
                 
-        (: function `replace-value` 
-           ======================== :)
-        else if ($fname = ('replace-value')) then
+        (: function `replace-values` 
+           ========================= :)
+        else if ($fname = ('replace-values', 'replace-values-ec')) then
             let $da := if (ends-with($fname, '-ec')) then 1 else 0        
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             let $doc := if ($da) then $arg1 else $context
@@ -1312,7 +1327,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $fnOptions :=
                 $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:replaceValue($doc, $replaceNodesExpr, $valueExpr, $fnOptions, $options)
+            return foxf:replaceValues($doc, $replaceNodesExpr, $valueExpr, $fnOptions, $options)
                         
         (: function `resolve-json-allof` 
            ============================ :)

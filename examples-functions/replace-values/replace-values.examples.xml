@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="replace-values">
+    <testenviron> In order to try out the examples, start a command shell and move to folder
+        $FOXPATH/examples-functions/replace-values. </testenviron>
+    <examples>
+        <example>
+            <description>
+                Change @longitude and @latitude attributes, using decimal numbers with three decimal digits.
+            </description>
+            <code>
+                fox "airports/airports.xml/replace-values('\\(latitude, longitude)', 'format-number(., """"##9.999"""")')"
+            </code>
+        </example>
+        <example>
+            <desctiprion>
+                As in the first example, but also add an @xml:base attribute to the root element and write the file into sub folder "edited", retaining the file name.            
+            </desctiprion>
+            <code>
+                fox "airports/airport*.xml/replace-values('\\(latitude, longitude)', 'format-number(., """"##9.999"""")' , 'base') => write-files('output')"
+            </code>
+        </example>
+        <example>
+            <description>
+                Chain various modifications - two value replacements, as well as the addition of a @count attribute and the deletion of 'source1' elements.    
+            </description>
+            <code>
+                fox "airports/airport*.xml/replace-values('\\(latitude, longitude)', 'format-number(., """"##9.999"""")' , 'base')/replace-values('\\dst', 'lower-case(.)')/insert-nodes('\airports', 'count(*)', '@count')/delete-nodes('\\source1')/pretty-node() => write-files('output')"
+            </code>
+        </example>
+    </examples>
+</function-usage>

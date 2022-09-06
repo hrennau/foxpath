@@ -123,8 +123,10 @@ declare function f:insertNodes($items as item()*,
         for $item in $items
         return if ($item instance of node()) then $item else i:fox-doc($item, ())
     let $ops := $options ! tokenize(.)
+    let $ops := f:getOptions($options, ('first', 'last', 'before', 'after', 'base', 'foreach'), 'insert-nodes')
     let $insertionPoint := ($ops[. = ('first', 'last', 'before', 'after')], 'last')[1]
-    let $nodeKind := ($ops[. = ('elem', 'att')], 'elem')[1]
+    let $nodeKind := $nodeName ! (if (starts-with(., '@')) then 'att' else 'elem')
+    let $nodeName := $nodeName ! replace(., '^@', '')
     let $withBaseUri := $ops = 'base'
     let $foreach := $ops = 'foreach'
     for $node in $nodes
@@ -2970,24 +2972,26 @@ declare function f:repeat($string as xs:string?, $count as xs:decimal?)
 (:~
  : Replaces the values of selected nodes.
  :
- : @param item a node or a document URI
- : @param replaceNodesExpr a Foxpath expression selecting the nodes which to change 
+ : @param items the documents to be modified, as nodes or document URIs
+ : @param replaceNodesExpr a Foxpath expression selecting the nodes which to modify 
  : @param valueExpr a Foxpath expression returning the new value of the node; the expression
  :   is evaluated in the context of the node to be changed
  : @param options options controling processing details
- :   base - add to the root element an @xml:base attribute
  : @param processingOptions options controling the Foxpath processor 
  : @return the edited input item
  :)
-declare function f:replaceValue($item as item()?,
-                                $replaceNodesExpr as xs:string,
-                                $valueExpr as xs:string,
-                                $options as xs:string?,
-                                $processingOptions as map(*))
+declare function f:replaceValues($items as item()*,
+                                 $replaceNodesExpr as xs:string,
+                                 $valueExpr as xs:string,
+                                 $options as xs:string?,
+                                 $processingOptions as map(*))
         as node()* {
-    let $node := if ($item instance of node()) then $item else i:fox-doc($item, ())
-    let $ops := $options ! tokenize(.)
+    let $nodes :=
+        for $item in $items
+        return if ($item instance of node()) then $item else i:fox-doc($item, ())
+    let $ops := f:getOptions($options, ('base'), 'replace-values')
     let $withBaseUri := $ops = 'base'
+    for $node in $nodes
     let $resultDoc :=  
         copy $node_ := $node
         modify (
@@ -2995,6 +2999,47 @@ declare function f:replaceValue($item as item()?,
             for $rnode in $replaceNodes
             let $newValue := f:resolveFoxpath($rnode, $valueExpr, (), $processingOptions)
             return replace value of node $rnode with $newValue,
+            
+            if (not($withBaseUri)) then () else
+                let $targetElem := $node_/root()/descendant-or-self::*[1] (: /ancestor-or-self::*[last()] :)
+                return
+                    if ($targetElem/@xml:base) then () else
+                        insert node attribute xml:base {$targetElem/base-uri(.)} into $targetElem              
+            )                        
+        return $node_
+    return $resultDoc
+ };
+
+(:~
+ : Renames selected nodes.
+ :
+ : @param items the documents to be modified, as nodes or document URIs
+ : @param targetNodesExpr a Foxpath expression selecting the nodes which to rename 
+ : @param nameExpr a Foxpath expression returning the new name of the node; the expression
+ :   is evaluated in the context of the node to be renamed
+ : @param options options controling processing details
+ : @param processingOptions options controling the Foxpath processor 
+ : @return the edited input item
+ :)
+declare function f:renameNodes($items as item()*,
+                               $targetNodesExpr as xs:string,
+                               $nameExpr as xs:string,
+                               $options as xs:string?,
+                               $processingOptions as map(*))
+        as node()* {
+    let $nodes :=
+        for $item in $items
+        return if ($item instance of node()) then $item else i:fox-doc($item, ())
+    let $ops := f:getOptions($options, ('base'), 'rename-nodes')
+    let $withBaseUri := $ops = 'base'
+    for $node in $nodes
+    let $resultDoc :=  
+        copy $node_ := $node
+        modify (
+            let $targetNodes := f:resolveFoxpath($node_, $targetNodesExpr, (), $processingOptions)
+            for $rnode in $targetNodes
+            let $newName := f:resolveFoxpath($rnode, $nameExpr, (), $processingOptions)
+            return rename node $rnode as $newName,
             
             if (not($withBaseUri)) then () else
                 let $targetElem := $node_/root()/descendant-or-self::*[1] (: /ancestor-or-self::*[last()] :)
@@ -3532,7 +3577,6 @@ declare function f:writeFiles($files as item()*,
         as empty-sequence() {
     let $ops := $options ! tokenize(.)
     let $noindent := $ops = 'noindent'
-    let $_DEBUG := trace($noindent, '_NOINDENT: ')
     for $file in $files
     let $fileName := 
         if (not($fileNameExpr)) then

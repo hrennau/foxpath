@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="rename-nodes">
+    <testenviron> In order to try out the examples, start a command shell and move to folder
+        $FOXPATH/examples-functions/rename-nodes. </testenviron>
+    <examples function="rename-nodes">
+        <example>
+            <description> 
+                Rename 'source1' elements to 'source'.                
+            </description>
+            <code>
+                fox "airports/airports.xml/rename-nodes('\\source1', '""""source""""')" 
+            </code>
+        </example>
+        <example>
+            <description> 
+                Rename all elements, changing the first character into uppercase.                
+            </description>
+            <code>
+                fox "airports/airports.xml/rename-nodes('\\*', 'concat(upper-case(substring(local-name(.), 1, 1)), substring(local-name(.), 2))')" 
+            </code>
+        </example>
+    </examples>
+</function-usage>

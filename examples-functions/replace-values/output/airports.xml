@@ -1,0 +1,50 @@
+<airports count="3" xml:base="file:///C:/projects/foxpath-dev/examples-functions/replace-values/airports/airports.xml" country="Denmark">
+  <airport id="611" icao="EKGH">
+    <name>Grønholt Hillerød Airport</name>
+    <city>Gronholt</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>55.941</latitude>
+      <longitude>12.382</longitude>
+      <altitude>97</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>e</dst>
+    </temporal>
+    <type>airport</type>
+  </airport>
+  <airport id="616" icao="EKPB">
+    <name>Kruså-Padborg Airport</name>
+    <city>Krusa-padborg</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>54.870</latitude>
+      <longitude>9.279</longitude>
+      <altitude>88</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>e</dst>
+    </temporal>
+    <type>airport</type>
+  </airport>
+  <airport id="624" icao="EKVD">
+    <name>Kolding Vamdrup Airfield</name>
+    <city>Kolding</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>55.436</latitude>
+      <longitude>9.331</longitude>
+      <altitude>143</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>e</dst>
+    </temporal>
+    <type>airport</type>
+  </airport>
+</airports>
