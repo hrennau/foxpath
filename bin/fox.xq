@@ -75,7 +75,7 @@ let $foxpathExpr :=
                                     $lib//foxpath[@name eq $fragmentId]/replace(., '^\s+|\s$', '')
                                    
 let $startTime := prof:current-ms()[$debugtime]       
-(: let $_DEBUG := trace($foxpath, '_FOXPATH: ') :)
+(: let $_DEBUG := trace($foxpath, '_FOXPATH: ') :) 
 let $context :=
     if ($context) then $context
     else f:currentDirectory()

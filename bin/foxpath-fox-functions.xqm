@@ -154,7 +154,7 @@ declare function f:insertNodes($items as item()*,
                     default return insert node $inode as last into $rnode
                 ,
                 if (not($withBaseUri)) then () else
-                    let $targetElem := $node_/root()/descendant-or-self::*[1] (: /ancestor-or-self::*[last()] :)
+                    let $targetElem := $node_/root()/descendant-or-self::*[1]
                     return
                         if ($targetElem/@xml:base) then () else
                             insert node attribute xml:base {$targetElem/base-uri(.)} into $targetElem              
@@ -2823,13 +2823,14 @@ declare function f:deleteNodes($items as item()*,
                                $options as xs:string?,
                                $processingOptions as map(*))
         as node()* {
-    let $ops := $options ! tokenize(.)
+    let $ops := f:getOptions($options, ('base', 'keepws'), 'delete-nodes')
     let $keepWS := $ops = 'keepws'
+    let $withBaseUri := $ops = 'base'
     for $item in $items        
     let $node := if ($item instance of node()) then $item else i:fox-doc($item, ())
     let $resultDoc :=  
         copy $node_ := $node
-        modify
+        modify (
             let $delNodes :=
                 for $expr in $excludeExprs return 
                     f:resolveFoxpath($node_, $expr, (), $processingOptions)
@@ -2837,6 +2838,13 @@ declare function f:deleteNodes($items as item()*,
             return 
             if (empty($delNodes))then () else
                 delete nodes $delNodes
+            ,
+            if (not($withBaseUri)) then () else
+                let $targetElem := $node_/root()/descendant-or-self::*[1]
+                return
+                    if ($targetElem/@xml:base) then () else
+                        insert node attribute xml:base {$targetElem/base-uri(.)} into $targetElem              
+        )   
         return $node_
     let $resultDoc := if ($keepWS) then $resultDoc else $resultDoc ! util:prettyFoxPrint(.)        
     return $resultDoc
@@ -2896,6 +2904,8 @@ declare function f:relatedNames($nodes as node()*,
             case 'att' return $node/@*
             case 'content' return $node/(@*, *)
             case 'descendant' return $node//*
+            case 'ancestor' return $node/ancestor::*
+            case 'ancestor-or-self' return $node/ancestor-or-self::*
             default return error(QName((), 'INVALID_ARG'), 'Unknown structure relationship: '||$relationship)
         return 
             if (empty($cnameFilter)) then $unfiltered
@@ -3590,6 +3600,47 @@ declare function f:writeFiles($files as item()*,
     let $writeOptions := if ($noindent) then () else map{'indent': 'yes'}
     return
         file:write($path, $file, $writeOptions)
+};
+
+(:~
+ : Writes a collection of files into a folder.
+ :
+ : @param files the file URIs
+ : @param dir the folder into which to write
+ : @return 0 if no errors were observed, 1 otherwise
+ :)
+declare function f:writeDocs($docs as item()*, 
+                             $dir as xs:string?,
+                             $options as xs:string?,
+                             $processingOptions as map(*)?)
+        as empty-sequence() {
+    let $ops := f:getOptions($options, ('noindent', 'unbase'), 'write-docs')
+    let $noindent := $ops = 'noindent'
+    let $unbase := $ops = 'unbase'
+    for $doc in $docs
+    let $baseUri :=
+        if ($doc instance of node()) then $doc ! base-uri(.)
+        else $doc
+    let $_CHECK := if ($baseUri) then () else error(QName((), 'INVALID_ARG'),
+        'Function write-doc requires documents with a base URI, but '||
+        'received a document without one.')
+    let $fileName := replace($baseUri, '.*/', '')
+    let $dir := ($dir, '.')[1]
+    let $_CREATE := if (file:exists($dir)) then () else file:create-dir($dir) 
+    let $path := $dir||'/'||$fileName
+    let $writeOptions := if ($noindent) then () else map{'indent': 'yes'}
+    let $wdoc :=
+        let $document :=
+            if ($doc instance of node()) then $doc
+            else i:fox-doc($doc, $processingOptions)
+        return
+            if (not($unbase)) then $document
+            else
+                copy $_document := $document
+                modify delete node $_document//@xml:base
+                return $_document
+    return
+        file:write($path, $wdoc, $writeOptions)
 };
 
 (:~

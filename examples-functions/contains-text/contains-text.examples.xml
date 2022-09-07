@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="contains-text">
+    <testenviron> In order to try out the examples, start a command shell and move to folder
+        $FOXPATH/examples-functions/contains-text. </testenviron>
+    <examples>
+        <example tag="A phrase">
+            <description> 
+                Extract the text of paragraphs containing the phrase 'propagating few errors'.                
+            </description>
+            <code>
+                fox "books/books.xml\\p[contains-text('propagating few errors')]\normalize-space()" 
+            </code>
+        </example>
+        <example tag="A phrase at the start">
+            <description> 
+                Extract the text of paragraphs starting with a particular phrase.                
+            </description>
+            <code>
+                fox "books/books.xml\\p[contains-text('^The usability of a Web site')]\normalize-space()" 
+            </code>
+        </example>
+        <example tag="A phrase at the end">
+            <description> 
+                Extract the text of paragraphs ending with a particular phrase.                
+            </description>
+            <code>
+                fox "books/books.xml\\p[contains-text('while propagating few errors`$')]\normalize-space()" 
+            </code>
+        </example>
+        <example tag="A phrase is the whole content">
+            <description>
+                Extract the text of elements with a text consisting of a particular phrase.
+            </description>
+            <code>
+                fox "books/books.xml\\note[contains-text('^This book has been approved by the Web Site Users Association`$')]\normalize-space()"
+            </code>
+        </example>
+        <example tag="All words">
+            <description>
+                Extract the text of all titles containing all words from a list of words: 
+            </description>
+            <code>
+                fox "books/books.xml\\title[contains-text('usability testing improving#W')]\normalize-space()" 
+            </code>
+        </example>
+        <example tag="Some word">
+            <description>
+                Extract the text of all titles containing at least one word from a list of words: 
+            </description>
+            <code>
+                fox "books/books.xml\\title[contains-text('astronaut expert eccentric#w')]\normalize-space()" 
+            </code>
+        </example>
+        <example tag="All words, occurring anywhere">
+            <description>
+                Check if a document contains all words from a list of words. Note that they may be distributed 
+                arbitrarily over the content elements - 'title', 'author', 'p', etc.
+            </description>
+            <code>
+                fox "books/books.xml\contains-text('association expert marigold usability users#W')" 
+            </code>
+        </example>
+        <example tag="Boolean and">
+            <description>
+                Check if a document contains a phrase ('web site users association') as well as at least
+                one word from a list of words ('marigold', 'armstrong').
+            </description>
+            <code>
+                fox "books/books.xml\contains-text('web site users association / marigold armstrong @w')" 
+            </code>
+        </example>
+        <example tag="Boolean or">
+            <description>
+                Check if a document contains at least one of two phrases.
+            </description>
+            <code>
+                fox "books/books.xml\contains-text('final task completion | effective task completion')" 
+            </code>
+        </example>
+        <example tag="Fuzzy">
+            <description>
+                Check if a document contains a phrase treated fuzzily.
+            </description>
+            <code>
+                fox "books/books.xml\contains-text('how well the site suppports#f1')" 
+            </code>
+        </example>
+        <example tag="More fuzzy">
+            <description>
+                Increasing the fuzziness.
+            </description>
+            <code>
+                fox "books/books.xml\contains-text('how well the site supppports#f2')" 
+            </code>
+        </example>
+        <example tag="Wildcard word">
+            <description>
+                Check if a document contains a phrase containing a word wildcard.
+            </description>
+            <code>
+                fox "books/books.xml\contains-text('efficient xxx effective task#wild-xxx')" 
+            </code>
+        </example>
+        <example tag="Maximum distance">
+            <description>
+                Extract the text of paragraphs containing three words, with a maximum distance of two words between adjacent terms.
+            </description>
+            <code>
+                fox "books/books.xml\\p[contains-text('task completion efficient#W dist..2')]\normalize-space()" 
+            </code>
+        </example>
+        <example tag="Ordered">
+            <description>
+                Extract the text of paragraphs containing three words, in the given order.
+            </description>
+            <code>
+                fox "books/books.xml\\p[contains-text('site learning completion#Wo')]\normalize-space()" 
+            </code>
+        </example>
+    </examples>
+</function-usage>

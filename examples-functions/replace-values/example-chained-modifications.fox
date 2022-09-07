@@ -1,0 +1,4 @@
+airports/airport*.xml/replace-values('\\(latitude, longitude)', 'format-number(., "##9.999")' , 'base')
+/replace-values('\\dst', 'lower-case(.)')/insert-nodes('\airports', 'count(*)', '@count')
+/delete-nodes('\\source1')/pretty-node() 
+=> write-files('output')

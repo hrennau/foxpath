@@ -1,0 +1,53 @@
+<airports country="Denmark">
+  <airport id="611" icao="EKGH">
+    <name>Grønholt Hillerød Airport</name>
+    <city>Gronholt</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>55.94139862060547</latitude>
+      <longitude>12.382200241088867</longitude>
+      <altitude>97</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source>OurAirports</source>
+  </airport>
+  <airport id="616" icao="EKPB">
+    <name>Kruså-Padborg Airport</name>
+    <city>Krusa-padborg</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>54.87030029296875</latitude>
+      <longitude>9.279009819030762</longitude>
+      <altitude>88</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source>OurAirports</source>
+  </airport>
+  <airport id="624" icao="EKVD">
+    <name>Kolding Vamdrup Airfield</name>
+    <city>Kolding</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>55.436298</latitude>
+      <longitude>9.33092</longitude>
+      <altitude>143</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source>OurAirports</source>
+  </airport>
+</airports>

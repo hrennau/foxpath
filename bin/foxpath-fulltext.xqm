@@ -38,35 +38,35 @@ declare function f:containsText($text as item()*,
 declare function f:fnContainsText($selections as xs:string+, 
                                   $externalOptions as xs:string?,
                                   $toplevelOr as xs:boolean?, 
-                                  $flags as xs:string?)
+                                  $options as xs:string?)
         as item() {
-    let $TESTMODUS := contains($flags, 'T')
-    let $TRACE := contains($flags, 'R')
-    let $mergeTextnodes := contains($flags, 'M') 
+    let $ops := $options ! normalize-space(.) ! tokenize(.)         
+    let $TESTMODUS := $ops = 'test'
+    let $TRACE := $ops = 'trace'
+    let $mergeTextnodes := $ops = 'merge'
     let $toplevelBool := if ($toplevelOr) then 'ftor' else 'ftand'        
     let $sels :=
         for $selection in $selections
         let $itemAndOptions := 
             if (exists($externalOptions)) then ($selection, $externalOptions)
             else f:splitStringIntoItemAndOptions($selection)
-        (: let $_DEBUG := trace($itemAndOptions, '_ITEM_AND_OPTIONS: ') :)
         let $item := $itemAndOptions[1]        
         let $options := $itemAndOptions[2]   
         return
             f:parseFt($item, $options) ! f:serializeFt(.)
     let $_DEBUG := 
-        trace($sels, '_FULLTEXT_EXPR: ')[$TRACE]            
+        trace($sels, '### QUERY MAPPED TO FULLTEXT EXPR: ')[$TRACE]            
     let $expr := 
         if (count($sels) eq 1) then $sels
         else ($sels ! concat('(', ., ')')) => string-join(' '||$toplevelBool||' ') 
-    (: let $_DEBUG := trace($expr, '_EXPR: ') :)
     let $funcText :=
-        if ($mergeTextnodes) then 'function($text) {$text contains text '||$expr||'}'
+        if (not($mergeTextnodes)) then 'function($text) {$text contains text '||$expr||'}'
         else 
         'function($text) {
             let $useText :=
-                if (not($text instance of element() or $text instance of document-node())) then $text        
-                else $text//text() => string-join(" ")
+                for $textItem in $text return
+                  if (not($textItem instance of element() or $textItem instance of document-node())) then $textItem        
+                  else $textItem//text() => string-join(" ")
             return $useText contains text '||$expr ||'}'
     let $func := xquery:eval($funcText)
     return 
@@ -169,11 +169,6 @@ declare function f:serializeFtOptions($node as element())
 declare function f:parseFt($text as xs:string?, $options as xs:string?) 
         as element()* {
     if (not($text)) then () else
-(:
-    let $sep := '#'
-    let $textNOOP := $text ! replace(., $sep||'.*', '') ! normalize-space(.)
-    let $optionsText := $text[contains(., $sep)] ! replace(., '^.*?'||$sep, '') ! normalize-space(.)
-:)
     let $textNOOP := $text
     let $optionsText := $options
     
@@ -221,6 +216,8 @@ declare function f:parseFtWords($text as xs:string?)
         replace($words, '^(\^+).*', '$1'),
         replace($words, '.*?(\$+)$', '$1')
         )[. ne $words]
+    (: 20220907 - for unknown reasons, a single ^ has become ^^ :)
+    let $anchors := $anchors ! replace(., '\^+', '^')
     let $wordsCleansed := replace($words, '^\^+|\$+$', '')
     let $usingWildcards := contains($wordsCleansed, '.')
     let $optionsMap := f:parseFtOptions($optionsText, true(), $usingWildcards, $anchors)
@@ -342,7 +339,6 @@ declare function f:parseFtOptions($optionsText as xs:string?,
                                   $anchors as xs:string*)
         as map(*)? {
     if (not($optionsText) and not($withWildcard) and empty($anchors)) then map{} else
-    
     let $options :=
         if (matches($optionsText, 'stop\(.*\)')) then
             let $sep := codepoints-to-string(30000) return
@@ -357,7 +353,6 @@ declare function f:parseFtOptions($optionsText as xs:string?,
        but need not, have fulltext semantics.
      :)
     let $options := $options[not(. = ('fulltext', 'ftext', 'ft'))]
-    (: let $_DEBUG := trace($options, '_OPTIONS: ') :)
     
     (: Evaluate anchors :)
     let $anchors := $anchors ! normalize-space(.)
@@ -435,7 +430,6 @@ declare function f:parseFtOptions($optionsText as xs:string?,
         map:entry('entire', 'entire content')[contains($flags, 'e')]
     )) ! map:remove(., 'flags')
     
-    (: let $_DEBUG := trace($omap, '_OMAP: ') :)
     return map:remove($omap, 'additional-flags')
 };
 

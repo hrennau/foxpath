@@ -150,50 +150,51 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `child-names`, `att-names`, `content-names`, `parent-name`  
            =================================================================== :)
-        else if ($fname = ('child-names', 'ec-child-names',
-                           'child-lnames', 'ec-child-lnames',
-                           'child-jnames', 'ec-child-jnames',
-                           'descendant-names', 'ec-descendant-names',
-                           'descendant-lnames', 'ec-descendant-lnames',
-                           'descendant-jnames', 'ec-descendant-jnames',
-                           'parent-name', 'ec-parent-name',
-                           'parent-lname', 'ec-parent-lname',
-                           'parent-jname', 'ec-parent-jname',
-                           'att-names', 'ec-att-names',
-                           'att-lnames', 'ec-att-lnames',
-                           'att-jnames', 'ec-att-jnames',
-                           'content-names', 'ec-content-names',
-                           'content-lnames', 'ec-content-lnames',
-                           'content-jnames', 'ec-content-jnames'                           
+        else if ($fname = ('child-names', 'child-names-ec',
+                           'child-lnames', 'child-lnames-ec',
+                           'child-jnames', 'child-jnames-ec',
+                           'descendant-names', 'descendant-names-ec',
+                           'descendant-lnames', 'descendant-lnames-ec',
+                           'descendant-jnames', 'descendant-jnames-ec',
+                           'parent-name', 'parent-name-ec',
+                           'parent-lname', 'parent-lname-ec',
+                           'parent-jname', 'parent-jname-ec',
+                           'ancestor-names', 'ancestor-names-ec',
+                           'ancestor-lnames', 'ancestor-lnames-ec',
+                           'ancestor-jnames', 'ancestor-jnames-ec',
+                           'att-names', 'att-names-ec',
+                           'att-lnames', 'att-lnames-ec',
+                           'att-jnames', 'att-jnames-ec',
+                           'content-names', 'content-names-ec',
+                           'content-lnames', 'content-lnames-ec',
+                           'content-jnames', 'content-jnames-ec'                           
                            )) then
-            let $da := if (starts-with($fname, 'ec-')) then 1 else 0
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
             let $narg := count($call/*)
             let $args := $call/([
                *[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 0],
                *[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 1],
                *[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 2]
             ])
-            let $nodes := if (starts-with($fname, 'ec-')) then $args(1) else $context
+            let $nodes := if ($da) then $args(1) else $context
             let $nameFilter := $args(1 + $da)
             let $flags := $args(2 + $da)
             let $nameKind := 
                 if (contains($fname, '-name')) then 'name' 
                 else if (contains($fname, '-jname')) then 'jname' 
                 else 'lname'
-            let $relationship := replace($fname, '^(ec-)?(.*?)-.*', '$2')                
+            let $relationship := replace($fname, '^(.*?)-.*(-ec)?', '$1')                
             return foxf:relatedNames($nodes, $relationship, $nameKind, $nameFilter, $flags)            
 
         (: function `contains-text` 
            ======================== :)
-        else if ($fname eq 'contains-text') then
-            let $selections :=
-                let $index := if (count($call/*) eq 1) then 1 else 2
-                return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $text :=
-                if (count($call/*) eq 1) then $context 
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $flags := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                 
-            return ft:containsText($text, $selections, $flags)            
+        else if ($fname = ('contains-text', 'contains-text-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $text := if ($da) then $arg1 else $context
+            let $query := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $flags := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)     
+            return ft:containsText($text, $query, $flags)            
                 
         (: function `content-deep-equal` 
            ============================= :)
@@ -280,8 +281,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $da := if (ends-with($fname, '-ec')) then 1 else 0        
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             let $doc := if ($da) then $arg1 else $context
-            let $excludeExprs :=
-                if (not($da)) then $arg1 else                
+            let $excludeExprs := if (not($da)) then $arg1 else                
                 $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $fnOptions := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
             return foxf:deleteNodes($doc, $excludeExprs, $fnOptions, $options)
@@ -1610,6 +1610,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $fnOptions := $call/*[5] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:writeFiles($items, $folder, $fileNameExpr, $encoding, $fnOptions, $options)
+                
+        (: function `write-docs` 
+           ===================== :)
+        else if ($fname eq 'write-docs') then
+            let $docs := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $folder := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $fnOptions := $call/*[3] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:writeDocs($docs, $folder, $fnOptions, $options)
                 
         (: function `write-json-docs` 
            ========================= :)

@@ -81,6 +81,7 @@ if "%name%"=="-p" (
 goto :NEXTPAR
 :ENDPAR 
 set foxpath=%name%
+REM echo foxpath=%foxpath%
 if %foxpath%=="?" echo NO else (echo YES)
 
 if %FOXPATH%=="?" (

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="delete-nodes">
+    <testenviron> In order to try out the examples, start a command shell and move to folder
+        $FOXPATH/examples-functions/delete-nodes. </testenviron>
+    <examples>
+        <example>
+            <description> 
+                Remove 'source1' elements.                
+            </description>
+            <code>
+                fox "airports/airports.xml/delete-nodes('\\source1')" 
+            </code>
+        </example>
+        <example>
+            <description> 
+                Remove 'source1' elements, as well as @id attributes.                
+            </description>
+            <code>
+                fox "airports/airports.xml/delete-nodes('\\source1, \\@id')" 
+            </code>
+        </example>
+        <example>
+            <description> 
+                Remove 'source1' elements, as well as @id attributes; add an @xml:base attribute to the root element.                
+            </description>
+            <code>
+                fox "airports/airports.xml/delete-nodes('\\source1, \\@id', 'base')" 
+            </code>
+        </example>
+        <example>
+            <description> 
+                Modify a set of documents and write the resulting documents into a folder.                
+            </description>
+            <code>
+                fox "airports/*.xml => delete-nodes-ec('\\source1, \\@id', 'base') => write-files('output')"  
+            </code>
+        </example>
+        <example>
+            <description>
+                As the preceding example, but the @xml:base attribute added during the process is
+                removed before writing.
+            </description>
+            <code>
+                fox "airports/*.xml => delete-nodes-ec('\\source1, \\@id', 'base') => write-docs('output', 'unbase')"                
+            </code>
+        </example>
+    </examples>
+</function-usage>
