@@ -2827,14 +2827,12 @@ declare function f:deleteNodes($items as item()*,
     let $keepWS := $ops = 'keepws'
     let $withBaseUri := $ops = 'base'
     for $item in $items        
-    let $node := if ($item instance of node()) then $item else i:fox-doc($item, ())
+    let $node := if ($item instance of node()) then $item/root() else i:fox-doc($item, ())
     let $resultDoc :=  
         copy $node_ := $node
         modify (
-            let $delNodes :=
-                for $expr in $excludeExprs return 
-                    f:resolveFoxpath($node_, $expr, (), $processingOptions)
-                    [. instance of node()]
+            let $delNodes := $excludeExprs !                 
+                f:resolveFoxpath($node_, ., (), $processingOptions)[. instance of node()]
             return 
             if (empty($delNodes))then () else
                 delete nodes $delNodes
@@ -3429,8 +3427,13 @@ declare function f:subsetFraction(
  : list of items, created using function row().
  :)
 declare function f:table($rows as item()*, 
-                         $headers as xs:string*)
+                         $headers as xs:string*,
+                         $options as xs:string?)
         as xs:string {
+    let $ops := f:getOptions($options, ('sort', 'sortd', 'distinct'), 'table')        
+    let $sort := $ops = 'sort'
+    let $sortd := $ops = 'sortd'
+    let $distinct := $ops = 'distinct'
     let $sep := codepoints-to-string(30000) (:  ($sep, '#')[1] :)
     let $headers :=
         if (count($headers) eq 1) then tokenize($headers, ',\s*') else $headers
@@ -3458,6 +3461,14 @@ declare function f:table($rows as item()*,
                 for $i in 1 to $countCols return 
                     $row($i) ! util:rpad(., $widths[$i], ' '), ' | '),
             ' |')
+    let $rowLines := 
+        if ($distinct) then $rowLines => distinct-values() 
+        else $rowLines 
+    let $rowLines :=
+        if ($sort or $sortd) then 
+            let $sorted := $rowLines => sort()
+            return if ($sort) then $sorted else $sorted => reverse()
+        else $rowLines
     let $tableWidth := 4 + sum($widths) + ($countCols - 1) * 3
     let $frameLine := '#'||f:repeat('-', $tableWidth - 2)||'#'
     let $headLines :=

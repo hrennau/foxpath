@@ -117,5 +117,13 @@
                 fox "books/books.xml\\p[contains-text('site learning completion#Wo')]\normalize-space()" 
             </code>
         </example>
+        <example tag="Complex query with global option">
+            <description>
+                Check if a document contains two different phrases, using global options for fuzziness and stop words.
+            </description>
+            <code>
+                fox "books/books.xml\contains-text('usability of xxx web siite / efffective task completion#f1 wild-xxx')" 
+            </code>
+        </example>
     </examples>
 </function-usage>

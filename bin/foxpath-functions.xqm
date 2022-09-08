@@ -329,9 +329,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
 (: the following function is at risk:
     eval-xpath
 :)
-        (: function `eval-xpath` 
-           ===================== :)
-        else if ($fname = ('eval-xpath', 'xpath')) then
+        (: function `resolve-xpath` 
+           ======================== :)
+        else if ($fname = ('resolve-xpath', 'xpath')) then
             let $xpath := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)  
             let $xpathContext :=
                 let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -1447,8 +1447,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $headers := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                             (: ! normalize-space(.) ! tokenize(.) :)
+            let $options := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                            
             return
-                foxf:table($values, $headers)
+                foxf:table($values, $headers, $options)
 
         (: function `text-to-codepoints` 
            ============================= :)

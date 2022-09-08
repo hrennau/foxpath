@@ -32,16 +32,15 @@
                 Modify a set of documents and write the resulting documents into a folder.                
             </description>
             <code>
-                fox "airports/*.xml => delete-nodes-ec('\\source1, \\@id', 'base') => write-files('output')"  
+                fox "airports/*.xml => delete-nodes-ec('\\source1, \\@id') => write-docs('output')"  
             </code>
         </example>
         <example>
-            <description>
-                As the preceding example, but the @xml:base attribute added during the process is
-                removed before writing.
+            <description> 
+                Equivalent to the preceding example; using several expressions instead of a single sequence expression.                
             </description>
             <code>
-                fox "airports/*.xml => delete-nodes-ec('\\source1, \\@id', 'base') => write-docs('output', 'unbase')"                
+                fox "airports/*.xml => delete-nodes-ec(('\\source1', '\\@id')) => write-docs('output')"  
             </code>
         </example>
     </examples>

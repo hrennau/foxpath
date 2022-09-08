@@ -1,5 +1,5 @@
 <airports country="Denmark">
-  <airport id="611" icao="EKGH">
+  <airport icao="EKGH">
     <name>Grønholt Hillerød Airport</name>
     <city>Gronholt</city>
     <country>Denmark</country>
@@ -14,9 +14,8 @@
       <dst>E</dst>
     </temporal>
     <type>airport</type>
-    <source>OurAirports</source>
   </airport>
-  <airport id="616" icao="EKPB">
+  <airport icao="EKPB">
     <name>Kruså-Padborg Airport</name>
     <city>Krusa-padborg</city>
     <country>Denmark</country>
@@ -31,9 +30,8 @@
       <dst>E</dst>
     </temporal>
     <type>airport</type>
-    <source>OurAirports</source>
   </airport>
-  <airport id="624" icao="EKVD">
+  <airport icao="EKVD">
     <name>Kolding Vamdrup Airfield</name>
     <city>Kolding</city>
     <country>Denmark</country>
@@ -48,6 +46,5 @@
       <dst>E</dst>
     </temporal>
     <type>airport</type>
-    <source>OurAirports</source>
   </airport>
 </airports>

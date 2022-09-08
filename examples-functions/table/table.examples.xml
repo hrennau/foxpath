@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="table">
+    <testenviron> In order to try out the examples, start a command shell and move to folder
+        $FOXPATH/example-data/oxygen-samples. </testenviron>
+    <examples>
+        <example>
+            <description> 
+                Write a two-column table describing DITA topic files - file name and title. 
+            </description>
+            <code> 
+                fox "dita//*.dita\*\row(base-file-name(), string(title\normalize-space()/truncate(60))) => table('File name, Title')" 
+            </code>
+        </example>
+        <example>
+            <description> 
+                Write a table describing DITA files, with sorted rows. 
+            </description>
+            <code> 
+                fox "dita//*.dita\*\row(base-file-name(), string(title\normalize-space()/truncate(60))) => table('File name, Title', 'sort')" 
+            </code>
+        </example>
+        <example>
+            <description> 
+                Write a table describing DITA files, with sorted rows and duplicate rows removed. 
+            </description>
+            <code> 
+                fox "dita//*.dita\*\row(base-file-name(), string(title\normalize-space()/truncate(60))) => table('File name, Title', 'sort distinct')" 
+            </code>
+        </example>
+        <example>
+            <description> 
+                Write a table describing DITA files, ignoring DITA documents without title. 
+            </description>
+            <code> 
+                fox "dita//*.dita\*[title]\row(base-file-name(), string(title\normalize-space()/truncate(60))) => table('File name, Title', 'sort distinct')" 
+            </code>
+        </example>
+        <example>
+            <description>
+                Write a three-column table describing DITA topic files - file name, title and short description.
+            </description>
+            <code>
+                fox "dita//*.dita\*\row(base-file-name(), string(title\normalize-space()/truncate(60)), string(shortdesc\normalize-space(.)/truncate(80))) => table('File name, Title, Short description')"
+            </code>
+        </example>
+    </examples>
+</function-usage>
