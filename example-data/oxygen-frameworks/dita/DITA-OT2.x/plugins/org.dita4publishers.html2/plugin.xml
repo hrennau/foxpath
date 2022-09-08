@@ -1,0 +1,47 @@
+<plugin id="org.dita4publishers.html2">
+  <extension-point id="xsl.transtype-html2"/>
+  
+  <feature extension="package.support.name" value="Eliot Kimber"/>
+  <feature extension="package.support.email" value="ekimber@contrext.com"/>  
+
+  <extension-point id="d4p.html2.xslt.param" name="HTML2 XSLT parameters"/>
+  <extension-point id="dita.conductor.xhtml.param" name="XHTML XSLT parameters"/>
+  <extension-point id="xsl.transtype-html2" hame="XSLT extensions"/>
+
+  <require plugin="org.dita4publishers.common.html"/> 
+  <require plugin="org.dita4publishers.common.mapdriven"/> 
+  <require plugin="org.dita-community.common.xslt"/> 
+
+  <template file="build_transtype-html2_template.xml"/>
+  
+  <template file="xsl/map2html2_template.xsl"/>
+
+  <feature extension="dita.conductor.transtype.check" value="html2" type="txt"/>
+  <feature extension="dita.conductor.target.relative" value="build.xml" type="file"/>
+
+  <!-- New way of specifying metadata with parameters contributed by the transtype:
+        https://github.com/dita-ot/dita-ot/issues/1757
+   -->
+  <transtype name="html2" extends="d4pCommons" desc="HTML2 (DITA 4 Publishers)">
+    <param name="html2.generate.dynamic.toc"
+      desc="Specifies whether or not to generate a dynamic TOC in the output." type="enum">
+      <val>true</val>
+      <val>false</val>
+    </param>
+    <param name="html2.generate.frameset"
+      desc="Specifies whether or not to generate an HTML frameset file for the map." type="enum">
+      <val>true</val>
+      <val default="true">false</val>
+    </param>
+    <param name="html2.generate.index"
+      desc="Specifies whether or not to generate a back-of-the-book index" type="enum">
+      <val>true</val>
+      <val default="true">false</val>
+    </param>
+    <param name="html2.generate.static.toc"
+      desc="Specifies whether or not to generate a static TOC in the output" type="enum">
+      <val>true</val>
+      <val default="true">false</val>
+    </param>
+  </transtype>
+</plugin>

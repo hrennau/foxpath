@@ -1,0 +1,1510 @@
+<!--Maps an element name to the path to an HTML file.-->
+<contentCompletionElementsMap xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.oxygenxml.com/ns/ccfilter/annotations http://www.oxygenxml.com/ns/ccfilter/annotations/ccAnnotationsSchemaFilter.xsd"
+    xmlns="http://www.oxygenxml.com/ns/ccfilter/annotations"
+    redirectURLPrefix="http://www.oxygenxml.com/redirect-url.php?url=">
+    <mappingGroup xml:base="http://www.docbook.org/tdg/en/html/">
+        <mapping elementName="abbrev" path="abbrev.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="abstract" path="abstract.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="accel" path="accel.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="ackno" path="ackno.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="acronym" path="acronym.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="action" path="action.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="address" path="address.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="affiliation" path="affiliation.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="alt" path="alt.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="anchor" path="anchor.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="answer" path="answer.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="aph" path="aph.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="appa" path="appa.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="appb" path="appb.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="appc" path="appc.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="appd" path="appd.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="appe" path="appe.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="appendix" path="appendix.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="appendixinfo" path="appendixinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="appf" path="appf.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="appi" path="appi.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="application" path="application.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="area" path="area.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="areaset" path="areaset.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="areaspec" path="areaspec.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="arg" path="arg.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="article" path="article.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="articleinfo" path="articleinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="artpagenums" path="artpagenums.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="attribution" path="attribution.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="audiodata" path="audiodata.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="audioobject" path="audioobject.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="author" path="author.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="authorblurb" path="authorblurb.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="authorgroup" path="authorgroup.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="authorinitials" path="authorinitials.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="beginpage" path="beginpage.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="bibliocoverage" path="bibliocoverage.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="bibliodiv" path="bibliodiv.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="biblioentry" path="biblioentry.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="bibliography" path="bibliography.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="bibliographyinfo" path="bibliographyinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="biblioid" path="biblioid.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="bibliolist" path="bibliolist.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="bibliomisc" path="bibliomisc.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="bibliomixed" path="bibliomixed.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="bibliomset" path="bibliomset.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="biblioref" path="biblioref.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="bibliorelation" path="bibliorelation.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="biblioset" path="biblioset.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="bibliosource" path="bibliosource.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="blockinfo" path="blockinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="blockquote" path="blockquote.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="book" path="book.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="bookinfo" path="bookinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="bridgehead" path="bridgehead.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="callout" path="callout.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="calloutlist" path="calloutlist.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="caption" path="caption.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="caution" path="caution.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="ch00" path="ch00.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="ch01" path="ch01.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="ch02" path="ch02.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="ch03" path="ch03.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="ch04" path="ch04.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="ch05" path="ch05.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="chapter" path="chapter.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="chapterinfo" path="chapterinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="citation" path="citation.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="citebiblioid" path="citebiblioid.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="citerefentry" path="citerefentry.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="citetitle" path="citetitle.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="city" path="city.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="classname" path="classname.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="classsynopsis" path="classsynopsis.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="classsynopsisinfo" path="classsynopsisinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="cmdsynopsis" path="cmdsynopsis.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="co" path="co.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="co01" path="co01.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="code" path="code.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="col" path="col.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="colgroup" path="colgroup.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="collab" path="collab.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="collabname" path="collabname.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="colophon" path="colophon.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="colspec" path="colspec.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="command" path="command.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="computeroutput" path="computeroutput.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="confdates" path="confdates.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="confgroup" path="confgroup.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="confnum" path="confnum.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="confsponsor" path="confsponsor.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="conftitle" path="conftitle.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="constant" path="constant.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="constraint" path="constraint.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="constraintdef" path="constraintdef.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="constructorsynopsis" path="constructorsynopsis.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="contractnum" path="contractnum.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="contractsponsor" path="contractsponsor.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="contrib" path="contrib.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="copyright" path="copyright.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="coref" path="coref.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="corpauthor" path="corpauthor.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="corpcredit" path="corpcredit.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="corpname" path="corpname.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="country" path="country.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="database" path="database.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="date" path="date.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="dbcpyright" path="dbcpyright.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="dbgloss" path="dbgloss.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="dedication" path="dedication.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="destructorsynopsis" path="destructorsynopsis.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="docbook" path="docbook.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="edition" path="edition.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="editor" path="editor.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="email" path="email.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="emphasis" path="emphasis.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="entry" path="entry.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="entrytbl" path="entrytbl.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="envar" path="envar.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="epigraph" path="epigraph.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="equation" path="equation.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="errorcode" path="errorcode.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="errorname" path="errorname.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="errortext" path="errortext.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="errortype" path="errortype.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="example" path="example.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="exceptionname" path="exceptionname.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="fax" path="fax.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="fieldsynopsis" path="fieldsynopsis.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="figure" path="figure.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="filename" path="filename.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="firstname" path="firstname.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="firstterm" path="firstterm.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="footnote" path="footnote.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="footnoteref" path="footnoteref.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="foreignphrase" path="foreignphrase.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="formalpara" path="formalpara.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="funcdef" path="funcdef.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="funcparams" path="funcparams.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="funcprototype" path="funcprototype.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="funcsynopsis" path="funcsynopsis.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="funcsynopsisinfo" path="funcsynopsisinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="function" path="function.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="glossary" path="glossary.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="glossaryinfo" path="glossaryinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="glossdef" path="glossdef.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="glossdiv" path="glossdiv.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="glossentry" path="glossentry.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="glosslist" path="glosslist.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="glosssee" path="glosssee.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="glossseealso" path="glossseealso.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="glossterm" path="glossterm.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="graphic" path="graphic.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="graphicco" path="graphicco.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="group" path="group.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="guibutton" path="guibutton.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="guiicon" path="guiicon.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="guilabel" path="guilabel.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="guimenu" path="guimenu.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="guimenuitem" path="guimenuitem.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="guisubmenu" path="guisubmenu.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="hardware" path="hardware.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="highlights" path="highlights.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="holder" path="holder.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="honorific" path="honorific.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="html-form" path="html-form.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="imagedata" path="imagedata.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="imageobject" path="imageobject.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="imageobjectco" path="imageobjectco.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="important" path="important.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="index" path="index.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="indexdiv" path="indexdiv.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="indexentry" path="indexentry.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="indexinfo" path="indexinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="indexterm" path="indexterm.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="informalequation" path="informalequation.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="informalexample" path="informalexample.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="informalfigure" path="informalfigure.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="informaltable" path="informaltable.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="initializer" path="initializer.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="inlineequation" path="inlineequation.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="inlinegraphic" path="inlinegraphic.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="inlinemediaobject" path="inlinemediaobject.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="interface" path="interface.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="interfacename" path="interfacename.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="invpartnumber" path="invpartnumber.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="isbn" path="isbn.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-amsa" path="iso-amsa.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-amsb" path="iso-amsb.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-amsc" path="iso-amsc.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-amsn" path="iso-amsn.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-amso" path="iso-amso.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-amsr" path="iso-amsr.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-box" path="iso-box.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-cyr1" path="iso-cyr1.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-cyr2" path="iso-cyr2.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-dia" path="iso-dia.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-grk1" path="iso-grk1.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-grk2" path="iso-grk2.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-grk3" path="iso-grk3.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-grk4" path="iso-grk4.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-lat1" path="iso-lat1.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-lat2" path="iso-lat2.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-num" path="iso-num.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-pub" path="iso-pub.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="iso-tech" path="iso-tech.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="issn" path="issn.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="issuenum" path="issuenum.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="itemizedlist" path="itemizedlist.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="itermset" path="itermset.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="ix01" path="ix01.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="jobtitle" path="jobtitle.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="keycap" path="keycap.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="keycode" path="keycode.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="keycombo" path="keycombo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="keysym" path="keysym.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="keyword" path="keyword.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="keywordset" path="keywordset.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="label" path="label.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="legalnotice" path="legalnotice.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="lhs" path="lhs.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="lineage" path="lineage.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="lineannotation" path="lineannotation.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="link" path="link.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="listitem" path="listitem.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="literal" path="literal.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="literallayout" path="literallayout.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="lot" path="lot.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="lotentry" path="lotentry.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="manvolnum" path="manvolnum.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="markup" path="markup.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="mathphrase" path="mathphrase.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="medialabel" path="medialabel.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="mediaobject" path="mediaobject.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="mediaobjectco" path="mediaobjectco.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="member" path="member.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="menuchoice" path="menuchoice.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="methodname" path="methodname.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="methodparam" path="methodparam.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="methodsynopsis" path="methodsynopsis.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="mml-math" path="mml-math.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="modespec" path="modespec.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="modifier" path="modifier.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="mousebutton" path="mousebutton.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="msg" path="msg.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="msgaud" path="msgaud.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="msgentry" path="msgentry.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="msgexplan" path="msgexplan.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="msginfo" path="msginfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="msglevel" path="msglevel.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="msgmain" path="msgmain.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="msgorig" path="msgorig.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="msgrel" path="msgrel.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="msgset" path="msgset.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="msgsub" path="msgsub.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="msgtext" path="msgtext.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="nonterminal" path="nonterminal.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="note" path="note.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="objectinfo" path="objectinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="olink" path="olink.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="ooclass" path="ooclass.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="ooexception" path="ooexception.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="oointerface" path="oointerface.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="option" path="option.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="optional" path="optional.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="orderedlist" path="orderedlist.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="orgdiv" path="orgdiv.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="orgname" path="orgname.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="otheraddr" path="otheraddr.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="othercredit" path="othercredit.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="othername" path="othername.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="package" path="package.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pagenums" path="pagenums.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="para" path="para.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="paramdef" path="paramdef.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="parameter" path="parameter.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="part" path="part.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="part1" path="part1.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="part2" path="part2.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="part3" path="part3.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="partinfo" path="partinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="partintro" path="partintro.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-attlist" path="pe-attlist.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-attrib" path="pe-attrib.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-attval" path="pe-attval.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-cals" path="pe-cals.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-class" path="pe-class.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-cmodel" path="pe-cmodel.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-cmodule" path="pe-cmodule.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-common-attrib" path="pe-common-attrib.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-content" path="pe-content.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-dbmodules" path="pe-dbmodules.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-element" path="pe-element.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-exclusion" path="pe-exclusion.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-hook" path="pe-hook.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-inclusion" path="pe-inclusion.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-iso" path="pe-iso.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-l-attrib" path="pe-l-attrib.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-l-class" path="pe-l-class.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-l-mix" path="pe-l-mix.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-mix" path="pe-mix.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-module" path="pe-module.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pe-role" path="pe-role.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="personblurb" path="personblurb.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="personname" path="personname.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="phone" path="phone.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="phrase" path="phrase.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pob" path="pob.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="postcode" path="postcode.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="preface" path="preface.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="prefaceinfo" path="prefaceinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="primary" path="primary.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="primaryie" path="primaryie.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="printhistory" path="printhistory.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="procedure" path="procedure.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="production" path="production.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="productionrecap" path="productionrecap.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="productionset" path="productionset.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="productname" path="productname.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="productnumber" path="productnumber.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="programlisting" path="programlisting.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="programlistingco" path="programlistingco.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="prompt" path="prompt.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="property" path="property.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pubdate" path="pubdate.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="publisher" path="publisher.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="publishername" path="publishername.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="pubsnumber" path="pubsnumber.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="qandadiv" path="qandadiv.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="qandaentry" path="qandaentry.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="qandaset" path="qandaset.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="question" path="question.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="quickref" path="quickref.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="quote" path="quote.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="ref-charents" path="ref-charents.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="ref-elements" path="ref-elements.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="ref-paraments" path="ref-paraments.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refclass" path="refclass.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refdescriptor" path="refdescriptor.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refentry" path="refentry.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refentryinfo" path="refentryinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refentrytitle" path="refentrytitle.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="reference" path="reference.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="referenceinfo" path="referenceinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refmeta" path="refmeta.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refmiscinfo" path="refmiscinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refname" path="refname.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refnamediv" path="refnamediv.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refpurpose" path="refpurpose.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refsect1" path="refsect1.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refsect1info" path="refsect1info.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refsect2" path="refsect2.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refsect2info" path="refsect2info.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refsect3" path="refsect3.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refsect3info" path="refsect3info.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refsection" path="refsection.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refsectioninfo" path="refsectioninfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refsynopsisdiv" path="refsynopsisdiv.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="refsynopsisdivinfo" path="refsynopsisdivinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="releaseinfo" path="releaseinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="remark" path="remark.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="replaceable" path="replaceable.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="returnvalue" path="returnvalue.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="revdescription" path="revdescription.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="revhistory" path="revhistory.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="revision" path="revision.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="revnumber" path="revnumber.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="revremark" path="revremark.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="rhs" path="rhs.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="row" path="row.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="sbr" path="sbr.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="screen" path="screen.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="screenco" path="screenco.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="screeninfo" path="screeninfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="screenshot" path="screenshot.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="secondary" path="secondary.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="secondaryie" path="secondaryie.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="sect1" path="sect1.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="sect1info" path="sect1info.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="sect2" path="sect2.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="sect2info" path="sect2info.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="sect3" path="sect3.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="sect3info" path="sect3info.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="sect4" path="sect4.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="sect4info" path="sect4info.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="sect5" path="sect5.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="sect5info" path="sect5info.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="section" path="section.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="sectioninfo" path="sectioninfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="see" path="see.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="seealso" path="seealso.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="seealsoie" path="seealsoie.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="seeie" path="seeie.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="seg" path="seg.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="seglistitem" path="seglistitem.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="segmentedlist" path="segmentedlist.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="segtitle" path="segtitle.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="seriesvolnums" path="seriesvolnums.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="set" path="set.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="setindex" path="setindex.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="setindexinfo" path="setindexinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="setinfo" path="setinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="sgmltag" path="sgmltag.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="shortaffil" path="shortaffil.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="shortcut" path="shortcut.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="sidebar" path="sidebar.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="sidebarinfo" path="sidebarinfo.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="simpara" path="simpara.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="simplelist" path="simplelist.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="simplemsgentry" path="simplemsgentry.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="simplesect" path="simplesect.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="spanspec" path="spanspec.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="state" path="state.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="step" path="step.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="stepalternatives" path="stepalternatives.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="street" path="street.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="structfield" path="structfield.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="structname" path="structname.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="subject" path="subject.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="subjectset" path="subjectset.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="subjectterm" path="subjectterm.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="subscript" path="subscript.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="substeps" path="substeps.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="subtitle" path="subtitle.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="superscript" path="superscript.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="surname" path="surname.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="svg-svg" path="svg-svg.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="symbol" path="symbol.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="synopfragment" path="synopfragment.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="synopfragmentref" path="synopfragmentref.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="synopsis" path="synopsis.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="systemitem" path="systemitem.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="table" path="table.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="task" path="task.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="taskprerequisites" path="taskprerequisites.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="taskrelated" path="taskrelated.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="tasksummary" path="tasksummary.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="tbody" path="tbody.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="td" path="td.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="term" path="term.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="termdef" path="termdef.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="tertiary" path="tertiary.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="tertiaryie" path="tertiaryie.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="textdata" path="textdata.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="textobject" path="textobject.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="tfoot" path="tfoot.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="tgroup" path="tgroup.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="th" path="th.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="thead" path="thead.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="tip" path="tip.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="title" path="title.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="titleabbrev" path="titleabbrev.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="toc" path="toc.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="tocback" path="tocback.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="tocchap" path="tocchap.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="tocentry" path="tocentry.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="tocfront" path="tocfront.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="toclevel1" path="toclevel1.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="toclevel2" path="toclevel2.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="toclevel3" path="toclevel3.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="toclevel4" path="toclevel4.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="toclevel5" path="toclevel5.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="tocpart" path="tocpart.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="token" path="token.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="tr" path="tr.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="trademark" path="trademark.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="type" path="type.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="ulink" path="ulink.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="uri" path="uri.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="userinput" path="userinput.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="varargs" path="varargs.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="variablelist" path="variablelist.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="varlistentry" path="varlistentry.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="varname" path="varname.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="videodata" path="videodata.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="videoobject" path="videoobject.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="void" path="void.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="volumenum" path="volumenum.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="warning" path="warning.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="wordasword" path="wordasword.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="xref" path="xref.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="year" path="year.html" type="link" linkText="DocBook Definitive Guide"/>
+        <!-- Some common attributes -->
+        <mapping attributeName="arch" path="ref-elements.html#common.attributes" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping attributeName="condition" path="ref-elements.html#common.attributes" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping attributeName="conformance" path="ref-elements.html#common.attributes" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping attributeName="id" path="ref-elements.html#common.attributes" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping attributeName="xml:id" path="ref-elements.html#common.attributes" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping attributeName="lang" path="ref-elements.html#common.attributes" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping attributeName="os" path="ref-elements.html#common.attributes" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping attributeName="remap" path="ref-elements.html#common.attributes" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping attributeName="role" path="ref-elements.html#common.attributes" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping attributeName="revision" path="ref-elements.html#common.attributes" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping attributeName="revisionflag" path="ref-elements.html#common.attributes" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping attributeName="security" path="ref-elements.html#common.attributes" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping attributeName="userlevel" path="ref-elements.html#common.attributes" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping attributeName="vendor" path="ref-elements.html#common.attributes" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping attributeName="xreflabel" path="ref-elements.html#common.attributes" type="link"
+            linkText="DocBook Definitive Guide"/>
+    </mappingGroup>
+    <!-- Specific missing DB 5 elements -->
+    <mappingGroup xml:base="http://www.docbook.org/tdg5/en/html/">
+        <mapping elementName="info" path="info.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="tag" path="tag.html" type="link" linkText="DocBook Definitive Guide"/>
+        <mapping elementName="tocdiv" path="tocdiv.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+        <mapping elementName="annotation" path="annotation.html" type="link"
+            linkText="DocBook Definitive Guide"/>
+    </mappingGroup>
+    <!-- Docbook 5.1 extra elements -->
+    <mappingGroup xml:base="http://docbook.org/tdg51/en/html/">
+        <mapping elementName="assembly" path="assembly.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+        <mapping elementName="association" path="association.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+        <mapping elementName="description" path="description.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+        <mapping elementName="filterin" path="filterin.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+        <mapping elementName="filterout" path="filterout.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+        <mapping elementName="instance" path="instance.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+        <mapping elementName="merge" path="merge.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+        <mapping elementName="module" path="module.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+        <mapping elementName="output" path="output.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+        <mapping elementName="relationship" path="relationship.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+        <mapping elementName="resource" path="resource.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+        <mapping elementName="resources" path="resources.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+        <mapping elementName="structure" path="structure.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+        <mapping elementName="transform" path="transform.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+        <mapping elementName="transforms" path="transforms.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+        <mapping elementName="topic" path="topic.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+        <mapping elementName="result" path="result.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+        <mapping elementName="multimediaparam" path="multimediaparam.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+        <mapping elementName="givenname" path="givenname.html" type="link"
+            linkText="DocBook 5.1 Definitive Guide"/>
+    </mappingGroup>
+
+    <!-- Content for each element -->
+    <mappingGroup xml:base="descriptions/">
+        <mapping elementName="abbrev" path="abbrev.html"/>
+        <mapping elementName="abstract" path="abstract.html"/>
+        <mapping elementName="accel" path="accel.html"/>
+        <mapping elementName="ackno" path="ackno.html"/>
+        <mapping elementName="acronym" path="acronym.html"/>
+        <mapping elementName="action" path="action.html"/>
+        <mapping elementName="address" path="address.html"/>
+        <mapping elementName="affiliation" path="affiliation.html"/>
+        <mapping elementName="alt" path="alt.html"/>
+        <mapping elementName="anchor" path="anchor.html"/>
+        <mapping elementName="answer" path="answer.html"/>
+        <mapping elementName="aph" path="aph.html"/>
+        <mapping elementName="appa" path="appa.html"/>
+        <mapping elementName="appb" path="appb.html"/>
+        <mapping elementName="appc" path="appc.html"/>
+        <mapping elementName="appd" path="appd.html"/>
+        <mapping elementName="appe" path="appe.html"/>
+        <mapping elementName="appendix" path="appendix.html"/>
+        <mapping elementName="appendixinfo" path="appendixinfo.html"/>
+        <mapping elementName="appf" path="appf.html"/>
+        <mapping elementName="appi" path="appi.html"/>
+        <mapping elementName="application" path="application.html"/>
+        <mapping elementName="area" path="area.html"/>
+        <mapping elementName="areaset" path="areaset.html"/>
+        <mapping elementName="areaspec" path="areaspec.html"/>
+        <mapping elementName="arg" path="arg.html"/>
+        <mapping elementName="article" path="article.html"/>
+        <mapping elementName="articleinfo" path="articleinfo.html"/>
+        <mapping elementName="artpagenums" path="artpagenums.html"/>
+        <mapping elementName="attribution" path="attribution.html"/>
+        <mapping elementName="audiodata" path="audiodata.html"/>
+        <mapping elementName="audioobject" path="audioobject.html"/>
+        <mapping elementName="author" path="author.html"/>
+        <mapping elementName="authorblurb" path="authorblurb.html"/>
+        <mapping elementName="authorgroup" path="authorgroup.html"/>
+        <mapping elementName="authorinitials" path="authorinitials.html"/>
+        <mapping elementName="beginpage" path="beginpage.html"/>
+        <mapping elementName="bibliocoverage" path="bibliocoverage.html"/>
+        <mapping elementName="bibliodiv" path="bibliodiv.html"/>
+        <mapping elementName="biblioentry" path="biblioentry.html"/>
+        <mapping elementName="bibliography" path="bibliography.html"/>
+        <mapping elementName="bibliographyinfo" path="bibliographyinfo.html"/>
+        <mapping elementName="biblioid" path="biblioid.html"/>
+        <mapping elementName="bibliolist" path="bibliolist.html"/>
+        <mapping elementName="bibliomisc" path="bibliomisc.html"/>
+        <mapping elementName="bibliomixed" path="bibliomixed.html"/>
+        <mapping elementName="bibliomset" path="bibliomset.html"/>
+        <mapping elementName="biblioref" path="biblioref.html"/>
+        <mapping elementName="bibliorelation" path="bibliorelation.html"/>
+        <mapping elementName="biblioset" path="biblioset.html"/>
+        <mapping elementName="bibliosource" path="bibliosource.html"/>
+        <mapping elementName="blockinfo" path="blockinfo.html"/>
+        <mapping elementName="blockquote" path="blockquote.html"/>
+        <mapping elementName="book" path="book.html"/>
+        <mapping elementName="bookinfo" path="bookinfo.html"/>
+        <mapping elementName="bridgehead" path="bridgehead.html"/>
+        <mapping elementName="callout" path="callout.html"/>
+        <mapping elementName="calloutlist" path="calloutlist.html"/>
+        <mapping elementName="caption" path="caption.html"/>
+        <mapping elementName="caution" path="caution.html"/>
+        <mapping elementName="ch00" path="ch00.html"/>
+        <mapping elementName="ch01" path="ch01.html"/>
+        <mapping elementName="ch02" path="ch02.html"/>
+        <mapping elementName="ch03" path="ch03.html"/>
+        <mapping elementName="ch04" path="ch04.html"/>
+        <mapping elementName="ch05" path="ch05.html"/>
+        <mapping elementName="chapter" path="chapter.html"/>
+        <mapping elementName="chapterinfo" path="chapterinfo.html"/>
+        <mapping elementName="citation" path="citation.html"/>
+        <mapping elementName="citebiblioid" path="citebiblioid.html"/>
+        <mapping elementName="citerefentry" path="citerefentry.html"/>
+        <mapping elementName="citetitle" path="citetitle.html"/>
+        <mapping elementName="city" path="city.html"/>
+        <mapping elementName="classname" path="classname.html"/>
+        <mapping elementName="classsynopsis" path="classsynopsis.html"/>
+        <mapping elementName="classsynopsisinfo" path="classsynopsisinfo.html"/>
+        <mapping elementName="cmdsynopsis" path="cmdsynopsis.html"/>
+        <mapping elementName="co" path="co.html"/>
+        <mapping elementName="co01" path="co01.html"/>
+        <mapping elementName="code" path="code.html"/>
+        <mapping elementName="col" path="col.html"/>
+        <mapping elementName="colgroup" path="colgroup.html"/>
+        <mapping elementName="collab" path="collab.html"/>
+        <mapping elementName="collabname" path="collabname.html"/>
+        <mapping elementName="colophon" path="colophon.html"/>
+        <mapping elementName="colspec" path="colspec.html"/>
+        <mapping elementName="command" path="command.html"/>
+        <mapping elementName="computeroutput" path="computeroutput.html"/>
+        <mapping elementName="confdates" path="confdates.html"/>
+        <mapping elementName="confgroup" path="confgroup.html"/>
+        <mapping elementName="confnum" path="confnum.html"/>
+        <mapping elementName="confsponsor" path="confsponsor.html"/>
+        <mapping elementName="conftitle" path="conftitle.html"/>
+        <mapping elementName="constant" path="constant.html"/>
+        <mapping elementName="constraint" path="constraint.html"/>
+        <mapping elementName="constraintdef" path="constraintdef.html"/>
+        <mapping elementName="constructorsynopsis" path="constructorsynopsis.html"/>
+        <mapping elementName="contractnum" path="contractnum.html"/>
+        <mapping elementName="contractsponsor" path="contractsponsor.html"/>
+        <mapping elementName="contrib" path="contrib.html"/>
+        <mapping elementName="copyright" path="copyright.html"/>
+        <mapping elementName="coref" path="coref.html"/>
+        <mapping elementName="corpauthor" path="corpauthor.html"/>
+        <mapping elementName="corpcredit" path="corpcredit.html"/>
+        <mapping elementName="corpname" path="corpname.html"/>
+        <mapping elementName="country" path="country.html"/>
+        <mapping elementName="database" path="database.html"/>
+        <mapping elementName="date" path="date.html"/>
+        <mapping elementName="dbcpyright" path="dbcpyright.html"/>
+        <mapping elementName="dbgloss" path="dbgloss.html"/>
+        <mapping elementName="dedication" path="dedication.html"/>
+        <mapping elementName="destructorsynopsis" path="destructorsynopsis.html"/>
+        <mapping elementName="docbook" path="docbook.html"/>
+        <mapping elementName="edition" path="edition.html"/>
+        <mapping elementName="editor" path="editor.html"/>
+        <mapping elementName="email" path="email.html"/>
+        <mapping elementName="emphasis" path="emphasis.html"/>
+        <mapping elementName="entry" path="entry.html"/>
+        <mapping elementName="entrytbl" path="entrytbl.html"/>
+        <mapping elementName="envar" path="envar.html"/>
+        <mapping elementName="epigraph" path="epigraph.html"/>
+        <mapping elementName="equation" path="equation.html"/>
+        <mapping elementName="errorcode" path="errorcode.html"/>
+        <mapping elementName="errorname" path="errorname.html"/>
+        <mapping elementName="errortext" path="errortext.html"/>
+        <mapping elementName="errortype" path="errortype.html"/>
+        <mapping elementName="example" path="example.html"/>
+        <mapping elementName="exceptionname" path="exceptionname.html"/>
+        <mapping elementName="fax" path="fax.html"/>
+        <mapping elementName="fieldsynopsis" path="fieldsynopsis.html"/>
+        <mapping elementName="figure" path="figure.html"/>
+        <mapping elementName="filename" path="filename.html"/>
+        <mapping elementName="firstname" path="firstname.html"/>
+        <mapping elementName="firstterm" path="firstterm.html"/>
+        <mapping elementName="footnote" path="footnote.html"/>
+        <mapping elementName="footnoteref" path="footnoteref.html"/>
+        <mapping elementName="foreignphrase" path="foreignphrase.html"/>
+        <mapping elementName="formalpara" path="formalpara.html"/>
+        <mapping elementName="funcdef" path="funcdef.html"/>
+        <mapping elementName="funcparams" path="funcparams.html"/>
+        <mapping elementName="funcprototype" path="funcprototype.html"/>
+        <mapping elementName="funcsynopsis" path="funcsynopsis.html"/>
+        <mapping elementName="funcsynopsisinfo" path="funcsynopsisinfo.html"/>
+        <mapping elementName="function" path="function.html"/>
+        <mapping elementName="glossary" path="glossary.html"/>
+        <mapping elementName="glossaryinfo" path="glossaryinfo.html"/>
+        <mapping elementName="glossdef" path="glossdef.html"/>
+        <mapping elementName="glossdiv" path="glossdiv.html"/>
+        <mapping elementName="glossentry" path="glossentry.html"/>
+        <mapping elementName="glosslist" path="glosslist.html"/>
+        <mapping elementName="glosssee" path="glosssee.html"/>
+        <mapping elementName="glossseealso" path="glossseealso.html"/>
+        <mapping elementName="glossterm" path="glossterm.html"/>
+        <mapping elementName="graphic" path="graphic.html"/>
+        <mapping elementName="graphicco" path="graphicco.html"/>
+        <mapping elementName="group" path="group.html"/>
+        <mapping elementName="guibutton" path="guibutton.html"/>
+        <mapping elementName="guiicon" path="guiicon.html"/>
+        <mapping elementName="guilabel" path="guilabel.html"/>
+        <mapping elementName="guimenu" path="guimenu.html"/>
+        <mapping elementName="guimenuitem" path="guimenuitem.html"/>
+        <mapping elementName="guisubmenu" path="guisubmenu.html"/>
+        <mapping elementName="hardware" path="hardware.html"/>
+        <mapping elementName="highlights" path="highlights.html"/>
+        <mapping elementName="holder" path="holder.html"/>
+        <mapping elementName="honorific" path="honorific.html"/>
+        <mapping elementName="html-form" path="html-form.html"/>
+        <mapping elementName="imagedata" path="imagedata.html"/>
+        <mapping elementName="imageobject" path="imageobject.html"/>
+        <mapping elementName="imageobjectco" path="imageobjectco.html"/>
+        <mapping elementName="important" path="important.html"/>
+        <mapping elementName="index" path="index.html"/>
+        <mapping elementName="indexdiv" path="indexdiv.html"/>
+        <mapping elementName="indexentry" path="indexentry.html"/>
+        <mapping elementName="indexinfo" path="indexinfo.html"/>
+        <mapping elementName="indexterm" path="indexterm.html"/>
+        <mapping elementName="informalequation" path="informalequation.html"/>
+        <mapping elementName="informalexample" path="informalexample.html"/>
+        <mapping elementName="informalfigure" path="informalfigure.html"/>
+        <mapping elementName="informaltable" path="informaltable.html"/>
+        <mapping elementName="initializer" path="initializer.html"/>
+        <mapping elementName="inlineequation" path="inlineequation.html"/>
+        <mapping elementName="inlinegraphic" path="inlinegraphic.html"/>
+        <mapping elementName="inlinemediaobject" path="inlinemediaobject.html"/>
+        <mapping elementName="interface" path="interface.html"/>
+        <mapping elementName="interfacename" path="interfacename.html"/>
+        <mapping elementName="invpartnumber" path="invpartnumber.html"/>
+        <mapping elementName="isbn" path="isbn.html"/>
+        <mapping elementName="iso-amsa" path="iso-amsa.html"/>
+        <mapping elementName="iso-amsb" path="iso-amsb.html"/>
+        <mapping elementName="iso-amsc" path="iso-amsc.html"/>
+        <mapping elementName="iso-amsn" path="iso-amsn.html"/>
+        <mapping elementName="iso-amso" path="iso-amso.html"/>
+        <mapping elementName="iso-amsr" path="iso-amsr.html"/>
+        <mapping elementName="iso-box" path="iso-box.html"/>
+        <mapping elementName="iso-cyr1" path="iso-cyr1.html"/>
+        <mapping elementName="iso-cyr2" path="iso-cyr2.html"/>
+        <mapping elementName="iso-dia" path="iso-dia.html"/>
+        <mapping elementName="iso-grk1" path="iso-grk1.html"/>
+        <mapping elementName="iso-grk2" path="iso-grk2.html"/>
+        <mapping elementName="iso-grk3" path="iso-grk3.html"/>
+        <mapping elementName="iso-grk4" path="iso-grk4.html"/>
+        <mapping elementName="iso-lat1" path="iso-lat1.html"/>
+        <mapping elementName="iso-lat2" path="iso-lat2.html"/>
+        <mapping elementName="iso-num" path="iso-num.html"/>
+        <mapping elementName="iso-pub" path="iso-pub.html"/>
+        <mapping elementName="iso-tech" path="iso-tech.html"/>
+        <mapping elementName="issn" path="issn.html"/>
+        <mapping elementName="issuenum" path="issuenum.html"/>
+        <mapping elementName="itemizedlist" path="itemizedlist.html"/>
+        <mapping elementName="itermset" path="itermset.html"/>
+        <mapping elementName="ix01" path="ix01.html"/>
+        <mapping elementName="jobtitle" path="jobtitle.html"/>
+        <mapping elementName="keycap" path="keycap.html"/>
+        <mapping elementName="keycode" path="keycode.html"/>
+        <mapping elementName="keycombo" path="keycombo.html"/>
+        <mapping elementName="keysym" path="keysym.html"/>
+        <mapping elementName="keyword" path="keyword.html"/>
+        <mapping elementName="keywordset" path="keywordset.html"/>
+        <mapping elementName="label" path="label.html"/>
+        <mapping elementName="legalnotice" path="legalnotice.html"/>
+        <mapping elementName="lhs" path="lhs.html"/>
+        <mapping elementName="lineage" path="lineage.html"/>
+        <mapping elementName="lineannotation" path="lineannotation.html"/>
+        <mapping elementName="link" path="link.html"/>
+        <mapping elementName="listitem" path="listitem.html"/>
+        <mapping elementName="literal" path="literal.html"/>
+        <mapping elementName="literallayout" path="literallayout.html"/>
+        <mapping elementName="lot" path="lot.html"/>
+        <mapping elementName="lotentry" path="lotentry.html"/>
+        <mapping elementName="manvolnum" path="manvolnum.html"/>
+        <mapping elementName="markup" path="markup.html"/>
+        <mapping elementName="mathphrase" path="mathphrase.html"/>
+        <mapping elementName="medialabel" path="medialabel.html"/>
+        <mapping elementName="mediaobject" path="mediaobject.html"/>
+        <mapping elementName="mediaobjectco" path="mediaobjectco.html"/>
+        <mapping elementName="member" path="member.html"/>
+        <mapping elementName="menuchoice" path="menuchoice.html"/>
+        <mapping elementName="methodname" path="methodname.html"/>
+        <mapping elementName="methodparam" path="methodparam.html"/>
+        <mapping elementName="methodsynopsis" path="methodsynopsis.html"/>
+        <mapping elementName="mml-math" path="mml-math.html"/>
+        <mapping elementName="modespec" path="modespec.html"/>
+        <mapping elementName="modifier" path="modifier.html"/>
+        <mapping elementName="mousebutton" path="mousebutton.html"/>
+        <mapping elementName="msg" path="msg.html"/>
+        <mapping elementName="msgaud" path="msgaud.html"/>
+        <mapping elementName="msgentry" path="msgentry.html"/>
+        <mapping elementName="msgexplan" path="msgexplan.html"/>
+        <mapping elementName="msginfo" path="msginfo.html"/>
+        <mapping elementName="msglevel" path="msglevel.html"/>
+        <mapping elementName="msgmain" path="msgmain.html"/>
+        <mapping elementName="msgorig" path="msgorig.html"/>
+        <mapping elementName="msgrel" path="msgrel.html"/>
+        <mapping elementName="msgset" path="msgset.html"/>
+        <mapping elementName="msgsub" path="msgsub.html"/>
+        <mapping elementName="msgtext" path="msgtext.html"/>
+        <mapping elementName="nonterminal" path="nonterminal.html"/>
+        <mapping elementName="note" path="note.html"/>
+        <mapping elementName="objectinfo" path="objectinfo.html"/>
+        <mapping elementName="olink" path="olink.html"/>
+        <mapping elementName="ooclass" path="ooclass.html"/>
+        <mapping elementName="ooexception" path="ooexception.html"/>
+        <mapping elementName="oointerface" path="oointerface.html"/>
+        <mapping elementName="option" path="option.html"/>
+        <mapping elementName="optional" path="optional.html"/>
+        <mapping elementName="orderedlist" path="orderedlist.html"/>
+        <mapping elementName="orgdiv" path="orgdiv.html"/>
+        <mapping elementName="orgname" path="orgname.html"/>
+        <mapping elementName="otheraddr" path="otheraddr.html"/>
+        <mapping elementName="othercredit" path="othercredit.html"/>
+        <mapping elementName="othername" path="othername.html"/>
+        <mapping elementName="package" path="package.html"/>
+        <mapping elementName="pagenums" path="pagenums.html"/>
+        <mapping elementName="para" path="para.html"/>
+        <mapping elementName="paramdef" path="paramdef.html"/>
+        <mapping elementName="parameter" path="parameter.html"/>
+        <mapping elementName="part" path="part.html"/>
+        <mapping elementName="part1" path="part1.html"/>
+        <mapping elementName="part2" path="part2.html"/>
+        <mapping elementName="part3" path="part3.html"/>
+        <mapping elementName="partinfo" path="partinfo.html"/>
+        <mapping elementName="partintro" path="partintro.html"/>
+        <mapping elementName="pe-attlist" path="pe-attlist.html"/>
+        <mapping elementName="pe-attrib" path="pe-attrib.html"/>
+        <mapping elementName="pe-attval" path="pe-attval.html"/>
+        <mapping elementName="pe-cals" path="pe-cals.html"/>
+        <mapping elementName="pe-class" path="pe-class.html"/>
+        <mapping elementName="pe-cmodel" path="pe-cmodel.html"/>
+        <mapping elementName="pe-cmodule" path="pe-cmodule.html"/>
+        <mapping elementName="pe-common-attrib" path="pe-common-attrib.html"/>
+        <mapping elementName="pe-content" path="pe-content.html"/>
+        <mapping elementName="pe-dbmodules" path="pe-dbmodules.html"/>
+        <mapping elementName="pe-element" path="pe-element.html"/>
+        <mapping elementName="pe-exclusion" path="pe-exclusion.html"/>
+        <mapping elementName="pe-hook" path="pe-hook.html"/>
+        <mapping elementName="pe-inclusion" path="pe-inclusion.html"/>
+        <mapping elementName="pe-iso" path="pe-iso.html"/>
+        <mapping elementName="pe-l-attrib" path="pe-l-attrib.html"/>
+        <mapping elementName="pe-l-class" path="pe-l-class.html"/>
+        <mapping elementName="pe-l-mix" path="pe-l-mix.html"/>
+        <mapping elementName="pe-mix" path="pe-mix.html"/>
+        <mapping elementName="pe-module" path="pe-module.html"/>
+        <mapping elementName="pe-role" path="pe-role.html"/>
+        <mapping elementName="personblurb" path="personblurb.html"/>
+        <mapping elementName="personname" path="personname.html"/>
+        <mapping elementName="phone" path="phone.html"/>
+        <mapping elementName="phrase" path="phrase.html"/>
+        <mapping elementName="pob" path="pob.html"/>
+        <mapping elementName="postcode" path="postcode.html"/>
+        <mapping elementName="preface" path="preface.html"/>
+        <mapping elementName="prefaceinfo" path="prefaceinfo.html"/>
+        <mapping elementName="primary" path="primary.html"/>
+        <mapping elementName="primaryie" path="primaryie.html"/>
+        <mapping elementName="printhistory" path="printhistory.html"/>
+        <mapping elementName="procedure" path="procedure.html"/>
+        <mapping elementName="production" path="production.html"/>
+        <mapping elementName="productionrecap" path="productionrecap.html"/>
+        <mapping elementName="productionset" path="productionset.html"/>
+        <mapping elementName="productname" path="productname.html"/>
+        <mapping elementName="productnumber" path="productnumber.html"/>
+        <mapping elementName="programlisting" path="programlisting.html"/>
+        <mapping elementName="programlistingco" path="programlistingco.html"/>
+        <mapping elementName="prompt" path="prompt.html"/>
+        <mapping elementName="property" path="property.html"/>
+        <mapping elementName="pubdate" path="pubdate.html"/>
+        <mapping elementName="publisher" path="publisher.html"/>
+        <mapping elementName="publishername" path="publishername.html"/>
+        <mapping elementName="pubsnumber" path="pubsnumber.html"/>
+        <mapping elementName="qandadiv" path="qandadiv.html"/>
+        <mapping elementName="qandaentry" path="qandaentry.html"/>
+        <mapping elementName="qandaset" path="qandaset.html"/>
+        <mapping elementName="question" path="question.html"/>
+        <mapping elementName="quickref" path="quickref.html"/>
+        <mapping elementName="quote" path="quote.html"/>
+        <mapping elementName="ref-charents" path="ref-charents.html"/>
+        <mapping elementName="ref-elements" path="ref-elements.html"/>
+        <mapping elementName="ref-paraments" path="ref-paraments.html"/>
+        <mapping elementName="refclass" path="refclass.html"/>
+        <mapping elementName="refdescriptor" path="refdescriptor.html"/>
+        <mapping elementName="refentry" path="refentry.html"/>
+        <mapping elementName="refentryinfo" path="refentryinfo.html"/>
+        <mapping elementName="refentrytitle" path="refentrytitle.html"/>
+        <mapping elementName="reference" path="reference.html"/>
+        <mapping elementName="referenceinfo" path="referenceinfo.html"/>
+        <mapping elementName="refmeta" path="refmeta.html"/>
+        <mapping elementName="refmiscinfo" path="refmiscinfo.html"/>
+        <mapping elementName="refname" path="refname.html"/>
+        <mapping elementName="refnamediv" path="refnamediv.html"/>
+        <mapping elementName="refpurpose" path="refpurpose.html"/>
+        <mapping elementName="refsect1" path="refsect1.html"/>
+        <mapping elementName="refsect1info" path="refsect1info.html"/>
+        <mapping elementName="refsect2" path="refsect2.html"/>
+        <mapping elementName="refsect2info" path="refsect2info.html"/>
+        <mapping elementName="refsect3" path="refsect3.html"/>
+        <mapping elementName="refsect3info" path="refsect3info.html"/>
+        <mapping elementName="refsection" path="refsection.html"/>
+        <mapping elementName="refsectioninfo" path="refsectioninfo.html"/>
+        <mapping elementName="refsynopsisdiv" path="refsynopsisdiv.html"/>
+        <mapping elementName="refsynopsisdivinfo" path="refsynopsisdivinfo.html"/>
+        <mapping elementName="releaseinfo" path="releaseinfo.html"/>
+        <mapping elementName="remark" path="remark.html"/>
+        <mapping elementName="replaceable" path="replaceable.html"/>
+        <mapping elementName="returnvalue" path="returnvalue.html"/>
+        <mapping elementName="revdescription" path="revdescription.html"/>
+        <mapping elementName="revhistory" path="revhistory.html"/>
+        <mapping elementName="revision" path="revision.html"/>
+        <mapping elementName="revnumber" path="revnumber.html"/>
+        <mapping elementName="revremark" path="revremark.html"/>
+        <mapping elementName="rhs" path="rhs.html"/>
+        <mapping elementName="row" path="row.html"/>
+        <mapping elementName="sbr" path="sbr.html"/>
+        <mapping elementName="screen" path="screen.html"/>
+        <mapping elementName="screenco" path="screenco.html"/>
+        <mapping elementName="screeninfo" path="screeninfo.html"/>
+        <mapping elementName="screenshot" path="screenshot.html"/>
+        <mapping elementName="secondary" path="secondary.html"/>
+        <mapping elementName="secondaryie" path="secondaryie.html"/>
+        <mapping elementName="sect1" path="sect1.html"/>
+        <mapping elementName="sect1info" path="sect1info.html"/>
+        <mapping elementName="sect2" path="sect2.html"/>
+        <mapping elementName="sect2info" path="sect2info.html"/>
+        <mapping elementName="sect3" path="sect3.html"/>
+        <mapping elementName="sect3info" path="sect3info.html"/>
+        <mapping elementName="sect4" path="sect4.html"/>
+        <mapping elementName="sect4info" path="sect4info.html"/>
+        <mapping elementName="sect5" path="sect5.html"/>
+        <mapping elementName="sect5info" path="sect5info.html"/>
+        <mapping elementName="section" path="section.html"/>
+        <mapping elementName="sectioninfo" path="sectioninfo.html"/>
+        <mapping elementName="see" path="see.html"/>
+        <mapping elementName="seealso" path="seealso.html"/>
+        <mapping elementName="seealsoie" path="seealsoie.html"/>
+        <mapping elementName="seeie" path="seeie.html"/>
+        <mapping elementName="seg" path="seg.html"/>
+        <mapping elementName="seglistitem" path="seglistitem.html"/>
+        <mapping elementName="segmentedlist" path="segmentedlist.html"/>
+        <mapping elementName="segtitle" path="segtitle.html"/>
+        <mapping elementName="seriesvolnums" path="seriesvolnums.html"/>
+        <mapping elementName="set" path="set.html"/>
+        <mapping elementName="setindex" path="setindex.html"/>
+        <mapping elementName="setindexinfo" path="setindexinfo.html"/>
+        <mapping elementName="setinfo" path="setinfo.html"/>
+        <mapping elementName="sgmltag" path="sgmltag.html"/>
+        <mapping elementName="shortaffil" path="shortaffil.html"/>
+        <mapping elementName="shortcut" path="shortcut.html"/>
+        <mapping elementName="sidebar" path="sidebar.html"/>
+        <mapping elementName="sidebarinfo" path="sidebarinfo.html"/>
+        <mapping elementName="simpara" path="simpara.html"/>
+        <mapping elementName="simplelist" path="simplelist.html"/>
+        <mapping elementName="simplemsgentry" path="simplemsgentry.html"/>
+        <mapping elementName="simplesect" path="simplesect.html"/>
+        <mapping elementName="spanspec" path="spanspec.html"/>
+        <mapping elementName="state" path="state.html"/>
+        <mapping elementName="step" path="step.html"/>
+        <mapping elementName="stepalternatives" path="stepalternatives.html"/>
+        <mapping elementName="street" path="street.html"/>
+        <mapping elementName="structfield" path="structfield.html"/>
+        <mapping elementName="structname" path="structname.html"/>
+        <mapping elementName="subject" path="subject.html"/>
+        <mapping elementName="subjectset" path="subjectset.html"/>
+        <mapping elementName="subjectterm" path="subjectterm.html"/>
+        <mapping elementName="subscript" path="subscript.html"/>
+        <mapping elementName="substeps" path="substeps.html"/>
+        <mapping elementName="subtitle" path="subtitle.html"/>
+        <mapping elementName="superscript" path="superscript.html"/>
+        <mapping elementName="surname" path="surname.html"/>
+        <mapping elementName="svg-svg" path="svg-svg.html"/>
+        <mapping elementName="symbol" path="symbol.html"/>
+        <mapping elementName="synopfragment" path="synopfragment.html"/>
+        <mapping elementName="synopfragmentref" path="synopfragmentref.html"/>
+        <mapping elementName="synopsis" path="synopsis.html"/>
+        <mapping elementName="systemitem" path="systemitem.html"/>
+        <mapping elementName="table" path="table.html"/>
+        <mapping elementName="task" path="task.html"/>
+        <mapping elementName="taskprerequisites" path="taskprerequisites.html"/>
+        <mapping elementName="taskrelated" path="taskrelated.html"/>
+        <mapping elementName="tasksummary" path="tasksummary.html"/>
+        <mapping elementName="tbody" path="tbody.html"/>
+        <mapping elementName="td" path="td.html"/>
+        <mapping elementName="term" path="term.html"/>
+        <mapping elementName="termdef" path="termdef.html"/>
+        <mapping elementName="tertiary" path="tertiary.html"/>
+        <mapping elementName="tertiaryie" path="tertiaryie.html"/>
+        <mapping elementName="textdata" path="textdata.html"/>
+        <mapping elementName="textobject" path="textobject.html"/>
+        <mapping elementName="tfoot" path="tfoot.html"/>
+        <mapping elementName="tgroup" path="tgroup.html"/>
+        <mapping elementName="th" path="th.html"/>
+        <mapping elementName="thead" path="thead.html"/>
+        <mapping elementName="tip" path="tip.html"/>
+        <mapping elementName="title" path="title.html"/>
+        <mapping elementName="titleabbrev" path="titleabbrev.html"/>
+        <mapping elementName="toc" path="toc.html"/>
+        <mapping elementName="tocback" path="tocback.html"/>
+        <mapping elementName="tocchap" path="tocchap.html"/>
+        <mapping elementName="tocentry" path="tocentry.html"/>
+        <mapping elementName="tocfront" path="tocfront.html"/>
+        <mapping elementName="toclevel1" path="toclevel1.html"/>
+        <mapping elementName="toclevel2" path="toclevel2.html"/>
+        <mapping elementName="toclevel3" path="toclevel3.html"/>
+        <mapping elementName="toclevel4" path="toclevel4.html"/>
+        <mapping elementName="toclevel5" path="toclevel5.html"/>
+        <mapping elementName="tocpart" path="tocpart.html"/>
+        <mapping elementName="token" path="token.html"/>
+        <mapping elementName="tr" path="tr.html"/>
+        <mapping elementName="trademark" path="trademark.html"/>
+        <mapping elementName="type" path="type.html"/>
+        <mapping elementName="ulink" path="ulink.html"/>
+        <mapping elementName="uri" path="uri.html"/>
+        <mapping elementName="userinput" path="userinput.html"/>
+        <mapping elementName="varargs" path="varargs.html"/>
+        <mapping elementName="variablelist" path="variablelist.html"/>
+        <mapping elementName="varlistentry" path="varlistentry.html"/>
+        <mapping elementName="varname" path="varname.html"/>
+        <mapping elementName="videodata" path="videodata.html"/>
+        <mapping elementName="videoobject" path="videoobject.html"/>
+        <mapping elementName="void" path="void.html"/>
+        <mapping elementName="volumenum" path="volumenum.html"/>
+        <mapping elementName="warning" path="warning.html"/>
+        <mapping elementName="wordasword" path="wordasword.html"/>
+        <mapping elementName="xref" path="xref.html"/>
+        <mapping elementName="year" path="year.html"/>
+        <mapping elementName="info" path="info.html"/>
+        <mapping elementName="tag" path="tag.html"/>
+        <mapping elementName="tocdiv" path="tocdiv.html"/>
+        <mapping elementName="annotation" path="annotation.html"/>
+        <mapping elementName="assembly" path="assembly.html"/>
+        <mapping elementName="association" path="association.html"/>
+        <mapping elementName="description" path="description.html"/>
+        <mapping elementName="filterin" path="filterin.html"/>
+        <mapping elementName="filterout" path="filterout.html"/>
+        <mapping elementName="instance" path="instance.html"/>
+        <mapping elementName="merge" path="merge.html"/>
+        <mapping elementName="module" path="module.html"/>
+        <mapping elementName="output" path="output.html"/>
+        <mapping elementName="relationship" path="relationship.html"/>
+        <mapping elementName="resource" path="resource.html"/>
+        <mapping elementName="resources" path="resources.html"/>
+        <mapping elementName="structure" path="structure.html"/>
+        <mapping elementName="transform" path="transform.html"/>
+        <mapping elementName="transforms" path="transforms.html"/>
+        <mapping elementName="topic" path="topic.html"/>
+        <mapping elementName="result" path="result.html"/>
+        <mapping elementName="multimediaparam" path="multimediaparam.html"/>
+        <mapping elementName="givenname" path="givenname.html"/>
+    </mappingGroup>
+</contentCompletionElementsMap>

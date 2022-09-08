@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE troubleshooting PUBLIC "-//OASIS//DTD DITA Troubleshooting//EN"
+"../dtd/troubleshooting.dtd">
+<troubleshooting id="nologon">
+  <title>Cannot log on</title>
+  <shortdesc>Login attempts have failed</shortdesc>
+  <troublebody>
+    <condition>
+      <p>The system will not accept your login credentials.</p>
+    </condition>
+    <troubleSolution>
+      <cause>
+        <p>Caps Lock key may be on.</p>
+      </cause>
+      <remedy>
+        <responsibleParty>user</responsibleParty>
+        <steps-unordered>
+          <step>
+            <cmd>Verify that the Caps Lock key is off.</cmd>
+          </step>
+        </steps-unordered>
+      </remedy>
+    </troubleSolution>
+    <troubleSolution>
+      <cause>
+        <p>The password you are using might not match the one stored in the
+          system.</p>
+      </cause>
+      <remedy id="gotoaccountmanagement">
+        <steps>
+          <step>
+            <cmd>Open a Web browser window</cmd>
+          </step>
+          <step>
+            <cmd>Go to <xref href="http://your.itdept.com/reset.html"
+                scope="external" format="html">Account management</xref>, and
+              follow the instructions</cmd>
+          </step>
+        </steps>
+      </remedy>
+    </troubleSolution>
+    <troubleSolution>
+      <cause>
+        <p>The account name you are using might not match one stored in the
+          system.</p>
+      </cause>
+      <remedy conref="#nologon/gotoaccountmanagement"/>
+    </troubleSolution>
+  </troublebody>
+</troubleshooting>

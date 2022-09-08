@@ -1,0 +1,55 @@
+# ============================================================= 
+# MODULE:    DITA Bookmap RNC
+# VERSION:   1.2
+# DATE:      October 2010
+# =============================================================
+
+# Refer to the latest version of this file by the following URI:
+# urn:dita-ng:dita:rnc:bookmap.rnc
+# To refer to this specific version, you may use this value:
+# urn:dita-ng:dita:rnc:bookmap.rnc:1.2
+
+# ============================================================= 
+# SYSTEM:     Darwin Information Typing Architecture (DITA)
+# PURPOSE:    Relax NG schema to describe DITA Book Maps
+# ORIGINAL CREATION DATE:
+# September 2010
+# (C) Copyright Syncro Soft 2010-2011
+# All Rights Reserved.
+# =============================================================
+
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+# Define the root elements
+start = bookmap.element
+# The DITA domains attribute
+domains-atts &=
+  [
+    a:defaultValue =
+      "(map bookmap) (topic delay-d) (topic indexing-d) (map mapgroup-d) (topic xnal-d)         (topic hi-d) (topic ut-d) (topic hazard-d) (topic abbrev-d) (topic ui-d) (topic pr-d) (topic sw-d)"
+  ]
+  attribute domains { text }?
+# Include modules
+include "bookmap.mod.rnc"
+include "../../base/rnc/map.mod.rnc"
+include "../../base/rnc/delayResolutionDomain.mod.rnc"
+include "../../base/rnc/indexingDomain.mod.rnc"
+include "../../base/rnc/mapGroup.mod.rnc"
+include "../../xnal/rnc/xnalDomain.mod.rnc"
+include "../../base/rnc/highlightDomain.mod.rnc"
+include "../../base/rnc/utilitiesDomain.mod.rnc"
+include "../../base/rnc/hazardstatementDomain.mod.rnc"
+include "../../technicalContent/rnc/abbreviateDomain.mod.rnc"
+include "../../technicalContent/rnc/uiDomain.mod.rnc"
+include "../../technicalContent/rnc/programmingDomain.mod.rnc"
+include "../../technicalContent/rnc/softwareDomain.mod.rnc"
+# Define the any pattern to exclude elements with ID attributes
+# from the wildcard and refer them expliceitely
+any =
+  (bookmap.element
+   | anchor.element
+   | element * - (bookmap | anchor) {
+       attribute * { text }*,
+       any
+     }
+   | text)*

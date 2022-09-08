@@ -1,0 +1,36 @@
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * Legacy conversion elements
+ * 
+ * langRef/containers/legacy-conversion-elements.html
+ * 
+ * Conversion elements exist primarily to aid in the 
+ * conversion of content to DITA.
+ * 
+ * ==================================================
+ * ==================================================
+ */
+
+
+
+/* ==================================================
+ * 
+ * <required-cleanup>
+ * 
+ * A required-cleanup element is used as a placeholder 
+ * for migrated elements that cannot be appropriately 
+ * tagged without manual intervention. 
+ */
+*[class ~= "topic/required-cleanup"]{
+  display:block;
+  padding-left:0.2em;
+  padding-right:0.2em;
+  border-left:thick solid;
+  border-right:thick solid;
+}
+*[class ~= "topic/required-cleanup"]:before{
+    content:"Required-Cleanup: ";
+    font-weight:bold;
+}

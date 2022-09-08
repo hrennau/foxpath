@@ -1,0 +1,1163 @@
+/**
+ * Copyright (c) 2006-2012 Alex Milowski
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ *     Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ * 
+ *     Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in
+ *     the documentation and/or other materials provided with the
+ *     distribution.
+ * 
+ *     Neither the name of Alex Milowski nor the names of the contributors may be used to endorse or promote
+ *     products derived from this software without specific prior written
+ *     permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+*/
+/* ###############  CSS describing XML Spec Schema for Oxygen ############### */
+/* ###############  Created by Alex Milowski (2006)           ############### */
+/* ###############  Revised by Murray Maloney (2012)          ############### */
+/* ###############  Counters by Radu Coravu @ Oxygen (2012)   ############### */
+
+
+spec {
+   display: block;
+}
+
+header {
+   display: block;
+   padding: 36pt;
+   margin-top: 24pt;
+   margin-bottom: 24pt;
+}
+
+header > title {
+   display: block;
+   color: blue;
+   font-weight: bold;
+   font-size: 30pt;
+   text-align: center;
+   margin-bottom: 15pt;
+}
+
+title {}
+subtitle {}
+
+/* ###############  W3C Spec Changes ############### */
+
+[diff="del"] {
+    display: none;
+}
+
+[diff="add"] {
+    color: green;
+}
+
+[diff="chg"] {
+    color: blue;
+}
+
+
+
+/* ###############  W3C Spec Meta Data ############### */
+
+copyright {
+   font-weight: bold;
+   content: "(c)"; 
+}
+
+version:before {
+   content: "Version: ";
+   font-weight: bold;   
+}
+
+version {
+   display: block;
+   margin-top: 6pt;
+   margin-bottom: 6pt;
+}
+
+w3c-designation:before {
+   content: "Designation: ";
+   font-weight: bold;
+}
+
+w3c-designation {
+   display: block;
+   margin-top: 6pt;
+   margin-bottom: 6pt;
+}
+
+w3c-doctype:before {
+   content: "Document Type: ";
+   font-weight: bold;
+}
+
+w3c-doctype {
+   display: block;
+   margin-top: 6pt;
+   margin-bottom: 6pt;
+}
+
+/* ###############  W3C Spec Publication Date ############### */
+
+pubdate:before {
+   content: "Pubdate:  ";
+   font-weight: bold;
+}
+pubdate {
+   display: block;
+   margin-top: 6pt;
+   margin-bottom: 24pt;
+}
+
+pubdate > year {
+   display: inline;
+}
+pubdate > day {
+   display: inline;
+}
+pubdate > month {
+   display: inline;
+}
+pubdate > month:before {
+   content: "-";
+}
+pubdate > month:after {
+   content: "-";
+}
+
+/* ###############  W3C Spec Locations ############### */
+
+
+
+publoc:before {
+   display: run-in;
+   content: "Published Location: ";
+   font-weight: bold;
+}
+publoc {
+   display: block;
+   margin-top: .5em;
+}
+latestloc:before {
+   display: run-in;
+   content: "Latest Location:  ";
+   font-weight: bold;
+}
+latestloc {
+   display: block;
+   margin-top: .5em;
+}
+
+prevlocs:before {
+   display: run-in;
+   content: "Previous Location:  ";
+   font-weight: bold;
+}
+prevlocs {
+   display: block;
+   margin-top: .5em;
+}
+
+errataloc:before {
+   display: run-in;
+   content: "Errata Location:  ";
+   font-weight: bold;
+}
+errataloc {
+   display: block;
+   content: attr(href);
+   margin-top: .5em;
+}
+
+preverrataloc:before {
+   display: run-in;
+   content: "Previous Errata Location:  ";
+   font-weight: bold;
+}
+preverrataloc {
+   display: block;
+   content: attr(href);
+   margin-top: .5em;
+}
+
+translationloc:before {
+   display: run-in;
+   content: "Translation Location:  ";
+   font-weight: bold;
+}
+translationloc {
+   display: block;
+   content: attr(href);
+   margin-top: .5em;
+}
+
+altlocs:before {
+   display: run-in;
+   content: "Alternate Location(s):  ";
+   font-weight: bold;
+}
+
+altlocs {
+    display: block;
+    content: "This document is also available in these non-normative formats: " ;
+    margin-top: .5em;
+}
+
+loc {
+   display: inline;
+   content: ", ";
+   font-style: italic;
+}
+
+p > loc {
+   display: inline;
+   content: "";
+   font-style: italic;
+   color: blue;
+}
+
+loc:only-child {
+   content: "";
+}
+
+loc:first-child {
+   content: "";
+}
+
+loc:last-child {
+   content: ", ";
+}
+
+/* ###############  W3C Spec Authors ############### */
+
+authlist:before {
+   display: block;
+   margin-top: 24pt;
+   content: "Authors: ";
+   font-weight: bold;
+}
+authlist {
+   display: block;
+   margin-bottom: 24pt;
+
+}
+
+author {
+   display: block;
+}
+
+author > name:after {
+   content: ", ";
+}
+
+author > affiliation:after {
+   content: ", ";
+}
+
+author > name { display: inline; }
+author > affiliation { display: inline; }
+author > email { display: inline; }
+
+/* ###############  W3C Spec Introductory ############### */
+
+abstract:before {
+   display: block;
+   margin-top: 24pt;
+   content: "Abstract";
+   font-weight: bold;
+}
+abstract {
+   display: block;
+   margin-bottom: 24pt;
+}
+
+status:before {
+   display: block;
+   margin-top: 12pt;
+   content: "Status";
+   font-weight: bold;
+}
+status {
+   display: block;
+   margin-bottom: 24pt;
+}
+
+/* ###############  W3C Spec Meta Data ############### */
+
+pubstmt:before {
+   display: run-in;
+   content: "Published: ";
+   font-weight: bold;    
+}
+pubstmt {
+    display: block;    
+}
+
+langusage:before {
+   content: "Language Usage: ";
+   font-weight: bold;
+}
+langusage {
+   display: block;
+}
+
+language {
+    display: inline;
+    content: ", "
+}
+
+sourcedesc:before {
+    display: block;
+    content: "Publication Source: " ;
+   font-weight: bold;    
+}
+
+sourcedesc {
+    display: block;
+}
+
+/* ###############  W3C Spec Revisions ############### */
+
+revisiondesc:before {
+   margin-top: 12pt;
+   content: "Revision Description: ";
+   font-weight: bold;
+}
+
+revisiondesc {
+   display: block;   
+   margin-top: 2em;
+   margin-bottom: 2em;
+}
+
+/* ###############  W3C Spec Body, Head, Div(s) & Rear Matter ############### */
+
+
+body, back {
+   display: block;
+   padding: 1em;
+}
+
+head {
+   display: block;
+   font-weight: bold;
+   margin-bottom: .5em;
+   font-size: 120%;
+   padding: 2pt;
+}
+
+div1, div2, div3, div4, div5 {
+   display: block;
+   margin-top: 1em;
+   margin-bottom: 2em;
+}
+
+div1 > head {
+   color: white;
+   background-color: black;
+}
+
+/* ###############  W3C Section Numbering ############### */
+
+
+body  { counter-reset:div1; }
+back  { counter-reset:div1; }
+
+div1 { counter-increment: div1;
+       counter-reset:div2; }
+div2 { counter-increment: div2;
+       counter-reset:div3; }
+div3 { counter-increment: div3;
+       counter-reset:div4; }
+div4 { counter-increment: div4;
+       counter-reset:div5; }
+div5 { counter-increment: div5;}
+
+
+body div1 > head:before { content: counter(div1) ". "; }
+body div2 > head:before { content: counter(div1) "." counter(div2) ". "; }
+body div3 > head:before { content:  counter(div1) "." counter(div2) "." counter(div3) ". "; }
+body div4 > head:before { content: counter(div1) "." counter(div2) "." counter(div3) "." counter(div4) ". "; }
+body div5 > head:before { content: counter(div1) "." counter(div2) "." counter(div3) "." counter(div4) "." counter(div5) ". "; }
+
+back div1 > head:before { content: counter(div1, upper-latin) ". "; }
+back div2 > head:before { content: counter(div1, upper-latin) "." counter(div2) ". "; }
+back div3 > head:before { content:  counter(div1, upper-latin) "." counter(div2) "." counter(div3) ". "; }
+back div4 > head:before { content: counter(div1, upper-latin) "." counter(div2) "." counter(div3) "." counter(div4) ". "; }
+back div5 > head:before { content: counter(div1, upper-latin) "." counter(div2) "." counter(div3) "." counter(div4) "." counter(div5) ". "; }
+
+/* ###############  W3C Spec Paragraphs ############### */
+
+p {
+   display: block;
+   padding: .25em;
+   margin-bottom: .5em;
+}
+
+p[role="if"] {
+   display: block;
+   padding: 1pt;
+   margin-bottom: .5em;
+   content: "IF  " ;
+}
+p[role="then"] {
+   display: block;
+   padding: 1pt;
+   margin-bottom: .5em;
+   content: "THEN  " ;
+}
+p[role="otherwise"] {
+   display: block;
+   padding: 1pt;
+   margin-bottom: .5em;
+   content: "OTHERWISE  " ;
+}
+
+
+/* ###############  W3C Spec Unordered Lists ############### */
+
+ulist {
+    display: block;
+    list-style-type: square;
+    margin-left: 2em;
+    margin-top: .25em;
+}
+
+ulist ulist {
+    display: block;
+    list-style-type: circle;
+    margin-left: 2em;
+    margin-top: .25em;
+}
+
+
+/* ###############  W3C Spec Ordered Lists ############### */
+
+olist {
+    counter-reset: olist;
+    display: block;
+    margin-left: 2em;
+    margin-top: .25em;
+}
+
+olist > item {
+    display: block;
+    padding-bottom: .1em;
+}
+
+olist > item:before {
+    content: counters(olist, ".") " "; 
+    counter-increment: olist;
+}
+
+olist[role="Case"] {
+    content: "The appropriate CASE among the following must be true:";
+}
+
+olist[role="and"] {
+    display: run-in; 
+    content: "ALL of the following must be true:" ;
+}
+
+olist[role="or"] {
+    display: run-in; 
+    content: "ONE of the following must be true: " ;
+}
+/* ###############  W3C Spec List Items ############### */
+
+ulist > item {
+    display: list-item;
+    padding-bottom: .1em;
+}
+
+/* ###############  W3C Spec List Items ############### */
+
+orglist {
+    display: table;
+    margin-bottom: 1em;
+}
+
+member {
+    display: table-row;
+}
+
+name {
+    display: table-cell
+}
+
+affiliation {
+    display: table-cell;
+    margin-left: 1em;
+}
+
+role { 
+    display: table-cell;
+    margin-left: 1em;
+}
+
+/* ###############  W3C Spec S-List ############### */
+
+
+slist {
+    display: block;
+    list-style-type: square;
+    margin-left: 2em;
+    margin-top: .25em;
+}
+
+sitem {
+    display: list-item;
+    padding-bottom: .25em;
+}
+   
+
+/* ###############  W3C Spec Biblios ############### */
+
+blist {
+   display: block;
+   padding: 5pt;
+   margin-top: 6pt;
+   margin-bottom: 6pt;
+}
+
+item, bibl {
+   display: block;
+   margin-bottom: .25em;
+}
+
+bibl:before {
+   display: block; 
+   content: "[" attr(id) "] <" attr(href) "> ";
+   margin-left: 0em;
+}
+
+bibl > titleref {
+  font-weight: bold;
+}
+
+/* ###############  W3C Spec Gloss Lists ############### */
+
+
+glist {
+   display: block;
+   padding: 5pt;
+   margin-top: 6pt;
+   margin-bottom: 6pt;
+
+}
+gitem {
+   display: block;
+   margin-bottom: 6pt;
+}
+
+glist > gitem:before {
+    margin-top: 6pt;
+}
+
+gitem > label { 
+   margin-top: 2pt;
+   font-weight: bold;
+}
+
+/* Testing
+gitem > label > termdef:after { 
+   display: block; 
+   content: "TERM: " attr(term);
+   font-weight: normal;
+   margin-left: 2em;
+   margin-bottom: 1em;
+}
+*/
+
+termdef {
+    content: "[Definition:] "
+}
+
+gitem > def { 
+   display: block;
+   margin-left: 2em;
+   margin-top: .25em;
+   margin-bottom: .25em;
+}
+
+
+/* ###############  W3C Spec Notes & Issues ############### */
+
+footnote {}
+
+issue, note, notice, ednote, vcnote, wfnote {
+   display: block;
+   margin-left: 0em;
+   margin-right: +0em;
+   margin-top: 2pt;
+   margin-bottom: 12pt;
+   border: 1pt solid gray;
+   color: red;
+   padding: 3pt;
+}
+
+/* ###############  W3C Spec Special Notes ############### */
+
+
+/* ###############  W3C Spec Issues ############### */
+
+issue:before {
+   display: run-in;
+   content: "ISSUE: [" attr(id) "]";
+}
+
+note:before {
+   display: run-in;
+   margin-top: 1em;
+   content: "NOTE: " ;
+}
+
+notice:before {
+   display: run-in;
+   margin-top: 1em;
+   content: "NOTICE: " ;
+}
+
+ednote:before {
+   display: run-in;
+   margin-top: 1em;
+   content: "EDITOR'S NOTE: " ;
+}
+
+vcnote:before {
+   display: run-in;
+   margin-top: 1em;
+   content: "VALIDITY CONSTRAINT NOTE: " ;
+}
+
+wfnote:before {
+   display: run-in;
+   margin-top: 1em;
+   content: "WELL-FORMEDNESS NOTE: " ;
+}
+
+note[role="example"]:before {
+   display: run-in;
+   margin-top: 2em;
+   margin-bottom: 1em;
+   content: "Example";
+}
+
+constraintnote {
+    display: block;
+    border: 1pt solid gray;
+    padding: 1em;
+    margin-top: 1em;
+}
+
+constraintnote > head:before {
+   display: run-in;
+   content: "Schema Constraint: " ;
+   font-weight: bold;
+   margin-bottom: 2em;
+}
+
+/* ###############  W3C Spec Examples ############### */
+
+eg[text=""] {
+    display: block;;
+    background: grey;
+    padding: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-left: 0em;
+    border: 1pt solid gray;
+    color: black;
+}
+
+eg {
+    display: block;;
+    content: oxy_url(attr(text));
+    background: grey;
+    padding: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-left: 0em;
+    border: 1pt solid gray;
+    color: black;
+}
+
+
+/* ###############  W3C Spec Property List ############### */
+
+proplist[role="psvi"] {
+    display: block;
+    content: "PSVI Contribution for: " attr(item) " information items" ;
+    margin-bottom: 6pt;
+    padding: 1em;
+    border: 1pt solid gray;
+}
+
+proplist {
+    display: block;
+    content: "Properties: " ;
+    margin-bottom: 1em;
+    padding: 1em;
+    border: 1pt solid gray;
+}
+
+pt {
+    display: inline; 
+    font-weight: bold ;
+}
+
+propdef:before {
+   display: block;    
+   content: " " attr(name) "  ";
+}
+
+propdef {
+   display: block;
+/*   content: "[" attr(id) "] " attr(name) "  "; */
+   margin-left: 2em;
+   margin-right: +2em;
+   margin-top: 2pt;
+   margin-bottom: 6pt;
+   padding: 3pt;    
+}
+
+/* ###############  W3C Spec Emphasis ############### */
+
+
+att { font: small mono; }
+attval { color: orange; }
+code { font: small mono; }
+el { color: orange; }
+emph { font-weight: bold; }
+function { color: orange; }
+kw  { color: orange; }
+local { font-weight: bold; }
+nt { color: orange; }
+phrase { }
+proto { color: orange; }
+
+quote:before { content: open-quote }
+quote:after  { content: close-quote }
+
+rfc2119 { font-weight: bold; }
+scrap { color: orange; }
+
+sup {font-size:xx-small; vertical-align:top;} 
+sub {font-size:xx-small; vertical-align:bottom;} 
+
+term {
+   font-style: italic;
+   font-weight: bold;
+}
+
+var { font-style: italic; }
+xnt { color: orange; }
+
+
+
+/* ###############  W3C Spec References ############### */
+
+
+bibref {
+   content: "[" attr(ref) "]";
+}
+
+
+clauseref {
+    display: inline;
+    content: "clause [" attr(ref) "] ";
+}
+
+compref {
+    display: inline;
+    content: "[" attr(ref) "] ";
+}
+
+eltref {
+    display: inline;
+    content: "<" attr(ref) ">" ;    
+}
+
+propref {
+    display: inline;
+    content: " {" attr(ref) "} " ;
+}
+
+propref[ref] { content: "[" attr(ref) "]" ; }
+
+propref[prop] { content: "{" attr(prop) "}" ; }
+
+/* propref[role="psvi"] {
+    display: inline;
+    content: "[" attr(ref) "]" ; 
+}
+
+propref[role="generic"] {
+    display: inline;
+    content: "{" attr(prop) "}" ; 
+}
+
+
+propref[comp="a"] {
+    display: inline;
+    content:  attr(prop)  ; 
+    font-weight: bold ;
+}
+
+propref[comp="ad"] {
+    display: inline;
+    content:  attr(prop)  ; 
+    font-weight: bold ;
+}
+
+propref[comp="agd"] {
+    display: inline;
+    content:  attr(prop)  ; 
+    font-weight: bold ;
+}
+
+propref[comp="as"] {
+    display: inline;
+    font-weight: bold ;
+    content:  "{" attr(prop) "}" ; 
+}
+
+propref[comp="au"] {
+    display: inline;
+    font-weight: bold ;
+    content:  attr(prop)  ; 
+}
+
+propref[comp="ct"] {
+    display: inline;
+    content: "{" attr(prop) "}" ; 
+}
+
+propref[comp="ctd"] {
+    display: inline;
+    content: "{" attr(prop) "}" ; 
+}
+
+propref[comp="ed"] {
+    display: inline;
+    content: "{" attr(prop) "}" ; 
+}
+
+propref[comp="ex"] {
+    display: inline;
+    font-style: italic ;
+    content: "{" attr(prop) "}" ; 
+}
+
+propref[comp="icd"] {
+    display: inline;
+    font-weight: bold ;
+    content:  attr(prop)  ; 
+}
+
+propref[comp="mg"] {
+    display: inline;
+    font-weight: bold ;
+    content:  attr(prop)  ; 
+}
+
+propref[comp="mgd"] {
+    display: inline;
+    font-weight: bold ;
+    content:  attr(prop)  ; 
+}
+
+propref[comp="nb"] {
+    display: inline;
+    font-weight: bold ;
+    content:  attr(prop)  ; 
+}
+
+propref[comp="nc"] {
+    display: inline;
+    font-weight: bold ;
+    content:  attr(prop)  ; 
+}
+
+propref[comp="nd"] {
+    display: inline;
+    font-weight: bold ;
+    content:  attr(prop)  ; 
+}
+
+propref[comp="oc"] {
+    display: inline;
+    font-weight: bold ;
+    content:  "{" attr(prop) "}"  ; 
+}
+
+propref[comp="p"] {
+    display: inline;
+    font-weight: bold ;
+    content:  attr(prop)  ; 
+}
+
+propref[comp="std"] {
+    display: inline;
+    font-weight: bold ;
+    content:  attr(prop)  ; 
+}
+
+propref[comp="s"] {
+    display: inline;
+    font-weight: bold ;
+    content:  "{" attr(prop) "}"  ; 
+}
+
+propref[comp="sc_a"] {
+    display: inline;
+    font-weight: bold ;
+    content:  attr(prop)  ; 
+}
+
+propref[comp="sc_e"] {
+    display: inline;
+    font-weight: bold ;
+    content:  attr(prop)  ; 
+}
+
+propref[comp="tac"] {
+    display: inline;
+    font-weight: bold ;
+    content:  "{" attr(prop) "}"  ; 
+}
+
+propref[comp="tt"] {
+    display: inline;
+    font-weight: bold ;
+    content:  "{" attr(prop) "}"  ; 
+}
+
+
+propref[comp="vc_a"] {
+    display: inline;
+    font-weight: bold ;
+    content:  attr(prop)  ; 
+}
+
+propref[comp="vc_au"] {
+    display: inline;
+    font-weight: bold ;
+    content:  attr(prop)  ; 
+}
+
+
+propref[comp="vc_e"] {
+    display: inline;
+    font-weight: bold ;
+    content:  attr(prop)  ; 
+}
+
+propref[comp="w"] {
+    display: inline;
+    font-weight: bold ;
+    content:  attr(prop)  ; 
+}
+
+propref[comp="x"] {
+    display: inline;
+    font-weight: bold ;
+    content:  "{" attr(prop) "}" ; 
+}
+*/
+
+
+specref {
+   content: "(" attr(ref) ")";
+}
+
+termref {
+    content: attr(def) ;
+   font-style: italic;
+}
+
+xpropref:before {
+    content: " [" ;
+}
+
+xpropref:after {
+    content: "] " ;
+}
+
+/* ###############  W3C Spec Graphic ############### */
+
+
+graphic {
+   content: attr(source, url); 
+   padding: 2em;
+   margin-top: 6pt;
+   margin-bottom: 6pt;
+   border: 2pt solid gray;
+ }
+
+/* ###############  W3C Spec Tables ############### */
+
+
+
+table {
+   display: table;
+   margin-top: 12pt;
+   margin-bottom: 6pt;
+}
+
+tbody {
+   display: table-row-group
+}
+
+tr {
+   display: table-row;
+   margin-top: 6pt;
+   margin-bottom: 6pt;
+}
+
+th {
+   display: table-cell;
+   font-weight: bold;
+   border: 0.5pt solid gray;
+}
+
+td {
+   display: table-cell;
+   border: 0.5pt solid gray;
+   margin-top: 6pt;
+   margin-bottom: 6pt;
+   padding: 12pt;
+}
+
+
+/* ###############  W3C Spec Schema Definitions ############### */
+
+definitions {}
+
+compdef:before {
+   content: "Schema Component Definition: " ;
+   margin-top: 2em;
+   margin-bottom: 1em;    
+}
+
+compdef {
+    display: block;
+   margin-top: .25em;
+   margin-bottom: 1em;
+    padding: 3pt;
+    border: 1pt solid gray;
+}
+
+reprdef {
+    display: block;
+    content: "XML Representation Summary" ;
+   margin-left: 0em;
+   margin-right: +0em;
+   margin-top: .25em;
+   margin-bottom: 1em;
+   border: 1pt solid gray;
+   padding: 3pt;    
+}
+
+/* ###############  W3C Spec Schema Definitions ############### */
+
+reprcomp {
+    display: block;
+    margin-left: 2em;    
+}
+
+reprelt {
+    display: block; 
+    content: "<" attr(eltname) ">";
+   margin-left: 2em;
+   margin-right: +2em;
+   margin-top: .25em;
+   margin-bottom: 1em;
+   padding: 3pt;  
+   background-color: lightblue;
+}
+
+propmap:before {
+    display: block;
+    content: attr(name);
+}
+
+propmap {
+    display: block;
+    margin-left: 2em;
+    margin-bottom: 1em;
+}
+
+schemaComp { 
+    display: block; 
+    margin-top: 2em ;
+    margin-bottom: 2em; }
+    
+pvlist { display: block; }
+
+pvpair { 
+    display: block; 
+    margin-left: 2em; }
+
+pvpair[ref]:before {
+    display: block;
+    content: attr(ref) ;
+    font-weight: bold;
+}
+
+pvpair[prop]:before {
+    display: block;
+    content: attr(prop) ;
+    font-weight: bold;
+}
+
+/* ###############  W3C Spec Schema Definitions ############### */
+/* This needs work. It is a special case in XML Schema */
+
+restrictCases {
+    display: table;
+}
+
+
+restrict {
+    display: table-row;
+}
+
+
+elt { display: table-cell; }
+any { display: table-cell; }
+all { display: table-cell; }
+choice { display: table-cell; }
+seq { display: table-cell; }
+
+
+property {
+    margin-top: 1em;
+    margin-bottom: .5em;
+    content: attr(name)
+
+}
+description {
+    display: block;
+    margin-left: 2em; 
+}
+

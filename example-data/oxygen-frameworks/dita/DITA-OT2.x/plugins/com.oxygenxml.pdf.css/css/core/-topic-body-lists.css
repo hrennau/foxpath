@@ -1,0 +1,194 @@
+/* ==========================================================
+ * 
+ * <li>
+ * 
+ * An li element is is a single item in an ordered (ol) or 
+ * unordered (ul) list. When a DITA topic is rendered, numbers 
+ * and alpha characters are usually displayed with list items 
+ * in ordered lists, while bullets and dashes are usually displayed 
+ * with list items in unordered lists.
+ * 
+ * <ol>
+ * 
+ * The ol element includes a list of items sorted by sequence or 
+ * order of importance.
+ * 
+ * <ul>
+ * 
+ * The ul element is a list of items in which the order of list items 
+ * is not significant. List items are typically styled on output 
+ * with a "bullet" character, depending on nesting level.
+ * 
+ */
+*[class~="topic/li"] {
+    display: list-item;
+    margin-left: 1em;
+    margin-bottom: 0.2em;
+}
+
+
+@media print {
+    /* Align the bullet at the middle of the space. */
+    *[class~="topic/li"]::marker {
+      text-align: center;
+      font-weight:bold;   
+    }
+    *[class~="topic/li"] {
+      margin-left: 0.25in;
+    }
+}
+
+
+*[class~="topic/ul"] *[class~="topic/li"] {
+    /* Different from OL, where the counter is inline, inside the item,
+    the UL reserves a zone for the marker. So we push a bit the
+    UL so it gets its markers aligned with the OL counters */
+    margin-left: 2em;
+} 
+
+*[class~="topic/ul"],
+*[class~="topic/ol"] {
+    display:block;
+    list-style-position: outside;
+    margin: 0.5em 0;
+}
+
+/*
+ * Deal witht the compact flag. The "yes" value is the default.
+ */
+*[class~="topic/ul"][compact='no'] > *,
+*[class~="topic/ul"][compact='no'] > *,
+*[class~="topic/sl"][compact='no'] > *{
+    margin-top:0.75em;
+    margin-bottom:0.75em;
+}
+
+@media print {
+    *[class~="topic/ul"],
+    *[class~="topic/ol"] {
+        list-style-position: outside;
+    }
+    
+    /* Dan: Prince mixes the counters for the inner OL's taking the initial 
+        value from the outer one. We make sure the counter is reset. */
+    *[class~="topic/ol"],
+    /* EXM-35991 Dan: It seems that the same problem is also for the UL's. Resetting the counter. */
+    *[class~="topic/ul"]{
+       counter-reset:list-item;
+    }
+}
+
+*[class~="topic/ul"] > *[class~="topic/li"] {
+    list-style-type: disc;
+}
+*[class~="topic/ul"]  > *[class~="topic/li"] *[class~="topic/ul"] > *[class~="topic/li"] {
+    list-style-type: circle;
+}
+*[class~="topic/ul"]  > *[class~="topic/li"] *[class~="topic/ul"]  > *[class~="topic/li"] *[class~="topic/ul"] > *[class~="topic/li"] {
+    list-style-type: square;
+}
+*[class~="topic/ul"]  > *[class~="topic/li"] *[class~="topic/ul"]  > *[class~="topic/li"] *[class~="topic/ul"]  > *[class~="topic/li"] *[class~="topic/ul"] > *[class~="topic/li"] {
+    list-style-type: disc;
+}
+
+
+
+*[class~="topic/ol"] > *[class~="topic/li"] {
+  list-style-type: decimal;
+}
+*[class~="topic/ol"]  > *[class~="topic/li"] *[class~="topic/ol"] > *[class~="topic/li"] {
+  list-style-type: lower-alpha;
+}
+ 
+ /*
+  In the editor, because there might be reused content (<li>'s from another topic) 
+  we had to implement the order list numbering using a counter, not relying on 
+  the "list-style-type" property.
+ */
+@media oxygen{  
+  /* Use list-item instead of block to avoid putting the 
+     sentinels markers of the "ol" and the first "li"
+     on the same line, in compact tag display.*/
+  *[class~="topic/ol"] > *[class~="topic/li"] {
+      display:list-item;
+      list-style:none !important;
+  }
+}
+
+/* Declare counter on the first list item. */
+@media oxygen AND (platform:eclipse),
+    oxygen AND (platform:standalone) {  
+  *[class~="topic/ol"] > *[class~="topic/li"]:first-of-type {
+      counter-reset: item-count;
+  }
+}
+@media oxygen AND (platform:webapp) {
+  /* First-of-type is not supported in webapp for the moment. */
+  *[class~="topic/ol"] > *[class~="topic/li"]:first-child {
+      counter-reset: item-count;
+  }
+}
+
+@media oxygen{  
+  *[class~="topic/ol"] > *[class~="topic/li"] {
+      counter-increment: item-count;
+  }
+  *[class~="topic/ol"] > *[class~="topic/li"]:before {
+      content: counter(item-count, decimal) ". ";
+      font-weight:bold;
+  }
+  
+  /*
+  
+  Not using the simpler expression:
+  
+  *[class~="topic/ol"]                        *[class~="topic/ol"] > *[class~="topic/li"]:before
+  
+  Because in case of conrefs, there is a second ol right inside the first one, and will consider inner OL as being level 2.  
+  We'll use this consturction instead, this refers to ol elements that are properly nested: 
+   
+  *[class~="topic/ol"] > *[class~="topic/li"] *[class~="topic/ol"] > *[class~="topic/li"]:before 
+  
+  */
+  *[class~="topic/ol"] > *[class~="topic/li"] 
+    *[class~="topic/ol"] > *[class~="topic/li"]:before {
+      content: counter(item-count, lower-alpha) ". ";
+  }
+  *[class~="topic/ol"] > *[class~="topic/li"] 
+    *[class~="topic/ol"] > *[class~="topic/li"]  
+       *[class~="topic/ol"] > *[class~="topic/li"]:before {
+      content: counter(item-count, lower-roman) ". ";
+  }
+  *[class~="topic/ol"] > *[class~="topic/li"] 
+    *[class~="topic/ol"] > *[class~="topic/li"]  
+       *[class~="topic/ol"] > *[class~="topic/li"]  
+         *[class~="topic/ol"] > *[class~="topic/li"]:before {
+      content: counter(item-count, decimal) ". ";
+  }
+}
+
+
+
+/* ==========================================================
+ * 
+ * <sl>
+ * 
+ * The sl element contains a simple list of items of short, 
+ * phrase-like content, such as a list of materials in a 
+ * kit or package.
+ * 
+ * On output, the list should have no bullets,
+ * on the assumption that each item is short enough
+ * to fit on one line, and needs no additional
+ * differentiation from its neighbors.
+ */
+*[class~="topic/sl"] {
+    display:block;
+    margin: 0.5em 2em;
+    list-style: none;
+}
+*[class~="topic/sli"] {
+    display: list-item;
+}
+
+

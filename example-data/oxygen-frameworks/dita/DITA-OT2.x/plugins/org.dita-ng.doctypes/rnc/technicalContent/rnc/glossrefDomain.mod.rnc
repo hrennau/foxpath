@@ -1,0 +1,89 @@
+# ============================================================= 
+# MODULE:    DITA Glossary Reference Domain - RNC              
+# VERSION:   1.2                                                
+# DATE:      November 2010                                       
+# =============================================================
+
+# Refer to the latest version of this file by the following URI:
+# urn:dita-ng:dita:rnc:glossrefDomain.mod.rnc
+# To refer to this specific version, you may use this value:
+# urn:dita-ng:dita:rnc:glossrefDomain.mod.rnc:1.2
+
+# ============================================================= 
+# SYSTEM:     Darwin Information Typing Architecture (DITA)     
+# PURPOSE:    Define elements and specialization attributes
+#             for the Glossary Reference Domain            
+# ORIGINAL CREATION DATE:  
+# September 2010                                                
+# (C) Copyright Syncro Soft 2010-2011                                
+# All Rights Reserved.                                          
+# =============================================================
+
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+# Define the domain values of this module
+domains-atts-value |= "(map glossref-d)"
+# Define domain extension patterns
+glossref-d-topicref = glossref.element
+# Extend the patterns with the domain contribution
+topicref |= glossref-d-topicref
+# Define patterns
+glossref = glossref.element
+# Define elements content and attributes
+
+# LONG NAME: Glossary Reference
+glossref.content = topicmeta?
+glossref.attributes =
+  attribute navtitle { text }?,
+  attribute href { text },
+  attribute keyref { text }?,
+  attribute keys { text },
+  attribute query { text }?,
+  attribute copy-to { text }?,
+  attribute outputclass { text }?,
+  attribute collection-type {
+    "choice"
+    | "family"
+    | "sequence"
+    | "unordered"
+    | "-dita-use-conref-target"
+  }?,
+  attribute type { text }?,
+  attribute scope {
+    "external" | "local" | "peer" | "-dita-use-conref-target"
+  }?,
+  attribute locktitle { "no" | "yes" | "-dita-use-conref-target" }?,
+  attribute format { text }?,
+  [ a:defaultValue = "none" ]
+  attribute linking {
+    "none"
+    | "normal"
+    | "sourceonly"
+    | "targetonly"
+    | "-dita-use-conref-target"
+  }?,
+  [ a:defaultValue = "no" ]
+  attribute toc { "no" | "yes" | "-dita-use-conref-target" }?,
+  [ a:defaultValue = "no" ]
+  attribute print {
+    "no" | "printonly" | "yes" | "-dita-use-conref-target"
+  }?,
+  [ a:defaultValue = "no" ]
+  attribute search { "no" | "yes" | "-dita-use-conref-target" }?,
+  attribute chunk { text }?,
+  univ-atts
+glossref.element =
+  
+  ## The <glossref> element is a convenience element for creating a reference
+  ##         to a glossary topic. It has a required keys attribute, which forces the author to create a
+  ##         key by which inline terms may reference their definition. For example, when glossentry
+  ##         topics are used to define acronyms, this will remind authors to create a key which
+  ##         <abbreviated-form> elements may use to reference the short and expanded versions of that
+  ##         acronym.
+  element glossref { glossref.attlist, glossref.content }
+glossref.attlist &= glossref.attributes
+# Specialization attributes. Global attributes and class defaults
+glossref.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ map/topicref glossref-d/glossref " ]
+  attribute class { text }?

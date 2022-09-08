@@ -1,0 +1,118 @@
+/* Font */
+@fontFamily: "Roboto";
+@availableFontWeights: "300,400,700";
+@fontUrl: "https://fonts.googleapis.com/css?family=@{fontFamily}:@{availableFontWeights}";
+
+/* Theme colors */
+@mainColor: #028eb2;
+@secondColor: #01cafe;
+
+
+@contentColor: #ffffff;
+@linkColor: @secondColor;
+@mainPageBorderColor: fade(@contentColor, 90%);
+
+
+@contentBgr: #17303C;
+@contentBorderColor: fade(@contentColor, 90%);
+
+
+/* Header */
+@headerBgr: #ffffff;
+@publicationTitleColor: @mainColor;
+
+/* Menus */
+@menuBgr: @headerBgr;
+@menuColor: @mainColor;
+@hoveredMenuBgr: @mainColor;
+@hoveredMenuColor: #ffffff;
+
+@submenuBgr: @mainColor;
+@subMenuBorderColor: #ffffff;
+@submenuColor: darken(@hoveredMenuColor, 20%);
+@hoveredSubmenuColor: @hoveredMenuColor;
+
+@mobileMenuToggleColor: @hoveredSubmenuColor;
+@mobileMenuToggleBgr: @secondColor;
+
+/* Indexterms link */
+@indextermsLinkCol: @mainColor;
+
+/* Breadcrumb */
+@breadcrumbColor: @linkColor;
+@breadcrumbActiveLinkColor: @contentColor;
+@breadcrumbBorderColor: @contentBorderColor;
+@breadcrumbBgr: @contentBgr;
+
+/* Main page content area */
+
+@bgrImage: "resources/images/hightech.jpg";
+@contentBgrImageColor: fade(@contentBgr, 80%);
+@mainPageContentColor: #ffffff;
+@mainPageContentBgr: transparent;
+
+/* Tiles */
+@tileBgr: fade(transparent, 25%);
+@tileBorderColor: @mainPageBorderColor;
+@tileTitleColor: @mainPageContentColor;
+@tileShortDescColor: @secondColor;
+
+/* TOC */
+@tocEntryBgr: @tileBgr;
+@tocEntryColor: @tileTitleColor;
+@tocShortDescColor: @tileShortDescColor;
+
+@tocEntryHoverColor: @mainPageContentColor;
+@tocEntryHoverBgr: @mainColor;
+
+@tocBorderColor: @tileBorderColor;
+
+/* Search area */
+@searchBgrImage: @bgrImage;
+
+@searchFieldBorderColor: @mainPageBorderColor;
+@searchFieldColor: @mainPageContentColor;
+@searchFieldBgr: fade(@contentBgr, 80%);
+@searchFieldBorderRadius: 0;
+@searchButtonHoverBgr: fade(@mainColor, 20%);
+
+/* Side TOC */
+@sideTocBorderColor: @contentBorderColor;
+@sideTocBgr: @contentBgr;
+@sideTocColor: @linkColor;
+@sideTocActiveColor: @contentColor;
+
+/* Tooltip */
+@tooltipBgr: @mainColor;
+@tooltipColor: @headerBgr;
+
+/* Footer */
+@footerBgr: @contentBgr;
+@footerColor: @contentColor;
+@footerLinkColor: @linkColor;
+
+/* Topic content */
+
+@topicPageBgr: @contentBgr;
+
+@titleColor: @secondColor;
+@subtitleColor: lighten(@titleColor, 30%);
+@subTitleBorderColor: @secondColor;
+@topicContentColor: @contentColor;
+
+/* Related links & child links*/
+@relLinksBgr: @contentBgr;
+@relLinksBorderColor: @contentBorderColor;
+
+/* Search results */
+@searchPageBgr: @contentBgr;
+@searchExpressionColor: @mainColor;
+@searchResultLinkColor: @linkColor;
+@searchTermHighlightBgr: @mainColor;
+@searchTermHighlightColor: @contentColor;
+
+/* Index terms */
+@termsPageBgr: @contentBgr;
+@indexTermFirstLetterColor: @secondColor;
+@indexTermColor: @contentColor;
+@indexTermGroupBorderColor: @contentBorderColor;

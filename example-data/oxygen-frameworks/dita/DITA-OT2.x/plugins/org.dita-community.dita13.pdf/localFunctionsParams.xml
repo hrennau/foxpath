@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension>
+  <param name="tempdir" expression="${dita.temp.dir}"/>  
+  <param name="mappath" expression="${args.input}"/>  
+</extension>

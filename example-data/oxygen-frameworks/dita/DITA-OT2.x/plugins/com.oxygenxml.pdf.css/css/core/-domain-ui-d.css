@@ -1,0 +1,118 @@
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * User interface elements
+ * 
+ * http://docs.oasis-open.org/dita/v1.2/os/spec/common/ui-d.html#userid
+ * 
+ * The user interface domain elements are used to describe 
+ * the user interface of a software program.
+ * ==================================================
+ * ==================================================
+ * 
+ */
+ 
+ 
+ 
+/* ====================================
+ *
+ * <uicontrol>
+ * 
+ * The user interface control (<uicontrol>) 
+ * element is used to mark up names of 
+ * buttons, entry fields, menu items, or 
+ * other objects that allow the user to 
+ * control the interface. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph  
+ */
+*[class~="ui-d/uicontrol"]{
+    font-weight:bold;
+}
+
+
+ 
+/* ====================================
+ *
+ * <wintitle>
+ * 
+ * The window title <wintitle> element can 
+ * be used to mark up names of windows or 
+ * dialogs, or other user interface elements 
+ * at the same level of grouping, including 
+ * wizard titles, wizard page titles, and 
+ * window pane titles.  
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/keyword  
+ */
+*[class~="ui-d/wintitle"]{
+    font-weight:bold;
+}
+
+
+
+/* ====================================
+ *
+ * <menucascade>
+ * 
+ * The <menucascade> element is used to 
+ * document a series of menu choices. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph  
+ */
+*[class~="ui-d/menucascade"]{
+/**/
+}
+
+
+
+/* ====================================
+ *
+ * <shortcut>
+ * 
+ * The <shortcut> element identifies a 
+ * keyboard shortcut for a menu or window action.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/keyword  
+ */
+*[class~="ui-d/shortcut"]{
+    text-decoration:underline;
+}
+/* Separates the submenus. */
+*[class~="ui-d/menucascade"] > *[class~="ui-d/uicontrol"]:before{
+    content: "→";
+/*    content: " > ";*/
+}
+*[class~="ui-d/menucascade"] > *[class~="ui-d/uicontrol"]:first-child:before{
+    content: "";
+}
+
+
+/* ====================================
+ *
+ * <screen>
+ * 
+ * The <screen> element contains or refers 
+ * to a textual representation of a computer 
+ * screen or user interface panel (window). 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph  
+ */
+*[class~="ui-d/screen"]{
+/**/
+}
+
+
+
+

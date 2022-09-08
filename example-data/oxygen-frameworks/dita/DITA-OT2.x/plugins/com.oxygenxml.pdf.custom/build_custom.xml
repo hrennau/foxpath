@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="Custom Oxygen processing">
+  <target name="oxygenCopyNoteImages">
+      <!-- OXYGEN PATCH START same icon images for notes as in Author editing mode -->
+    <mkdir dir="${artwork.dir}/Configuration/OpenTopic/cfg/common/artwork"/>
+    <copy todir="${artwork.dir}/Configuration/OpenTopic/cfg/common/artwork" failonerror="false">
+      <fileset dir="${dita.plugin.com.oxygenxml.webhelp.responsive.dir}/oxygen-webhelp/resources/img">
+          <include name="caution.png"/>
+          <include name="danger.png"/>
+          <include name="important.png"/>
+          <include name="note.png"/>
+          <include name="remember.png"/>
+          <include name="restriction.png"/>
+          <include name="tip.png"/>
+          <include name="warning.png"/>
+          <include name="troubleshooting.png"></include>
+          <include name="nav_right16.png"/>   <!-- for notes of type: other -->
+          <include name="nav_left16.png"/>   <!-- for notes of type: other right-to-left -->
+      </fileset>
+    </copy>
+  </target>
+</project>

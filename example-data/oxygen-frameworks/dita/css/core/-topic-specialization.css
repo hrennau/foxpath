@@ -1,0 +1,270 @@
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * Specialization elements
+ * 
+ * langRef/containers/specialization-elements.html
+ * 
+ * Several DITA elements exist either for architectural 
+ * reasons or for support of specialized markup yet to be designed.
+ * 
+ * ==================================================
+ * ==================================================
+ */
+ 
+
+
+/* ==================================================
+ * 
+ * <data>
+ * 
+ * The data element represents a property within a 
+ * DITA topic or map. While the data element can be used 
+ * directly to capture properties, it is particularly 
+ * useful as a basis for specialization.
+ */ 
+*[class~="topic/data"]{
+  display:block;
+}
+*[class~="topic/data"] *[class~="topic/data"]{
+  margin-left: 2em;
+}
+*[class~="topic/data"]:before {
+  content: oxy_capitalize(oxy_name()) " ";
+  /* -before_bold- >>> */
+  font-weight: bold;
+  /* <<< */
+}
+*[class~="topic/data"][name]:before {
+    -oxy-append-content: oxy_textfield(edit, '@name', columns, 10);
+}
+*[class~="topic/data"][value]:before {
+    -oxy-append-content: " "oxy_textfield(edit, '@value', columns, 10);
+}
+@media print {
+  *[class~="topic/data"]{
+    display:none;
+  }    
+}
+
+
+/* ==================================================
+ * 
+ * <data-about>
+ * 
+ * The data-about element identifies the subject of 
+ * a property when the subject isn't associated with 
+ * the context in which the property is specified. 
+ */ 
+*[class~="topic/data-about"]{
+  display:block;
+}
+*[class~="topic/data-about"]:before{
+  content: "Data about:";
+  /* -before_bold- >>> */
+  font-weight: bold;
+  /* <<< */
+}
+
+/* TODO - dan - is the same as xref, has scope, 
+* should see where is used "Link relationship attribute group" 
+* and make some LESS mixins.
+* 
+* */
+*[class~="topic/data-about"][href]:before{
+  link:attr(href);
+  -ah-link: attr(href);
+  
+  -oxy-append-content: url("../../img/link.png");
+}
+@media print {  
+  *[class~="topic/data-about"]{
+    display:none;
+  }
+}
+
+/* ==================================================
+ * 
+ * <boolean>
+ * 
+ * The boolean element was deprecated in DITA version 
+ * 1.1. It was originally intended to express one of 
+ * two opposite values, such as yes / no or on / off. 
+ */ 
+*[class~="topic/boolean"]{
+}
+*[class~="topic/boolean"]:before{
+    content: "boolean: " ;
+}
+
+*[class~="topic/boolean"][state='no']:before,
+*[class~="topic/boolean"][state='yes']:before{
+    content: 
+             oxy_checkbox(edit, "@state", 
+             values, "yes",
+             uncheckedValues, "no",
+             labels, oxy_name(),
+             color, "green");
+}
+@media print {
+  *[class~="topic/boolean"]:before{
+    content: "boolean: " attr(state);
+  }
+}
+
+
+
+/* ==================================================
+ * 
+ * <state>
+ * 
+ * The state element specifies a name/value pair 
+ * whenever it is necessary to represent a named state 
+ * that has a variable value. 
+ */ 
+*[class~="topic/state"] {
+    /*See -colors.css */
+    visibility:-oxy-collapse-text;
+    -oxy-display-tags:none;
+}
+*[class~="topic/state"]:before {
+    content: oxy_label(text, "state: ") 
+      oxy_textfield(edit, "@name", columns, 10, color, "green") 
+      "=" 
+      oxy_textfield(edit, "@value", columns, 10, color, "green") 
+}
+@media print {
+  *[class~="topic/state"]:before {
+      content: "state: " attr(name) "=" attr(value);
+  }
+}
+
+
+
+
+/* ==================================================
+ * 
+ * <foreign>
+ * 
+ * The foreign element allows the introduction of 
+ * non-DITA content, for example, MathML, SVG, or Rich 
+ * Text Format (RTF).
+ */ 
+*[class~="topic/foreign"] {
+/**/
+}
+/*Treat math element with href as an image.*/
+*[class~="math-d/math"][href]{
+    content:attr(href, url);
+}
+@media print {
+  *[class~="topic/foreign"]{
+    /* Give a display to the specializing element */
+    display:none;
+  }
+} 
+ 
+ 
+ 
+
+/* ==================================================
+ * 
+ * <indexbase>
+ * 
+ * The index-base element allows indexing extensions to 
+ * be added by specializing this element.
+ * The index-base element can only exist as a child of 
+ * an indexterm element.
+ */ 
+*[class~="topic/indexbase"] {
+/**/
+}
+@media print {
+  *[class~="topic/indexbase"]{
+      /* Give a display to the specializing element */
+      display:none;
+  }
+} 
+
+
+
+
+/* ==================================================
+ * 
+ * <itemgroup>
+ * 
+ * The itemgroup element can be used to sub-divide or 
+ * organize elements that occur inside a list item, 
+ * definition, or parameter definition.
+ */ 
+*[class~="topic/itemgroup"] {   
+  display:block;
+}
+
+
+
+
+/* ==================================================
+ * 
+ * <no-topic-nesting>
+ * 
+ * The no-topic-nesting element is a placeholder in 
+ * the DITA architecture. It is not actually used by 
+ * the default DITA document types;
+ */ 
+*[class~="topic/no-topic-nesting"]:before {
+  /*See -colors.css */
+  content: "This element is not intended to be used in source files.";
+}
+@media print {
+  *[class~="topic/no-topic-nesting"]{
+      display:none;
+  }
+}
+
+
+
+
+
+/* ==================================================
+ * 
+ * <unknown>
+ * 
+ * The unknown element is an open extension that allows 
+ * information architects to incorporate xml fragments 
+ * that do not necessarily fit into an existing DITA use 
+ * case. Processors should ignore this element unless 
+ * otherwise instructed. 
+ */ 
+*[class~="topic/unknown"]{
+/**/
+}
+@media print {
+  *[class~="topic/unknown"]{
+      /* Give a display to the specializing element */
+      display:none;
+  }
+}
+
+
+
+/* == special content and exhibits == */
+/*
+  The specialized title attribute allows
+  architects of specialized types to define
+  a fixed or default title for a specialized
+  element. Not intended for direct use by authors.
+ */
+ @media oxygen {
+ /*EXM-33873 Avoid setting display block directly on the element*/
+*[spectitle]:before{
+    display:block;
+    font-weight: bold;
+    content: attr(spectitle)" ";
+}
+}
+/* == specially highlighted elements == */
+
+
+ 

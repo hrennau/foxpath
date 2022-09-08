@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://purl.oclc.org/dsdl/nvdl/ns/structure/1.0" startMode="top"> 
+    <mode name="top"> 
+        <namespace 
+            ns="http://schemas.openxmlformats.org/*" wildCard="*"> 
+            <validate schema="xsd/mainOffice.xsd" useMode="nested"/> 
+        </namespace> 
+    </mode>     
+    <mode name="nested"> 
+        <namespace match="attributes elements" 
+            ns="http://schemas.openxmlformats.org/drawingml/2006/*"> 
+            <attach/> 
+        </namespace> 
+        <namespace match="attributes elements" 
+            ns="http://schemas.openxmlformats.org/officeDocument/2006/*"> 
+            <attach/> 
+        </namespace> 
+        <namespace match="attributes elements" 
+            ns="http://schemas.openxmlformats.org/package/2006/*"> 
+            <attach/> 
+        </namespace> 
+        <namespace match="attributes elements" 
+            ns="http://schemas.openxmlformats.org/presentationml/2006/main"> 
+            <attach/> 
+        </namespace> 
+        <namespace match="attributes elements" 
+            ns="http://schemas.openxmlformats.org/schemaLibrary/2006/main"> 
+            <attach/> 
+        </namespace> 
+        <namespace match="attributes elements" 
+            ns="http://schemas.openxmlformats.org/spreadsheetml/2006/7/main"> 
+            <attach/> 
+        </namespace> 
+        <namespace match="attributes elements" 
+            ns="urn:schemas-microsoft-com:*"> 
+            <attach/> 
+        </namespace> 
+        <namespace match="attributes" 
+            ns="http://schemas.openxmlformats.org/markup-compatibility/2006"> 
+            <validate  schema="attributes.rng"/> 
+        </namespace> 
+        <namespace match="elements" 
+            ns="http://schemas.openxmlformats.org/markup-compatibility/2006"> 
+            <validate schema="elements.rng"> 
+                <mode> 
+                    <anyNamespace> 
+                        <allow/> 
+                    </anyNamespace> 
+                </mode> 
+                <!--<context path="Choice"> 
+                    <mode> 
+                        <namespace 
+                            ns="http://www.example.com/myExtenstionWithFallback"> 
+                            <validate schema="myExtensionWithFallback.rng"> 
+                                <mode> 
+                                    <anyNamespace> 
+                                        <attach/> 
+                                    </anyNamespace> 
+                                </mode> 
+                            </validate> 
+                        </namespace> 
+                    </mode> 
+                </context>--> 
+            </validate> 
+            <unwrap> 
+                <mode> 
+                    <anyNamespace> 
+                        <allow/> 
+                    </anyNamespace> 
+                </mode> 
+                <context path="Fallback"> 
+                    <mode> 
+                        <anyNamespace> 
+                            <attach/> 
+                        </anyNamespace> 
+                    </mode> 
+                </context> 
+            </unwrap> 
+        </namespace> 
+        <!--<namespace ns="http://www.example.com/myExtensionWithoutFallback"> 
+            <validate schema="myExtensionWithoutFallback.rng"> 
+                <mode> 
+                    <anyNamespace> 
+                        <attach/> 
+                    </anyNamespace> 
+                </mode> 
+            </validate> 
+        </namespace> -->
+    </mode> 
+</rules> 

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="Correct Help IDs">
+    <target name="buildJar">
+            <!-- OXYGEN PATCH START EXM-18027 -->
+        <propertyregex
+            property="profile.name"
+            override="true"
+            input="${args.filter}"
+            regexp="(.+)(/|\\)(.+)\.ditaval"
+            select="\3"
+        />
+        <condition property="helpset.name" value="${dita.map.filename.root}_${profile.name}">
+            <and>
+                <isset property="profile.name"/>
+                <not>
+                    <isset property="helpset.name"/>
+                </not>
+            </and>
+        </condition>
+        <condition property="helpset.name" value="${dita.map.filename.root}">
+            <and>
+                <not>
+                    <isset property="profile.name"/>
+                </not>
+                <not>
+                    <isset property="helpset.name"/>
+                </not>
+            </and>
+        </condition>
+      
+      <antcall target="correctHelpIDs"/>
+      <antcall target="index"/>
+      <jar destfile="${dita.map.output.dir}/${dita.map.filename.root}.jar" basedir="${dita.map.output.dir}">
+        <include name="**/*"/>
+        <exclude name="${dita.map.filename.root}.jar"/>
+      </jar>
+    <!-- OXYGEN PATCH END EXM-18027 -->
+    </target>
+   <!-- OXYGEN PATCH START EXM-18027 -->
+  <!-- Duplicate the 4 meta files and do a find/replace with regexp in the duplicated files for
+          removing topics_, tasks_ and concepts_ from help IDs. -->
+  <target name="correctHelpIDs">
+    <move file="${dita.map.output.dir}/${dita.map.filename.root}_helpset.hs" tofile="${dita.map.output.dir}/${helpset.name}.hs" />
+    <antcall target="removeAllHelpIDPrefixes">
+      <param name="javahelp.meta.file" value="${dita.map.output.dir}/${helpset.name}.hs"/>
+    </antcall>
+    <replaceregexp 
+        file="${dita.map.output.dir}/${helpset.name}.hs" 
+        match="${dita.map.filename.root}.jhm"
+        replace="map.jhm"
+        encoding="UTF-8"
+        flags="g" />
+    <replaceregexp 
+        file="${dita.map.output.dir}/${helpset.name}.hs" 
+        match="${dita.map.filename.root}.xml"
+        replace="toc.xml"
+        encoding="UTF-8"
+        flags="g" />
+    <replaceregexp 
+        file="${dita.map.output.dir}/${helpset.name}.hs" 
+        match="${dita.map.filename.root}_index.xml"
+        replace="index.xml"
+        encoding="UTF-8"
+        flags="g" />
+    
+    <move file="${dita.map.output.dir}/${dita.map.filename.root}_index.xml" tofile="${dita.map.output.dir}/index.xml" />
+    <antcall target="removeAllHelpIDPrefixes">
+      <param name="javahelp.meta.file" value="${dita.map.output.dir}/index.xml"/>
+    </antcall>
+    
+    <move file="${dita.map.output.dir}/${dita.map.filename.root}.xml" tofile="${dita.map.output.dir}/toc.xml" />
+    <antcall target="removeAllHelpIDPrefixes">
+      <param name="javahelp.meta.file" value="${dita.map.output.dir}/toc.xml"/>
+    </antcall>
+    
+    <move file="${dita.map.output.dir}/${dita.map.filename.root}.jhm" tofile="${dita.map.output.dir}/map.jhm" />
+    <antcall target="removeAllHelpIDPrefixes">
+      <param name="javahelp.meta.file" value="${dita.map.output.dir}/map.jhm"/>
+    </antcall>
+  </target>
+
+  <target name="removeAllHelpIDPrefixes">
+    <antcall target="removeHelpIDPrefix">
+      <param name="javahelp.meta.file" value="${javahelp.meta.file}"/>
+      <param name="javahelp.meta.prefix" value="topics_"/>
+    </antcall>
+    <antcall target="removeHelpIDPrefix">
+      <param name="javahelp.meta.file" value="${javahelp.meta.file}"/>
+      <param name="javahelp.meta.prefix" value="tasks_"/>
+    </antcall>
+    <antcall target="removeHelpIDPrefix">
+      <param name="javahelp.meta.file" value="${javahelp.meta.file}"/>
+      <param name="javahelp.meta.prefix" value="concepts_"/>
+    </antcall>
+    <antcall target="removeHelpIDPrefix">
+      <param name="javahelp.meta.file" value="${javahelp.meta.file}"/>
+      <param name="javahelp.meta.prefix" value="references_"/>
+    </antcall>
+  </target>
+
+  <target name="removeHelpIDPrefix">
+      <replaceregexp 
+          file="${javahelp.meta.file}" 
+          match="${javahelp.meta.prefix}"
+          replace=""
+          encoding="UTF-8"
+          flags="g" />
+  </target>
+
+  <target name="index">
+    <echo message="Making the JavaHelp index for ${dita.map.filename.root}"/>
+     <!--EXM-29583 Delete JavaHelpSearch Folder -->
+    <delete dir="${dita.map.output.dir}/JavaHelpSearch"/>
+    <mkdir dir="${dita.map.output.dir}/JavaHelpSearch"/>
+    <java classname="com.sun.java.help.search.Indexer" fork="yes" dir="${dita.map.output.dir}" failonerror="true">
+      <classpath>
+        <pathelement path="${dita.dir}/lib/jsearch.jar"/>
+      </classpath>
+      <arg value="."/>
+      <arg value="-verbose"/>
+      <arg value="-db"/>
+      <arg value="JavaHelpSearch"/>
+    </java>
+  </target>
+    <!-- OXYGEN PATCH END EXM-18027 -->
+</project>

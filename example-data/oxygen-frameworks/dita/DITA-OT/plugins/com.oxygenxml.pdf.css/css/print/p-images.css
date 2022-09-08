@@ -1,0 +1,42 @@
+/*
+ * =====================================================
+ * 
+ * Defines the images resolution, scaling, size.
+ * 
+ * =====================================================
+ */
+
+@media print {
+    *[class ~= "topic/image"] {
+        prince-image-resolution: 120dpi;
+        -ah-image-resolution: 120dpi;
+        image-resolution: 120dpi;
+    }
+    
+    /*
+		The units are optional (default is pixels). 
+    */
+    *[class~="topic/image"][width]  { width:  attr(width, px);  }    
+    *[class~="topic/image"][width*='pc'],
+    *[class~="topic/image"][width*='pt'],
+    *[class~="topic/image"][width*='px'],
+    *[class~="topic/image"][width*='mm'],
+    *[class~="topic/image"][width*='cm'],
+    *[class~="topic/image"][width*='in'],
+    *[class~="topic/image"][width*='em'] { 
+    	width:  attr(width);  
+   	}
+    
+    *[class~="topic/image"][height]  { height:  attr(height, px);  }    
+    *[class~="topic/image"][height*='pc'],
+    *[class~="topic/image"][height*='pt'],
+    *[class~="topic/image"][height*='px'],
+    *[class~="topic/image"][height*='mm'],
+    *[class~="topic/image"][height*='cm'],
+    *[class~="topic/image"][height*='in'],
+    *[class~="topic/image"][height*='em'] { 
+    	height:  attr(height);  
+   	}
+    
+    
+}

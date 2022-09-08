@@ -1,0 +1,70 @@
+
+@media print {
+    /* 
+     * 
+     * TOC - links and page numbers.
+     * 
+     */
+    *[class ~= "map/map"]> map {
+        display: block;
+        page: table-of-contents;
+        counter-reset: page 1;
+    }
+    @page table-of-contents {
+        @top {          content: "Table of Contents" }
+        @bottom {       content: counter(page, lower-roman) }
+        @bottom-right { content: none }
+        @bottom-left {  content: none }
+        @top-right {    content: none }
+        @top-left {     content: none }
+    }
+    
+    
+    *[class ~= "map/topicref"] {
+        display:block;
+    }    
+
+    /* The chapters, the level 1 topicref from the opentopic:map are bolded. */
+    *[class ~= "map/topicref"][is-chapter] {
+        font-weight: bold;
+        font-size:1.5em;
+    }
+    *[class ~= "map/topicref"][is-chapter] > *[class ~= "map/topicref"]:not(is-chapter)  { 
+        font-weight: normal;
+        font-size:0.67em;
+    }
+    
+    
+    /* A dotted line between the topic name and the page number. */
+     *[class ~= "map/topicref"] *[class ~= "topic/navtitle"] {
+        font-weight:inherit;
+        margin:0.5em;
+        padding:0em;
+     }
+     *[class ~= "map/topicref"] *[class ~= "topic/navtitle"]:before {
+        content:none;
+     }
+     *[class ~= "map/topicref"] *[class ~= "topic/navtitle"]:after {
+        display:inline;
+        content: leader('.') target-counter(attr(href), page);
+        link:attr(href);
+    }
+    
+    
+    /* Make topicmeta transparent */    
+    *[class ~= "map/topicref"] *[class ~= "map/topicmeta"] {
+        display:inline;    
+        border:none;
+        background-color:transparent;
+        margin:0;   
+        padding:0;
+    }
+    /* No short descriptions in the TOC. */
+    *[class ~= "map/topicref"] *[class ~= "map/shortdesc"] {
+        display:none;    
+    }
+    
+    
+}
+
+

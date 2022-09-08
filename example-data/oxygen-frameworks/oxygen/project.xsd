@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xs:element name="project">
+        <xs:annotation>
+            <xs:documentation>The root element of a project file for
+                &lt;oXygen/&gt;.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="meta"/>
+                <xs:element ref="projectTree"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="meta">
+        <xs:annotation>
+            <xs:documentation>Meta information about the project.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="filters"/>
+                <xs:element ref="options"/>
+                <xs:element ref="lastOpenedFiles" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="filters">
+        <xs:complexType>
+            <xs:attribute name="directoryPatterns" use="required" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Directory filter patterns (matching linked directories will be
+                        hidden). The patterns are comma separated, where * = any string, ? = any
+                        character.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="filePatterns" use="required" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Matching files will be hidden. The patterns are comma
+                        separated, where * = any string, ? = any character.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="positiveFilePatterns" use="required" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Mathching files will be shown. The patterns are comma
+                        separated, where * = any string, ? = any character.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="showHiddenFiles" use="required" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation>Show hidden files and directories.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="options">
+        <xs:annotation>
+            <xs:documentation>The project specific options.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="1" ref="serialized"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="serialized">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="map"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="map">
+        <xs:annotation>
+            <xs:documentation>The serialized map of preferences.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="entry"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="entry">
+        <xs:annotation>
+            <xs:documentation>The list of files opened when oXygen was closed.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="String" minOccurs="1"/>
+                <xs:any processContents="skip" minOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="String">
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="xs:string">
+                    <xs:attribute ref="xml:space"/>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="lastOpenedFiles">
+        <xs:annotation>
+            <xs:documentation>The list of files opened when oXygen was closed.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="file"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="projectTree">
+        <xs:annotation>
+            <xs:documentation>The tree of folders and files included in the
+                project.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="folder"/>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="file"/>
+            </xs:sequence>
+            <xs:attribute name="name" use="required" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>The name of the project file.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="file">
+        <xs:annotation>
+            <xs:documentation>A file included in the project.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="focused" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation>This attribute is for files from element lastOpenedFiles. Only
+                        the file that was edited when oXygen was closed has this
+                        attribute.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="name" use="required" type="xs:anyURI">
+                <xs:annotation>
+                    <xs:documentation>The name of the file starting at the root of the
+                        project.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="folder">
+        <xs:annotation>
+            <xs:documentation>A folder included in the project. If it has the attribute path it
+                represents a folder from disk with all the contained files and folders. Otherwise it
+                is a logical folder that does not have to exist on disk.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="folder"/>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="file"/>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>The displayed name of the folder.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="path" type="xs:anyURI">
+                <xs:annotation>
+                    <xs:documentation>The path attribute occur only for folders linked to external
+                        folders.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

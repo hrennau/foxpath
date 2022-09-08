@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_jtei.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_jtei.rng" type="application/xml"
+	schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" rend="jTEI">
+  <teiHeader>
+      <fileDesc>
+         <titleStmt>
+            <title type="main"/>
+        
+            <author>
+               <name>
+                  <forename/> 
+                  <surname/>
+               </name>
+               <affiliation/>
+               <email/>
+            </author>
+         </titleStmt>
+         <publicationStmt>
+            <publisher>TEI Consortium</publisher>
+            <date/>
+            <availability>
+               <licence target="https://creativecommons.org/licenses/by/4.0/">
+                  <p>For this publication a Creative Commons Attribution 4.0 International license has been granted by the author(s) who retain full copyright.</p>
+               </licence> 
+            </availability>
+         </publicationStmt>
+         <sourceDesc>
+            <p>No source, born digital.</p>
+         </sourceDesc>
+      </fileDesc>
+      <encodingDesc>
+         <projectDesc>
+            <p>Revues.org -centre for open electronic publishing- is the platform for journals in the
+          humanities and social sciences, open to quality periodicals looking to publish full-text
+          articles online.</p>
+         </projectDesc>
+      </encodingDesc>
+      <profileDesc>
+         <langUsage>
+            <language ident="en">en</language>
+         </langUsage>
+         <textClass>
+            <keywords xml:lang="en">
+          
+               <term/>
+            </keywords>
+         </textClass>
+      </profileDesc>
+      <revisionDesc>
+         <change/>
+      </revisionDesc>
+  </teiHeader>
+  <text>
+      <front>
+         <div type="abstract" xml:id="abstract"/>
+      </front>
+      <body>
+      
+         <div xml:id="firstdiv">
+            <head/>
+            <p>
+               <ref type="bibl" target="#bloggs13">Bloggs 2013</ref> tells us...</p>
+         </div>
+         <div xml:id="seconddiv">
+            <head/>
+            <p/>
+         </div>
+      </body>
+    
+      <back>
+         <div type="bibliography">
+        
+            <listBibl>
+               <bibl xml:id="bloggs13"/>
+            </listBibl>
+         </div>
+      </back>
+  </text>
+</TEI>

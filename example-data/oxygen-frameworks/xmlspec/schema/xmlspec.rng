@@ -1,0 +1,3872 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ............................................................... -->
+<!-- XML specification DTD ......................................... -->
+<!-- ............................................................... -->
+<!-- $Id$ -->
+<!--
+  TYPICAL INVOCATION:
+  #  <!DOCTYPE spec PUBLIC
+  #       "-//W3C//DTD Specification V2.10//EN"
+  #       "http://www.w3.org/2002/xmlspec/dtd/2.10/xmlspec.dtd">
+  
+  PURPOSE:
+    This XML DTD is for W3C specifications and other technical reports.
+    It is based in part on the TEI Lite and Sweb DTDs.
+  
+  COPYRIGHT:
+  
+    Copyright (C) 2000, 2001, 2002, 2003 Sun Microsystems, Inc. All Rights Reserved.
+    This document is governed by the W3C Software License[3] as
+    described in the FAQ[4].
+  
+      [1] http://www.w3.org/TR/xslt
+      [2] http://www.w3.org/XML/1998/06/xmlspec-report-v21.htm
+      [3] http://www.w3.org/Consortium/Legal/copyright-software-19980720
+      [4] http://www.w3.org/Consortium/Legal/IPR-FAQ-20000620.html#DTD
+  
+  DEPENDENCIES:
+    None.
+  
+  CHANGE HISTORY:
+    The list of historical changes is at the end of the DTD. For recent changes,
+    see the CVS log.
+  
+    For all details, see the design report at:
+  
+    <http://www.w3.org/XML/1998/06/xmlspec-report-v21.htm>
+  
+    This report is now out-of-date, but no more recent report has been prepared.
+  
+  #2003-06-25: nwalsh: Added translationloc, preverrataloc, rfc2119
+  
+  #2003-05-28: nwalsh: Added errataloc, fixed IE bug. Added @num to prod.
+  
+               Published V2.4
+  
+  #2003-03-12: nwalsh: Added local.* PEs to a number of additional
+               places to make customization layers easier.
+  
+               Published V2.3
+  
+  #2002-09-04: nwalsh: Added 'phrase' to title, subtitle, version,
+               w3c-designation, w3c-doctype, day, month, year, name,
+               affiliation, email, language, role, lhs, rhs, com,
+               typename, date, loc, nt, sub, sup, term, termref,
+               titleref, xnt, xspecref, xtermref
+  
+               This is *solely* to support automated diffing. Users
+               are explicitly forbidden from using this as an escape
+               hatch to get extra markup in these contexts.
+  
+  #2001-10-08: nwalsh: Added local.arg.att and local.proto.att
+  
+  #2002-08-14: nwalsh: Published V2.2
+  
+    Added marked sections around element and attlist declarations and
+    added the altlocs element
+  
+  MAINTAINERS:
+    Norman Walsh
+    Sun Microsystems, Inc.
+    Norman.Walsh@Sun.COM
+    voice: +1 413 256 6985
+    fax:   +1 413 256 6985
+  
+    Eve Maler
+    Sun Microsystems, Inc.
+    elm@east.sun.com
+    voice: +1 781 442 3190
+    fax:   +1 781 442 1437
+-->
+<!-- ............................................................... -->
+<!-- Entities for characters and symbols ........................... -->
+<!-- ............................................................... -->
+<!--
+  #1998-03-10: maler: Added &ldquo; and &rdquo;.
+  #                   Used 8879:1986-compatible decimal character
+  #                   references.
+  #                   Merged charent.mod file back into main file.
+  #1998-05-14: maler: Fixed ldquo and rdquo.  Gave mdash a real number.
+  #1998-12-03: maler: Escaped the leading ampersands.
+-->
+<!-- ............................................................... -->
+<!-- Entities for classes of standalone elements ................... -->
+<!-- ............................................................... -->
+<!--
+  #1997-10-16: maler: Added table to %illus.class;.
+  #1997-11-28: maler: Added htable to %illus.class;.
+  #1997-12-29: maler: IGNOREd table.
+  #1998-03-10: maler: Removed SGML Open-specific %illus.class;.
+  #                   Added "local" entities for customization.
+  #1998-05-14: maler: Added issue to %note.class;.
+  #                   Removed %[local.]statusp.class;.
+  #1998-05-21: maler: Added constraintnote to %note.class;.
+  #1998-08-22: maler: Changed htable to table in %illus.class;.
+  #                   Added definitions to %illus.class;.
+  #2000-03-07: maler: Added proto and example to %illus.class;.
+-->
+<grammar xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <define name="local.p.class">
+    <notAllowed/>
+  </define>
+  <define name="p.class">
+    <choice>
+      <ref name="p"/>
+      <ref name="local.p.class"/>
+    </choice>
+  </define>
+  <define name="local.list.class">
+    <notAllowed/>
+  </define>
+  <define name="list.class">
+    <choice>
+      <ref name="ulist"/>
+      <ref name="olist"/>
+      <ref name="slist"/>
+      <ref name="glist"/>
+      <ref name="local.list.class"/>
+    </choice>
+  </define>
+  <define name="local.speclist.class">
+    <notAllowed/>
+  </define>
+  <define name="speclist.class">
+    <choice>
+      <ref name="orglist"/>
+      <ref name="blist"/>
+      <ref name="local.speclist.class"/>
+    </choice>
+  </define>
+  <define name="local.note.class">
+    <notAllowed/>
+  </define>
+  <define name="note.class">
+    <choice>
+      <ref name="note"/>
+      <ref name="issue"/>
+      <ref name="wfcnote"/>
+      <ref name="vcnote"/>
+      <ref name="constraintnote"/>
+      <ref name="local.note.class"/>
+    </choice>
+  </define>
+  <define name="local.illus.class">
+    <notAllowed/>
+  </define>
+  <define name="illus.class">
+    <choice>
+      <ref name="eg"/>
+      <ref name="graphic"/>
+      <ref name="scrap"/>
+      <ref name="table"/>
+      <ref name="definitions"/>
+      <ref name="proto"/>
+      <ref name="example"/>
+      <ref name="local.illus.class"/>
+    </choice>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Entities for classes of phrase-level elements ................. -->
+  <!-- ............................................................... -->
+  <!--
+    #1997-12-29: maler: Added xspecref to %ref.class;.
+    #1998-03-10: maler: Added %ednote.class;.
+    #                   Added "local" entities for customization.
+    #2000-03-07: maler: Added function, var, el, att, and attval to
+    #                   %tech.class;.
+    #                   Added sub, sup, and phrase to %emph.class;.
+  -->
+  <define name="local.annot.class">
+    <notAllowed/>
+  </define>
+  <define name="annot.class">
+    <choice>
+      <ref name="footnote"/>
+      <ref name="local.annot.class"/>
+    </choice>
+  </define>
+  <define name="local.termdef.class">
+    <notAllowed/>
+  </define>
+  <define name="termdef.class">
+    <choice>
+      <ref name="termdef"/>
+      <ref name="term"/>
+      <ref name="local.termdef.class"/>
+    </choice>
+  </define>
+  <define name="local.emph.class">
+    <notAllowed/>
+  </define>
+  <define name="emph.class">
+    <choice>
+      <ref name="emph"/>
+      <ref name="phrase"/>
+      <ref name="rfc2119"/>
+      <ref name="quote"/>
+      <ref name="sub"/>
+      <ref name="sup"/>
+      <ref name="local.emph.class"/>
+    </choice>
+  </define>
+  <define name="local.ref.class">
+    <notAllowed/>
+  </define>
+  <define name="ref.class">
+    <choice>
+      <ref name="bibref"/>
+      <ref name="specref"/>
+      <ref name="termref"/>
+      <ref name="titleref"/>
+      <ref name="xspecref"/>
+      <ref name="xtermref"/>
+      <ref name="local.ref.class"/>
+    </choice>
+  </define>
+  <define name="local.loc.class">
+    <notAllowed/>
+  </define>
+  <define name="loc.class">
+    <choice>
+      <ref name="loc"/>
+      <ref name="local.loc.class"/>
+    </choice>
+  </define>
+  <define name="local.tech.class">
+    <notAllowed/>
+  </define>
+  <define name="tech.class">
+    <choice>
+      <ref name="kw"/>
+      <ref name="nt"/>
+      <ref name="xnt"/>
+      <ref name="code"/>
+      <ref name="function"/>
+      <ref name="var"/>
+      <ref name="el"/>
+      <ref name="att"/>
+      <ref name="attval"/>
+      <ref name="local.tech.class"/>
+    </choice>
+  </define>
+  <define name="local.ednote.class">
+    <notAllowed/>
+  </define>
+  <define name="ednote.class">
+    <choice>
+      <ref name="ednote"/>
+      <ref name="local.ednote.class"/>
+    </choice>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Entities for mixtures of standalone elements .................. -->
+  <!-- ............................................................... -->
+  <!--
+    #1997-09-30: maler: Created %p.mix; to eliminate p from self.
+    #1997-09-30: maler: Added %speclist.class; to %obj.mix; and %p.mix;.
+    #1997-09-30: maler: Added %note.class; to %obj.mix; and %p.mix;.
+    #1997-10-16: maler: Created %entry.mix;.  Note that some elements
+    #                   left out here are still allowed in termdef,
+    #                   which entry can contain through %p.pcd.mix;.
+    #1997-11-28: maler: Added %p.class; to %statusobj.mix;.
+    #1998-03-10: maler: Added %ednote.class; to all mixtures, except
+    #                   %p.mix; and %statusobj.mix;, because paragraphs
+    #                   and status paragraphs will contain ednote
+    #                   through %p.pcd.mix;.
+    #1998-03-23: maler: Added %termdef.mix; (broken out from
+    #                    %termdef.pcd.mix;).
+    #1998-05-14: maler: Removed %statusobj.mix; and all mentions of
+    #                   %statusp.mix;.
+  -->
+  <define name="local.div.mix">
+    <notAllowed/>
+  </define>
+  <!-- compensate for IE bug; suggested by ht -->
+  <define name="div.mix">
+    <choice>
+      <ref name="p.class"/>
+      <ref name="list.class"/>
+      <ref name="speclist.class"/>
+      <ref name="note.class"/>
+      <ref name="illus.class"/>
+      <ref name="ednote.class"/>
+      <ref name="local.div.mix"/>
+    </choice>
+  </define>
+  <define name="local.obj.mix">
+    <notAllowed/>
+  </define>
+  <!-- compensate for IE bug; suggested by ht -->
+  <define name="obj.mix">
+    <choice>
+      <ref name="p.class"/>
+      <ref name="list.class"/>
+      <ref name="speclist.class"/>
+      <ref name="note.class"/>
+      <ref name="illus.class"/>
+      <ref name="ednote.class"/>
+      <ref name="local.obj.mix"/>
+    </choice>
+  </define>
+  <define name="local.p.mix">
+    <notAllowed/>
+  </define>
+  <!-- compensate for IE bug; suggested by ht -->
+  <define name="p.mix">
+    <choice>
+      <ref name="list.class"/>
+      <ref name="speclist.class"/>
+      <ref name="note.class"/>
+      <ref name="illus.class"/>
+      <ref name="local.p.mix"/>
+    </choice>
+  </define>
+  <!-- compensate for IE bug; suggested by ht -->
+  <define name="local.hdr.mix">
+    <notAllowed/>
+  </define>
+  <!-- compensate for IE bug; suggested by ht -->
+  <define name="hdr.mix">
+    <choice>
+      <ref name="p.class"/>
+      <ref name="list.class"/>
+      <ref name="ednote.class"/>
+      <ref name="local.hdr.mix"/>
+    </choice>
+  </define>
+  <define name="local.termdef.mix">
+    <notAllowed/>
+  </define>
+  <!-- compensate for IE bug; suggested by ht -->
+  <define name="termdef.mix">
+    <choice>
+      <ref name="note.class"/>
+      <ref name="illus.class"/>
+      <ref name="local.termdef.mix"/>
+    </choice>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Entities for mixtures of #PCDATA and phrase-level elements .... -->
+  <!-- ............................................................... -->
+  <!--
+    Note that %termdef.pcd.mix contains %note.class;
+    and %illus.class;, considered standalone elements.
+  -->
+  <!--
+    #1997-09-30: maler: Added scrap and %note.class; to %termdef.pcd.mix;.
+    #1997-11-28: maler: Added %loc.class; to %p.pcd.mix;.
+    #1998-03-10: maler: Added %ednote.class; to all mixtures.
+    #1998-03-23: maler: Moved some %termdef.pcd.mix; stuff out to
+    #                   %termdef.mix;.
+    #1998-05-14: maler: Removed %statusp.pcd.mix;.
+    #1998-05-21: maler: Added constraint element to %eg.pcd.mix;.
+    #1999-07-02: maler: Added %loc.class; to %head.pcd.mix;,
+    #                   %label.pcd.mix;, %eg.pcd.mix;, %termdef.pcd.mix;,
+    #                   %tech.pcd.mix; (net: all PCD mixes have it).
+    #                   Removed unused %loc.pcd.mix;.
+  -->
+  <define name="local.p.pcd.mix">
+    <notAllowed/>
+  </define>
+  <!-- compensate for IE bug; suggested by ht -->
+  <define name="p.pcd.mix">
+    <choice>
+      <text/>
+      <ref name="annot.class"/>
+      <ref name="termdef.class"/>
+      <ref name="emph.class"/>
+      <ref name="ref.class"/>
+      <ref name="tech.class"/>
+      <ref name="loc.class"/>
+      <ref name="ednote.class"/>
+      <ref name="local.p.pcd.mix"/>
+    </choice>
+  </define>
+  <define name="local.head.pcd.mix">
+    <notAllowed/>
+  </define>
+  <!-- compensate for IE bug; suggested by ht -->
+  <define name="head.pcd.mix">
+    <choice>
+      <text/>
+      <ref name="annot.class"/>
+      <ref name="emph.class"/>
+      <ref name="tech.class"/>
+      <ref name="loc.class"/>
+      <ref name="ednote.class"/>
+      <ref name="local.head.pcd.mix"/>
+    </choice>
+  </define>
+  <define name="local.label.pcd.mix">
+    <notAllowed/>
+  </define>
+  <!-- compensate for IE bug; suggested by ht -->
+  <define name="label.pcd.mix">
+    <choice>
+      <text/>
+      <ref name="annot.class"/>
+      <ref name="termdef.class"/>
+      <ref name="emph.class"/>
+      <ref name="tech.class"/>
+      <ref name="loc.class"/>
+      <ref name="ednote.class"/>
+      <ref name="local.label.pcd.mix"/>
+    </choice>
+  </define>
+  <define name="local.eg.pcd.mix">
+    <notAllowed/>
+  </define>
+  <!-- compensate for IE bug; suggested by ht -->
+  <define name="eg.pcd.mix">
+    <choice>
+      <text/>
+      <ref name="annot.class"/>
+      <ref name="emph.class"/>
+      <ref name="loc.class"/>
+      <ref name="ednote.class"/>
+      <ref name="constraint"/>
+      <ref name="local.eg.pcd.mix"/>
+    </choice>
+  </define>
+  <define name="local.termdef.pcd.mix">
+    <notAllowed/>
+  </define>
+  <!-- compensate for IE bug; suggested by ht -->
+  <define name="termdef.pcd.mix">
+    <choice>
+      <text/>
+      <ref name="term"/>
+      <ref name="emph.class"/>
+      <ref name="ref.class"/>
+      <ref name="tech.class"/>
+      <ref name="loc.class"/>
+      <ref name="ednote.class"/>
+      <ref name="local.termdef.pcd.mix"/>
+    </choice>
+  </define>
+  <define name="local.bibl.pcd.mix">
+    <notAllowed/>
+  </define>
+  <!-- compensate for IE bug; suggested by ht -->
+  <define name="bibl.pcd.mix">
+    <choice>
+      <text/>
+      <ref name="emph.class"/>
+      <ref name="ref.class"/>
+      <ref name="loc.class"/>
+      <ref name="ednote.class"/>
+      <ref name="local.bibl.pcd.mix"/>
+    </choice>
+  </define>
+  <define name="local.tech.pcd.mix">
+    <notAllowed/>
+  </define>
+  <!-- compensate for IE bug; suggested by ht -->
+  <define name="tech.pcd.mix">
+    <choice>
+      <text/>
+      <ref name="loc.class"/>
+      <ref name="ednote.class"/>
+      <ref name="phrase"/>
+      <ref name="rfc2119"/>
+      <ref name="local.tech.pcd.mix"/>
+    </choice>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Entities for customizable content models ...................... -->
+  <!-- ............................................................... -->
+  <!--
+    #1998-03-10: maler: Added customization entities.
+    #1998-05-14: maler: Allowed prevlocs and latestloc in either order.
+    #1999-07-02: maler: Made version optional; added copyright element.
+    #2000-03-07: maler: Allowed status and abstract in opposite order.
+  -->
+  <define name="spec.mdl">
+    <ref name="header"/>
+    <optional>
+      <ref name="front"/>
+    </optional>
+    <ref name="body"/>
+    <optional>
+      <ref name="back"/>
+    </optional>
+  </define>
+  <define name="header.mdl">
+    <ref name="title"/>
+    <optional>
+      <ref name="subtitle"/>
+    </optional>
+    <optional>
+      <ref name="version"/>
+    </optional>
+    <ref name="w3c-designation"/>
+    <ref name="w3c-doctype"/>
+    <ref name="pubdate"/>
+    <zeroOrMore>
+      <ref name="notice"/>
+    </zeroOrMore>
+    <ref name="publoc"/>
+    <optional>
+      <ref name="altlocs"/>
+    </optional>
+    <optional>
+      <choice>
+        <group>
+          <ref name="prevlocs"/>
+          <optional>
+            <ref name="latestloc"/>
+          </optional>
+        </group>
+        <group>
+          <ref name="latestloc"/>
+          <optional>
+            <ref name="prevlocs"/>
+          </optional>
+        </group>
+      </choice>
+    </optional>
+    <ref name="authlist"/>
+    <optional>
+      <ref name="errataloc"/>
+    </optional>
+    <optional>
+      <ref name="preverrataloc"/>
+    </optional>
+    <optional>
+      <ref name="translationloc"/>
+    </optional>
+    <optional>
+      <ref name="copyright"/>
+    </optional>
+    <choice>
+      <group>
+        <ref name="status"/>
+        <ref name="abstract"/>
+      </group>
+      <group>
+        <ref name="abstract"/>
+        <ref name="status"/>
+      </group>
+    </choice>
+    <optional>
+      <ref name="pubstmt"/>
+    </optional>
+    <optional>
+      <ref name="sourcedesc"/>
+    </optional>
+    <ref name="langusage"/>
+    <ref name="revisiondesc"/>
+  </define>
+  <define name="pubdate.mdl">
+    <optional>
+      <ref name="day"/>
+    </optional>
+    <ref name="month"/>
+    <ref name="year"/>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Entities for common attributes ................................ -->
+  <!-- ............................................................... -->
+  <!-- #2000-03-07: maler: Added %argtypes;. -->
+  <!--
+    argtypes:
+    Values for function prototype argument datatypes.
+  -->
+  <define name="argtypes">
+    <choice>
+      <value>boolean</value>
+      <value>expression</value>
+      <value>location-set</value>
+      <value>node-set</value>
+      <value>number</value>
+      <value>object</value>
+      <value>point</value>
+      <value>range</value>
+      <value>string</value>
+    </choice>
+  </define>
+  <!--
+    key attribute:
+    Optionally provides a sorting or indexing key, for cases when
+    the element content is inappropriate for this purpose.
+  -->
+  <define name="key.att">
+    <optional>
+      <attribute name="key"/>
+    </optional>
+  </define>
+  <!--
+    def attribute:
+    Points to the element where the relevant definition can be
+    found, using the IDREF mechanism.  %def.att; is for optional
+    def attributes, and %def-req.att; is for required def
+    attributes.
+  -->
+  <define name="def-req.att">
+    <attribute name="def">
+      <data type="IDREF"/>
+    </attribute>
+  </define>
+  <!--
+    ref attribute:
+    Points to the element where more information can be found,
+    using the IDREF mechanism.  %ref.att; is for optional
+    ref attributes, and %ref-req.att; is for required ref
+    attributes.
+  -->
+  <define name="ref-req.att">
+    <attribute name="ref">
+      <data type="IDREF"/>
+    </attribute>
+  </define>
+  <!--
+    #1998-03-23: maler: Added show and actuate attributes to href.
+    #                   Added semi-common xml:space attribute.
+    #1998-08-22: maler: Used new xlink:form and #IMPLIED features.
+    #1999-07-02: maler: Reorganized XLink-related entities completely;
+    #                   added xmlns:xlink attribute to the mix.
+    #2000-03-07: maler: Updated XLink usage to February 2000 draft,
+    #                   except that href still has no namespace prefix.
+  -->
+  <!--
+    xmlns:xlink and xlink:type attributes:
+    xmlns:xlink declares the association of the xlink prefix
+    with the namespace created by the XLink specification.
+    xlink:type identifies an element as an XLink "simple" linking
+    element.
+  -->
+  <define name="simple-xlink.att">
+    <optional>
+      <attribute name="xlink:type" a:defaultValue="simple">
+        <value type="string" datatypeLibrary="">simple</value>
+      </attribute>
+    </optional>
+  </define>
+  <!--
+    href attributes:
+    The href attribute locates the remote-resource half of a
+    simple link; the element on which the href appears is the
+    local-resource half.  Some elements are usable links only if
+    the author chooses to supply a functional href.  The attribute
+    name should really be xlink:href, but is kept without the
+    prefix for now in order to be backwards-compatible.
+  -->
+  <define name="href.att">
+    <optional>
+      <attribute name="href"/>
+    </optional>
+  </define>
+  <define name="href-req.att">
+    <attribute name="href"/>
+  </define>
+  <!--
+    xlink:show and xlink:actuate attributes:
+    These attributes offer instructions to the display engine
+    about how to handle traversal to resource indicated by an
+    href locator.
+  -->
+  <define name="auto-embed.att">
+    <optional>
+      <attribute name="xlink:show" a:defaultValue="embed">
+        <value type="string" datatypeLibrary="">embed</value>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="xlink:actuate" a:defaultValue="onLoad">
+        <value type="string" datatypeLibrary="">onLoad</value>
+      </attribute>
+    </optional>
+  </define>
+  <define name="user-replace.att">
+    <optional>
+      <attribute name="xlink:show" a:defaultValue="replace">
+        <value type="string" datatypeLibrary="">replace</value>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="xlink:actuate" a:defaultValue="onRequest">
+        <value type="string" datatypeLibrary="">onRequest</value>
+      </attribute>
+    </optional>
+  </define>
+  <define name="user-new.att">
+    <optional>
+      <attribute name="xlink:show" a:defaultValue="new">
+        <value type="string" datatypeLibrary="">new</value>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="xlink:actuate" a:defaultValue="onRequest">
+        <value type="string" datatypeLibrary="">onRequest</value>
+      </attribute>
+    </optional>
+  </define>
+  <!--
+    xml:space attribute:
+    Indicates that the element contains whitespace that the
+    formatter or other application should retain, as appropriate
+    to its function.
+  -->
+  <define name="xmlspace.att">
+    <optional>
+      <attribute name="xml:space" a:defaultValue="preserve">
+        <value>preserve</value>
+      </attribute>
+    </optional>
+  </define>
+  <!-- #2000-03-07: maler: Added common diff attribute.  Made %role.att;. -->
+  <!--
+    diff attribute:
+    Indicates in what way the element has changed.  When a value
+    is not provided, that subelement should inherit a value from
+    its parent.  If the root element has no value supplied,
+    assume "off".
+  -->
+  <define name="diff.att">
+    <optional>
+      <attribute name="diff">
+        <choice>
+          <value>chg</value>
+          <value>add</value>
+          <value>del</value>
+          <value>off</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <!--
+    role attribute:
+    Extends the useful life of the DTD by allowing authors to
+    make a subtype of any element.  No default.
+  -->
+  <define name="role.att">
+    <optional>
+      <attribute name="role">
+        <data type="NMTOKEN"/>
+      </attribute>
+    </optional>
+  </define>
+  <!--
+    Common attributes:
+    Every element has an ID attribute for links, a role
+    attribute, and a diff attribute. %common.att; is for
+    common attributes where the ID is optional, and
+    %common-idreq.att; is for common attributes where the
+    ID is required.
+  -->
+  <define name="local.common.att">
+    <empty/>
+  </define>
+  <define name="common.att">
+    <optional>
+      <attribute name="id">
+        <data type="ID"/>
+      </attribute>
+    </optional>
+    <ref name="role.att"/>
+    <ref name="diff.att"/>
+    <ref name="local.common.att"/>
+  </define>
+  <define name="local.common-idreq.att">
+    <empty/>
+  </define>
+  <define name="common-idreq.att">
+    <attribute name="id">
+      <data type="ID"/>
+    </attribute>
+    <ref name="role.att"/>
+    <ref name="diff.att"/>
+    <ref name="local.common-idreq.att"/>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Common elements ............................................... -->
+  <!-- ............................................................... -->
+  <!-- head: Title on divisions, productions, and the like -->
+  <define name="head">
+    <element name="head">
+      <ref name="attlist.head"/>
+      <zeroOrMore>
+        <ref name="head.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.head" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Major specification structure ................................. -->
+  <!-- ............................................................... -->
+  <!--
+    #1998-03-10: maler: Made spec content model easily customizable.
+    #1999-07-02: maler: Added doctype atts and status att.
+    #2000-03-07: maler: Added cr, issues, and dispcmts to w3c-doctype.
+  -->
+  <define name="spec">
+    <element name="spec">
+      <ref name="attlist.spec"/>
+      <ref name="spec.mdl"/>
+    </element>
+  </define>
+  <!--
+    w3c-doctype attributes:
+    Indicates the type of document, so that the appropriate
+    stylesheet or workflow routing can be applied.  Should
+    *not* generate any text (such as the "REC-" or "NOTE-"
+    prefix on the W3C designation content).  No default.  If
+    w3c-doctype is "other", other-doctype should be filled in.
+    
+    status attribute:
+    Indicates the stage of review of the document.  May affect
+    the stylesheet's treatment of ednotes (e.g., whether to
+    output them).  No default.
+  -->
+  <define name="local.spec.att">
+    <empty/>
+  </define>
+  <define name="attlist.spec" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="local.spec.att"/>
+    <optional>
+      <attribute name="w3c-doctype">
+        <choice>
+          <value>cr</value>
+          <value>dispcmts</value>
+          <value>issues</value>
+          <value>wgnote</value>
+          <value>memsub</value>
+          <value>teamsub</value>
+          <value>note</value>
+          <value>other</value>
+          <value>pr</value>
+          <value>per</value>
+          <value>rec</value>
+          <value>wd</value>
+          <value>review</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="other-doctype"/>
+    </optional>
+    <optional>
+      <attribute name="status">
+        <choice>
+          <value>int-review</value>
+          <value>ext-review</value>
+          <value>final</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <define name="front">
+    <element name="front">
+      <ref name="attlist.front"/>
+      <oneOrMore>
+        <ref name="div1"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.front" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="body">
+    <element name="body">
+      <ref name="attlist.body"/>
+      <oneOrMore>
+        <ref name="div1"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.body" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- #1997-09-30: maler: Added inform-div1 to back content. -->
+  <define name="back">
+    <element name="back">
+      <ref name="attlist.back"/>
+      <choice>
+        <group>
+          <oneOrMore>
+            <ref name="div1"/>
+          </oneOrMore>
+          <zeroOrMore>
+            <ref name="inform-div1"/>
+          </zeroOrMore>
+        </group>
+        <oneOrMore>
+          <ref name="inform-div1"/>
+        </oneOrMore>
+      </choice>
+    </element>
+  </define>
+  <define name="attlist.back" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="div1">
+    <element name="div1">
+      <ref name="attlist.div1"/>
+      <ref name="head"/>
+      <zeroOrMore>
+        <ref name="div.mix"/>
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="div2"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.div1" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!--
+    #1997-09-30: maler: Added inform-div1 declarations.
+    #2000-03-07: maler: Added div5 level.
+  -->
+  <!-- inform-div1: Non-normative division in back matter -->
+  <define name="inform-div1">
+    <element name="inform-div1">
+      <ref name="attlist.inform-div1"/>
+      <ref name="head"/>
+      <zeroOrMore>
+        <ref name="div.mix"/>
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="div2"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.inform-div1" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="div2">
+    <element name="div2">
+      <ref name="attlist.div2"/>
+      <ref name="head"/>
+      <zeroOrMore>
+        <ref name="div.mix"/>
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="div3"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.div2" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="div3">
+    <element name="div3">
+      <ref name="attlist.div3"/>
+      <ref name="head"/>
+      <zeroOrMore>
+        <ref name="div.mix"/>
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="div4"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.div3" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="div4">
+    <element name="div4">
+      <ref name="attlist.div4"/>
+      <ref name="head"/>
+      <zeroOrMore>
+        <ref name="div.mix"/>
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="div5"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.div4" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="div5">
+    <element name="div5">
+      <ref name="attlist.div5"/>
+      <ref name="head"/>
+      <zeroOrMore>
+        <ref name="div.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.div5" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Specification header .......................................... -->
+  <!-- ............................................................... -->
+  <!-- #1998-03-10: maler: Made header content model easily customizable. -->
+  <define name="header">
+    <element name="header">
+      <ref name="attlist.header"/>
+      <ref name="header.mdl"/>
+    </element>
+  </define>
+  <define name="attlist.header" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- Example of title: "Extensible Cheese Language (XCL)" -->
+  <define name="title">
+    <element name="title">
+      <ref name="attlist.title"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.title" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- Example of subtitle: "A Cheesy Specification" -->
+  <define name="subtitle">
+    <element name="subtitle">
+      <ref name="attlist.subtitle"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.subtitle" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- Example of version: "Version 666.0" -->
+  <define name="version">
+    <element name="version">
+      <ref name="attlist.version"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.version" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- Example of w3c-designation: "WD-xcl-19991231" -->
+  <define name="w3c-designation">
+    <element name="w3c-designation">
+      <ref name="attlist.w3c-designation"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.w3c-designation" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- Example of w3c-doctype: "W3C Working Draft" -->
+  <define name="w3c-doctype">
+    <element name="w3c-doctype">
+      <ref name="attlist.w3c-doctype"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.w3c-doctype" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- #1998-03-10: maler: Made pubdate content model easily customizable. -->
+  <define name="pubdate">
+    <element name="pubdate">
+      <ref name="attlist.pubdate"/>
+      <ref name="pubdate.mdl"/>
+    </element>
+  </define>
+  <define name="attlist.pubdate" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="day">
+    <element name="day">
+      <ref name="attlist.day"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.day" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="month">
+    <element name="month">
+      <ref name="attlist.month"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.month" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="year">
+    <element name="year">
+      <ref name="attlist.year"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.year" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- #1999-07-02: maler: Declared copyright element. -->
+  <define name="copyright">
+    <element name="copyright">
+      <ref name="attlist.copyright"/>
+      <oneOrMore>
+        <ref name="hdr.mix"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.copyright" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- Example of notice: "This draft is for public comment..." -->
+  <define name="notice">
+    <element name="notice">
+      <ref name="attlist.notice"/>
+      <oneOrMore>
+        <ref name="hdr.mix"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.notice" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- #2000-03-07: maler: Broadened models of *loc to %p.pcd.mix;. -->
+  <define name="publoc">
+    <element name="publoc">
+      <ref name="attlist.publoc"/>
+      <zeroOrMore>
+        <ref name="p.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.publoc" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!--
+    #2002-08-15: nwalsh: Added altlocs element.
+      The semantics of the altlocs are equivalent to the Dublin Core relation element
+      with type="hasVersion". Each of the loc elements inside altlocs should identify
+      an alternate version of the resource described by the document, for example
+      HTML, XML, and PDF forms.
+  -->
+  <define name="altlocs">
+    <element name="altlocs">
+      <ref name="attlist.altlocs"/>
+      <oneOrMore>
+        <ref name="loc"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.altlocs" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="prevlocs">
+    <element name="prevlocs">
+      <ref name="attlist.prevlocs"/>
+      <zeroOrMore>
+        <ref name="p.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.prevlocs" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!--
+    #2005-10-13: nwalsh: restrict latestloc content model.
+      New pubrules allows for multiple latestlocs. For some reason, this element
+      used to allow PCDATA. Now it allows only loc elements. If this causes
+      trouble, tell Norm.
+  -->
+  <define name="latestloc">
+    <element name="latestloc">
+      <ref name="attlist.latestloc"/>
+      <oneOrMore>
+        <ref name="loc"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.latestloc" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="errataloc">
+    <element name="errataloc">
+      <ref name="attlist.errataloc"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.errataloc" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="simple-xlink.att"/>
+    <ref name="href-req.att"/>
+  </define>
+  <define name="preverrataloc">
+    <element name="preverrataloc">
+      <ref name="attlist.preverrataloc"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.preverrataloc" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="simple-xlink.att"/>
+    <ref name="href-req.att"/>
+  </define>
+  <define name="translationloc">
+    <element name="translationloc">
+      <ref name="attlist.translationloc"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.translationloc" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="simple-xlink.att"/>
+    <ref name="href-req.att"/>
+  </define>
+  <!-- loc (defined in "Phrase-level elements" below) -->
+  <define name="authlist">
+    <element name="authlist">
+      <ref name="attlist.authlist"/>
+      <oneOrMore>
+        <ref name="author"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.authlist" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!--
+    #1997-09-30: maler: Made affiliation optional.
+    #1998-03-10: maler: Made email optional.
+  -->
+  <define name="author">
+    <element name="author">
+      <ref name="attlist.author"/>
+      <ref name="name"/>
+      <optional>
+        <ref name="affiliation"/>
+      </optional>
+      <optional>
+        <ref name="email"/>
+      </optional>
+    </element>
+  </define>
+  <define name="attlist.author" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="name">
+    <element name="name">
+      <ref name="attlist.name"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.name" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="key.att"/>
+  </define>
+  <define name="affiliation">
+    <element name="affiliation">
+      <ref name="attlist.affiliation"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.affiliation" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- #1999-07-02: maler: Added show/actuate attributes and default values. -->
+  <define name="email">
+    <element name="email">
+      <ref name="attlist.email"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <!--
+    href attribute:
+            email functions as a hypertext reference through this
+            required attribute.  Typically the reference would use
+            the mailto: scheme.  E.g.:
+    
+    <email href="mailto:elm@arbortext.com">elm@arbortext.com</email>
+  -->
+  <define name="attlist.email" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="simple-xlink.att"/>
+    <ref name="href-req.att"/>
+    <ref name="user-new.att"/>
+  </define>
+  <!--
+    #1998-05-15: maler: Changed status content from %statusobj.mix;
+    #                   to plain %obj.mix;.  statusp is obsolete.
+  -->
+  <define name="status">
+    <element name="status">
+      <ref name="attlist.status"/>
+      <oneOrMore>
+        <ref name="obj.mix"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.status" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="abstract">
+    <element name="abstract">
+      <ref name="attlist.abstract"/>
+      <zeroOrMore>
+        <ref name="hdr.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.abstract" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="pubstmt">
+    <element name="pubstmt">
+      <ref name="attlist.pubstmt"/>
+      <oneOrMore>
+        <ref name="hdr.mix"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.pubstmt" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="sourcedesc">
+    <element name="sourcedesc">
+      <ref name="attlist.sourcedesc"/>
+      <oneOrMore>
+        <ref name="hdr.mix"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.sourcedesc" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="langusage">
+    <element name="langusage">
+      <ref name="attlist.langusage"/>
+      <oneOrMore>
+        <ref name="language"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.langusage" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="language">
+    <element name="language">
+      <ref name="attlist.language"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.language" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="revisiondesc">
+    <element name="revisiondesc">
+      <ref name="attlist.revisiondesc"/>
+      <oneOrMore>
+        <ref name="hdr.mix"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.revisiondesc" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Paragraph ..................................................... -->
+  <!-- ............................................................... -->
+  <!--
+    #1997-09-30: maler: Changed from %obj.mix; to %p.mix;.
+    #1997-12-29: maler: Changed order of %p.mix; and %p.pcd.mix;
+    #                   references.
+    #1997-12-29: maler: Changed order of %statusobj.mix; and
+    #                   %statusp.pcd.mix; references.
+    #1998-05-14: maler: Removed statusp declarations.
+  -->
+  <define name="p">
+    <element name="p">
+      <ref name="attlist.p"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="p.pcd.mix"/>
+          <ref name="p.mix"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.p" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Regular lists ................................................. -->
+  <!-- ............................................................... -->
+  <!-- ulist: Unordered list, typically bulleted. -->
+  <define name="ulist">
+    <element name="ulist">
+      <ref name="attlist.ulist"/>
+      <oneOrMore>
+        <ref name="item"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <!--
+    spacing attribute:
+    Use "normal" to get normal vertical spacing for items;
+    use "compact" to get less spacing.  The default is dependent
+    on the stylesheet.
+  -->
+  <define name="attlist.ulist" combine="interleave">
+    <ref name="common.att"/>
+    <optional>
+      <attribute name="spacing">
+        <choice>
+          <value>normal</value>
+          <value>compact</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <!-- olist: Ordered list, typically numbered. -->
+  <define name="olist">
+    <element name="olist">
+      <ref name="attlist.olist"/>
+      <oneOrMore>
+        <ref name="item"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <!--
+    spacing attribute:
+    Use "normal" to get normal vertical spacing for items;
+    use "compact" to get less spacing.  The default is dependent
+    on the stylesheet.
+  -->
+  <define name="attlist.olist" combine="interleave">
+    <ref name="common.att"/>
+    <optional>
+      <attribute name="spacing">
+        <choice>
+          <value>normal</value>
+          <value>compact</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <define name="item">
+    <element name="item">
+      <ref name="attlist.item"/>
+      <oneOrMore>
+        <ref name="obj.mix"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.item" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- slist: Simple list, typically with no mark. -->
+  <define name="slist">
+    <element name="slist">
+      <ref name="attlist.slist"/>
+      <oneOrMore>
+        <ref name="sitem"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.slist" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="sitem">
+    <element name="sitem">
+      <ref name="attlist.sitem"/>
+      <zeroOrMore>
+        <ref name="p.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.sitem" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- glist: Glossary list, typically two-column. -->
+  <define name="glist">
+    <element name="glist">
+      <ref name="attlist.glist"/>
+      <oneOrMore>
+        <ref name="gitem"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.glist" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="gitem">
+    <element name="gitem">
+      <ref name="attlist.gitem"/>
+      <ref name="label"/>
+      <ref name="def"/>
+    </element>
+  </define>
+  <define name="attlist.gitem" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="label">
+    <element name="label">
+      <ref name="attlist.label"/>
+      <zeroOrMore>
+        <ref name="label.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.label" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="def">
+    <element name="def">
+      <ref name="attlist.def"/>
+      <zeroOrMore>
+        <ref name="obj.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.def" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Special lists ................................................. -->
+  <!-- ............................................................... -->
+  <!-- blist: Bibliography list. -->
+  <define name="blist">
+    <element name="blist">
+      <ref name="attlist.blist"/>
+      <oneOrMore>
+        <ref name="bibl"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.blist" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- #1999-07-02: maler: Added show/actuate attributes and default values. -->
+  <define name="bibl">
+    <element name="bibl">
+      <ref name="attlist.bibl"/>
+      <zeroOrMore>
+        <ref name="bibl.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <!--
+    href attribute:
+    bibl optionally functions as a hypertext reference to the
+    referred-to resource through this attribute.  E.g.:
+    
+    <bibl href="http://www.my.com/doc.htm">My Document</bibl>
+  -->
+  <define name="attlist.bibl" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="simple-xlink.att"/>
+    <ref name="href.att"/>
+    <ref name="user-replace.att"/>
+    <ref name="key.att"/>
+  </define>
+  <!-- orglist: Organization member list. -->
+  <define name="orglist">
+    <element name="orglist">
+      <ref name="attlist.orglist"/>
+      <oneOrMore>
+        <ref name="member"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.orglist" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- #1997-09-30: maler: Added optional affiliation. -->
+  <define name="member">
+    <element name="member">
+      <ref name="attlist.member"/>
+      <ref name="name"/>
+      <optional>
+        <ref name="affiliation"/>
+      </optional>
+      <optional>
+        <ref name="role"/>
+      </optional>
+    </element>
+  </define>
+  <define name="attlist.member" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- name (defined in "Specification header" above) -->
+  <!-- affiliation (defined in "Specification header" above) -->
+  <define name="role">
+    <element name="role">
+      <ref name="attlist.role"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.role" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Notes ......................................................... -->
+  <!-- ............................................................... -->
+  <define name="note">
+    <element name="note">
+      <ref name="attlist.note"/>
+      <oneOrMore>
+        <ref name="obj.mix"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.note" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!--
+    #1998-05-14: maler: Declared issue element.
+    #2000-03-07: maler: Added head, source, resolution, and status.
+  -->
+  <define name="issue">
+    <element name="issue">
+      <ref name="attlist.issue"/>
+      <optional>
+        <ref name="head"/>
+      </optional>
+      <zeroOrMore>
+        <ref name="source"/>
+      </zeroOrMore>
+      <oneOrMore>
+        <ref name="obj.mix"/>
+      </oneOrMore>
+      <optional>
+        <ref name="resolution"/>
+      </optional>
+    </element>
+  </define>
+  <!--
+    status attribute:
+    Indicates whether the issue is open or closed.  Note that
+    the lack of a resolution element does not necessarily mean
+    that the issue is still open.
+  -->
+  <define name="attlist.issue" combine="interleave">
+    <attribute name="id">
+      <data type="ID"/>
+    </attribute>
+    <ref name="role.att"/>
+    <ref name="diff.att"/>
+    <optional>
+      <attribute name="status" a:defaultValue="open">
+        <choice>
+          <value>open</value>
+          <value>closed</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <define name="source">
+    <element name="source">
+      <ref name="attlist.source"/>
+      <zeroOrMore>
+        <ref name="p.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.source" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="resolution">
+    <element name="resolution">
+      <ref name="attlist.resolution"/>
+      <oneOrMore>
+        <ref name="obj.mix"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.resolution" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- wfcnote: Well-formedness constraint note. -->
+  <define name="wfcnote">
+    <element name="wfcnote">
+      <ref name="attlist.wfcnote"/>
+      <ref name="head"/>
+      <oneOrMore>
+        <ref name="obj.mix"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <!--
+    ID attribute:
+    wfcnote must have an ID so that it can be pointed to
+    from a wfc element in a production.
+  -->
+  <define name="attlist.wfcnote" combine="interleave">
+    <ref name="common-idreq.att"/>
+  </define>
+  <!-- vcnote: Validity constraint note. -->
+  <define name="vcnote">
+    <element name="vcnote">
+      <ref name="attlist.vcnote"/>
+      <ref name="head"/>
+      <oneOrMore>
+        <ref name="obj.mix"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <!--
+    ID attribute:
+    vcnote must have an ID so that it can be pointed to
+    from a vc element in a production.
+  -->
+  <define name="attlist.vcnote" combine="interleave">
+    <ref name="common-idreq.att"/>
+  </define>
+  <!-- #1998-05-21: maler: Declared generic constraintnote element. -->
+  <!-- constraintnote: Generic constraint note. -->
+  <define name="constraintnote">
+    <element name="constraintnote">
+      <ref name="attlist.constraintnote"/>
+      <ref name="head"/>
+      <oneOrMore>
+        <ref name="obj.mix"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <!--
+    ID attribute:
+    constraintnote must have an ID so that it can be
+    pointed to from a constraint element in a production.
+  -->
+  <!--
+    type attribute:
+    constraintnote must have a type value keyword so that
+    it can be correctly characterized in the specification.
+  -->
+  <define name="attlist.constraintnote" combine="interleave">
+    <ref name="common-idreq.att"/>
+    <attribute name="type">
+      <data type="NMTOKEN"/>
+    </attribute>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Basic display elements ........................................ -->
+  <!-- ............................................................... -->
+  <!-- #1998-03-23: maler: Added xml:space attribute. -->
+  <!-- eg: Example element, with whitespace respected. -->
+  <define name="eg">
+    <element name="eg">
+      <ref name="attlist.eg"/>
+      <zeroOrMore>
+        <ref name="eg.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.eg" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="xmlspace.att"/>
+  </define>
+  <!--
+    #2000-03-07: maler: Removed the xml:attributes attribute.
+    #                   Added %local.graphic.att;.
+  -->
+  <!--
+    graphic: Displayed graphic.  Graphic data should be
+    displayed at the point where it is referenced.  Not
+    actually conforming to XLink right now.
+  -->
+  <define name="graphic">
+    <element name="graphic">
+      <ref name="attlist.graphic"/>
+      <empty/>
+    </element>
+  </define>
+  <!--
+    source attribute:
+    The graphic data must reside at the location pointed to.
+  -->
+  <define name="local.graphic.att">
+    <empty/>
+  </define>
+  <define name="attlist.graphic" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="simple-xlink.att"/>
+    <attribute name="source"/>
+    <ref name="auto-embed.att"/>
+    <optional>
+      <attribute name="alt"/>
+    </optional>
+    <ref name="local.graphic.att"/>
+  </define>
+  <!-- #2000-03-07: maler: Added proto element structure. -->
+  <!-- proto: Function prototype, in the XPath/XPointer style. -->
+  <define name="proto">
+    <element name="proto">
+      <ref name="attlist.proto"/>
+      <zeroOrMore>
+        <ref name="arg"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="local.proto.att">
+    <empty/>
+  </define>
+  <define name="attlist.proto" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="local.proto.att"/>
+    <attribute name="name">
+      <data type="NMTOKEN"/>
+    </attribute>
+    <attribute name="return-type">
+      <ref name="argtypes"/>
+    </attribute>
+  </define>
+  <define name="local.arg.att">
+    <empty/>
+  </define>
+  <define name="arg">
+    <element name="arg">
+      <ref name="attlist.arg"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.arg" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="local.arg.att"/>
+    <attribute name="type">
+      <ref name="argtypes"/>
+    </attribute>
+    <optional>
+      <attribute name="occur">
+        <choice>
+          <value>opt</value>
+          <value>req</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <!-- #2000-03-07: maler: Added example element. -->
+  <define name="example">
+    <element name="example">
+      <ref name="attlist.example"/>
+      <optional>
+        <ref name="head"/>
+      </optional>
+      <oneOrMore>
+        <ref name="obj.mix"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.example" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- ............................................................... -->
+  <!-- EBNF .......................................................... -->
+  <!-- ............................................................... -->
+  <!--
+    #1997-11-28: maler: Added prodgroup to scrap and defined it.
+    #1998-05-21: maler: Added constraint to prod.
+    #1999-07-02: maler: Added prodrecap to scrap; broadened scrap model.
+    #                   Added headstyle attribute to scrap.
+  -->
+  <!-- scrap: Collection of EBNF language productions. -->
+  <define name="scrap">
+    <element name="scrap">
+      <ref name="attlist.scrap"/>
+      <ref name="head"/>
+      <oneOrMore>
+        <choice>
+          <ref name="prodgroup"/>
+          <ref name="prod"/>
+          <ref name="bnf"/>
+          <ref name="prodrecap"/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+  <!--
+    lang attribute:
+    The scrap can link to a description of the language used,
+    found in a language element in the header.
+    headstyle attribute:
+    Allows a scrap title to be suppressed from output.  To be
+    used only when a scrap title directly next to a section
+    title is distracting or repetetive.
+  -->
+  <define name="attlist.scrap" combine="interleave">
+    <ref name="common.att"/>
+    <optional>
+      <attribute name="lang">
+        <data type="IDREF"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="headstyle" a:defaultValue="show">
+        <choice>
+          <value>show</value>
+          <value>suppress</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <!--
+    prodgroup: Sub-collection of productions, needed for
+    formatting reasons.
+  -->
+  <define name="prodgroup">
+    <element name="prodgroup">
+      <ref name="attlist.prodgroup"/>
+      <oneOrMore>
+        <ref name="prod"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <!--
+    pcw<n> attributes:
+    Presentational attributes to control the width
+    of the "pseudo-table" columns used to output
+    groups of productions.
+  -->
+  <define name="attlist.prodgroup" combine="interleave">
+    <ref name="common.att"/>
+    <optional>
+      <attribute name="pcw1"/>
+    </optional>
+    <optional>
+      <attribute name="pcw2"/>
+    </optional>
+    <optional>
+      <attribute name="pcw3"/>
+    </optional>
+    <optional>
+      <attribute name="pcw4"/>
+    </optional>
+    <optional>
+      <attribute name="pcw5"/>
+    </optional>
+  </define>
+  <!-- prod: EBNF language production. -->
+  <define name="prod">
+    <element name="prod">
+      <ref name="attlist.prod"/>
+      <ref name="lhs"/>
+      <oneOrMore>
+        <ref name="rhs"/>
+        <zeroOrMore>
+          <choice>
+            <ref name="com"/>
+            <ref name="wfc"/>
+            <ref name="vc"/>
+            <ref name="constraint"/>
+          </choice>
+        </zeroOrMore>
+      </oneOrMore>
+    </element>
+  </define>
+  <!--
+    ID attribute:
+    The production must have an ID so that cross-references
+    (specref) and mentions of nonterminals (nt) can link to
+    it.
+  -->
+  <define name="attlist.prod" combine="interleave">
+    <ref name="common-idreq.att"/>
+    <optional>
+      <attribute name="num"/>
+    </optional>
+  </define>
+  <!-- lhs: Left-hand side of production. -->
+  <define name="lhs">
+    <element name="lhs">
+      <ref name="attlist.lhs"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.lhs" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!--
+    rhs: Right-hand side of production; may have many
+    "right-hand sides," one to a line.
+  -->
+  <define name="rhs">
+    <element name="rhs">
+      <ref name="attlist.rhs"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+          <ref name="nt"/>
+          <ref name="xnt"/>
+          <ref name="com"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.rhs" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- nt and xnt (defined in "Phrase-level elements" below) -->
+  <!-- #1997-11-28: maler: Added loc and bibref to com content. -->
+  <!-- com: Production comment. -->
+  <define name="com">
+    <element name="com">
+      <ref name="attlist.com"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+          <ref name="loc"/>
+          <ref name="bibref"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.com" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!--
+    wfc: Reference to a well-formedness constraint; should
+    generate the head of the wfcnote pointed to.
+  -->
+  <define name="wfc">
+    <element name="wfc">
+      <ref name="attlist.wfc"/>
+      <empty/>
+    </element>
+  </define>
+  <!--
+    def attribute:
+    Each well formedness tagline in a production must link to the
+    wfcnote that defines it.
+  -->
+  <define name="attlist.wfc" combine="interleave">
+    <ref name="def-req.att"/>
+    <ref name="common.att"/>
+  </define>
+  <!--
+    vc: Reference to a validity constraint; should generate
+    the head of the vcnote pointed to.
+  -->
+  <define name="vc">
+    <element name="vc">
+      <ref name="attlist.vc"/>
+      <empty/>
+    </element>
+  </define>
+  <!--
+    def attribute:
+    Each validity tagline in a production must link to the vcnote
+    that defines it.
+  -->
+  <define name="attlist.vc" combine="interleave">
+    <ref name="def-req.att"/>
+    <ref name="common.att"/>
+  </define>
+  <!-- #1998-05-21: maler: Declared generic constraint element. -->
+  <!--
+    constraint: Reference to a generic constraint; should
+    generate the head of the constraintnote pointed to.
+  -->
+  <define name="constraint">
+    <element name="constraint">
+      <ref name="attlist.constraint"/>
+      <empty/>
+    </element>
+  </define>
+  <!--
+    def attribute:
+    Each constraint tagline in a production must link to the
+    constraint note that defines it.
+  -->
+  <define name="attlist.constraint" combine="interleave">
+    <ref name="def-req.att"/>
+    <ref name="common.att"/>
+  </define>
+  <!-- #1998-03-23: maler: Added xml:space attribute. -->
+  <!--
+    bnf: Un-marked-up EBNF production, with whitespace
+    respected.
+  -->
+  <define name="bnf">
+    <element name="bnf">
+      <ref name="attlist.bnf"/>
+      <zeroOrMore>
+        <ref name="eg.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.bnf" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="xmlspace.att"/>
+  </define>
+  <!-- #1999-07-02: maler: Declared prodrecap. -->
+  <!--
+    prodrecap: Reference to production or bnf that appears
+    in its "normative" form elsewhere in the spec; should
+    generate a copy of the original production, without
+    a production number next to it.
+  -->
+  <define name="prodrecap">
+    <element name="prodrecap">
+      <ref name="attlist.prodrecap"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.prodrecap" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="ref-req.att"/>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Table ......................................................... -->
+  <!-- ............................................................... -->
+  <!--
+    #1997-10-16: maler: Added table mechanism.
+    #1997-11-28: maler: Added non-null system ID to entity declaration.
+    #                   Added HTML table module.
+    #1997-12-29: maler: IGNOREd SGML Open table model.
+    #1998-03-10: maler: Removed SGML Open table model.
+    #                   Merged html-tbl.mod file into main file.
+    #                   Added %common.att; to all HTML table elements.
+    #1998-05-14: maler: Replaced table model with full HTML 4.0 model.
+    #                   Removed htable in favor of table.
+    #                   Removed htbody in favor of tbody.
+  -->
+  <define name="cellhalign.att">
+    <optional>
+      <attribute name="align">
+        <choice>
+          <value>left</value>
+          <value>center</value>
+          <value>right</value>
+          <value>justify</value>
+          <value>char</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="char"/>
+    </optional>
+    <optional>
+      <attribute name="charoff"/>
+    </optional>
+  </define>
+  <define name="cellvalign.att">
+    <optional>
+      <attribute name="valign">
+        <choice>
+          <value>top</value>
+          <value>middle</value>
+          <value>bottom</value>
+          <value>baseline</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <define name="thtd.att">
+    <optional>
+      <attribute name="abbr"/>
+    </optional>
+    <optional>
+      <attribute name="axis"/>
+    </optional>
+    <optional>
+      <attribute name="headers">
+        <data type="IDREFS"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="scope">
+        <choice>
+          <value>row</value>
+          <value>col</value>
+          <value>rowgroup</value>
+          <value>colgroup</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="rowspan" a:defaultValue="1">
+        <data type="NMTOKEN"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="colspan" a:defaultValue="1">
+        <data type="NMTOKEN"/>
+      </attribute>
+    </optional>
+  </define>
+  <define name="width.att">
+    <optional>
+      <attribute name="width"/>
+    </optional>
+  </define>
+  <define name="span.att">
+    <optional>
+      <attribute name="span" a:defaultValue="1">
+        <data type="NMTOKEN"/>
+      </attribute>
+    </optional>
+  </define>
+  <!-- table: HTML-based geometric table model. -->
+  <define name="table">
+    <element name="table">
+      <ref name="attlist.table"/>
+      <optional>
+        <ref name="caption"/>
+      </optional>
+      <choice>
+        <zeroOrMore>
+          <ref name="col"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="colgroup"/>
+        </zeroOrMore>
+      </choice>
+      <optional>
+        <ref name="thead"/>
+      </optional>
+      <optional>
+        <ref name="tfoot"/>
+      </optional>
+      <oneOrMore>
+        <ref name="tbody"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.table" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="width.att"/>
+    <optional>
+      <attribute name="summary"/>
+    </optional>
+    <optional>
+      <attribute name="border"/>
+    </optional>
+    <optional>
+      <attribute name="frame">
+        <choice>
+          <value>void</value>
+          <value>above</value>
+          <value>below</value>
+          <value>hsides</value>
+          <value>lhs</value>
+          <value>rhs</value>
+          <value>vsides</value>
+          <value>box</value>
+          <value>border</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="rules">
+        <choice>
+          <value>none</value>
+          <value>groups</value>
+          <value>rows</value>
+          <value>cols</value>
+          <value>all</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="cellspacing"/>
+    </optional>
+    <optional>
+      <attribute name="cellpadding"/>
+    </optional>
+  </define>
+  <define name="caption">
+    <element name="caption">
+      <ref name="attlist.caption"/>
+      <zeroOrMore>
+        <ref name="p.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.caption" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="col">
+    <element name="col">
+      <ref name="attlist.col"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.col" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="span.att"/>
+    <ref name="width.att"/>
+    <ref name="cellhalign.att"/>
+    <ref name="cellvalign.att"/>
+  </define>
+  <define name="colgroup">
+    <element name="colgroup">
+      <ref name="attlist.colgroup"/>
+      <zeroOrMore>
+        <ref name="col"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.colgroup" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="span.att"/>
+    <ref name="width.att"/>
+    <ref name="cellhalign.att"/>
+    <ref name="cellvalign.att"/>
+  </define>
+  <define name="thead">
+    <element name="thead">
+      <ref name="attlist.thead"/>
+      <oneOrMore>
+        <ref name="tr"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.thead" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="cellhalign.att"/>
+    <ref name="cellvalign.att"/>
+  </define>
+  <define name="tfoot">
+    <element name="tfoot">
+      <ref name="attlist.tfoot"/>
+      <oneOrMore>
+        <ref name="tr"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.tfoot" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="cellhalign.att"/>
+    <ref name="cellvalign.att"/>
+  </define>
+  <define name="tbody">
+    <element name="tbody">
+      <ref name="attlist.tbody"/>
+      <oneOrMore>
+        <ref name="tr"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.tbody" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="cellhalign.att"/>
+    <ref name="cellvalign.att"/>
+  </define>
+  <define name="tr">
+    <element name="tr">
+      <ref name="attlist.tr"/>
+      <oneOrMore>
+        <choice>
+          <ref name="th"/>
+          <ref name="td"/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.tr" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="cellhalign.att"/>
+    <ref name="cellvalign.att"/>
+  </define>
+  <define name="th">
+    <element name="th">
+      <ref name="attlist.th"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="p.pcd.mix"/>
+          <ref name="p.mix"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.th" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="thtd.att"/>
+    <ref name="cellhalign.att"/>
+    <ref name="cellvalign.att"/>
+  </define>
+  <define name="td">
+    <element name="td">
+      <ref name="attlist.td"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="p.pcd.mix"/>
+          <ref name="p.mix"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.td" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="thtd.att"/>
+    <ref name="cellhalign.att"/>
+    <ref name="cellvalign.att"/>
+  </define>
+  <!-- ............................................................... -->
+  <!-- IDL structures for DOM specifications ......................... -->
+  <!-- ............................................................... -->
+  <!-- ............................................................... -->
+  <!-- Specialized entities for classes .............................. -->
+  <define name="idl-desc.class">
+    <choice>
+      <ref name="p"/>
+      <ref name="note"/>
+    </choice>
+  </define>
+  <define name="idl-tdef.class">
+    <choice>
+      <ref name="typedef"/>
+      <ref name="constant"/>
+      <ref name="exception"/>
+      <ref name="reference"/>
+      <ref name="group"/>
+    </choice>
+  </define>
+  <define name="idl-mod.class">
+    <choice>
+      <ref name="module"/>
+      <ref name="interface"/>
+    </choice>
+  </define>
+  <define name="idl-struct.class">
+    <choice>
+      <ref name="struct"/>
+      <ref name="enum"/>
+      <ref name="sequence"/>
+      <ref name="union"/>
+      <ref name="typename"/>
+    </choice>
+  </define>
+  <define name="idl-meth.class">
+    <choice>
+      <ref name="method"/>
+      <ref name="attribute"/>
+    </choice>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Specialized entities for mixtures ............................. -->
+  <!--
+    Quick reference to content model mixtures:
+    
+                            desc tdef mod struct meth
+    group                     x    x   x    x      x
+    definitions, module       x    x   x
+    interface                 x    x               x
+    typedef, case, component                x
+  -->
+  <define name="idl-grp.mix">
+    <choice>
+      <ref name="idl-desc.class"/>
+      <ref name="idl-tdef.class"/>
+      <ref name="idl-mod.class"/>
+      <ref name="idl-struct.class"/>
+      <ref name="idl-meth.class"/>
+    </choice>
+  </define>
+  <define name="idl-defn.mix">
+    <choice>
+      <ref name="idl-desc.class"/>
+      <ref name="idl-tdef.class"/>
+      <ref name="idl-mod.class"/>
+    </choice>
+  </define>
+  <define name="idl-intfc.mix">
+    <choice>
+      <ref name="idl-desc.class"/>
+      <ref name="idl-tdef.class"/>
+      <ref name="idl-meth.class"/>
+    </choice>
+  </define>
+  <define name="idl-type.mix">
+    <ref name="idl-struct.class"/>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Specialized entities for common attributes .................... -->
+  <!--
+    name attribute:
+    Provides a name.  Required.
+  -->
+  <define name="idl-name.att">
+    <attribute name="name"/>
+  </define>
+  <!--
+    type attribute:
+    Provides a type.  Required.
+  -->
+  <define name="idl-type.att">
+    <attribute name="type"/>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Common IDL element ............................................ -->
+  <define name="descr">
+    <element name="descr">
+      <ref name="attlist.descr"/>
+      <zeroOrMore>
+        <ref name="obj.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.descr" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- ............................................................... -->
+  <!-- IDL definition elements ....................................... -->
+  <!-- definitions: Top-level element for definitions. -->
+  <define name="definitions">
+    <element name="definitions">
+      <ref name="attlist.definitions"/>
+      <oneOrMore>
+        <ref name="idl-defn.mix"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.definitions" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- group: Element used to group a set of definitions. -->
+  <define name="group">
+    <element name="group">
+      <ref name="attlist.group"/>
+      <ref name="descr"/>
+      <zeroOrMore>
+        <ref name="idl-grp.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.group" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="idl-name.att"/>
+  </define>
+  <!-- interface: Definition of an interface. -->
+  <define name="interface">
+    <element name="interface">
+      <ref name="attlist.interface"/>
+      <ref name="descr"/>
+      <zeroOrMore>
+        <ref name="idl-intfc.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.interface" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="idl-name.att"/>
+    <optional>
+      <attribute name="inherits"/>
+    </optional>
+  </define>
+  <!-- module: Definition of a module. -->
+  <define name="module">
+    <element name="module">
+      <ref name="attlist.module"/>
+      <ref name="descr"/>
+      <zeroOrMore>
+        <ref name="idl-defn.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.module" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="idl-name.att"/>
+  </define>
+  <!-- reference: Reference to some other declaration. -->
+  <define name="reference">
+    <element name="reference">
+      <ref name="attlist.reference"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.reference" combine="interleave">
+    <ref name="common.att"/>
+    <attribute name="declaration">
+      <data type="IDREF"/>
+    </attribute>
+  </define>
+  <!-- typedef: Definition of a named type. -->
+  <define name="typedef">
+    <element name="typedef">
+      <ref name="attlist.typedef"/>
+      <ref name="descr"/>
+      <ref name="idl-type.mix"/>
+    </element>
+  </define>
+  <define name="attlist.typedef" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="idl-name.att"/>
+    <optional>
+      <attribute name="array.size">
+        <data type="NMTOKEN"/>
+      </attribute>
+    </optional>
+  </define>
+  <!-- struct: Declaration of a struct type. -->
+  <define name="struct">
+    <element name="struct">
+      <ref name="attlist.struct"/>
+      <ref name="descr"/>
+      <oneOrMore>
+        <ref name="component"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.struct" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="idl-name.att"/>
+  </define>
+  <!-- component: Declaration of a structural member. -->
+  <define name="component">
+    <element name="component">
+      <ref name="attlist.component"/>
+      <ref name="idl-type.mix"/>
+    </element>
+  </define>
+  <define name="attlist.component" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="idl-name.att"/>
+  </define>
+  <!-- union: Declaration of a union type. -->
+  <define name="union">
+    <element name="union">
+      <ref name="attlist.union"/>
+      <ref name="descr"/>
+      <oneOrMore>
+        <ref name="case"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.union" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="idl-name.att"/>
+    <attribute name="switch.type"/>
+  </define>
+  <define name="case">
+    <element name="case">
+      <ref name="attlist.case"/>
+      <ref name="descr"/>
+      <ref name="idl-type.mix"/>
+    </element>
+  </define>
+  <define name="attlist.case" combine="interleave">
+    <ref name="common.att"/>
+    <attribute name="labels"/>
+  </define>
+  <!-- enum: Declaration of an enum type. -->
+  <define name="enum">
+    <element name="enum">
+      <ref name="attlist.enum"/>
+      <ref name="descr"/>
+      <oneOrMore>
+        <ref name="enumerator"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.enum" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="idl-name.att"/>
+  </define>
+  <define name="enumerator">
+    <element name="enumerator">
+      <ref name="attlist.enumerator"/>
+      <ref name="descr"/>
+    </element>
+  </define>
+  <define name="attlist.enumerator" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="idl-name.att"/>
+  </define>
+  <!-- sequence: Declaration of a sequence type (not named). -->
+  <define name="sequence">
+    <element name="sequence">
+      <ref name="attlist.sequence"/>
+      <zeroOrMore>
+        <ref name="sequence"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.sequence" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="idl-type.att"/>
+    <optional>
+      <attribute name="size">
+        <data type="NMTOKEN"/>
+      </attribute>
+    </optional>
+  </define>
+  <!-- constant: Declaration of a named constant. -->
+  <define name="constant">
+    <element name="constant">
+      <ref name="attlist.constant"/>
+      <ref name="descr"/>
+    </element>
+  </define>
+  <define name="attlist.constant" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="idl-name.att"/>
+    <ref name="idl-type.att"/>
+    <attribute name="value"/>
+  </define>
+  <!-- exception: Declaration of an exception. -->
+  <define name="exception">
+    <element name="exception">
+      <ref name="attlist.exception"/>
+      <ref name="descr"/>
+      <zeroOrMore>
+        <ref name="component"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.exception" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="idl-name.att"/>
+  </define>
+  <!--  component (defined under struct, above) -->
+  <!-- attribute: Declaration of an attribute (data member). -->
+  <define name="attribute">
+    <element name="attribute">
+      <ref name="attlist.attribute"/>
+      <ref name="descr"/>
+    </element>
+  </define>
+  <define name="attlist.attribute" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="idl-name.att"/>
+    <ref name="idl-type.att"/>
+    <optional>
+      <attribute name="readonly" a:defaultValue="no">
+        <choice>
+          <value>yes</value>
+          <value>no</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <!-- method: Declaration of a method. -->
+  <define name="method">
+    <element name="method">
+      <ref name="attlist.method"/>
+      <ref name="descr"/>
+      <ref name="parameters"/>
+      <ref name="returns"/>
+      <ref name="raises"/>
+    </element>
+  </define>
+  <define name="attlist.method" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="idl-name.att"/>
+  </define>
+  <define name="parameters">
+    <element name="parameters">
+      <ref name="attlist.parameters"/>
+      <zeroOrMore>
+        <ref name="param"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.parameters" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="param">
+    <element name="param">
+      <ref name="attlist.param"/>
+      <ref name="descr"/>
+    </element>
+  </define>
+  <define name="attlist.param" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="idl-name.att"/>
+    <ref name="idl-type.att"/>
+    <optional>
+      <attribute name="attr" a:defaultValue="inout">
+        <choice>
+          <value>in</value>
+          <value>out</value>
+          <value>inout</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <define name="returns">
+    <element name="returns">
+      <ref name="attlist.returns"/>
+      <ref name="descr"/>
+    </element>
+  </define>
+  <define name="attlist.returns" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="idl-type.att"/>
+  </define>
+  <define name="raises">
+    <element name="raises">
+      <ref name="attlist.raises"/>
+      <zeroOrMore>
+        <ref name="exception"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.raises" combine="interleave">
+    <empty/>
+  </define>
+  <!--  exception (defined under constant, above) -->
+  <define name="typename">
+    <element name="typename">
+      <ref name="attlist.typename"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.typename" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Phrase-level elements ......................................... -->
+  <!-- ............................................................... -->
+  <!-- #2000-03-07: maler: Added att and attval elements. -->
+  <!-- att: Attribute name. -->
+  <define name="att">
+    <element name="att">
+      <ref name="attlist.att"/>
+      <zeroOrMore>
+        <ref name="tech.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.att" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- attval: Attribute value. -->
+  <define name="attval">
+    <element name="attval">
+      <ref name="attlist.attval"/>
+      <zeroOrMore>
+        <ref name="tech.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.attval" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!--
+    bibref: Reference to a bibliography list entry; should
+    generate, in square brackets, "key" on bibl.
+  -->
+  <define name="bibref">
+    <element name="bibref">
+      <ref name="attlist.bibref"/>
+      <empty/>
+    </element>
+  </define>
+  <!--
+    ref attribute:
+    A bibliography reference must link to the bibl element that
+    describes the resource.
+  -->
+  <define name="attlist.bibref" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="ref-req.att"/>
+  </define>
+  <define name="code">
+    <element name="code">
+      <ref name="attlist.code"/>
+      <zeroOrMore>
+        <ref name="tech.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.code" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!--
+    #1998-03-10: maler: Declared ednote and related elements.
+    #1999-07-02: maler: Changed edtext content from #PCDATA to %p.pcd.mix;.
+  -->
+  <!-- ednote: Editorial note for communication among editors. -->
+  <define name="ednote">
+    <element name="ednote">
+      <ref name="attlist.ednote"/>
+      <optional>
+        <ref name="name"/>
+      </optional>
+      <optional>
+        <ref name="date"/>
+      </optional>
+      <ref name="edtext"/>
+    </element>
+  </define>
+  <define name="attlist.ednote" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="date">
+    <element name="date">
+      <ref name="attlist.date"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.date" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="edtext">
+    <element name="edtext">
+      <ref name="attlist.edtext"/>
+      <zeroOrMore>
+        <ref name="p.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.edtext" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- #2000-03-07: maler: Added el element. -->
+  <!-- el: Element type name (GI). -->
+  <define name="el">
+    <element name="el">
+      <ref name="attlist.el"/>
+      <zeroOrMore>
+        <ref name="tech.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.el" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- #2000-03-07: maler: Expanded emph to %p.pcd.mix;. -->
+  <define name="emph">
+    <element name="emph">
+      <ref name="attlist.emph"/>
+      <zeroOrMore>
+        <ref name="p.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.emph" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- footnote: Both footnote content and call to footnote. -->
+  <define name="footnote">
+    <element name="footnote">
+      <ref name="attlist.footnote"/>
+      <oneOrMore>
+        <ref name="obj.mix"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.footnote" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!--
+    #2000-03-07: maler: Added function and gave it content of
+    #                   %tech.pcd.mix; instead of XPath's #PCDATA.
+  -->
+  <define name="function">
+    <element name="function">
+      <ref name="attlist.function"/>
+      <zeroOrMore>
+        <ref name="tech.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.function" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <define name="kw">
+    <element name="kw">
+      <ref name="attlist.kw"/>
+      <zeroOrMore>
+        <ref name="tech.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.kw" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- #1999-07-02: maler: Added show/actuate attributes and default values. -->
+  <!-- loc: Generic link to a Web resource, similar to HTML's A. -->
+  <define name="loc">
+    <element name="loc">
+      <ref name="attlist.loc"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <!--
+    href attribute:
+            The purpose of a loc element is to function as a A-like
+            hypertext link to a resource.  (Ideally, the content of loc
+            will also mention the URI of the resource, so that readers of
+            the printed version will be able to locate the resource.) E.g.:
+    
+    <loc href="http://www.my.com/doc.htm">http://www.my.com/doc.htm</loc>
+  -->
+  <define name="attlist.loc" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="simple-xlink.att"/>
+    <ref name="href-req.att"/>
+    <ref name="user-replace.att"/>
+  </define>
+  <!--
+    nt: Mention of a nonterminal in text, along with a link to
+    the production in the current document that defines it.
+  -->
+  <define name="nt">
+    <element name="nt">
+      <ref name="attlist.nt"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <!--
+    def attribute:
+    The nonterminal must link to the production that defines
+    it.
+  -->
+  <define name="attlist.nt" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="def-req.att"/>
+  </define>
+  <!-- #2000-03-07: maler: Declared phrase. -->
+  <!--
+    phrase: "Attribute hanger" for small bits of (e.g.) differenced
+    text in a paragraph or similar, when another element isn't handy.
+    Beware that its content model may allow more nested elements than
+    would normally be allowed in some contexts.
+  -->
+  <define name="phrase">
+    <element name="phrase">
+      <ref name="attlist.phrase"/>
+      <zeroOrMore>
+        <ref name="p.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.phrase" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- #2003-06-25: nwalsh: RFC2119 elements -->
+  <define name="rfc2119">
+    <element name="rfc2119">
+      <ref name="attlist.rfc2119"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.rfc2119" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- #1998-03-10: maler: Declared quote. -->
+  <!-- quote: Scare quotes and other purely presentational quotes. -->
+  <define name="quote">
+    <element name="quote">
+      <ref name="attlist.quote"/>
+      <zeroOrMore>
+        <ref name="p.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.quote" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!--
+    specref: Reference to a div, olist item, prod, or issue
+    in the current document; should generate italic "[n.n],
+    Section Title" for div, "n" for numbered item, "[n]" for
+    production, or "Issue id" for issue.
+  -->
+  <define name="specref">
+    <element name="specref">
+      <ref name="attlist.specref"/>
+      <empty/>
+    </element>
+  </define>
+  <!--
+    ref attribute:
+    The purpose of a specref element is to link to a div, item
+    in an olist, or production in the current spec.
+  -->
+  <define name="attlist.specref" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="ref-req.att"/>
+  </define>
+  <!-- #2000-03-07: maler: Added sub and sup. -->
+  <!-- sub: Subscript. -->
+  <define name="sub">
+    <element name="sub">
+      <ref name="attlist.sub"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.sub" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- sup: Superscript. -->
+  <define name="sup">
+    <element name="sup">
+      <ref name="attlist.sup"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.sup" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- term: The term in text that is being defined in text. -->
+  <define name="term">
+    <element name="term">
+      <ref name="attlist.term"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.term" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- termdef: Definition of a term in text. -->
+  <define name="termdef">
+    <element name="termdef">
+      <ref name="attlist.termdef"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="termdef.pcd.mix"/>
+          <ref name="termdef.mix"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <!--
+    ID attribute:
+    A term definition must have an ID so that it can be linked
+    to from termref elements.
+  -->
+  <!--
+    term attribute:
+    The canonical form of the term or phrase being defined must
+    appear in this attribute, even if the term or phrase also
+    appears in the element content in identical form (e.g., in
+    the term element).
+  -->
+  <define name="attlist.termdef" combine="interleave">
+    <ref name="common-idreq.att"/>
+    <attribute name="term"/>
+  </define>
+  <!--
+    termref: Mention of a term, along with a link to the
+    definition in the current document.
+  -->
+  <define name="termref">
+    <element name="termref">
+      <ref name="attlist.termref"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <!--
+    ref attribute:
+    A term reference must link to the termdef element that
+    defines the term.
+  -->
+  <define name="attlist.termref" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="def-req.att"/>
+  </define>
+  <!-- #1999-07-02: maler: Added show/actuate attributes and default values. -->
+  <!--
+    titleref: Citation of another document, which can also
+    link to that document if it is a Web resource.
+  -->
+  <define name="titleref">
+    <element name="titleref">
+      <ref name="attlist.titleref"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <!--
+    href attribute:
+            A title reference can optionally function as a hypertext
+            link to the resource with this title.  E.g.:
+    
+    <loc href="http://www.my.com/doc.htm">http://www.my.com/doc.htm</loc>
+  -->
+  <define name="attlist.titleref" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="simple-xlink.att"/>
+    <ref name="href.att"/>
+    <ref name="user-new.att"/>
+  </define>
+  <!-- #2000-03-07: maler: Added var. -->
+  <!--
+    var: String standing for a variable value that the user
+    or system will supply.  For example: "For each node
+    <var>x</var> in this node-set..."
+  -->
+  <define name="var">
+    <element name="var">
+      <ref name="attlist.var"/>
+      <zeroOrMore>
+        <ref name="tech.pcd.mix"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.var" combine="interleave">
+    <ref name="common.att"/>
+  </define>
+  <!-- #1999-07-02: maler: Added show/actuate attributes and default values. -->
+  <!--
+    xnt: Mention of a nonterminal in text, along with a link to
+    the production in another document that defines it.
+  -->
+  <define name="xnt">
+    <element name="xnt">
+      <ref name="attlist.xnt"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <!--
+    href attribute:
+            The nonterminal must hyperlink to a resource that serves
+            to define it (e.g., a production in a related XML
+            specification).  E.g.:
+    
+    <xnt href="http://www.w3.org/TR/spec.htm#prod3">Name</xnt>
+  -->
+  <define name="attlist.xnt" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="simple-xlink.att"/>
+    <ref name="href-req.att"/>
+    <ref name="user-new.att"/>
+  </define>
+  <!--
+    #1997-12-29: maler: Declared xspecref.
+    #1999-07-02: maler: Added show/actuate attributes and default values.
+  -->
+  <!--
+    xspecref: Reference to a div, olist item, prod, or issue
+    in a related specification document; should generate
+    no special text.
+  -->
+  <define name="xspecref">
+    <element name="xspecref">
+      <ref name="attlist.xspecref"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <!--
+    href attribute:
+            The spec reference must hyperlink to the resource to
+            cross-refer to (e.g., a section in a related XML
+            specification).  E.g.:
+    
+    <xspecref href="http://www.w3.org/TR/spec.htm#sec2">
+    the section on constraints</xspecref>
+  -->
+  <define name="attlist.xspecref" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="simple-xlink.att"/>
+    <ref name="href-req.att"/>
+    <ref name="user-new.att"/>
+  </define>
+  <!-- #1999-07-02: maler: Added show/actuate attributes and default values. -->
+  <!--
+    termref: Mention of a term, along with a link to the
+    definition in a related document.
+  -->
+  <define name="xtermref">
+    <element name="xtermref">
+      <ref name="attlist.xtermref"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="phrase"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <!--
+    href attribute:
+            The term reference must hyperlink to the resource that
+            serves to define the term (e.g., a term definition in
+            a related XML specification).  E.g.:
+    
+    <xtermref href="http://www.w3.org/TR/spec.htm#term5">
+    entity
+    </xtermref>
+  -->
+  <define name="attlist.xtermref" combine="interleave">
+    <ref name="common.att"/>
+    <ref name="simple-xlink.att"/>
+    <ref name="href-req.att"/>
+    <ref name="user-new.att"/>
+  </define>
+  <!-- ............................................................... -->
+  <!-- Unused elements for ADEPT ..................................... -->
+  <!-- ............................................................... -->
+  <!--
+    #1997-09-30: maler: Added unusued elements.
+    #1997-10-14: maler: Fixed div to move nested div to the mixture.
+    #1998-05-14: maler: Added key-term, htable, and htbody.
+    #1998-11-30: maler: Added para, listitem, itemizedlist, and orderedlist.
+  -->
+  <!--
+    The following elements are purposely declared but never
+    referenced.  Declaring them allows them to be pasted from
+    an HTML document, an earlier version of an XMLspec document,
+    or a DocBook document into a document using this DTD in ADEPT.
+    The ATD Context Transformation mechanism will try to convert
+    them to the appropriate element for this DTD.  While this
+    conversion will not work for all fragments, it does allow many
+    cases to work reasonably well.
+  -->
+  <define name="div">
+    <element name="div">
+      <ref name="attlist.div"/>
+      <optional>
+        <ref name="head"/>
+      </optional>
+      <zeroOrMore>
+        <choice>
+          <ref name="div.mix"/>
+          <ref name="ul"/>
+          <ref name="ol"/>
+          <ref name="h1"/>
+          <ref name="h2"/>
+          <ref name="h3"/>
+          <ref name="h4"/>
+          <ref name="h5"/>
+          <ref name="h6"/>
+          <ref name="div"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.div" combine="interleave">
+    <empty/>
+  </define>
+  <define name="h1">
+    <element name="h1">
+      <ref name="attlist.h1"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="head.pcd.mix"/>
+          <ref name="em"/>
+          <ref name="a"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.h1" combine="interleave">
+    <empty/>
+  </define>
+  <define name="h2">
+    <element name="h2">
+      <ref name="attlist.h2"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="head.pcd.mix"/>
+          <ref name="em"/>
+          <ref name="a"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.h2" combine="interleave">
+    <empty/>
+  </define>
+  <define name="h3">
+    <element name="h3">
+      <ref name="attlist.h3"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="head.pcd.mix"/>
+          <ref name="em"/>
+          <ref name="a"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.h3" combine="interleave">
+    <empty/>
+  </define>
+  <define name="h4">
+    <element name="h4">
+      <ref name="attlist.h4"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="head.pcd.mix"/>
+          <ref name="em"/>
+          <ref name="a"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.h4" combine="interleave">
+    <empty/>
+  </define>
+  <define name="h5">
+    <element name="h5">
+      <ref name="attlist.h5"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="head.pcd.mix"/>
+          <ref name="em"/>
+          <ref name="a"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.h5" combine="interleave">
+    <empty/>
+  </define>
+  <define name="h6">
+    <element name="h6">
+      <ref name="attlist.h6"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="head.pcd.mix"/>
+          <ref name="em"/>
+          <ref name="a"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.h6" combine="interleave">
+    <empty/>
+  </define>
+  <define name="pre">
+    <element name="pre">
+      <ref name="attlist.pre"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="eg.pcd.mix"/>
+          <ref name="em"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.pre" combine="interleave">
+    <empty/>
+  </define>
+  <define name="ul">
+    <element name="ul">
+      <ref name="attlist.ul"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="item"/>
+          <ref name="li"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.ul" combine="interleave">
+    <empty/>
+  </define>
+  <define name="ol">
+    <element name="ol">
+      <ref name="attlist.ol"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="item"/>
+          <ref name="li"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.ol" combine="interleave">
+    <empty/>
+  </define>
+  <define name="li">
+    <element name="li">
+      <ref name="attlist.li"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="obj.mix"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.li" combine="interleave">
+    <empty/>
+  </define>
+  <define name="em">
+    <element name="em">
+      <ref name="attlist.em"/>
+      <zeroOrMore>
+        <text/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.em" combine="interleave">
+    <empty/>
+  </define>
+  <define name="a">
+    <element name="a">
+      <ref name="attlist.a"/>
+      <zeroOrMore>
+        <text/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.a" combine="interleave">
+    <empty/>
+  </define>
+  <define name="key-term">
+    <element name="key-term">
+      <ref name="attlist.key-term"/>
+      <zeroOrMore>
+        <text/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.key-term" combine="interleave">
+    <empty/>
+  </define>
+  <define name="htable">
+    <element name="htable">
+      <ref name="attlist.htable"/>
+      <optional>
+        <ref name="caption"/>
+      </optional>
+      <choice>
+        <zeroOrMore>
+          <ref name="col"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="colgroup"/>
+        </zeroOrMore>
+      </choice>
+      <optional>
+        <ref name="thead"/>
+      </optional>
+      <optional>
+        <ref name="tfoot"/>
+      </optional>
+      <oneOrMore>
+        <ref name="tbody"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.htable" combine="interleave">
+    <empty/>
+  </define>
+  <define name="htbody">
+    <element name="htbody">
+      <ref name="attlist.htbody"/>
+      <oneOrMore>
+        <ref name="tr"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="attlist.htbody" combine="interleave">
+    <empty/>
+  </define>
+  <define name="statusp">
+    <element name="statusp">
+      <ref name="attlist.statusp"/>
+      <zeroOrMore>
+        <choice>
+          <ref name="p.pcd.mix"/>
+          <ref name="p.mix"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.statusp" combine="interleave">
+    <empty/>
+  </define>
+  <define name="itemizedlist">
+    <element name="itemizedlist">
+      <ref name="attlist.itemizedlist"/>
+      <zeroOrMore>
+        <ref name="listitem"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.itemizedlist" combine="interleave">
+    <empty/>
+  </define>
+  <define name="orderedlist">
+    <element name="orderedlist">
+      <ref name="attlist.orderedlist"/>
+      <zeroOrMore>
+        <ref name="listitem"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.orderedlist" combine="interleave">
+    <empty/>
+  </define>
+  <define name="listitem">
+    <element name="listitem">
+      <ref name="attlist.listitem"/>
+      <zeroOrMore>
+        <ref name="para"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.listitem" combine="interleave">
+    <empty/>
+  </define>
+  <define name="para">
+    <element name="para">
+      <ref name="attlist.para"/>
+      <zeroOrMore>
+        <text/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.para" combine="interleave">
+    <empty/>
+  </define>
+  <start>
+    <choice>
+      <ref name="itemizedlist"/>
+      <ref name="htable"/>
+      <ref name="htbody"/>
+      <ref name="spec"/>
+      <ref name="pre"/>
+      <ref name="orderedlist"/>
+      <ref name="key-term"/>
+      <ref name="statusp"/>
+    </choice>
+  </start>
+</grammar>
+<!-- ............................................................... -->
+<!-- Change history ................................................ -->
+<!-- ............................................................... -->
+<!--
+  #This revision history is no longer being maintained. See the CVS log
+  #for detailed revisions history.
+  #####################################################################
+  #1997-08-18: maler
+  #- Did a major revision.
+  #1997-09-10: maler
+  #- Updated FPI.
+  #- Removed namekey element and put key attribute on name element.
+  #- Made statusp element and supporting entities.
+  #- Added slist element with sitem+ content.
+  #- Required head on scrap and added new bnf subelement.
+  #- Added an xnt element and allowed it and nt in regular text and rhs.
+  #- Removed the ntref element.
+  #- Added back the com element to the content of rhs.
+  #- Added a key attribute to bibl.
+  #- Removed the ident element.
+  #- Added a term element to be used inside termdef.
+  #- Added an xtermref element parallel to termref.
+  #- Beefed up DTD comments.
+  #1997-09-12: maler
+  #- Allowed term element in general text.
+  #- Changed bibref to EMPTY.
+  #- Added ref.class to termdef.pcd.mix.
+  #1997-09-14: maler
+  #- Changed main attribute of xtermref from def to href.
+  #- Added termdef.class to label contents.
+  #1997-09-30: maler
+  #- Added character entity module and added new entities.
+  #- Removed p from appearing directly in self; created %p.mix;.
+  #- Added inform-div (non-normative division) element.
+  #- Fixed xtermref comment to mention href, not ref.
+  #- Extended orglist model to allow optional affiliation.
+  #- Modified author to make affiliation optional.
+  #- Added %speclist.class; and %note.class; to %obj.mix; and %p.mix;.
+  #- Added %note.class; and %illus.class; to %termdef.pcd.mix;.
+  #- Added unused HTML elements.
+  #- Put empty system ID next to public ID in entity declarations.
+  #1997-10-14: maler
+  #- Fixed "unused" div content model to move nested div to mixture.
+  #1997-10-16: maler
+  #- Added SGML Open Exchange tables.
+  #1997-11-28: maler
+  #- Added support for prodgroup and its attributes.
+  #- Added support for HTML tables.
+  #- Added loc and bibref to content of com.
+  #- Added loc to general p content models.
+  #- Allowed p as alternative to statusp in status.
+  #- Added non-null system IDs to external parameter entity declarations.
+  #- (Modified the SGML Open table module to make it XML-compliant.)
+  #- (Modified the character entity module.)
+  #1997-12-29: maler
+  #- Moved #PCDATA occurrences to come before GIs in content models.
+  #- Removed use of the SGML Open table module.
+  #- Added xspecref element.
+  #- Ensured that all FPIs contain 4-digit year.
+  #- (Modified the character entity module.)
+  #1998-03-10: maler
+  #- Merged the character entity and table modules into the main file.
+  #- Added ldquo and rdquo entities.
+  #- Added common attributes to prodgroup.
+  #- Made the email element in header optional.
+  #- Removed reference to the SGML Open table model.
+  #- Added ednote element.
+  #- Added quote element.
+  #- Updated XLink usage to reflect 3 March 1998 WD.
+  #- Added "local" entities to the class entities for customization.
+  #- Parameterized several content models to allow for customization.
+  #1998-03-23: maler
+  #- Cleaned up some comments and removed some others.
+  #- Added xml:space semi-common attribute to eg and bnf elements.
+  #- Added show and embed attributes on all the uses of href.
+  #- Added %common.att; to all HTML table elements.
+  #- Added a real URI to the "typical invocation" comment.
+  #1998-05-14: maler
+  #- Fixed mdash, ldquo, and rdquo character entities.
+  #- Switched to the full HTML 4.0 table model.
+  #- Removed htable/htbody elements and replaced them with table/tbody.
+  #- Added issue element to %note.class; and declared it.
+  #- Allowed prevlocs and latestloc in either order.
+  #- Added key-term, htable, htbody, and statusp as unused elements.
+  #- Removed real statusp element in favor of plain p.
+  #1998-05-21: maler
+  #- Declared generic constraint and constraintnote elements.
+  #- Added constraintnote to %note.class;.
+  #- Added constraint to %eg.pcd.mix; and prod content model.
+  #1998-08-22: maler
+  #- Fixed %illus.class; to mention table instead of htable.
+  #- Added definitions to %illus.class; for DOM model.
+  #- Added DOM definitions element and its substructure.
+  #- Updated XLink usage in %href.att; to use xlink:form and #IMPLIED.
+  #- Added clarifying comments to href-using elements.
+  #1998-11-30: maler
+  #- Added new unused elements to support DocBook translation.
+  #- Updated maler phone numbers.
+  #1998-12-3: maler
+  #- Fixed character entities with respect to escaping of ampersands.
+  #- Added many more explanatory comments.
+  #1999-07-02: maler
+  #- Added %loc.class; to all PCD mixes that didn't already have it.
+  #- Removed unused %loc.pcd.mix;.
+  #- Made version in spec header optional.
+  #- Added three new attributes to spec.
+  #- Broadened content of edtext.
+  #- Added optional copyright element to header.
+  #- Reorganized XLink-related parameter entities; added xmlns:xlink.
+  #- Changed edtext content from #PCDATA to %p.pcd.mix;.
+  #- Added show/actuate atts and default values to all href elements.
+  #- Changed versioning scheme from 8-digit dates to version numbers.
+  #- Added w3c-doctype, other-doctype, status atts to spec element.
+  #- Added prodrecap element inside scrap.
+  #- Added headstyle attribute to scrap.
+  #2000-03-07: maler
+  #- Added proto element, its arg subelement, and the %argtypes; entity.
+  #- Added function, var, sub, sup, phrase, el, att, attval elements.
+  #- Expanded emph to %p.pcd.mix;.
+  #- Allowed status and abstract to appear in the opposite order.
+  #- Updated XLink usage to the latest WD, except for href and source.
+  #- Removed the xml:attributes attribute from graphic.
+  #- Added %local.graphic.att; to graphic.
+  #- Added common diff attribute.
+  #- Added div5 element.
+  #- Broadened content models of publoc, prevlocs, and latestloc.
+  #- Added head, source, resolution, and status attribute to issue.
+  #- Added cr, issues, and dispcmts to w3c-doctype attribute on spec.
+  #- Added example element.
+-->
+<!-- ............................................................... -->
+<!-- End of XML specification DTD .................................. -->
+<!-- ............................................................... -->

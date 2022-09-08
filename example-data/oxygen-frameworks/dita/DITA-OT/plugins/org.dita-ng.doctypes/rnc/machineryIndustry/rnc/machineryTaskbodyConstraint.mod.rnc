@@ -1,0 +1,34 @@
+# ============================================================= 
+# MODULE:    DITA Machine Industry Taskbody Constraint - RNC              
+# VERSION:   1.2                                                
+# DATE:      November 2010                                       
+# =============================================================
+
+# Refer to the latest version of this file by the following URI:
+# urn:dita-ng:dita:rnc:machineryTaskbodyConstraint.mod.rnc
+# To refer to this specific version, you may use this value:
+# urn:dita-ng:dita:rnc:machineryTaskbodyConstraint.mod.rnc:1.2
+
+# ============================================================= 
+# SYSTEM:     Darwin Information Typing Architecture (DITA)     
+# PURPOSE:    Define constraints for for the machinery taskbody
+#             elements  
+# ORIGINAL CREATION DATE:  
+# September 2010                                                
+# (C) Copyright Syncro Soft 2010-2011                                
+# All Rights Reserved.                                          
+# =============================================================
+
+# Define the domain values of this module
+domains-atts-value |= "(topic task)"
+include "../../technicalContent/rnc/task.mod.rnc" {
+  taskbody.content =
+    (prelreqs | context | section)*,
+    (steps | steps-unordered | steps-informal)?,
+    result?,
+    example*,
+    closereqs?
+}
+include "../../base/rnc/topic.mod.rnc"
+prelreqs = prelreqs.element
+closereqs = closereqs.element

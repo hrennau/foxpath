@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns:its="http://www.w3.org/2005/11/its" ns="http://www.w3.org/ns/widgets" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <define name="extension">
+    <zeroOrMore>
+      <choice>
+        <ref name="attr.allowed"/>
+        <ref name="anyElement"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <define name="anyElement">
+    <zeroOrMore>
+      <choice>
+        <element>
+          <anyName>
+            <except>
+              <nsName/>
+            </except>
+          </anyName>
+          <ref name="any"/>
+        </element>
+        <text/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <define name="any">
+    <zeroOrMore>
+      <choice>
+        <attribute>
+          <anyName/>
+        </attribute>
+        <ref name="anyElement"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <define name="attr.allowed">
+    <attribute>
+      <anyName>
+        <except>
+          <nsName ns=""/>
+          <name>xml:lang</name>
+          <name>its:dir</name>
+        </except>
+      </anyName>
+    </attribute>
+  </define>
+  <define name="attr.xmllang">
+    <attribute name="xml:lang">
+      <data type="language"/>
+    </attribute>
+  </define>
+  <define name="attr.itsdir">
+    <attribute name="its:dir">
+      <choice>
+        <value>ltr</value>
+        <value>rtl</value>
+        <value>lro</value>
+        <value>rlo</value>
+      </choice>
+    </attribute>
+  </define>
+  <define name="data.positiveNumber">
+    <data type="string">
+      <param name="pattern">[1-9]\d*</param>
+    </data>
+  </define>
+  <define name="data.boolean">
+    <choice>
+      <value type="string" datatypeLibrary="">true</value>
+      <value type="string" datatypeLibrary="">false</value>
+    </choice>
+  </define>
+  <start>
+    <ref name="elem.widget"/>
+  </start>
+  <define name="elem.widget">
+    <element name="widget">
+      <optional>
+        <ref name="attr.xmllang"/>
+      </optional>
+      <optional>
+        <attribute name="id">
+          <data type="anyURI"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="version"/>
+      </optional>
+      <optional>
+        <attribute name="height">
+          <ref name="data.positiveNumber"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="width">
+          <ref name="data.positiveNumber"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="viewmodes">
+          <list>
+            <zeroOrMore>
+              <choice>
+                <value>application</value>
+                <value>floating</value>
+                <value>fullscreen</value>
+                <value>mini</value>
+                <value>all</value>
+              </choice>
+            </zeroOrMore>
+          </list>
+        </attribute>
+      </optional>
+      <interleave>
+        <zeroOrMore>
+          <ref name="elem.name"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="elem.description"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="elem.icon"/>
+        </zeroOrMore>
+        <optional>
+          <ref name="elem.author"/>
+        </optional>
+        <zeroOrMore>
+          <ref name="elem.license"/>
+        </zeroOrMore>
+        <optional>
+          <ref name="elem.content"/>
+        </optional>
+        <zeroOrMore>
+          <ref name="elem.feature"/>
+        </zeroOrMore>
+        <zeroOrMore>
+          <ref name="elem.preference"/>
+        </zeroOrMore>
+        <ref name="extension"/>
+      </interleave>
+    </element>
+  </define>
+  <define name="elem.name">
+    <element name="name">
+      <optional>
+        <ref name="attr.xmllang"/>
+      </optional>
+      <optional>
+        <ref name="attr.itsdir"/>
+      </optional>
+      <optional>
+        <attribute name="short"/>
+      </optional>
+      <ref name="extension"/>
+    </element>
+  </define>
+  <define name="elem.description">
+    <element name="description">
+      <optional>
+        <ref name="attr.xmllang"/>
+      </optional>
+      <optional>
+        <ref name="attr.itsdir"/>
+      </optional>
+      <ref name="extension"/>
+    </element>
+  </define>
+  <define name="elem.icon">
+    <element name="icon">
+      <zeroOrMore>
+        <ref name="attr.allowed"/>
+      </zeroOrMore>
+      <attribute name="src">
+        <data type="anyURI"/>
+      </attribute>
+      <optional>
+        <attribute name="height">
+          <ref name="data.positiveNumber"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="width">
+          <ref name="data.positiveNumber"/>
+        </attribute>
+      </optional>
+      <empty/>
+    </element>
+  </define>
+  <define name="elem.author">
+    <element name="author">
+      <optional>
+        <ref name="attr.xmllang"/>
+      </optional>
+      <optional>
+        <ref name="attr.itsdir"/>
+      </optional>
+      <optional>
+        <attribute name="href">
+          <data type="anyURI"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="email">
+          <data type="string">
+            <param name="pattern">.+@.+</param>
+          </data>
+        </attribute>
+      </optional>
+      <ref name="extension"/>
+    </element>
+  </define>
+  <define name="elem.license">
+    <element name="license">
+      <optional>
+        <ref name="attr.xmllang"/>
+      </optional>
+      <optional>
+        <ref name="attr.itsdir"/>
+      </optional>
+      <optional>
+        <attribute name="href">
+          <data type="anyURI"/>
+        </attribute>
+      </optional>
+      <ref name="extension"/>
+    </element>
+  </define>
+  <define name="elem.content">
+    <element name="content">
+      <zeroOrMore>
+        <ref name="attr.allowed"/>
+      </zeroOrMore>
+      <attribute name="src">
+        <data type="anyURI"/>
+      </attribute>
+      <optional>
+        <attribute name="type"/>
+      </optional>
+      <optional>
+        <attribute name="charset"/>
+      </optional>
+      <empty/>
+    </element>
+  </define>
+  <define name="elem.feature">
+    <element name="feature">
+      <attribute name="name">
+        <data type="anyURI"/>
+      </attribute>
+      <optional>
+        <attribute name="required">
+          <ref name="data.boolean"/>
+        </attribute>
+      </optional>
+      <interleave>
+        <optional>
+          <ref name="elem.param"/>
+        </optional>
+        <ref name="extension"/>
+      </interleave>
+    </element>
+  </define>
+  <define name="elem.param">
+    <element name="param">
+      <attribute name="name"/>
+      <attribute name="value"/>
+      <ref name="extension"/>
+    </element>
+  </define>
+  <define name="elem.preference">
+    <element name="preference">
+      <optional>
+        <ref name="attr.xmllang"/>
+      </optional>
+      <attribute name="name"/>
+      <optional>
+        <attribute name="value"/>
+      </optional>
+      <optional>
+        <attribute name="readonly">
+          <ref name="data.boolean"/>
+        </attribute>
+      </optional>
+      <ref name="extension"/>
+    </element>
+  </define>
+</grammar>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<langlist name="epub-strings">
+  <!-- FIXME: Not sure the different en variants are required if there's no difference -->
+    <lang xml:lang="en"    filename="strings-en.xml"/>
+    <lang xml:lang="en-ca" filename="strings-en-ca.xml"/>
+    <lang xml:lang="en-us" filename="strings-en-us.xml"/>
+  <!-- Add references to other languages here -->
+</langlist>

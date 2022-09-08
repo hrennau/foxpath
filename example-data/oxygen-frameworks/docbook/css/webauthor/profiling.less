@@ -1,0 +1,29 @@
+.profile(@att, @layer) {
+    *[@{att}] {
+      border:1px solid green; 
+    }
+    
+    *[@{att}]:after(@{layer}) {
+    font-size:0.75em;
+    content:
+      ' (if @{att} is '
+      oxy_label(text, oxy_concat("'", oxy_replace(attr(@att), ' ', "' or '"), "'"), color, blue)
+      ') ';
+    background-color:#CCFFAA;
+  }    
+}
+
+@media oxygen AND (platform:"webapp") {
+  .profile(audience,        1000001);     
+  .profile(arch,            1000003);     
+  .profile(condition,       1000005);       
+  .profile(conformance,     1000007);       
+  .profile(os,              1000009);       
+  .profile(revision,        1000011);       
+  .profile(revisionflag,    1000013);           
+  .profile(security,        1000015);         
+  .profile(status,          1000017);         
+  .profile(userlevel,       1000019);           
+  .profile(vendor,          1000021);     
+  .profile(wordsize,        1000023);
+}

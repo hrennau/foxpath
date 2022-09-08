@@ -1,0 +1,130 @@
+<!-- bookmark 2005-1 DTD 2005-06-26
+file: bookmark-2005-1.dtd  
+Authors: Tom McLaughlin and Michael Moodie
+
+Change List:
+2004-03-10  T. McLaughlin and M. Hakkinen. Added languagecode entity. Added @xml:lang to bookmark. 
+Redefined timeOffset. Changed version to 1.0.1.
+2004-04-02 T. McLaughlin. Changed system identifier path to z3986/2004/. Added xmlns attribute. 
+Added @SMILtimeVal, and changed timeOffset content to SMILtimeVal. Changed @clipBegin and clipEnd 
+to SMILtimeVal. Updated version to 1.0.2.
+2004-04-02 M. Moodie. Corrected definition of timeOffset.  Repositioned ATTLIST for bookmarkSet, 
+updated version to 1.0.3
+2004-04-05 T. McLaughlin. Corrected definition of uri. Update version to 1.0.4
+2004-05-11 T. McLaughlin. Changed content model of bookmark, lastmark, hiliteStart, and hiliteEnd 
+to allow both timeOffset and charOffset. Update version to 1.0.5.
+2004-07-07 M. Moodie. Changed descriptions of uri and charoffset to specify that uri references 
+are only to SMIL. Changed version to 1.0.6
+2004-08-18 M. Moodie. Corrected content models of bookmark, lastmark, hiliteStart, and hiliteEnd 
+re timeOffset and charOffset.  Corrected reference to % languagecode in element bookmark. Corrected 
+content model of timeOffset.  Corrected references to % SMILtimeVal in ATTLIST audio.  Changed uri 
+to URI throughout.
+2004-09-16 M. Moodie. Changed version to 1.2.0
+2005-06-26 M. Gylling. Changed pid, sid, ns uri and filename for Z3986-2005
+
+The following identifiers apply to this DTD: 
+"-//NISO//DTD bookmark 2005-1//EN"
+"http://www.daisy.org/z3986/2005/bookmark-2005-1.dtd"   
+-->  
+
+      
+<!-- ********************* Entities ******************* -->
+<!-- languagecode: an RFC3066 language code. -->
+<!ENTITY % languagecode  "NMTOKEN">
+
+<!-- SMILtimeVal: SMIL 2.0 clock value. -->
+<!ENTITY % SMILtimeVal "CDATA">
+
+<!ENTITY % URI "CDATA">
+<!-- ********************* Elements ********************* -->
+<!-- BookmarkSet: The set of bookmarks for a book consists of the title, a unique 
+identifier of the book, the last place the reader left off and zero or more 
+bookmarks, highlights, and associated audio or textual notes. This set is intended for 
+export of bookmarks, highlights and notes to another player; the markup is not required 
+for a player's internal representation of bookmarks.
+ -->
+<!ELEMENT bookmarkSet  (title, uid, lastmark?, (bookmark | hilite)*) >
+
+ 
+ <!ATTLIST bookmarkSet
+  xmlns  %URI;  #FIXED "http://www.daisy.org/z3986/2005/bookmark/"
+>  
+<!-- Title: The book's title in text and an optional audio clip.
+ -->
+ 
+<!ELEMENT title  (text, audio?) >
+
+<!-- uid: A globally unique identifier for the book.
+ -->
+<!ELEMENT uid  (#PCDATA) >
+
+<!-- Bookmark: Location and optional note. Location consists of a URI pointing to 
+the id attribute of the <par> element in the SMIL file that contains the bookmark 
+plus a time offset in seconds (or character offset) to the exact place.  Player should 
+by default automatically number bookmarks in the order in which they fall in the book.
+ -->
+<!ELEMENT bookmark  (ncxRef, URI, ((timeOffset, charOffset?)| charOffset), note?) >
+<!ATTLIST bookmark
+  label    CDATA    #IMPLIED
+  xml:lang  %languagecode;  #IMPLIED
+>  
+
+<!-- NcxRef: Captures current location in NCX (the id of the current navPoint)at 
+time lastmark, bookmark, or highlight is set.  Ensures that current location in NCX and 
+SMIL are synchronized after moving to a lastmark, etc., so that any global navigation 
+commands issued by the user will start from the current location. -->
+<!ELEMENT ncxRef       (#PCDATA)>
+
+<!-- Lastmark: Location where reader left off and where player will resume play when 
+restarted.
+ -->
+<!ELEMENT lastmark  (ncxRef, URI, ((timeOffset, charOffset?)| charOffset)) >
+
+<!-- Hilite: A block of text with an optional note attached.
+ -->
+<!ELEMENT hilite  (hiliteStart, hiliteEnd, note?) >
+<!ATTLIST hilite
+  label    CDATA    #IMPLIED
+>  
+
+<!-- HilStart: Starting point of highlighted block.
+ -->
+<!ELEMENT hiliteStart  (ncxRef, URI, ((timeOffset, charOffset?)| charOffset)) >
+
+<!-- HilEnd: End point of highlighted block.
+ -->
+<!ELEMENT hiliteEnd    (ncxRef, URI, ((timeOffset, charOffset?)| charOffset)) >
+
+<!-- Uri: pointer to id of <par> or <seq> in SMIL that contains the bookmark.
+ -->
+<!ELEMENT URI  (#PCDATA) >
+
+<!-- Timeoffset: Exact position of bookmark in SMIL file referenced by the URI; represented 
+as SMIL 2.0 Clock Value. The timeOffset value is relative to the start of the SMIL time container 
+referenced in the URI. 
+ -->
+<!ELEMENT timeOffset  (#PCDATA) >
+
+<!-- Charoffset: Exact position of bookmark in text-only file referenced (via SMIL) by the URI: 
+measured in characters, counting from the start of the content of the referenced element; 
+start- and end-tags are not counted, white space is then normalized (collapsed to one character).
+ -->
+<!ELEMENT charOffset     (#PCDATA) >
+
+<!-- Note: The note is for the user's input, random thoughts, musings, etc. It can be 
+text or audio or both.
+ -->
+<!ELEMENT note    (text?, audio?) >
+
+<!-- Text: Text of title or note. 
+ -->
+<!ELEMENT text  (#PCDATA) >
+<!-- Audio: Audio clip of user-recorded note, in any format supported by standard.
+ -->
+<!ELEMENT audio  EMPTY >
+<!ATTLIST audio
+  
+   src         %URI;    #REQUIRED
+   clipBegin   %SMILtimeVal;    #IMPLIED
+   clipEnd     %SMILtimeVal;    #IMPLIED
+>

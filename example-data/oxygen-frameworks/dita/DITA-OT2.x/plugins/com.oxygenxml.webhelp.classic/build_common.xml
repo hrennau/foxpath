@@ -1,0 +1,366 @@
+<!-- The common build system used in DITA and Docbook. -->
+<!--
+    
+Oxygen WebHelp Plugin
+Copyright (c) 1998-2017 Syncro Soft SRL, Romania.  All rights reserved.
+
+-->
+
+<project>
+	<!-- Default value of DITA-OT parameter. -->
+	<property name="args.outext" value="html" />
+
+	<!-- Directory of the Webhelp plugin. -->
+	<property name="webhelp.classic.dir" value="." />
+
+	<!-- Directory with files log4j.jar and license.jar. -->
+	<property name="webhelp.lib.dir" value="${webhelp.classic.dir}/lib" />
+
+	<property name="webhelp.version" value="19.1" />
+
+	<property name="webhelp.build.number" value="2017121318" />
+
+	<!-- Property to disable search autocomplete -->
+	<property name="webhelp.enable.search.autocomplete" value="true" />
+
+	<tstamp>
+		<format property="gen.time" pattern="yyyyMMddhhmmss" />
+	</tstamp>
+
+	<property environment="env" />
+
+	<condition property="webhelp-with-feedback">
+		<and>
+			<isset property="webhelp.product.id" />
+			<isset property="webhelp.product.version" />
+		</and>
+	</condition>
+
+	<condition property="webhelp-feedback-enabled">
+		<and>
+			<isset property="webhelp.product.id" />
+			<isset property="webhelp.product.version" />
+		</and>
+	</condition>
+
+	<taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+	<target name="check-list">
+        <property name="src.dir"
+            value="${output.dir}${file.separator}oxygen-webhelp${file.separator}"/>
+		<pathconvert targetos="unix" pathsep='",${line.separator}"' property="files">
+			<map from="${src.dir}" to="/" />
+			<fileset dir="${src.dir}">
+				<include name="**/*.js" />
+				<include name="**/*.php" />
+				<include name="**/*.css" />
+				<include name="**/*.html" />
+			</fileset>
+		</pathconvert>
+	</target>
+
+	<target name="webhelp-skin-copy-condition" unless="copy.webhelp.skin.css">
+		<available file="${webhelp.skin.css}" property="webhelp.skin.css.present" />
+		<condition property="copy.webhelp.skin.css" value="yes">
+			<and>
+              <not><isset property="webhelp.mobile"/></not>
+				<isset property="webhelp.skin.css.present" />
+			</and>
+		</condition>
+		<condition property="output.webhelp.skin.css" value="${webhelp.skin.css}">
+			<and>
+          <not><isset property="copy.webhelp.skin.css"/></not>
+				<isset property="webhelp.skin.css" />
+			</and>
+		</condition>
+	</target>
+
+	<target name="copy-skin" depends="webhelp-skin-copy-condition" if="copy.webhelp.skin.css">
+		<!-- Location where the skin css set with param webhelp.skin.css will be copied in output directory. -->
+      <property name="output.webhelp.skin.css" 
+        value="oxygen-webhelp/resources/skins/skin.css"/>
+		<copy file="${webhelp.skin.css}" tofile="${output.dir}/${output.webhelp.skin.css}" overwrite="true" />
+	</target>
+
+	<target name="webhelp-favicon-copy-condition">
+		<available file="${webhelp.favicon}" property="webhelp.favicon.present" />
+	</target>
+
+	<target name="copy-favicon" depends="webhelp-favicon-copy-condition" if="${webhelp.favicon.present}">
+		<!-- The favicon set with param webhelp.favicon will be copied in output directory. -->
+		<basename property="webhelp.favicon.file" file="${webhelp.favicon}" />
+		<copy file="${webhelp.favicon}" tofile="${output.dir}/${webhelp.favicon.file}" overwrite="true" />
+	</target>
+
+	<!-- Copy all custom resources to the output folder -->
+	<target name="webhelp-custom-resources-copy-condition">
+		<available file="${webhelp.custom.resources}" property="webhelp.custom.resources.present" />
+	</target>
+	<target name="copy-custom-resources" depends="webhelp-custom-resources-copy-condition" if="${webhelp.custom.resources.present}">
+		<!-- All custom resources set with param webhelp.custom.resources will be copied in output directory. -->
+		<copy todir="${output.dir}" overwrite="true" encoding="UTF-8" failonerror="true">
+			<fileset dir="${webhelp.custom.resources}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- 
+             The JavaScript, CSS image and localization files are copied to output folder. 
+             They are referenced in the output HTML pages.
+      -->
+	<target name="copy-webhelp-resources" depends="copy-skin, copy-favicon, copy-custom-resources">
+        <propertyregex property="corrected.output.dir" input="${output.dir}" regexp="\\" replace="/"
+            defaultvalue="${output.dir}" global="true"/>
+		<copy todir="${output.dir}/oxygen-webhelp" overwrite="true" encoding="ISO-8859-1">
+			<fileset dir="${webhelp.plugin.path}oxygen-webhelp">
+				<include name="**/*" />
+				<exclude name="**/.svn" />
+				<exclude name="resources/*.html" unless="webhelp-with-feedback" />
+				<exclude name="resources/js/init.js" unless="webhelp-with-feedback" />
+				<exclude name="resources/js/comments*.js" unless="webhelp-with-feedback" />
+				<exclude name="feedback.xml" />
+				<exclude name="resources/img/**" />
+				<exclude name="resources/skins/**" />
+				<exclude name="resources/include/**" />
+				<exclude name="resources/localization/**" />
+				<exclude name="resources/php/**" />
+				<exclude name="feedback/**" />
+			</fileset>
+			<filterset begintoken="@" endtoken="@">
+				<filter token="PRODUCT_ID" value="${webhelp.product.id}" />
+				<filter token="PRODUCT_VERSION" value="${webhelp.product.version}" />
+				<filter token="FOLDER_OUTPUT_PATH" value="${corrected.output.dir}" />
+				<filter token="WEBHELP_PAGE_DIRECTION" value="${webhelp.page.direction}" />
+			</filterset>
+		</copy>
+		<copy todir="${output.dir}/oxygen-webhelp/resources/img" overwrite="true">
+			<fileset dir="${webhelp.plugin.path}oxygen-webhelp/resources/img">
+				<include name="**/*" />
+				<exclude name="**/.svn" />
+			</fileset>
+		</copy>
+		<copy todir="${output.dir}/oxygen-webhelp/resources/skins" overwrite="true">
+			<fileset dir="${webhelp.plugin.path}oxygen-webhelp/resources/skins">
+				<include name="desktop/**/*" unless="webhelp.mobile" />
+				<include name="desktop-frames/**/*" unless="webhelp.mobile" />
+				<include name="mobile/**/*" if="webhelp.mobile" />
+				<exclude name="**/.svn" />
+			</fileset>
+			<filterset begintoken="@@" endtoken="@@">
+				<filter token="WEBHELP_UNIQUE_ID" value="${gen.time}" />
+			</filterset>
+		</copy>
+		<copy file="${webhelp.plugin.path}license-3rd-party.txt" todir="${output.dir}" />
+		<if>
+			<and>
+				<isset property="webhelp.product.id" />
+				<isset property="webhelp.product.version" />
+			</and>
+			<then>
+				<antcall target="copy-webhelp-resources-feedback" />
+			</then>
+		</if>
+	</target>
+
+	<macrodef name="checkSpecialCharacter">
+		<attribute name="char" />
+		<sequential>
+			<fail message="Special character '@{char}' must not be used in the product ID: ${webhelp.product.id}">
+				<condition>
+					<or>
+						<contains string="${webhelp.product.id}" substring="@{char}" />
+					</or>
+				</condition>
+			</fail>
+			<fail message="Special character '@{char}' must not be used in the product version: ${webhelp.product.version}">
+				<condition>
+					<or>
+						<contains string="${webhelp.product.version}" substring="@{char}" />
+					</or>
+				</condition>
+			</fail>
+		</sequential>
+	</macrodef>
+
+	<target name="check-webhelp-feedback-parameters" if="webhelp-with-feedback">
+		<!-- Check if special characters are used: &lt; &gt; / \ &apos; ( ) { } = ; * % + &amp; -->
+		<checkSpecialCharacter char="&lt;" />
+		<checkSpecialCharacter char="&gt;" />
+		<checkSpecialCharacter char="/" />
+		<checkSpecialCharacter char="\" />
+		<checkSpecialCharacter char="&apos;" />
+		<checkSpecialCharacter char="(" />
+		<checkSpecialCharacter char=")" />
+		<checkSpecialCharacter char="{" />
+		<checkSpecialCharacter char="}" />
+		<checkSpecialCharacter char="=" />
+		<checkSpecialCharacter char=";" />
+		<checkSpecialCharacter char="*" />
+		<checkSpecialCharacter char="%" />
+		<checkSpecialCharacter char="+" />
+		<checkSpecialCharacter char="&amp;" />
+	</target>
+
+	<target name="copy-webhelp-resources-feedback" depends="check-webhelp-feedback-parameters">
+        <fail 
+            message="Parameters 'webhelp.product.id' and 'webhelp.product.version' must be set for 'webhelp-feedback' target!">
+			<condition>
+				<not>
+					<and>
+						<isset property="webhelp.product.id" />
+						<isset property="webhelp.product.version" />
+					</and>
+				</not>
+			</condition>
+		</fail>
+		<copy todir="${output.dir}/oxygen-webhelp" overwrite="true" encoding="UTF-8">
+			<fileset dir="${webhelp.plugin.path}oxygen-webhelp">
+				<include name="feedback/**/*" if="webhelp-feedback-enabled" />
+				<exclude name="feedback.xml" />
+				<exclude name="feedback/resources/img/*" />
+				<exclude name="feedback/install/img/*" />
+				<exclude name="feedback/resources/bootstrap/fonts/*"/>
+			</fileset>
+			<filterset begintoken="@" endtoken="@">
+				<filter token="PRODUCT_ID" value="${webhelp.product.id}" />
+				<filter token="PRODUCT_VERSION" value="${webhelp.product.version}" />
+				<filter token="FOLDER_OUTPUT_PATH" value="${corrected.output.dir}" />
+				<filter token="WEBHELP_PAGE_DIRECTION" value="${webhelp.page.direction}" />
+				<filter token="LANGUAGE" value="${webhelp.language}" />
+			</filterset>
+		</copy>
+		<copy todir="${output.dir}/oxygen-webhelp" overwrite="true">
+			<fileset dir="${webhelp.plugin.path}oxygen-webhelp">
+				<include name="feedback/install/img/*" if="webhelp-feedback-enabled" />
+				<include name="feedback/resources/img/*" if="webhelp-feedback-enabled" />
+				<include name="feedback/resources/bootstrap/fonts/*" if="webhelp-feedback-enabled" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="copy-webhelp-feedback-localization" if="${webhelp-with-feedback}">
+		<copy todir="${output.dir}/oxygen-webhelp/feedback/resources" overwrite="true">
+			<fileset dir="${output.dir}/oxygen-webhelp/resources">
+				<include name="localization/**/*" if="webhelp-feedback-enabled" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="check-image-file-exist">
+		<available type="file" file="${webhelp.logo.image}" property="webhelp.logo.image.file" />
+		<if>
+			<isset property="webhelp.logo.image.file" />
+			<then>
+				<copy file="${webhelp.logo.image}" todir="${output.dir}" overwrite="true" />
+				<basename file="${webhelp.logo.image}" property="webhelp.logo.image.output" />
+                <property 
+                    name="webhelp.logo.image.output.file" 
+                    value="${output.dir}/${webhelp.logo.image.output}"/>
+			</then>
+			<else>
+				<condition property="webhelp.logo.image.output" value="${webhelp.logo.image}">
+					<isset property="webhelp.logo.image" />
+				</condition>
+			</else>
+		</if>
+	</target>
+
+	<target name="webhelp-index-preprocess">
+		<!-- Implemented for DITA -->
+	</target>
+
+	<!-- Create the JavaScript files with the search database. -->
+	<target name="webhelp-index" depends="check-list, webhelp-index-preprocess">
+		<!-- Extract search JS from jar and copy them to the 'oxygen-webhelp/search' folder -->
+		
+		<path id="wh_classpath">
+			<fileset dir="${webhelp.lib.dir}">
+			   <include name="*.jar" />
+			</fileset>
+		</path>
+		
+		<copy todir="${output.dir}/oxygen-webhelp/search/">
+			<resources>
+				<javaresource name="searchEngineJS/nwSearchFnt.LICENSE.txt" classpathref="wh_classpath" />
+				<javaresource name="searchEngineJS/nwSearchFnt.js"  classpathref="wh_classpath"/>
+			</resources>
+			<flattenmapper/>
+	    </copy>
+		<copy todir="${output.dir}/oxygen-webhelp/search/stemmers/">
+			<resources>
+				<javaresource name="searchEngineJS/stemmers/en_stemmer.js"  classpathref="wh_classpath"/>
+				<javaresource name="searchEngineJS/stemmers/fr_stemmer.js"  classpathref="wh_classpath"/>
+				<javaresource name="searchEngineJS/stemmers/index.html"  classpathref="wh_classpath"/>
+				<javaresource name="searchEngineJS/stemmers/de_stemmer.js"  classpathref="wh_classpath"/>
+			</resources>
+			<flattenmapper/>
+	    </copy>
+		
+		<taskdef name="indexertask" classname="ro.sync.exml.indexer.IndexerTask" classpathref="wh_classpath"/>
+
+		<!-- Remove the leading "." from the output extension -->
+        <propertyregex property="noDotExt" input="${args.outext}"
+            regexp="^\.(.*)" replace="\1"
+            defaultValue="${args.outext}" casesensitive="false" />
+
+		<echo>Indexing html files in ${output.dir}, indexer language is: ${webhelp.language}</echo>
+        <indexertask 
+            outputDir="${output.dir}/oxygen-webhelp/search" 
+            propsDir="${webhelp.classic.dir}/indexer"
+            indexerLanguage="${webhelp.language}" 
+            htmlExtension="${noDotExt}"
+            stem="${use.stemming}"
+        	enableAutocomplete="${webhelp.enable.search.autocomplete}"
+        	userDictionary="${webhelp.search.japanese.dictionary}"
+        	doNotIndex="div.ignore,div.navfooter,div.footer,div.navheader,div.wh_top_menu,div.wh_breadcrumb,div.wh_side_toc,
+        	div.wh_tools,div.wh_publication_title,div.wh_indexterms_link,div.wh_copyright_information,nav.wh_footer,nav.related-links,
+        	span.navheader, span.navparent, div.navfooter,span.topic_breadcrumb_links">
+
+
+			<fileset dir="${output.dir}">
+				<patternset>
+					<!-- Index only html files -->
+					<include name="**/*.${noDotExt}" />
+					<!-- Exclude html files should not be indexed -->
+					<exclude name="index.${noDotExt}" />
+					<exclude name="toc.${noDotExt}" />
+					<exclude name="index_frames.${noDotExt}" />
+					<exclude name="search.${noDotExt}" />
+					<exclude name="indexTerms.${noDotExt}" />
+					<!-- Exclude the resources dir -->
+					<exclude name="oxygen-webhelp/" />
+				</patternset>
+				<patternset>
+					<excludesfile name="${webhelp.search.custom.excludes.file}" if="webhelp.search.custom.excludes.file" />
+					<!-- File containig name exclusion patterns generated from the @search="no" attribute from the DITA Map. -->
+					<excludesfile name="${search.excludes.file}" if="${search.excludes.file.exists}" />
+				</patternset>
+			</fileset>
+		</indexertask>
+	</target>
+
+	<target name="check-license" unless="${env.SAXON_EE_LICENSED_ENV}">
+		<echo>Using directory ${webhelp.lib.dir} </echo>
+        <available classname="ro.sync.licensemanager.WebhelpLicenseChecker" 
+            property="WebhelpLicenseChecker.present">
+			<classpath>
+				<fileset dir="${webhelp.lib.dir}">
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
+		</available>
+        <fail unless="WebhelpLicenseChecker.present" 
+            message="The WebHelp Plugin does not contain all jar files. Please contact support@oxygenxml.com for more details."/>
+        <java classname="ro.sync.licensemanager.WebhelpLicenseChecker" 
+            failonerror="true"
+            fork="true" logError="true">
+        	<arg value="${webhelp.classic.dir}" />
+			<classpath>
+				<fileset dir="${webhelp.lib.dir}">
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
+		</java>
+	</target>
+</project>

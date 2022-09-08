@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html [
+    <!ENTITY header SYSTEM "header.xml">
+    <!ENTITY footer SYSTEM "footer.xml">
+]>
+    <html xmlns="http://www.w3.org/1999/xhtml" xmlns:whc="http://www.oxygenxml.com/webhelp/components">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />        
+        <script>
+            /**
+             * If an old URL is given, redirect to the corresponding topic from the WebHelp Responsive
+             */
+            var actualLocation = window.location.href;
+            var newLocation;
+            if (actualLocation.indexOf('/#')!=-1) {
+                newLocation = actualLocation.replace(/\/#/g, "/");
+                window.location.replace(newLocation);
+            }
+            if (actualLocation.match(/\/index\.(.*)#/gi)!=null) {
+                newLocation = actualLocation.replace(/\/index\.(.*)#/gi, "/");
+                window.location.replace(newLocation);
+            }
+            
+            function debug(msg, object){
+                console.log(msg, object);
+            }
+            function executeQuery(){
+                $('#searchForm').submit();
+                return true;
+            }
+        </script>
+        
+	    <link rel="stylesheet" type="text/css" 
+	        href="${oxygen-webhelp-assets-dir}/resources/css/webhelp_responsive_topic.css?buildId=${oxygen-webhelp-build-number}" />
+        
+        <!-- Latest compiled and minified Bootstrap CSS -->
+        <link rel="stylesheet" type="text/css" 
+            href="${oxygen-webhelp-assets-dir}/resources/bootstrap/css/bootstrap.min.css" />
+        
+        <!-- Bootstrap Optional theme -->
+        <link rel="stylesheet" type="text/css" 
+            href="${oxygen-webhelp-assets-dir}/resources/bootstrap/css/bootstrap-theme.min.css" />
+        
+        <link rel="stylesheet" href="${oxygen-webhelp-assets-dir}/resources/js/jquery-ui.min.css" />
+        
+        <!-- Changes and comments, as side-notes  -->
+        <link rel="stylesheet" type="text/css"  
+            href="${oxygen-webhelp-assets-dir}/resources/css/p-side-notes.css?buildId=${oxygen-webhelp-build-number}" />
+        
+        <!-- Template default styles  -->
+        <link rel="stylesheet" type="text/css" 
+            href="${oxygen-webhelp-template-dir}/resources/css/wt_default.css?buildId=${oxygen-webhelp-build-number}" />
+
+        
+        <script type="text/javascript" src="${oxygen-webhelp-assets-dir}/resources/js/jquery-3.1.1.min.js"/>
+        <script type="text/javascript" src="${oxygen-webhelp-assets-dir}/resources/localization/strings.js?buildId=${oxygen-webhelp-build-number}"/>
+        <script type="text/javascript" src="${oxygen-webhelp-assets-dir}/resources/js/localization.js?buildId=${oxygen-webhelp-build-number}"/>
+        <script type="text/javascript" src="${oxygen-webhelp-assets-dir}/resources/js/parseuri.js?buildId=${oxygen-webhelp-build-number}"/>
+        <script type="text/javascript" src="${oxygen-webhelp-assets-dir}/resources/js/jquery.cookie.js"/>
+        
+        <script type="text/javascript" src="${oxygen-webhelp-assets-dir}/resources/js/jquery-ui.min.js"><!----></script>
+        
+        <script type="text/javascript" src="${oxygen-webhelp-assets-dir}/resources/js/jquery.highlight-3.js"/>
+        
+        <!-- Top Menu and Side TOC components resources -->
+        <link type="text/css" href="${oxygen-webhelp-assets-dir}/nav-links/nav-links.css" rel="stylesheet"/>
+        <script data-main="${oxygen-webhelp-assets-dir}/nav-links/nav-links-init.js" 
+                src="${oxygen-webhelp-assets-dir}/lib/requirejs/require.js"></script>
+        
+        <!-- Skin resources -->
+        <whc:webhelp_skin_resources/>
+        <!-- EXM-36950 - Expand the args.hdf parameter here -->
+        <whc:include_html href="${args.hdf}"/>
+        <whc:include_html href="${webhelp.fragment.head}"/>
+    </head>
+    <body class="wh_main_page">
+        <!-- EXM-36950 - Expand the args.hdr parameter here -->
+        <whc:include_html href="${args.hdr}"/>
+        <whc:include_html href="${webhelp.fragment.before.body}"/>
+        &header;
+        <!-- Search form -->
+        <whc:webhelp_search_input class="navbar-form wh_main_page_search" role="form">
+          <whc:include_html href="${webhelp.fragment.before.main.page.search}"/>
+          <div class="wh_welcome"><whc:include_html href="${webhelp.fragment.welcome}"/></div>          
+          <whc:component_content/>
+          <whc:include_html href="${webhelp.fragment.after.main.page.search}"/>
+        </whc:webhelp_search_input>
+        <div class="wh_content_area ">
+            <whc:include_html href="${webhelp.fragment.before.toc_or_tiles}"/>
+            <!-- This is the placeholder for the main page tiles. -->
+            <div class="container wh_content_flex_container">
+                <!-- This is the placeholder for the main page tiles. -->
+                <whc:webhelp_tiles>
+                    <!-- Template for a tile. -->
+                    <whc:webhelp_tile>
+                        <div>
+                            <!-- Place holder for tile's image -->
+                            <whc:webhelp_tile_image/>
+
+                            <div class="wh_tile_text">
+                                <!-- Place holder for tile's title -->
+                                <whc:webhelp_tile_title/>
+
+                                <!-- Place holder for tile's shordesc -->
+                                <whc:webhelp_tile_shortdesc/>
+                            </div>
+                        </div>
+                    </whc:webhelp_tile>
+                </whc:webhelp_tiles>
+                <!--
+                    This is the placeholder for the main page entries
+                    presented in a tree-like fashion.
+                -->
+                <whc:webhelp_main_page_toc/>
+                <whc:include_html href="${webhelp.fragment.after.toc_or_tiles}"/>
+            </div>
+        </div>
+        &footer;
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="${oxygen-webhelp-assets-dir}/resources/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+        <script src="${oxygen-webhelp-template-dir}/resources/js/wt_default.js?buildId=${oxygen-webhelp-build-number}" type="text/javascript" />
+        
+        <whc:include_html href="${webhelp.fragment.after.body}"/>
+        
+        <!-- Search autocomplete -->
+        <script type="text/javascript" src="${oxygen-webhelp-assets-dir}/search/keywords.js?uniqueId=${oxygen-webhelp-timestamp}"><!----></script>        
+        <script type="text/javascript" src="${oxygen-webhelp-assets-dir}/search/searchAutocomplete.js?buildId=${oxygen-webhelp-build-number}"><!----></script>
+        <script type="text/javascript" src="${oxygen-webhelp-assets-dir}/search/searchHistoryItems.js?buildId=${oxygen-webhelp-build-number}"><!----></script>
+        <script type="text/javascript" src="${oxygen-webhelp-assets-dir}/search/searchOptions.js?uniqueId=${oxygen-webhelp-timestamp}"><!----></script>
+    </body>
+</html>

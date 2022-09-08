@@ -1,0 +1,103 @@
+.wh_breadcrumb title,
+.wh_side_toc .title {
+    position: relative;
+   /* display: inline-block;*/
+}
+
+.wh_breadcrumb .topicref .wh-tooltip,
+.wh_side_toc .topicref .wh-tooltip {
+    display: flex;
+    align-items: baseline;
+    visibility: hidden;
+    background-color: #444;
+    color: #fff;
+    font-weight: normal;
+    text-align: left;
+    line-height: 1em;
+    padding: 10px;
+    margin: 4px;
+    border-radius: .4em;
+    min-width: 15em;
+    min-height: 2em;
+    position: absolute;
+    z-index: 1;
+    opacity: 0;
+    transition: .5s opacity 1s;
+}
+
+.wh_breadcrumb .topicref .wh-tooltip .shortdesc,
+.wh_side_toc .topicref .wh-tooltip .shortdesc {
+    /* Remove the paragraph margin. */
+    margin: 0;
+}
+
+.wh_breadcrumb .topicref .title:hover .wh-tooltip,
+.wh_side_toc .topicref .title:hover .wh-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* WH-1545: Do not mix the tooltip styles with thos from the Side TOC or Breadcrumb. */
+.wh_breadcrumb span.wh-tooltip *,
+.wh_side_toc span.wh-tooltip *
+{
+    color: inherit !important;
+    background-color: transparent !important;
+}
+
+/* Tooltip positioning. */
+
+[data-tooltip-position="left"] .topicref .wh-tooltip {
+    top: -0.5em;
+    right: calc(100% + 1em);
+}
+
+[data-tooltip-position="right"] .topicref .wh-tooltip {
+    top: -0.5em;
+    left: calc(100% + .4em);
+}
+
+[data-tooltip-position="top"] .topicref .wh-tooltip {
+    bottom: 100%;
+}
+
+[data-tooltip-position="bottom"] .topicref .wh-tooltip {
+    top: 100%;
+}
+
+[data-tooltip-position="hidden"] .topicref .wh-tooltip {
+    display:none;
+}
+
+/* Tooltip arrow. */
+
+.wh_breadcrumb .topicref .wh-tooltip::before,
+.wh_side_toc .topicref .wh-tooltip::before {
+    content: " ";
+    position: absolute;
+    border: .4em solid transparent;
+}
+
+[data-tooltip-position="left"] .topicref .wh-tooltip::before {
+    top: .8em;
+    left: 100%;
+    border-left-color: #444;
+}
+
+[data-tooltip-position="right"] .topicref .wh-tooltip::before {
+    top: .8em;
+    right: 100%;
+    border-right-color: #444;
+}
+
+[data-tooltip-position="bottom"] .topicref .wh-tooltip::before {
+    left: .8em;
+    bottom: 100%;
+    border-bottom-color: #444;
+}
+
+[data-tooltip-position="top"] .topicref .wh-tooltip::before {
+    left: .8em;
+    top: 100%;
+    border-top-color: #444;
+}

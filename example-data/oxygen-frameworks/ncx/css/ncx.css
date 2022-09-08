@@ -1,0 +1,128 @@
+/*
+ * Oxygen Author stylesheet for NCX navigation files
+ * 
+ * @author:		George Bina Syncrosoft
+ * 				Tobias Fischer, pagina GmbH
+ * @date:		2014-04-15
+ * 
+ */
+ncx {
+    display : block;
+}
+
+head {
+    display : block;
+    background-color : #EEEEEE;
+    margin: 2em 1em;
+}
+
+meta {
+    display : block;
+    content : oxy_label(text, attr(name), styles, "width:10em; text-align:right;") " "
+    	oxy_editor(
+	        type, text,
+	        edit, "@content",
+	        columns, 40
+	    );
+    color   : green;
+}
+
+docTitle {
+    display : block;
+    font-weight:bold;
+    color:#002244;
+    background-color:inherit;
+    font-size: 2.2em;
+    margin: 1em 1em;
+    border-bottom: 2px solid #004477; 
+}
+
+docAuthor {
+    display : block;
+    color : blue;
+    width: 50%;
+    margin-left:auto;
+    margin-right:2em;
+    text-align:right;
+}
+
+navMap {
+    display : block;
+    margin:1em 1em;
+}
+
+navPoint:before {
+    content : attr(playOrder) '. ';
+}
+
+navPoint {
+    display : block;
+    margin:0.3em 2em;
+    -oxy-foldable:true;
+    -oxy-not-foldable-child: navLabel;
+}
+
+navPoint:after {
+    content : ' (' attr(id) ')';
+    color : #CCCCCC;
+}
+
+navLabel {
+    font-weight:bold;
+    background-color:inherit;
+}
+
+content:after {
+    link: attr(src);
+    content: ' ' url(../img/link.png) ' ' attr(src);
+    display:inline;
+    color:navy;
+    background-color:inherit;
+}
+
+content {
+    content : ' → ';    
+}
+
+img {
+    display: inline;
+    content: attr(src, url);
+    width:32px;
+    padding-left:5px;
+}
+
+pageList {
+    display : block;
+    margin:1em 1em;
+    background-color : #FFFFF5;
+}
+
+pageTarget {
+    display:list-item;
+    list-style-type:disc;
+    margin-left : 1em;
+}
+
+navList {
+    display : block;
+    margin:1em 1em;
+    background-color : #F5F5FF;
+}
+
+navTarget {
+    display : block;
+    padding-left:10px;
+}
+
+navInfo {
+    display : block;
+    font-weight:bold;
+    color:#002244;
+    background-color:inherit;
+}
+
+navList > navTarget {
+    margin-left : 1em;
+    display:list-item;
+    list-style-type:disc;
+}

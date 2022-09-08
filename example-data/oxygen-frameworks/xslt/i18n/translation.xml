@@ -1,0 +1,750 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<translation>
+<languageList>
+        <language description="English" lang="en_US"/>
+        <language description="German" lang="de_DE"/>
+        <language description="French" lang="fr_FR"/>
+        <language description="Japanese" lang="ja_JP"/>
+        <language description="Dutch" lang="nl_NL"/>
+    </languageList>
+<key type="action" value="Remove_ids_on_copy">
+        <comment>'Remove IDs when copying content' button text.</comment>
+        <val lang="en_US">Remove IDs when copying content</val>
+        <val lang="de_DE">Entferne IDs beim Kopieren der Inhalte</val>
+        <val lang="fr_FR">Supprimer les IDs lors de la copie de contenu</val>
+        <val lang="ja_JP">コンテンツをコピーするときに、IDを削除する</val>
+        <val lang="nl_NL">ID's verwijderen bij het kopiëren van inhoud</val>
+    </key>
+<key value="delete_empty_li_insert_paragraph">
+        <comment>Deletes the current element and creates a new element of another type.</comment>
+        <val lang="en_US">Deletes the current "{0}" element and creates a new "{1}" element.</val>
+        <val lang="de_DE">Löscht das aktuelle "{0}" Element und erzeugt ein neues "{1}" Element.</val>
+        <val lang="fr_FR">Supprime l''élément courant "{0}" et créé un nouvel élément "{1}".</val>
+        <val lang="ja_JP">現在の"{0}"要素を削除し、新しい"{1}"要素を作成します。</val>
+        <val lang="nl_NL">Hiermee wordt het huidige element "{0}" verwijderd en wordt een nieuw element "{1}" gemaakt.</val>
+    </key>
+<key value="convert_element_from_to">
+        <comment>Convert an element to another one</comment>
+        <val lang="en_US">Convert {0} to {1}</val>
+        <val lang="de_DE">Konvertiere {0} zu {1}</val>
+        <val lang="fr_FR">Convertir {0} en {1}</val>
+        <val lang="ja_JP">{0}を{1}に変換する</val>
+        <val lang="nl_NL">{0} converteren naar {1}</val>
+    </key>
+<key type="action" value="Choose_media">
+        <comment>Media file chooser title.</comment>
+        <val lang="en_US">Choose Media</val>
+        <val lang="de_DE">Wähle Medien</val>
+        <val lang="fr_FR">Choisir un média</val>
+        <val lang="ja_JP">メディアを選択する</val>
+        <val lang="nl_NL">Media kiezen</val>
+    </key>
+<key value="Media_files">
+        <comment>Media file chooser file description.</comment>
+        <val lang="en_US">Media Files</val>
+        <val lang="de_DE">Mediendateien</val>
+        <val lang="fr_FR">Fichier média</val>
+        <val lang="ja_JP">メディアファイル</val>
+        <val lang="nl_NL">Mediabestanden</val>
+    </key>
+<key value="Properties">
+        <comment>Properties.</comment>
+        <val lang="en_US">Properties</val>
+        <val lang="de_DE">Eigenschaften</val>
+        <val lang="fr_FR">Propriétés</val>
+        <val lang="ja_JP">プロパティ</val>
+        <val lang="nl_NL">Eigenschappen</val>
+    </key>
+<key value="Action_not_marked_as_change">
+        <comment>Label for confirmation.</comment>
+        <val lang="en_US">This action will not be marked as a change. Do you want to continue?</val>
+        <val lang="de_DE">Diese Aktion wird nicht als Änderung markiert. Möchten Sie fortfahren?</val>
+        <val lang="fr_FR">Cette action ne sera pas marquée comme un changement. Voulez-vous continuer?</val>
+        <val lang="ja_JP">この操作は変更として記録されません。続行しますか？</val>
+        <val lang="nl_NL">Deze actie wordt niet als een wijziging gemarkeerd. Wilt u doorgaan?</val>
+    </key>
+<key value="Track_changes">
+        <comment>Title for a confirmation dialog.</comment>
+        <val lang="en_US">Track changes</val>
+        <val lang="de_DE">Änderungen verfolgen</val>
+        <val lang="fr_FR">Suivi des modifications</val>
+        <val lang="ja_JP">変更の追跡</val>
+        <val lang="nl_NL">Wijzigingen bijhouden</val>
+    </key>
+<key type="action" value="delete.table.columns">
+        <comment>Delete Column(s) action name.</comment>
+        <val lang="en_US">Delete Column(s)</val>
+        <val lang="de_DE">Lösche Spalte(n)</val>
+        <val lang="fr_FR">Supprimer une/des colonne(s)</val>
+        <val lang="ja_JP">列の削除</val>
+        <val lang="nl_NL">Kolom(men) verwijderen</val>
+    </key>
+<key type="action" value="delete.table.rows">
+        <comment>Delete Row(s) action name.</comment>
+        <val lang="en_US">Delete Row(s)</val>
+        <val lang="de_DE">Lösche Zeile(n)</val>
+        <val lang="fr_FR">Supprimer une/des ligne(s)</val>
+        <val lang="ja_JP">行の削除</val>
+        <val lang="nl_NL">Rij(en) verwijderen</val>
+    </key>
+<key type="action" value="delete.table.rows_description">
+        <comment>Delete Row(s) action description.</comment>
+        <val lang="en_US">Delete the selected table row(s).</val>
+        <val lang="de_DE">Lösche die markierten Tabellenzeile(n).</val>
+        <val lang="fr_FR">Supprimer la/les ligne(s) sélectionnée(s).</val>
+        <val lang="ja_JP">選択したテーブル行を削除します。</val>
+        <val lang="nl_NL">Verwijder de geselecteerde tabelrij(en).</val>
+    </key>
+<key type="action" value="delete.table.columns_description">
+        <comment>Delete Column(s) action description.</comment>
+        <val lang="en_US">Delete the selected table column(s).</val>
+        <val lang="de_DE">Lösche die markierten Tabellenspalte(n).</val>
+        <val lang="fr_FR">Supprimer la/les colonne(s) sélectionnée(s).</val>
+        <val lang="ja_JP">選択したテーブル列を削除します。</val>
+        <val lang="nl_NL">Verwijder de geselecteerde tabelkolom(men).</val>
+    </key>
+<key type="action" value="table.join">
+        <comment>Join action name.</comment>
+        <val lang="en_US">Join</val>
+        <val lang="de_DE">Zusammenführen</val>
+        <val lang="fr_FR">Fusionner</val>
+        <val lang="ja_JP">結合</val>
+        <val lang="nl_NL">Samenvoegen</val>
+    </key>
+<key type="action" value="table.join_description">
+        <comment>Join action description.</comment>
+        <val lang="en_US">Join selected table cells.</val>
+        <val lang="de_DE">Markierte Tabellenzellen zusammenführen.</val>
+        <val lang="fr_FR">Fusionner les cellules sélectionnées.</val>
+        <val lang="ja_JP">選択したテーブルセルを結合します。</val>
+        <val lang="nl_NL">Voeg de geselecteerde tabelcellen samen.</val>
+    </key>
+<key value="Split_cells">
+        <comment>Split Cells dialog title.</comment>
+        <val lang="en_US">Split cells</val>
+        <val lang="de_DE">Zellen teilen</val>
+        <val lang="fr_FR">Fractionner des cellules</val>
+        <val lang="ja_JP">セルの分割</val>
+        <val lang="nl_NL">Cellen splitsen</val>
+    </key>
+<key type="action" value="table.split">
+        <comment>Split Cell action name.</comment>
+        <val lang="en_US">Split</val>
+        <val lang="de_DE">Teilen</val>
+        <val lang="fr_FR">Fractionner</val>
+        <val lang="ja_JP">分割</val>
+        <val lang="nl_NL">Splitsen</val>
+    </key>
+<key type="action" value="table.split_description">
+        <comment>Split Cell action description.</comment>
+        <val lang="en_US">Split the current table cell into multiple cells.</val>
+        <val lang="de_DE">Teile die markierte Tabellenzelle in mehrere Zellen.</val>
+        <val lang="fr_FR">Fractionner la cellule courante en plusieurs cellules.</val>
+        <val lang="ja_JP">現在のテーブルセルを複数のセルに分割します。</val>
+        <val lang="nl_NL">Splits de huidige tabelcel in meerdere cellen.</val>
+    </key>
+<key type="action" value="delete.table.row_description">
+        <comment>Delete Row action description.</comment>
+        <val lang="en_US">Delete the current table row.</val>
+        <val lang="de_DE">Aktuelle Tabellenreihe löschen.</val>
+        <val lang="fr_FR">Supprimer la ligne courante.</val>
+        <val lang="ja_JP">現在のテーブル行を削除します。</val>
+        <val lang="nl_NL">Verwijder de huidige rij.</val>
+    </key>
+<key type="action" value="delete.table.column_description">
+        <comment>Delete Column action description.</comment>
+        <val lang="en_US">Delete the current table column.</val>
+        <val lang="de_DE">Aktuelle Tabellenspalte löschen.</val>
+        <val lang="fr_FR">Supprimer la colonne courante.</val>
+        <val lang="ja_JP">現在のテーブル列を削除します。</val>
+        <val lang="nl_NL">Verwijder de huidige kolom.</val>
+    </key>
+<key type="action" value="table.split.above_description">
+        <comment>Split Cell Above action description.</comment>
+        <val lang="en_US">Split vertically the current table cell by creating a new cell above it, only if it spans over multiple rows.</val>
+        <val lang="de_DE">Nur aktuelle Tabellenzelle vertikal spalten, indem eine neue Zelle darüber erstellt wird, wenn sie sich über mehrere Reihen ausbreitet.</val>
+        <val lang="fr_FR">Fractionner verticalement la cellule courante en créant une nouvelle cellule au-dessus, seulement si elle s'étend sur plusieurs lignes.</val>
+        <val lang="ja_JP">複数行にまたがる場合のみ、その上に新しいセルを作成することにより、現在のテーブルセルを縦方向に分割します。</val>
+        <val lang="nl_NL">Splits de huidige cel verticaal door een nieuwe cel hierboven aan te maken, alleen als deze meerdere rijen beslaat.</val>
+    </key>
+<key type="action" value="table.split.below_description">
+        <comment>Split Cell Below action description.</comment>
+        <val lang="en_US">Split vertically the current table cell by creating a new cell below it, only if it spans over multiple rows.</val>
+        <val lang="de_DE">Nur aktuelle Tabellenzelle vertikal spalten, indem eine neue Zelle darunter erstellt wird, wenn sie sich über mehrere Reihen ausbreitet.</val>
+        <val lang="fr_FR">Fractionner verticalement la cellule courante en créant une nouvelle cellule en-dessous, seulement si elle s'étend sur plusieurs lignes.</val>
+        <val lang="ja_JP">複数行にまたがる場合のみ、その下に新しいセルを作成することにより、現在のテーブルセルを縦方向に分割します。</val>
+        <val lang="nl_NL">Splits de huidige cel verticaal door een nieuwe cel hieronder aan te maken, alleen als deze meerdere rijen beslaat.</val>
+    </key>
+<key type="action" value="table.join.cell.below_description">
+        <comment>Join Cell Below action description.</comment>
+        <val lang="en_US">Join the current table cell with the below one, only if both of them have the same column span.</val>
+        <val lang="de_DE">Nur aktuelle Tabellenzelle mit der darunter verbinden, wenn beide Zellen die gleiche Spaltenausbreitung haben.</val>
+        <val lang="fr_FR">Fusionner la cellule courante avec celle du dessous, seulement si les deux ont la même étendue de colonne.</val>
+        <val lang="ja_JP">両方に同じ列スパンがある場合のみ、現在のテーブルセルを下のセルと結合します。</val>
+        <val lang="nl_NL">Voeg de huidige cel samen met de ondergelegen cel, alleen als beide cellen hetzelfde aantal kolommen beslaan.</val>
+    </key>
+<key type="action" value="table.join.cell.above_description">
+        <comment>Join Cell Above action description.</comment>
+        <val lang="en_US">Join the current table cell with the above one, only if both of them have the same column span.</val>
+        <val lang="de_DE">Nur aktuelle Tabellenzelle mit der darüber verbinden, wenn beide Zellen die gleiche Spaltenausbreitung haben.</val>
+        <val lang="fr_FR">Fusionner la cellule courante avec celle du dessus, seulement si les deux ont la même étendue de colonne.</val>
+        <val lang="ja_JP">両方に同じ列スパンがある場合のみ、現在のテーブルセルを上のセルと結合します。</val>
+        <val lang="nl_NL">Voeg de huidige cel samen met de bovengelegen cel, alleen als beide cellen hetzelfde aantal kolommen beslaan.</val>
+    </key>
+<key type="action" value="table.split.right_description">
+        <comment>Split Cell To The Right action description.</comment>
+        <val lang="en_US">Split horizontally the current table cell by creating a new cell to the right of it, only if it spans over multiple columns.</val>
+        <val lang="de_DE">Nur aktuelle Tabellenzelle horizontal spalten, indem eine neue Zelle rechts davon erstellt wird, wenn sie sich über mehrere Spalten ausbreitet.</val>
+        <val lang="fr_FR">Fractionner horizontalement la cellule courante en créant une nouvelle cellule à droite de celle-ci, seulement si elle s'étend sur plusieurs lignes.</val>
+        <val lang="ja_JP">複数列にまたがる場合のみ、その右に新しいセルを作成することにより、現在のテーブルセルを横方向に分割します。</val>
+        <val lang="nl_NL">Splits de huidige cel horizontaal door een nieuwe cel hieronder aan te maken, alleen als deze meerdere rijen beslaat.</val>
+    </key>
+<key type="action" value="table.split.left_description">
+        <comment>Split Cell To The Left action description.</comment>
+        <val lang="en_US">Split horizontally the current table cell by creating a new cell to the left of it, only if it spans over multiple columns.</val>
+        <val lang="de_DE">Nur aktuelle Tabellenzelle horizontal spalten, indem eine neue Zelle links davon erstellt wird, wenn sie sich über mehrere Spalten ausbreitet.</val>
+        <val lang="fr_FR">Fractionner horizontalement la cellule courante en créant une nouvelle cellule à gauche de celle-ci, seulement si elle s'étend sur plusieurs lignes.</val>
+        <val lang="ja_JP">複数列にまたがる場合のみ、その左に新しいセルを作成することにより、現在のテーブルセルを横方向に分割します。</val>
+        <val lang="nl_NL">Splits de huidige cel horizontaal door een nieuwe cel links hiervan aan te maken, alleen als deze meerdere kolommen beslaat.</val>
+    </key>
+<key type="action" value="table.join.row.cells_description">
+        <comment>Join Row Cells action description.</comment>
+        <val lang="en_US">Join the selected table cells, only if they are on the same row and have the same row span.</val>
+        <val lang="de_DE">Ausgewählte Tabellenzellen nur verbinden, wenn sie sich in der gleichen Reihe befinden und die gleiche Reihenausbreitung haben.</val>
+        <val lang="fr_FR">Fusionner les cellules sélectionnées, seulement si elles sont sur la même ligne et ont la même étendue de ligne.</val>
+        <val lang="ja_JP">同じ行にあり、同じ行スパンがある場合のみ、選択したテーブルセルを結合します。</val>
+        <val lang="nl_NL">Voeg de geselecteerde cellen samen, alleen als deze op dezelfde rij liggen en hetzelfde aantal rijen beslaan.</val>
+    </key>
+<key type="action" value="insert.table_description">
+        <comment>Insert Table action description.</comment>
+        <val lang="en_US">Insert a table.</val>
+        <val lang="de_DE">Tabelle einfügen.</val>
+        <val lang="fr_FR">Insérer un tableau.</val>
+        <val lang="ja_JP">テーブルを挿入します。</val>
+        <val lang="nl_NL">Voeg een tabel in.</val>
+    </key>
+<key value="table.join.split">
+        <comment>Table Join/Split action group title.</comment>
+        <val lang="en_US">Join or split table cells.</val>
+        <val lang="de_DE">Tabellenzellen verbinden oder spalten.</val>
+        <val lang="fr_FR">Fusionner ou fractionner des cellules.</val>
+        <val lang="ja_JP">テーブルセルを結合または分割します。</val>
+        <val lang="nl_NL">Voeg cellen samen of splits cellen.</val>
+    </key>
+<key type="action" value="insert.table.column.before_description">
+        <comment>Insert Column Before action description.</comment>
+        <val lang="en_US">Insert a new table column before the current one.</val>
+        <val lang="de_DE">Neue Tabellenspalte vor der aktuellen einfügen.</val>
+        <val lang="fr_FR">Insérer une nouvelle colonne avant la colonne courante.</val>
+        <val lang="ja_JP">新しいテーブル列を現在の列の前に挿入します。</val>
+        <val lang="nl_NL">Voeg een nieuwe kolom voor de huidige kolom in.</val>
+    </key>
+<key type="action" value="insert.table.column.after_description">
+        <comment>Insert column after action description.</comment>
+        <val lang="en_US">Insert a new table column after the current one.</val>
+        <val lang="de_DE">Neue Tabellenspalte nach der aktuellen einfügen.</val>
+        <val lang="fr_FR">Insérer une nouvelle colonne après la colonne courante.</val>
+        <val lang="ja_JP">新しいテーブル列を現在の列の後に挿入します。</val>
+        <val lang="nl_NL">Voeg een nieuwe kolom na de huidige kolom in.</val>
+    </key>
+<key type="action" value="insert.table.row.below_description">
+        <comment>Insert row below action description.</comment>
+        <val lang="en_US">Insert a new table row below the current one.</val>
+        <val lang="de_DE">Neue Tabellenreihe unter der aktuellen einfügen.</val>
+        <val lang="fr_FR">Insérer une nouvelle ligne sous la ligne courante.</val>
+        <val lang="ja_JP">新しいテーブル行を現在の行の下に挿入します。</val>
+        <val lang="nl_NL">Voeg een nieuwe rij onder de huidige rij in.</val>
+    </key>
+<key type="action" value="insert.table.row.above_description">
+        <comment>Insert Row above action description.</comment>
+        <val lang="en_US">Insert a new table row above the current one.</val>
+        <val lang="de_DE">Neue Tabellenreihe über der aktuellen einfügen.</val>
+        <val lang="fr_FR">Insérer une nouvelle ligne au-dessus de la ligne courante.</val>
+        <val lang="ja_JP">新しいテーブル行を現在の行の上に挿入します。</val>
+        <val lang="nl_NL">Voeg een nieuwe rij boven de huidige rij in.</val>
+    </key>
+<key type="action" value="show.table.properties.description">
+        <comment>Show table properties action description.</comment>
+        <val lang="en_US">Customize the display properties for the entire table or for the selected rows, columns, or cells.</val>
+        <val lang="de_DE">Anzeigeeigenschaften für die gesamte Tabelle oder für die gewählten Reihen, Spalten oder Zellen kundenspezifisch anpassen.</val>
+        <val lang="fr_FR">Personnaliser les propriétés d'affichage pour l'ensemble du tableau ou pour les lignes, colonnes ou cellules sélectionnées.</val>
+        <val lang="ja_JP">テーブル全体、選択した行、列、またはセルに対する表示プロパティをカスタマイズします。</val>
+        <val lang="nl_NL">Pas de weergave-eigenschappen voor de gehele tabel of voor de geselecteerde rijen, kolommen of cellen aan.</val>
+    </key>
+<key type="action" value="insert.table.column">
+        <comment>Insert Column action name.</comment>
+        <val lang="en_US">Insert Column</val>
+        <val lang="de_DE">Spalte einfügen</val>
+        <val lang="fr_FR">Insérer une colonne</val>
+        <val lang="ja_JP">列の挿入</val>
+        <val lang="nl_NL">Voeg kolom in</val>
+    </key>
+<key type="action" value="insert.table.row.above">
+        <comment>Insert row above action name.</comment>
+        <val lang="en_US">Insert Row Above</val>
+        <val lang="de_DE">Zeile oberhalb einfügen</val>
+        <val lang="fr_FR">Insérer une ligne au-dessus</val>
+        <val lang="ja_JP">上に行を挿入する</val>
+        <val lang="nl_NL">Rij boven invoegen</val>
+    </key>
+<key type="action" value="insert.table.row.below">
+        <comment>Insert row below action name.</comment>
+        <val lang="en_US">Insert Row Below</val>
+        <val lang="de_DE">Zeile unterhalb einfügen</val>
+        <val lang="fr_FR">Insérer une ligne en dessous</val>
+        <val lang="ja_JP">下に行を挿入する</val>
+        <val lang="nl_NL">Rij onder invoegen</val>
+    </key>
+<key type="action" value="insert.table.column.after">
+        <comment>Insert column after action name.</comment>
+        <val lang="en_US">Insert Column After</val>
+        <val lang="de_DE">Spalte rechts einfügen</val>
+        <val lang="fr_FR">Insérer une colonne après</val>
+        <val lang="ja_JP">後に列を挿入する</val>
+        <val lang="nl_NL">Kolom rechts invoegen</val>
+    </key>
+<key type="action" value="insert.table.column.before">
+        <comment>Insert column before action name.</comment>
+        <val lang="en_US">Insert Column Before</val>
+        <val lang="de_DE">Spalte links einfügen</val>
+        <val lang="fr_FR">Insérer une colonne avant</val>
+        <val lang="ja_JP">前に列を挿入する</val>
+        <val lang="nl_NL">Kolom links invoegen</val>
+    </key>
+<key type="action" value="table.toggle.colspec">
+        <comment>An action that toggles the visibility of the column specification elements from a table (the name of the element is "colspec"). </comment>
+        <val lang="en_US">colspecs...</val>
+        <val lang="de_DE">Spalteneinstellungen...</val>
+        <val lang="fr_FR">spécifications de colonne...</val>
+        <val lang="ja_JP">列指定要...</val>
+        <val lang="nl_NL">kolomspecificaties...</val>
+    </key>
+<key type="action" value="table.toggle.colspec_description">
+        <comment>The description of the action that toggles the visibility of the column specification elements from a table.</comment>
+        <val lang="en_US">Toggles on/off the visibility of the column specification elements from the table.</val>
+        <val lang="de_DE">Element für die Spalteneinstellungen der Tabelle ein-/ausblenden</val>
+        <val lang="fr_FR">Affiche/Masque les éléments de spécification de colonne du tableau.</val>
+        <val lang="ja_JP">テーブルの列指定要素の可視性のオン/オフを切り替えます。</val>
+        <val lang="nl_NL">Schakelt het tonen van de kolomspecificatie-elementen in de tabel in en uit.</val>
+    </key>
+<key type="action" value="Remove_ids_on_copy_in_same_doc">
+        <comment>'Remove IDs when copying content in the same document' button text.</comment>
+        <val lang="en_US">Remove IDs when copying content in the same document</val>
+        <val lang="de_DE">Beim Kopieren von Inhalt in demselben Dokument IDs entfernen.</val>
+        <val lang="fr_FR">Retirer les ID lors de copie de contenu dans le même document.</val>
+        <val lang="ja_JP">同じ文書内の内容をコピーするときには、IDを削除する</val>
+        <val lang="nl_NL">Verwijder ID's bij het kopiëren van inhoud binnen hetzelfde document</val>
+    </key>
+<key type="action" value="Autogenerate_ids_for_elements">
+        <comment>Auto generate IDs for elements button text.</comment>
+        <val lang="en_US">Auto generate IDs for elements</val>
+        <val lang="de_DE">Automatisches Erzeugen von IDs für Elemente</val>
+        <val lang="fr_FR">Générer automatiquement des ID pour les éléments</val>
+        <val lang="ja_JP">要素の自動生成ID</val>
+        <val lang="nl_NL">Genereer automatisch ID's voor elementen</val>
+    </key>
+<key value="add_component_documentation_description">
+        <comment>Action description for adding documentation for an XSL global component.</comment>
+        <val lang="en_US">Add documentation for an XSL global component</val>
+        <val lang="de_DE">Dokumentation für eine Globale XSL Komponente hinzufügen</val>
+        <val lang="fr_FR">Ajouter la documentation d'un composant XSL global</val>
+        <val lang="ja_JP">XSL グローバル コンポーネントに文書を追加</val>
+        <val lang="nl_NL">Voeg documentatie voor een algemeen XSL-component toe</val>
+    </key>
+<key type="action" value="add_component_documentation">
+        <comment>Action name for adding documentation for an XSL global component.</comment>
+        <val lang="en_US">Add component documentation</val>
+        <val lang="de_DE">Eine Komponentendokumentation hinzufügen</val>
+        <val lang="fr_FR">Ajouter la documentation du composant</val>
+        <val lang="ja_JP">コンポーネント文書を追加</val>
+        <val lang="nl_NL">Voeg documentatie voor component toe</val>
+    </key>
+<key value="reference_description">
+        <comment>Action description for inserting a documentation reference.</comment>
+        <val lang="en_US">Insert a documentation reference</val>
+        <val lang="de_DE">Eine Dokumentationsreferenz einfügen</val>
+        <val lang="fr_FR">Insérer une référence de documentation</val>
+        <val lang="ja_JP">文書参照を挿入</val>
+        <val lang="nl_NL">Voeg een documentatiereferentie in</val>
+    </key>
+<key type="action" value="reference">
+        <comment>Action name for inserting a documentation reference.</comment>
+        <val lang="en_US">Reference</val>
+        <val lang="de_DE">Referenz</val>
+        <val lang="fr_FR">Référence</val>
+        <val lang="ja_JP">参照</val>
+        <val lang="nl_NL">Referentie</val>
+    </key>
+<key value="list_description">
+        <comment>Insert new list action description.</comment>
+        <val lang="en_US">Insert a new list</val>
+        <val lang="de_DE">Eine neue Liste einfügen</val>
+        <val lang="fr_FR">Insérer une nouvelle liste</val>
+        <val lang="ja_JP">新しいリストを挿入</val>
+        <val lang="nl_NL">Voeg een nieuwe lijst in</val>
+    </key>
+<key value="paragraph_description">
+        <comment>Insert Paragraph action description.</comment>
+        <val lang="en_US">Insert a new documentation paragraph</val>
+        <val lang="de_DE">Einen neuen Dokumentaionsparagraph einfügen</val>
+        <val lang="fr_FR">Insérer un nouveau paragraphe de documentation</val>
+        <val lang="ja_JP">新しい文書パラグラフを挿入</val>
+        <val lang="nl_NL">Voeg een nieuwe paragraaf in</val>
+    </key>
+<key value="italic_description">
+        <comment>Italic action description.</comment>
+        <val lang="en_US">Make the selected documentation text italic</val>
+        <val lang="de_DE">Ausgewählten Text kursiv machen</val>
+        <val lang="fr_FR">Mettre en italique le texte sélectionné</val>
+        <val lang="ja_JP">選択された文書のテキストをイタリックに</val>
+        <val lang="nl_NL">Voeg het element 'i' in</val>
+    </key>
+<key value="bold_description">
+        <comment>Bold action description.</comment>
+        <val lang="en_US">Make the selected documentation text bold</val>
+        <val lang="de_DE">Ausgewählten Text fett machen</val>
+        <val lang="fr_FR">Mettre en gras le texte sélectionné</val>
+        <val lang="ja_JP">選択された文書のテキストをボールドに</val>
+        <val lang="nl_NL">Voeg het element 'b' in</val>
+    </key>
+<key value="handle.paste.column.warning">
+        <comment>Message shown when there are cells that span over the inserted column.</comment>
+        <val lang="en_US">For some rows the new column cannot add a cell 
+            (there are cells that span over it or there are rows with missing cells). What do you want to do?</val>
+        <val lang="de_DE">Die neue Spalte kann für manche Zeilen keine Zellen einfügen
+            (es existieren Zellen, die diese umfasen oder Spalten mit fehlenden Zellen). Was möchten Sie tun?</val>
+        <val lang="fr_FR">Pour certaines lignes la nouvelle colonne ne peut avoir de cellules 
+        	(il y a des cellules qui s'étendent sur celle-ci ou il y a des lignes avec des cellules manquantes). Que voulez-vous faire ?</val>
+        <val lang="ja_JP">いくつかの行では、セルに新しい列を追加できません (複数のセルにまたがっているか
+      セルがない行があります)。 どうしますか?</val>
+        <val lang="nl_NL">Voor sommige rijen kan de nieuwe kolom geen cel toevoegen (er zijn cellen die de rij overspannen of er zijn rijen met onbrekende cellen). Wat wilt u doen?</val>
+    </key>
+<key type="action" value="list">
+        <comment>List menu item name.</comment>
+        <val lang="en_US">List</val>
+        <val lang="de_DE">Liste</val>
+        <val lang="fr_FR">Liste</val>
+        <val lang="ja_JP">リスト</val>
+        <val lang="nl_NL">Lijst</val>
+    </key>
+<key value="bold">
+        <comment>Bold action name.</comment>
+        <val lang="en_US">Bold</val>
+        <val lang="de_DE">Fett</val>
+        <val lang="fr_FR">Gras</val>
+        <val lang="ja_JP">ボールド</val>
+        <val lang="nl_NL">Vet</val>
+    </key>
+<key value="italic">
+        <comment>Italic action name.</comment>
+        <val lang="en_US">Italic</val>
+        <val lang="de_DE">Kursiv</val>
+        <val lang="fr_FR">Italique</val>
+        <val lang="ja_JP">イタリック</val>
+        <val lang="nl_NL">Cursief</val>
+    </key>
+<key type="action" value="paragraph">
+        <comment>Insert Paragraph action name.</comment>
+        <val lang="en_US">Insert Paragraph</val>
+        <val lang="de_DE">Paragraph einfügen</val>
+        <val lang="fr_FR">Insérer un paragraphe</val>
+        <val lang="ja_JP">段落の挿入</val>
+        <val lang="nl_NL">Voeg paragraaf in</val>
+    </key>
+<key type="action" value="listitem_description">
+        <comment>Insert List Item action description.</comment>
+        <val lang="en_US">Insert a list item</val>
+        <val lang="de_DE">Einen Listeneintrag einfügen</val>
+        <val lang="fr_FR">Insérer un élément de liste</val>
+        <val lang="ja_JP">リスト項目の挿入</val>
+        <val lang="nl_NL">Voeg een lijstwaarde in</val>
+    </key>
+<key type="action" value="insert.table">
+        <comment>Insert Table action name.</comment>
+        <val lang="en_US">Insert Table...</val>
+        <val lang="de_DE">Tabelle einfügen...</val>
+        <val lang="fr_FR">Insérer un tableau...</val>
+        <val lang="ja_JP">テーブルの挿入...</val>
+        <val lang="nl_NL">Voeg tabel in...</val>
+    </key>
+<key type="action" value="table.join.row.cells">
+        <comment>Join Row Cells action name.</comment>
+        <val lang="en_US">Join Row Cells</val>
+        <val lang="de_DE">Zeilenzellen verbinden</val>
+        <val lang="fr_FR">Fusionner les cellules de la ligne</val>
+        <val lang="ja_JP">行セルの結合</val>
+        <val lang="nl_NL">Voeg rijcellen samen</val>
+    </key>
+<key type="action" value="table.split.left">
+        <comment>Split Cell To The Left action name.</comment>
+        <val lang="en_US">Split Cell To The Left</val>
+        <val lang="de_DE">Zelle nach links aufteilen</val>
+        <val lang="fr_FR">Fractionner la cellule à gauche</val>
+        <val lang="ja_JP">左にセルの分割</val>
+        <val lang="nl_NL">Splits cel aan linkerkant</val>
+    </key>
+<key type="action" value="table.split.right">
+        <comment>Split Cell To The Right action name.</comment>
+        <val lang="en_US">Split Cell To The Right</val>
+        <val lang="de_DE">Zelle nach rechts aufteilen</val>
+        <val lang="fr_FR">Fractionner la cellule à droite</val>
+        <val lang="ja_JP">右にセルを分割</val>
+        <val lang="nl_NL">Splits cel aan rechterkant</val>
+    </key>
+<key type="action" value="table.join.cell.above">
+        <comment>Join Cell Above action name.</comment>
+        <val lang="en_US">Join Cell Above</val>
+        <val lang="de_DE">Mit Zelle darüber verbinden</val>
+        <val lang="fr_FR">Fusionner avec la cellule du dessus</val>
+        <val lang="ja_JP">上のセルと結合</val>
+        <val lang="nl_NL">Voeg samen met bovenliggende cel</val>
+    </key>
+<key type="action" value="table.join.cell.below">
+        <comment>Join Cell Below action name.</comment>
+        <val lang="en_US">Join Cell Below</val>
+        <val lang="de_DE">Mit Zelle darunter verbinden</val>
+        <val lang="fr_FR">Fusionner avec la cellule du dessous</val>
+        <val lang="ja_JP">下とセルを結合</val>
+        <val lang="nl_NL">Voeg samen met onderliggende cel</val>
+    </key>
+<key type="action" value="table.split.below">
+        <comment>Split Cell Below action name.</comment>
+        <val lang="en_US">Split Cell Below</val>
+        <val lang="de_DE">Zelle unten teilen</val>
+        <val lang="fr_FR">Fractionner la cellule vers le bas</val>
+        <val lang="ja_JP">下にセルの分割</val>
+        <val lang="nl_NL">Splits cel aan onderkant</val>
+    </key>
+<key type="action" value="table.split.above">
+        <comment>Split Cell Above action name.</comment>
+        <val lang="en_US">Split Cell Above</val>
+        <val lang="de_DE">Zelle oben teilen</val>
+        <val lang="fr_FR">Fractionner la cellule vers le haut</val>
+        <val lang="ja_JP">上にセルを分割</val>
+        <val lang="nl_NL">Splits cel aan bovenkant</val>
+    </key>
+<key type="action" value="delete.table.column">
+        <comment>Delete Column action name.</comment>
+        <val lang="en_US">Delete Column</val>
+        <val lang="de_DE">Spalte löschen</val>
+        <val lang="fr_FR">Effacer la colonne</val>
+        <val lang="ja_JP">列の削除</val>
+        <val lang="nl_NL">Verwijder kolom</val>
+    </key>
+<key type="action" value="delete.table.row">
+        <comment>Delete Row action name.</comment>
+        <val lang="en_US">Delete Row</val>
+        <val lang="de_DE">Zeile löschen</val>
+        <val lang="fr_FR">Effacer la ligne</val>
+        <val lang="ja_JP">行の削除 Row</val>
+        <val lang="nl_NL">Verwijder rij</val>
+    </key>
+<key type="action" value="item">
+        <comment>Insert List Item action name.</comment>
+        <val lang="en_US">Insert List Item</val>
+        <val lang="de_DE">Listeneintrag einfügen</val>
+        <val lang="fr_FR">Insérer un élément de liste</val>
+        <val lang="ja_JP">リスト項目の挿入</val>
+        <val lang="nl_NL">Voeg lijstwaarde in</val>
+    </key>
+<key type="action" value="section">
+        <comment>Insert Section action name.</comment>
+        <val lang="en_US">Insert Section</val>
+        <val lang="de_DE">Abschnitt einfügen</val>
+        <val lang="fr_FR">Insérer une section</val>
+        <val lang="ja_JP">セクションの挿入</val>
+        <val lang="nl_NL">Voeg sectie in</val>
+    </key>
+<key value="Caption">
+        <comment>Caption checkbox in the XHTML table customizer dialog.</comment>
+        <val lang="en_US">Caption</val>
+        <val lang="de_DE">Legende</val>
+        <val lang="fr_FR">Légende</val>
+        <val lang="ja_JP">キャプション</val>
+        <val lang="nl_NL">Bijschrift</val>
+    </key>
+<key type="action" value="Choose_image">
+        <comment>Image file chooser title.</comment>
+        <val lang="en_US">Choose image</val>
+        <val lang="de_DE">Grafik auswählen</val>
+        <val lang="fr_FR">Choisir une image</val>
+        <val lang="ja_JP">画像の選択</val>
+        <val lang="nl_NL">Kies afbeelding</val>
+    </key>
+<key value="Image_files">
+        <comment>Image file chooser file description.</comment>
+        <val lang="en_US">Image files</val>
+        <val lang="de_DE">Grafikdateien</val>
+        <val lang="fr_FR">Fichiers d'images</val>
+        <val lang="ja_JP">画像ファイル</val>
+        <val lang="nl_NL">Afbeeldingsbestanden</val>
+    </key>
+<key value="ID_options">
+        <comment>Title for ID elements customizer dialog.</comment>
+        <val lang="en_US">ID Options</val>
+        <val lang="de_DE">ID Optionen</val>
+        <val lang="fr_FR">Options d'ID</val>
+        <val lang="ja_JP">ID オプション</val>
+        <val lang="nl_NL">ID-opties</val>
+    </key>
+<key value="ID_pattern">
+        <comment>ID pattern label text.</comment>
+        <val lang="en_US">ID Pattern:</val>
+        <val lang="de_DE">ID-Muster:</val>
+        <val lang="fr_FR">Format d'ID :</val>
+        <val lang="ja_JP">ID パターン:</val>
+        <val lang="nl_NL">ID-patroon:</val>
+    </key>
+<key type="action" value="Insert_table">
+        <comment>Insert table dialog title.</comment>
+        <val lang="en_US">Insert Table</val>
+        <val lang="de_DE">Tabelle einfügen</val>
+        <val lang="fr_FR">Insérer un tableau</val>
+        <val lang="ja_JP">テーブルの挿入</val>
+        <val lang="nl_NL">Verwijder tabel</val>
+    </key>
+<key value="Simple">
+        <comment>'Simple' button text</comment>
+        <val lang="en_US">Simple</val>
+        <val lang="de_DE">Einfach</val>
+        <val lang="fr_FR">Simple</val>
+        <val lang="ja_JP">シンプル</val>
+        <val lang="nl_NL">Eenvoudig</val>
+    </key>
+<key value="Table_size">
+        <comment>Table size.</comment>
+        <val lang="en_US">Table Size</val>
+        <val lang="de_DE">Tabellengröße</val>
+        <val lang="fr_FR">Taille du tableau</val>
+        <val lang="ja_JP">テーブルサイズ</val>
+        <val lang="nl_NL">Tabelgrootte</val>
+    </key>
+<key value="Rows">
+        <comment>Rows</comment>
+        <val lang="en_US">Rows</val>
+        <val lang="de_DE">Zeilen</val>
+        <val lang="fr_FR">Lignes</val>
+        <val lang="ja_JP">行</val>
+        <val lang="nl_NL">Rijen</val>
+    </key>
+<key value="Columns">
+        <comment>Columns</comment>
+        <val lang="en_US">Columns</val>
+        <val lang="de_DE">Spalten</val>
+        <val lang="fr_FR">Colonnes</val>
+        <val lang="ja_JP">列</val>
+        <val lang="nl_NL">Kolommen</val>
+    </key>
+<key type="action" value="Generate_table_header">
+        <comment>'Generate table header' checkbox text.</comment>
+        <val lang="en_US">Generate table header</val>
+        <val lang="de_DE">Tabellenkopfzeile erzeugen</val>
+        <val lang="fr_FR">Générer l'en-tête du tableau</val>
+        <val lang="ja_JP">テーブル ヘッダーの作成</val>
+        <val lang="nl_NL">Genereer tabelkoptekst</val>
+    </key>
+<key type="action" value="Generate_table_footer">
+        <comment>'Generate table footer' checkbox text.</comment>
+        <val lang="en_US">Generate table footer</val>
+        <val lang="de_DE">Tabellenfußzeile erzeugen</val>
+        <val lang="fr_FR">Générer le pied de page du tableau</val>
+        <val lang="ja_JP">テーブル フッターの作成</val>
+        <val lang="nl_NL">Genereer tabelvoettekst</val>
+    </key>
+<key value="Column_widths">
+        <comment>Column widths.</comment>
+        <val lang="en_US">Column widths</val>
+        <val lang="de_DE">Spaltenbreite</val>
+        <val lang="fr_FR">Largeur de colonne</val>
+        <val lang="ja_JP">列幅</val>
+        <val lang="nl_NL">Kolombreedte</val>
+    </key>
+<key value="Frame">
+        <comment>'Frame' label text.</comment>
+        <val lang="en_US">Frame</val>
+        <val lang="de_DE">Rahmen</val>
+        <val lang="fr_FR">Cadre</val>
+        <val lang="ja_JP">フレーム</val>
+        <val lang="nl_NL">Rand</val>
+    </key>
+<key type="action" value="underline">
+        <comment>Underline action name.</comment>
+        <val lang="en_US">Underline</val>
+        <val lang="de_DE">Unterstreichen</val>
+        <val lang="fr_FR">Souligner</val>
+        <val lang="ja_JP">アンダーライン</val>
+        <val lang="nl_NL">Onderstreep</val>
+    </key>
+<key type="action" value="Add">
+        <comment>Add button text</comment>
+        <val lang="en_US">Add</val>
+        <val lang="de_DE">Hinzufügen</val>
+        <val lang="fr_FR">Ajouter</val>
+        <val lang="ja_JP">追加</val>
+        <val lang="nl_NL">Voeg toe</val>
+    </key>
+<key type="action" value="Edit">
+        <comment>Edit button text</comment>
+        <val lang="en_US">Edit</val>
+        <val lang="de_DE">Bearbeiten</val>
+        <val lang="fr_FR">Éditer</val>
+        <val lang="ja_JP">編集</val>
+        <val lang="nl_NL">Wijzig</val>
+    </key>
+<key type="action" value="Remove">
+        <comment>Remove button text</comment>
+        <val lang="en_US">Remove</val>
+        <val lang="de_DE">Entfernen</val>
+        <val lang="fr_FR">Supprimer</val>
+        <val lang="ja_JP">削除</val>
+        <val lang="nl_NL">Verwijder</val>
+    </key>
+<key value="Model">
+        <comment>Name for a model chooser group.</comment>
+        <val lang="en_US">Model</val>
+        <val lang="de_DE">Modell</val>
+        <val lang="fr_FR">Modèle</val>
+        <val lang="ja_JP">モデル</val>
+        <val lang="nl_NL">Model</val>
+    </key>
+<key value="table">
+        <comment>Table menu item name.</comment>
+        <val lang="en_US">Table</val>
+        <val lang="de_DE">Tabelle</val>
+        <val lang="fr_FR">Tableau</val>
+        <val lang="ja_JP">テーブル</val>
+        <val lang="nl_NL">Tabel</val>
+    </key>
+<key type="action" value="continue">
+        <comment>Continue message.</comment>
+        <val lang="en_US">Continue</val>
+        <val lang="de_DE">Weiter</val>
+        <val lang="fr_FR">Continuer</val>
+        <val lang="ja_JP">続ける</val>
+        <val lang="nl_NL">Ga door</val>
+    </key>
+<key type="action" value="cancel">
+        <comment>Cancel message.</comment>
+        <val lang="en_US">Cancel</val>
+        <val lang="de_DE">Abbrechen</val>
+        <val lang="fr_FR">Annuler</val>
+        <val lang="ja_JP">キャンセル</val>
+        <val lang="nl_NL">Annuleer</val>
+    </key>
+<key value="edit.properties">
+        <comment>Name of action for editing properties of a node in the DITA map tree</comment>
+        <val lang="en_US">Edit Properties</val>
+        <val lang="de_DE">Eigenschaften bearbeiten</val>
+        <val lang="fr_FR">Éditer les propriétés</val>
+        <val lang="ja_JP">プロパティの編集</val>
+        <val lang="nl_NL">Wijzig eigenschappen</val>
+    </key>
+<key value="edit.properties_description">
+        <comment>Description of action for editing properties of a node in the DITA map tree</comment>
+        <val lang="en_US">View and edit the properties of the selected node(s).</val>
+        <val lang="de_DE">Zeige und bearbeite die Eigenschaften des/der markierten Knoten(s).</val>
+        <val lang="fr_FR">Afficher et éditer les propriétés du/des nœud(s) sélectionné(s).</val>
+        <val lang="ja_JP">選択したノードのプロパティを確認および編集します。</val>
+        <val lang="nl_NL">Bekijk en wijzig de eigenschappen van de geselecteerde node(s).</val>
+    </key>
+</translation>

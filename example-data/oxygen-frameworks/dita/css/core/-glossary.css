@@ -1,0 +1,306 @@
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * Glossentry elements.
+ * 
+ * http://docs.oasis-open.org/dita/v1.2/os/spec/common/glossary2.html
+ * 
+ * Use the glossentry topic type to define glossary terms. 
+ * Each glossentry topic should define a single sense of a term.
+ * 
+ * ==================================================
+ * ==================================================
+ * 
+ */
+ 
+/* ====================================
+ *
+ * <glossentry>
+ * 
+ * The <glossentry> element defines a single sense of a 
+ * glossary term. Glossary entries for different term 
+ * senses can be reused independently of one another. 
+ * DITA 1.2 adds several elements to the glossentry topic 
+ * type, allowing it to specify additional information 
+ * about a term (beyond just the definition).
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/topic concept/concept
+ */
+*[class~="glossentry/glossentry"] {
+  /**/
+}
+/* ====================================
+ *
+ * <glossterm>
+ * 
+ * The <glossterm> element specifies the preferred term 
+ * associated with a definition of a sense. If the same 
+ * term has multiple senses, create a separate <glossentry> 
+ * topic for each sense.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/title concept/title
+ */
+*[class~="glossentry/glossterm"] {
+  /**/
+}
+
+*[class~="glossgroup/glossgroup"] *[class~="glossentry/glossentry"] {
+    -oxy-not-foldable-child:glossterm;
+}
+
+/* ====================================
+ *
+ * <glossdef>
+ * 
+ * The <glossdef> element specifies the definition of one 
+ * sense of a term. If a term has multiple senses, create 
+ * a separate <glossentry> topic to define each sense.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/abstract concept/abstract
+ */
+*[class~="glossentry/glossdef"] {
+  /**/
+}
+*[class~="glossentry/glossdef"]:before {
+  content: none;
+}
+/* ====================================
+ *
+ * <glossAbbreviation>
+ * 
+ * The <glossAbbreviation> element provides an abbreviated 
+ * form of the term contained in a <glossterm> element.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/title concept/title
+ */
+*[class~="glossentry/glossAbbreviation"] {
+  /**/
+}
+/* ====================================
+ *
+ * <glossAcronym>
+ * 
+ * The <glossAcronym> element defines an acronym as an alternate 
+ * form for the term defined in the <glossterm> element. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/title concept/title
+ */
+*[class~="glossentry/glossAcronym"] {
+  /**/
+}
+/* ====================================
+ *
+ * <glossAlt>
+ * 
+ * The <glossAlt> element contains a variant term for the 
+ * preferred term. The variant should have the same meaning 
+ * as the term in the <glossterm> element; the variant is 
+ * simply another way to refer to the same term. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/section concept/section
+ */
+*[class~="glossentry/glossAlt"] {
+  -oxy-foldable: false;
+  margin: 1em 0;
+}
+/* ====================================
+ *
+ * <glossAlternateFor>
+ * 
+ * The <glossAlternateFor> element indicates when a variant 
+ * term has a relationship to another variant term as well 
+ * as to the preferred term. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/xref concept/xref
+ */
+*[class~="glossentry/glossAlternateFor"] {
+  /**/
+}
+/* ====================================
+ *
+ * <glossBody>
+ * 
+ * The <glossbody> element is used to provide details 
+ * about a glossary term (such as part of speech or 
+ * additional forms of the term). 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/body concept/conbody
+ */
+*[class~="glossentry/glossBody"] {
+  /**/
+}
+/* ====================================
+ *
+ * <glossPartOfSpeech>
+ * 
+ * The <glossPartOfSpeech> element identifies the part 
+ * of speech for the preferred and alternate terms. Alternate 
+ * terms must have the same part of speech as the preferred 
+ * term because all terms in the glossentry topic designate 
+ * the same subject. If the part of speech isn't specified, 
+ * the default is a noun for the standard enumeration.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data concept/data
+ */
+*[class~="glossentry/glossPartOfSpeech"] {
+  /**/
+}
+*[class~="glossentry/glossPartOfSpeech"]:before {
+  content: "Part of speech: ";
+}
+/* ====================================
+ *
+ * <glossProperty>
+ * 
+ * The <glossPartOfSpeech> element identifies the part 
+ * of speech for the preferred and alternate terms. Alternate 
+ * terms must have the same part of speech as the preferred 
+ * term because all terms in the glossentry topic designate 
+ * the same subject. If the part of speech isn't specified, 
+ * the default is a noun for the standard enumeration.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data concept/data
+ */
+*[class~="glossentry/glossProperty"] {
+  /**/
+}
+*[class~="glossentry/glossProperty"]:before {
+  content: "Property: ";
+}
+/* ====================================
+ *
+ * <glossScopeNote>
+ * 
+ * The <glossScopeNote> element contains a clarification of the 
+ * subject designated by the <glossterm>, such as examples of included 
+ * or excluded companies or products.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/note concept/note
+ */
+*[class~="glossentry/glossScopeNote"] {
+  /**/
+}
+/* ====================================
+ *
+ * <glossShortForm>
+ * 
+ * The <glossShortForm> element provides a shorter alternative to 
+ * the primary term specified in the <glossterm> element.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     +  topic/title concept/title
+ */
+*[class~="glossentry/glossShortForm"] {
+  /**/
+}
+/* ====================================
+ *
+ * <glossStatus>
+ * 
+ * Identifies the usage status of a preferred or alternate 
+ * term. If the status isn't specified, the <glossterm> 
+ * provides a preferred term and an alternate term provides 
+ * an allowed term.
+ *   
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data concept/data
+ */
+*[class~="glossentry/glossStatus"] {
+  /**/
+}
+*[class~="glossentry/glossStatus"]:before {
+  content: "Status: ";
+}
+/* ====================================
+ *
+ * <glossSurfaceForm>
+ * 
+ * The <glossSurfaceForm> element specifies an unambiguous 
+ * presentation of the <glossterm> that may combine multiple 
+ * forms. The surface form is suitable to introduce the term 
+ * in new contexts.
+ *   
+ * Inherits styles from parent class:
+ *  
+ *     + topic/p concept/p
+ */
+*[class~="glossentry/glossSurfaceForm"] {
+  /**/
+}
+*[class~="glossentry/glossSurfaceForm"]:before {
+  content: "Surface form: ";
+  /* -before_bold- >>> */
+  font-weight: bold;
+  /* <<< */
+}
+/* ====================================
+ *
+ * <glossSymbol>
+ * 
+ * The <glossSymbol> element identifies a standard image 
+ * associated with the subject of the <glossterm>.
+ *   
+ * Inherits styles from parent class:
+ *  
+ *     + topic/image concept/image 
+ */
+*[class~="glossentry/glossSymbol"] {
+  /**/
+}
+/* ====================================
+ *
+ * <glossSynonym>
+ * 
+ * Provides a term that is a synonym of the primary 
+ * value in the <glossterm> element.
+ *   
+ * Inherits styles from parent class:
+ *  
+ *     + topic/title concept/title
+ */
+*[class~="glossentry/glossSynonym"] {
+  /**/
+}
+/* ====================================
+ *
+ * <glossUsage>
+ * 
+ * The <glossUsage> element provides information about 
+ * the correct use of a term, such as where or how 
+ * it can be used.
+ *   
+ * Inherits styles from parent class:
+ *  
+ *     + topic/note concept/note
+ */
+*[class~="glossentry/glossUsage"] {
+  margin: 0.5em;
+}
+*[class~="glossentry/glossUsage"]:before {
+  content: "Usage: ";
+}

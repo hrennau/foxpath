@@ -1,0 +1,1164 @@
+@namespace oxy url('http://www.oxygenxml.com/extensions/author');
+/*
+  ===========================
+  Topic elements.
+  ===========================
+ */
+/*
+  The <topic> element is the top-level DITA element for
+  a single-subject topic or article. Other top-level
+  DITA elements that are more content-specific are
+  <concept>, <task>, <reference>, and <glossary>.
+ */
+*[class~="topic/topic"] {
+    display: block;
+    margin: 0.5em 0;
+    padding-left: 0.5em;
+}
+*[class~="topic/body"] {
+    display: block;
+}
+
+@media screen {
+	*[class~="topic/topic"] {
+	    padding-top: 2px;
+ 	   	padding-bottom: 2px;
+	}
+	
+	*[class~="topic/body"] {
+    	padding-top: 2px;
+    	padding-bottom: 2px;
+	}
+}
+
+/*
+  The generic title.
+ */
+*[class~="topic/title"] {
+    display:block;
+    font-weight:bold;
+    background-color:inherit;
+    margin:0.3em 0;
+}
+/*
+  Reduce the font size.
+ */
+*[class~="topic/topic"] > *[class~="topic/title"] {
+    font-size: 1.8em;
+    border-bottom:1px solid #002244;
+}
+* *[class~="topic/topic"] > *[class~="topic/title"] {
+    font-size: 1.6em;
+    border-bottom:1px solid #002244;
+}
+* * *[class~="topic/topic"] > *[class~="topic/title"] {
+    font-size: 1.4em;
+    border-bottom:none;
+}
+* * * *[class~="topic/topic"] > *[class~="topic/title"] {
+    font-size: 1.2em;
+}
+* * * * *[class~="topic/topic"] > *[class~="topic/title"] {
+    font-size: 1em;
+}
+/*
+  The alternate title element.
+ */
+*[class~="topic/titlealts"] {
+    display:block;
+}
+/*
+  When your DITA topic is transformed to XHTML, the
+  <searchtitle> element is used to create a title
+  element at the top of the resulting HTML file
+ */
+*[class~="topic/searchtitle"],
+*[class~="topic/navtitle"] {
+    margin: 0.5em 0;
+    font-weight: bold;
+    display: block;
+    background-color:inherit;
+}
+*[class~="topic/searchtitle"]:before,
+*[class~="topic/navtitle"]:before {
+    color: #444444;
+    background-color:inherit;
+    font-weight: bold;
+    display: inline;
+}
+*[class~="topic/searchtitle"]:before {
+    content: "Search Title: ";
+}
+*[class~="topic/navtitle"]:before {
+    content: "Navigation Title: ";
+}
+/*
+   For authoring, call attention to shortdesc by boxing it.
+   For output, its just a paragraph.
+ */
+*[class~="topic/shortdesc"] {
+    display: block;
+    margin: 0.5em 0;
+}
+*[class~="topic/shortdesc"]:before {
+    content:"Short Description: ";
+    color:#333333;
+    background-color: inherit;
+    font-weight:bold;
+    font-style:italic;
+    display: inline;
+    margin: 0.5em 0;
+}
+/*
+  The <prolog> element contains information about
+  the topic as an whole (for example, author information
+  or subject category) that is either entered by
+  the author or machine-maintained.
+ */
+*[class~="topic/prolog"] {
+    margin: 6pt;
+    background-color: #FFFFFA;
+    color:inherit;
+    padding-top: 3pt;
+    padding-right: 3pt;
+    padding-left: 3pt;
+    padding-bottom: 6pt;
+    border: thin solid olive;
+    display:block;
+}
+/*
+   general setup for section-like divisions and
+  exhibits
+ */
+*[class~="topic/section"],
+*[class~="topic/fig"] {
+    margin-top: 12pt;
+    display: block;
+}
+*[class~="topic/section"] > *[class~="topic/title"],
+*[class~="topic/example"] > *[class~="topic/title"] {
+    display: block;
+    font-weight: bold;
+    margin-top: 6pt;
+    margin-bottom: 2pt;
+}
+/* == special content and exhibits == */
+/*
+  The specialized title attribute allows
+  architects of specialized types to define
+  a fixed or default title for a specialized
+  element. Not intended for direct use by authors.
+ */
+*[spectitle]:before {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 2pt;
+    content: attr(spectitle)": ";
+}
+*[class~="topic/section"][spectitle]:before,
+*[class~="topic/example"][spectitle]:before {
+    display: block;
+    font-weight: bold;
+    content: attr(spectitle)": ";
+}
+*[class~="topic/example"] {
+    display:block;
+}
+*[class~="topic/example"]:before {
+    display: block;
+    font-weight: bold;
+    color:#444444;
+    background-color:inherit;
+    content: "Example: ";
+}
+/*
+  Body elements
+ */
+*[class~="topic/p"],
+*[class~="topic/note"] {
+    display: block;
+    margin-top: 2pt;
+    margin-bottom: 2pt;
+    margin-left:1em;
+}
+note:before {
+    content:url('../img/note.png') " Note: ";
+    font-weight:bold;
+}
+*[class~="topic/note"][type="attention"]:before {
+    content:url('../img/important.png') " Attention: ";
+}
+*[class~="topic/note"][type="caution"]:before {
+    content:url('../img/caution.png') " Caution: ";
+}
+*[class~="topic/note"][type="danger"]:before {
+    content:url('../img/danger.png') " Danger: ";
+}
+*[class~="topic/note"][type="fastpath"]:before {
+    content:"Fastpath: ";
+}
+*[class~="topic/note"][type="important"]:before {
+    content:url('../img/important.png') " Important: ";
+}
+note[type="note"]:before {
+    content:url('../img/note.png') " Note: ";
+}
+*[class~="topic/note"][type="other"]:before {
+    content:"Other: ";
+}
+*[class~="topic/note"][type="remember"]:before {
+    content:url('../img/remember.png') " Remember: ";
+}
+*[class~="topic/note"][type="restriction"]:before {
+    content:url('../img/restriction.png') " Restriction: ";
+}
+*[class~="topic/note"][type="tip"]:before {
+    content:url('../img/tip.png') " Tip: ";
+}
+*[class~="topic/note"][type="notice"]:before {
+    content:url('../img/important.png') " Notice: ";
+}
+*[class~="topic/note"][type="warning"]:before {
+    content:url('../img/warning.png') " Warning: ";
+}
+*[class~="topic/note"][type="other"][othertype]:before {
+    content:attr(othertype) ": ";
+}
+/*
+  Lists
+ */
+ 
+*[class~="topic/li"] {
+    display: list-item;
+}
+
+/* For an unordered list we must leave a margin left in which we will paint the bullet. */
+*[class~="topic/ul"] > *[class~="topic/li"] {
+    margin-left: 1em;
+}
+
+*[class~="topic/ul"],
+*[class~="topic/ol"] {
+    display:block;
+    margin: 0.5em 0;
+}
+
+/* In case of nested lists we indent one level to the right.*/
+*[class~="topic/li"] > *[class~="topic/ol"],
+*[class~="topic/li"] > *[class~="topic/ul"] {
+    margin-left: 1em;
+}
+
+*[class~="topic/ul"] > *[class~="topic/li"] {
+    list-style-type: disc;
+}
+*[class~="topic/ul"] *[class~="topic/ul"] > *[class~="topic/li"] {
+    list-style-type: circle;
+}
+*[class~="topic/ul"] *[class~="topic/ul"] *[class~="topic/ul"] > *[class~="topic/li"] {
+    list-style-type: square;
+}
+*[class~="topic/ul"] *[class~="topic/ul"] *[class~="topic/ul"] *[class~="topic/ul"] > *[class~="topic/li"] {
+    list-style-type: disc;
+}
+*[class~="topic/li"] > *[class~="topic/ol"] {
+    margin-top:0;
+    margin-bottom:0;
+}
+/*
+  This works on firefox, but it looks odd into
+  the XML editor.
+ */
+*[class~="topic/ol"] {
+    display:block;
+}
+*[class~="topic/ol"] > *[class~="topic/li"] {
+/* Use list-item instead of block to avoid putting the 
+   sentinels markers of the "ol" and the first "li"
+   on the same line, in compact tag display.*/
+    display:list-item;
+    list-style:none;
+}
+
+/* Declare counter on the first list item. */
+*[class~="topic/ol"] > *[class~="topic/li"]:first-child {
+    counter-reset: item-count;
+}
+
+/* Increment the counter for list items */
+*[class~="topic/ol"] > *[class~="topic/li"] {
+    counter-increment: item-count;
+}
+
+/* Render the counter before the list item content */
+*[class~="topic/ol"] > *[class~="topic/li"]:before {
+    content: counters(item-count, ".", decimal) ". ";
+    font-weight:bold;
+}
+/*EXM-28795 second level of ordered list*/
+*[class~="topic/ol"] *[class~="topic/ol"] > *[class~="topic/li"]:first-child {
+    counter-reset: item2-count;
+}
+
+/* Increment the counter for list items */
+*[class~="topic/ol"] *[class~="topic/ol"] > *[class~="topic/li"] {
+    counter-increment: item2-count;
+}
+
+/* Render the counter before the list item content */
+*[class~="topic/ol"] *[class~="topic/ol"] > *[class~="topic/li"]:before {
+    content: counters(item2-count, ".", lower-alpha) ". ";
+    font-weight:bold;
+}
+/*
+  The simple list (<sl>) element contains
+  a simple list of items of short,
+  phrase-like content, such as in documenting
+  the materials in a kit or package.
+  On output, the list should have no bullets,
+  on the assumption that each item is short enough
+  to fit on one line, and needs no additional
+  differentiation from its neighbors.
+ */
+*[class~="topic/sl"] {
+    display:block;
+    list-style: none;
+}
+*[class~="topic/sli"] {
+    display: list-item;
+}
+/* == phrase markup == */
+*[class~="topic/q"] {
+    display:inline;
+}
+*[class~="topic/q"]:before {
+    content: "\"";
+    color:gray;
+    background-color:inherit;
+}
+*[class~="topic/q"]:after {
+    content: "\"";
+    color:gray;
+    background-color:inherit;
+}
+/*
+  The long quote (<lq>) element indicates content quoted from another source.
+ */
+*[class~="topic/lq"]:before {
+    color:gray;
+    background-color:inherit;
+    content:open-quote;
+    font-size:larger;
+}
+*[class~="topic/lq"]:after {
+    color:gray;
+    background-color:inherit;
+    content:close-quote;
+    font-size:larger;
+}
+*[class~="topic/lq"] {
+    display: block;
+    margin: 0.8em 0;
+}
+/*
+  The <cite> element is used when
+  you need a bibliographic
+  citation that refers to a book or article.
+ */
+*[class~="topic/cite"] {
+    display:inline;
+    font-style: italic;
+}
+*[class~="topic/p"] {
+    display: block;
+    margin: 0.5em 0;
+}
+*[class~="topic/pre"] {
+    display:block;
+    background-color: #efefef;
+    font-family: monospace;
+    font-size:0.9em;
+    white-space: pre;
+    color:black;
+    padding: 0.2em;
+    margin: 1.33ex 0;
+}
+*[class~="topic/lines"] {
+    display: block;
+    white-space: pre;
+    font-style: normal;
+    margin: 1.33ex 0;
+}
+/*
+  Use footnote (<fn>) to annotate text with notes that
+  are not appropriate for inclusion inline.
+ */
+ 
+ @media screen{
+    *[class~="topic/fn"]:before {
+        font-weight: bold;
+        content: "fn ";
+        color:#333333;
+        background-color:inherit;
+    }
+    *[class~="topic/fn"][callout]:before {
+        font-weight: bold;
+        content: attr(callout) " ";
+        color:#333333;
+        background-color:inherit;
+    }
+    *[class~="topic/fn"] {
+        display:block;
+        font-size:small;
+        padding:2px;
+        border-top:1px solid gray;
+    }
+}
+/*
+  Definition list.
+ */
+*[class~="topic/dlhead"],
+*[class~="topic/dlentry"] {
+    display:block;
+}
+*[class~="topic/dlhead"] {
+    color:maroon;
+    background-color:inherit;
+    font-weight: bold;
+}
+*[class~="topic/dl"] {
+    display:block;
+    margin-left: 2ex;
+    margin-top: 1.33ex;
+    margin-bottom: 1.33ex;
+}
+*[class~="topic/dt"],
+*[class~="topic/dthd"] {
+    font-weight: bold;
+    display:block;
+}
+*[class~="topic/dd"],
+*[class~="topic/ddhd"] {
+    display:block;
+    margin-left: 4ex;   
+}
+/*
+  ================
+  Figures
+  ================
+ */
+*[class~="topic/fig"],
+*[class~="topic/figgroup"] {
+    display:block;
+    margin:0.8em 0;
+}
+*[class~="topic/desc"] {
+    display:inline;
+}
+*[class~="topic/desc"]:before {
+    content: " [";
+    color: #333333;
+    background-color:inherit;
+}
+*[class~="topic/desc"]:after {
+    content: "]";
+    color: #333333;
+    background-color:inherit;
+}
+
+*[class~="topic/object"]:before {
+    content:oxy_button(actionID, "play.media", transparent, true, enableInReadOnlyContext, true);
+}
+/*
+  Only descs from xref and link are
+  left inline.
+ */
+*[class~="topic/fig"] > *[class~="topic/desc"],
+*[class~="topic/object"] > *[class~="topic/desc"],
+table > *[class~="topic/desc"],
+*[class~="topic/linklist"] > *[class~="topic/desc"] {
+    display: block;
+    margin: 1.33ex 0;
+}
+fig > title:before    {
+	content: "Figure: ";
+}
+ 
+/*
+  Parameter of an object.
+ */
+*[class~="topic/param"]:before {
+    content: "\A Param name: " oxy_textfield(edit, "@name", columns, 10) " value: " oxy_textfield(edit, "@value", columns, 10);
+}
+/*
+  Level 3 Compatible content specification.
+ */
+*[class~="topic/image"]{
+    content: attr(href, url);
+}
+*[class~="topic/image"][placement="inline"] {
+    display: inline;
+    width:attr(width, length);
+    height:attr(height, length);
+}
+*[class~="topic/image"][placement="break"] {
+    display: block;
+}
+/*EXM-21459 Ignore such href values*/
+*[class~="topic/image"][href="-dita-use-conref-target"]{
+    content: "";
+}
+/*EXM-25542 Overwrite scale of font sizes set in dita.css*/
+*[class~="topic/image"][scale]{
+    font-size:inherit;
+}
+
+/*
+  The alt element provides an element equivalent
+  of the alt attribute on the image element.
+ */
+*[class~="topic/alt"] {
+    display:block;
+}
+*[class~="topic/alt"]:before {
+    content:"[";
+}
+*[class~="topic/alt"]:after {
+    content:"]";
+}
+/* == simple table markup == */
+*[class~="topic/simpletable"] {
+    display: table;
+}
+
+*[class~="topic/strow"],
+*[class~="topic/sthead"] {
+    display: table-row;
+}
+*[class~="topic/sthead"] > *[class~="topic/stentry"] {
+    font-weight: bold;
+}
+*[class~="topic/stentry"] {
+    display: table-cell;
+}
+
+@media print {
+	*[class~="topic/simpletable"] {
+    	border-collapse:collapse;
+    	border: 1px solid black;
+	}
+
+	*[class~="topic/stentry"] {
+    	border: 1px solid black;
+    	padding:0.5em;
+	}
+}
+
+@media screen {
+	*[class~="topic/simpletable"] {
+    border: thin solid gray;
+    margin: 10px 5px 10px 5px;
+}
+
+*[class~="topic/sthead"] > *[class~="topic/stentry"] {
+    	background-color: #DDEEFF;
+    	padding-top:1px;
+    	padding-bottom:1px;
+    	padding-left:5px;
+    	padding-right:5px;
+	}
+	*[class~="topic/stentry"] {
+    	border: thin solid #EEEEEE;
+   	 	padding-top:1px;
+    	padding-bottom:1px;
+   	 	padding-left:5px;
+    	padding-right:5px;
+	}
+}
+
+/* == specially highlighted elements == */
+/*
+  The <draft-comment> element allows simple
+  review and discussion of topic contents
+  within the marked-up content.
+ */
+*[class~="topic/draft-comment"] {
+    padding:2px;
+    display: block;
+    margin-top: 6pt;
+    margin-bottom: 2pt;
+    background-color: #99FF99;
+    color:inherit;
+    border-left: thick solid green;
+    border-right: thick solid green;
+}
+*[class~="topic/draft-comment"]:before {
+    font-weight: bold;
+    content: "Comment by "attr(author)": ";
+}
+/*
+  The related information links of a topic
+  (<related-links> element) are stored in a
+  special section following the body of the topic.
+ */
+*[class~="topic/related-links"] {
+    display: block;
+    margin:0.5em 0;
+}
+*[class~="topic/related-links"]:before {
+    display: block;
+    font-weight: bold;
+    content: "Related Links: ";
+    margin:0.5em 0;
+    color:#444444;
+    background-color:inherit;
+}
+*[class~="topic/links"],
+*[class~="topic/linklist"],
+*[class~="topic/linkpool"] {
+    display: block;
+    margin-top: 1.33ex;
+    margin-bottom: 1.33ex;
+    margin-left: 2ex;
+}
+*[class~="topic/links"]:before,
+*[class~="topic/linklist"]:before,
+*[class~="topic/linkpool"]:before {
+    color: #444444;
+    background-color:inherit;
+    font-weight: bold;
+    content: "Links: ";
+}
+*[class~="topic/links"] > *[class~="topic/title"],
+*[class~="topic/linklist"] > *[class~="topic/title"],
+*[class~="topic/linkpool"] > *[class~="topic/title"] {
+    display: block;
+    font-weight: bold;
+    margin-top: 6pt;
+}
+/*
+  The <linkinfo> element allows you to place a
+  descriptive paragraph following a list of links
+  in a linklist element.
+ */
+*[class~="topic/linkinfo"] {
+    display:block;
+    margin-top:0.5em;
+    margin-bottom:0.5em;
+    margin-left:1em;
+}
+*[class~="topic/linkinfo"]:before {
+    content: "Link Info: ";
+    font-weight:bold;
+    color: #444444;
+    background-color:inherit;
+    display:block;
+}
+/*
+  The <link> element defines a relationship
+  to another topic. Links represent the types
+  and roles of topics in a web of information,
+  and therefore represent navigational links
+  within that web. Links are typically sorted
+  on output based on their attributes.
+ */
+*[class~="topic/link"] {
+    display: list-item;
+    list-style-type:circle;
+    margin-left: +20pt;
+}
+/*
+  Use the cross-reference (<xref>) element
+  to link to a different location within
+  the current topic, or a different topic
+  within the same help system, or to
+  external sources, such as Web pages, or
+  to a location in another topic. The href
+  attribute on the <xref> element provides
+  the location of the target.
+ */
+*[class~="topic/link"],
+*[class~="topic/xref"] {
+    text-decoration:underline;
+}
+*[class~="topic/xref"],
+*[class~="topic/cite"] {
+    display:inline;
+}
+*[class~="topic/link"]:before,
+*[class~="topic/xref"]:before {
+    text-decoration:underline;
+    color:navy;
+    background-color:inherit;
+}
+*[class~="topic/link"][href]:before,
+*[class~="topic/xref"][href]:before {
+    content:url("../img/link.png");
+}
+/*EXM-28599 Present @href value for coderef*/
+*[class~="pr-d/coderef"][href]:before {
+    content:url("../img/link.png")  "[" attr(href) "]";
+}
+
+*[class~="topic/link"][href]:empty,
+*[class~="topic/xref"][href]:empty {
+    content: oxy_label(text, oxy_getSomeText(oxy_link-text(), 150, true), background-color, rgb(240, 240, 240));
+}
+
+*[class~="topic/link"][type][href]:empty,
+*[class~="topic/xref"][type][href]:empty {
+    content: oxy_label(text, oxy_getSomeText(oxy_link-text(), 150, true), background-color, rgb(240, 240, 240));
+}
+
+/*EXM-28844 Show rendered text in-place in Author when referencing external resources.*/
+*[class~="topic/link"][href][scope="external"]:empty,
+*[class~="topic/link"][href][format="html"]:empty,
+*[class~="topic/xref"][href][scope="external"]:empty ,
+*[class~="topic/xref"][href][format="html"]:empty {
+    content: oxy_label(text, oxy_getSomeText(attr(href), 150, true), background-color, rgb(240, 240, 240));
+}
+
+/*
+  ==============================
+  Specialization elements.
+  ==============================
+ */
+*[class~="topic/boolean"],
+*[class~="topic/state"] {
+    display:inline;
+}
+*[class~="topic/boolean"]:before,
+*[class~="topic/state"]:before {
+    display:inline;
+    color:gray;
+    background-color:inherit;
+    font-weight:bold;
+}
+*[class~="topic/boolean"]:before {
+    content: "boolean state=" attr(state);
+}
+*[class~="topic/state"]:before {
+    content: "state name=" attr(name) " value=" attr(value);
+}
+/*
+  A <required-cleanup> element is used as a
+  placeholder for migrated elements that cannot
+  be appropriately tagged without manual
+  intervention. As the element name implies,
+  the intent for authors is to clean up the
+  contained material and eventually get rid
+  of the <required-cleanup> element.
+ */
+*[class~="topic/required-cleanup"] {
+    display:block;
+    padding:2px;
+    color: inherit;
+    background-color: #FFFF99;
+    border-left: thick solid red;
+    border-right: thick solid red;
+}
+*[class~="topic/itemgroup"] {
+    display:block;
+    margin:0.5em 0;
+}
+*[class~="topic/term"] {
+    display: inline;
+    font-style: italic;
+}
+/*
+  The <resourceid> element provides an identifier for
+  applications that require them in a particular format,
+  when the normal id attribute of the topic can't be used.
+ */
+*[class~="topic/resourceid"],
+/*
+  The <series> metadata element contains information about
+  the product series that the topic supports.
+ */
+*[class~="topic/series"],
+/*
+  The <source> element contains a reference to a resource
+  from which the present topic is derived, either
+  completely or in part.
+ */
+*[class~="topic/source"],
+*[class~="topic/permissions"],
+/*
+  The <prognum> metadata element identifies the program
+  number of the associated program product.
+ */
+*[class~="topic/prognum"],
+*[class~="topic/publisher"],
+*[class~="topic/othermeta"],
+*[class~="topic/platform"],
+/*
+  The <featnum> element contains the feature number of
+  a product in the metadata.
+ */
+*[class~="topic/featnum"],
+*[class~="topic/keywords"],
+*[class~="topic/critdates"],
+*[class~="topic/copyright"],
+/*
+  The <component> element describes the component of
+  the product that this topic is concerned with.
+ */
+*[class~="topic/component"],
+*[class~="topic/prodname"],
+*[class~="topic/audience"],
+/*
+  The <brand> element indicates the manufacturer or brand
+  associated with the product described by the parent
+  <prodinfo> element.
+ */
+*[class~="topic/brand"],
+*[class~="topic/category"],
+*[class~="topic/prodinfo"],
+*[class~="topic/metadata"],
+*[class~="topic/author"] {
+    display: block;
+    margin-left: 0.5em;
+    margin-top: 0.5ex;
+    margin-bottom: 0.5ex;
+}
+*[class~="topic/vrmlist"] {
+    display: block;
+    margin: 1.33ex 0;
+}
+*[class~="topic/vrm"] {
+    display: block;
+    margin-left: 16ex;
+}
+*[class~="topic/copyryear"],
+*[class~="topic/copyrholder"] {
+    display: inline;
+    padding-left:10px;
+}
+*[class~="topic/created"],
+*[class~="topic/revised"] {
+    display: block;
+    margin-left: 2ex;
+}
+/*
+  Labels for the meta information.
+ */
+*[class~="topic/resourceid"]:before,
+*[class~="topic/series"]:before,
+*[class~="topic/source"]:before,
+*[class~="topic/permissions"]:before,
+*[class~="topic/prognum"]:before,
+*[class~="topic/publisher"]:before,
+*[class~="topic/othermeta"]:before,
+*[class~="topic/platform"]:before,
+*[class~="topic/featnum"]:before,
+*[class~="topic/keywords"]:before,
+*[class~="topic/critdates"]:before,
+*[class~="topic/created"]:before,
+*[class~="topic/revised"]:before,
+*[class~="topic/copyryear"]:before,
+*[class~="topic/copyrholder"]:before,
+*[class~="topic/copyright"]:before,
+*[class~="topic/component"]:before,
+*[class~="topic/vrm"]:before,
+*[class~="topic/prodname"]:before,
+*[class~="topic/audience"]:before,
+*[class~="topic/brand"]:before,
+*[class~="topic/category"]:before,
+*[class~="topic/prodinfo"]:before,
+*[class~="topic/metadata"]:before,
+*[class~="topic/author"]:before {
+    display: inline;
+    font-weight: bold;
+    color: #444400;
+    background-color:inherit;
+}
+*[class~="topic/resourceid"]:before {
+    content: "Resource Id: ";
+}
+*[class~="topic/series"]:before {
+    content: "Series: ";
+}
+*[class~="topic/source"][href]:after {
+    display: inline;
+    content: url("../img/link.png")  attr(href);
+    color: navy;
+    background-color:inherit;
+    font-family: monospace;
+    font-size:0.9em;
+    text-decoration:underline;
+}
+*[class~="topic/source"]:before {
+    content: "Source: ";
+}
+*[class~="topic/permissions"]:before {
+    content: "Permissions: ";
+}
+*[class~="topic/prognum"]:before {
+    content: "Program number: ";
+}
+*[class~="topic/publisher"]:before {
+    content: "Publisher: ";
+}
+*[class~="topic/othermeta"]:before {
+    content: "Othermeta:";
+}
+*[class~="topic/platform"]:before {
+    content: "Platform: ";
+}
+*[class~="topic/featnum"]:before {
+    content: "Feature number: ";
+}
+*[class~="topic/keywords"]:before {
+    content: "Keywords: ";
+}
+*[class~="topic/critdates"]:before {
+    content: "Critical dates: ";
+}
+*[class~="topic/created"]:before {
+    content: "Created: ";
+}
+*[class~="topic/revised"]:before {
+    content: "Revised: ";
+}
+*[class~="topic/copyryear"]:before {
+    display: inline;
+    content: "Year: " " [" attr(year, string, "Please specify the year attribute") "]";
+}
+*[class~="topic/copyright"]:before {
+    content: "Copyright ";
+}
+*[class~="topic/copyrholder"]:before {
+    content: "Holder:  ";
+}
+*[class~="topic/component"]:before {
+    content: "Component: ";
+}
+*[class~="topic/vrm"]:before {
+    content: "VRM: ";
+}
+*[class~="topic/prodname"]:before {
+    content: "Product name: ";
+}
+*[class~="topic/audience"]:before {
+    content: "Audience: ";
+}
+*[class~="topic/author"]:before {
+    content: "Author: ";
+}
+*[class~="topic/brand"]:before {
+    content: "Brand: ";
+}
+*[class~="topic/prodinfo"]:before {
+    content: "Product info: ";
+}
+*[class~="topic/metadata"]:before {
+    content: "Metadata: ";
+}
+/*
+  Effective values.
+ */
+*[class~="topic/audience"]:after {
+    content: " type=" attr(type) " job=" attr(job)
+    " experiencelevel=" attr(experiencelevel);
+}
+*[class~="topic/vrm"]:after {
+    content: 
+      " version: " oxy_textfield(edit, "@version", columns, 10)
+      " release: " oxy_textfield(edit, "@release", columns, 10) 
+      " modification: " oxy_textfield(edit, "@modification", columns, 10);
+}
+/* Form controls */
+*[class~="topic/created"]:after {
+    content:
+        oxy_label(text, "Date: " , width, 7ex)
+        oxy_datePicker(
+            columns, 12, 
+            edit, "@date",
+            format, "yyyy-MM-dd",
+            validateInput, false) "     "  
+        oxy_label(text, "Golive: " , width, 5ex)
+        oxy_datePicker(
+            columns, 12, 
+            edit, "@golive",
+            format, "yyyy-MM-dd",
+            validateInput, false)"     "
+        oxy_label(text, "Expiry: " , width, 5ex)
+        oxy_datePicker(
+            columns, 12, 
+            edit, "@expiry",
+            format, "yyyy-MM-dd",
+            validateInput, false)
+}
+*[class~="topic/revised"]:after {
+    content:
+        oxy_label(text, "Modified: " , width, 7ex)
+        oxy_datePicker(
+            columns, 12, 
+            edit, "@modified",
+            format, "yyyy-MM-dd",
+            validateInput, false) "     "  
+        oxy_label(text, "Golive: " , width, 5ex)
+        oxy_datePicker(
+            columns, 12, 
+            edit, "@golive",
+            format, "yyyy-MM-dd",
+            validateInput, false)"     "
+        oxy_label(text, "Expiry: " , width, 5ex)
+        oxy_datePicker(
+            columns, 12, 
+            edit, "@expiry",
+            format, "yyyy-MM-dd",
+            validateInput, false)
+}
+*[class~="topic/data"] > *[class~="topic/data"] {
+    margin-left:10px;
+} 
+*[class~="topic/data"]:before {
+    display:block;
+    content: "Data name: "oxy_textfield(edit, '@name', columns, 15) " Value: "oxy_textfield(edit, '@value', columns, 15) " ";
+}
+*[class~="topic/othermeta"]:after {
+    content: " name=" attr(name)
+    " content=" attr(content);
+}
+*[class~="topic/permissions"]:after {
+    content: " view=" attr(view) " ";
+}
+*[class~="topic/resourceid"]:after {
+    content: " id=" attr(id);
+}
+*[class~="topic/resourceid"][id][appname]:after {
+    content: " id=" attr(id) " appname=" attr(appname);
+}
+/*
+   ---------------------------------------------------------------------------
+  Common to topicmeta/keywords and to DITA topics
+  ---------------------------------------------------------------------------
+ */
+*[class~="topic/keyword"] {
+    display: inline;
+    font-weight: bold;
+}
+
+*[class="+ topic/keyword sw-d/varname "] {
+    font-weight: normal;
+}
+/*
+  Separates the keywords.
+ */
+*[class~="topic/indextermref"],
+*[class~="topic/indexterm"] {
+    display: inline;
+    font-size: small;
+}
+/*EXM-27204 Always show place holder content for indexterms*/
+*[class~="topic/indexterm"]{
+ -oxy-show-placeholder:always;
+}
+*[class~="topic/indextermref"]:before,
+*[class~="topic/indexterm"]:before {
+    display: inline;
+    content: "(";
+}
+*[class~="topic/indexterm"]:after,
+*[class~="topic/indextermref"]:after {
+    display: inline;
+    content: attr(keyref) ")";
+}
+*[class~="topic/tm"]:after {
+    content: "[tm]";
+    vertical-align:super;
+    color:gray;
+    background-color:inherit;
+    font-size:smaller;
+}
+*[class~="topic/tm"][tmtype="reg"]:after {
+    content: "\AE";
+}
+*[class~="topic/tm"][tmtype="service"]:after {
+    content: "[sm]";
+}
+
+/*Support for DITA 1.2 keyrefs*/
+*[keyref]:before,
+/*EXM-21733 Prefer keyref to href as the DITA 1.2 specs says.*/
+*[keyref][href]:before{
+     /*Use concat to cast from URI to string*/
+    link: oxy_concat("", attr(keyref, keyref));
+    content:url("../img/link.png") "[" attr(keyref) "]";
+}
+
+*[keyref]:empty {
+    content: oxy_label(text, oxy_getSomeText(oxy_link-text(), 150, true), background-color, rgb(240, 240, 240));
+}
+
+/*Remove the link*/
+*[class~="topic/image"][keyref]:before,
+*[class~="topic/image"][keyref][href]:before{
+    content: "";
+}
+
+*[class~="topic/image"][keyref],
+*[class~="topic/image"][keyref][href]{
+    content: attr(keyref, keyref);
+}
+
+*[class~="topic/keywords"] > * {
+    display: block;
+    font-size: inherit;
+    margin-left: 1em;
+}
+    
+*[class~="topic/keywords"]  *[class~="topic/indexterm"]:before,
+*[class~="topic/keywords"]  *[class~="topic/indexterm"]:after
+{
+	content:"";
+}
+*[class~="topic/keywords"]  *[class~="topic/indexterm"] {
+    display: block;
+    font-weight:bold;
+    color:#447700;
+} 
+*[class~="topic/keywords"]  *[class~="topic/indexterm"] > *[class~="topic/indexterm"]{
+    padding-left: 2em;
+    font-weight:normal;
+    color:black;
+}
+*[class~="topic/keywords"]  *[class~="topic/indexterm"] > *[class~="indexing-d/index-see"],
+*[class~="topic/keywords"]  *[class~="topic/indexterm"] > *[class~="indexing-d/index-see-also"]
+{
+    font-style: italic;
+    display: block;
+} 
+*[class~="topic/indexterm"] > *[class~="indexing-d/index-see"]:before
+{
+    color:gray;
+    content: " See: ";
+} 
+*[class~="topic/indexterm"] > *[class~="indexing-d/index-see-also"]:before
+{
+    color:gray;
+    content: " See also: ";
+} 
+
+*[class~="topic/indexterm"] > *[class~="indexing-d/index-see-also"]:after,
+*[class~="topic/indexterm"] > *[class~="indexing-d/index-see"]:after{
+    content:" ";
+}
+
+/*Stepsection.
+ * EXM-23945 Remove bullets or item numbering from stepsections defined in steps or unordered steps
+ */
+*[class~="topic/ol"] > *[class~="task/stepsection"],
+*[class~="topic/ul"] > *[class~="task/stepsection"]{
+    margin-left: 0em;
+    display: block;
+    list-style:none;
+    list-style-type:none;
+    counter-reset: none;
+    counter-increment:none;
+}
+*[class~="topic/ol"] > *[class~="task/stepsection"]:before,
+*[class~="topic/ul"] > *[class~="task/stepsection"]:before{
+    content: "";
+}

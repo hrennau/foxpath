@@ -1,0 +1,107 @@
+val:before {
+  display:block;
+  font-size:1.2em;
+  content: "DITAVAL Filter file  "
+    oxy_buttonGroup(
+      label, '+...'
+      actionIDs, 'add.style-conflict, add.filter, add.flag-revision'
+      transparent, true
+    )
+  ;
+}
+/* Remove the add style-conflict if we already have that element */
+val:before!>style-conflict {
+  content: "DITAVAL Filter file  "
+    oxy_buttonGroup(
+      label, '+...'
+      actionIDs, 'add.filter, add.flag-revision'
+      transparent, true
+    )    
+  ;
+}
+
+val > *:hover{
+  background-color:#FFFFEE;
+}
+
+val > * {
+  display:block;
+}
+
+style-conflict:before {
+  padding : 5px;
+  content:
+    oxy_label(text, "Style conflict ", styles, "font-weight:bold;")
+    " ["
+    oxy_button(actionID, 'delete2', transparent, true)
+    "]"
+    "\A "
+    oxy_label(text, ' foreground-conflict-color ', width, 19ex, color, gray)
+    oxy_label(text, ' background-conflict-color ', width, 19ex, color, gray)
+    "\A"
+    oxy_combobox(
+      edit, "@foreground-conflict-color",
+      columns, 20,
+      values, "black,   silver,  gray,    white,   maroon,  red,     purple,  fuchsia, green,   lime,    olive,   yellow,  navy,    blue,    teal,    aqua"    
+    )
+    oxy_combobox(edit, "@background-conflict-color", 
+      columns, 20,
+      values, "black,   silver,  gray,    white,   maroon,  red,     purple,  fuchsia, green,   lime,    olive,   yellow,  navy,    blue,    teal,    aqua"      
+    );
+}
+style-conflict {
+  border : 1px solid gray;
+}
+style-conflict:after {
+  display:block;
+  padding-top:5px;
+  content :
+  "  sample text sample text sample text sample text sample text sample text";
+  background-color: oxy_xpath("if (@background-conflict-color) then @background-conflict-color else 'white'");
+  color: oxy_xpath("if (@foreground-conflict-color) then @foreground-conflict-color else 'black'");
+}
+
+startflag:after,
+endflag:before{
+  display:inline;
+  content: " sample text sample text sample text ";
+  font-style: oxy_xpath("if (../@style='italics') then 'italic' else 'normal'");
+  text-decoration:oxy_xpath("if (../@style='underline' or ../@style='double-underline') then 'underline' else if (../@style='overline') then 'overline' else 'none'");
+  
+  border-bottom:oxy_xpath("if (../@style='double-underline') then '1px solid black' else 'none'"); 
+  
+  font-weight: oxy_xpath("if (../@style='bold') then 'bold' else 'normal'");
+  background-color: oxy_xpath("if (../@backcolor) then ../@backcolor else 'white'");
+  color: oxy_xpath("if (../@color) then ../@color else 'black'");
+}
+
+endflag:first-child:before {
+  content:"\A sample text sample text sample text ";  
+}
+
+endflag[imageref]:after {
+  content : 
+    attr(imageref, url)
+    "\A"
+    "End flag image reference: "
+    oxy_urlChooser(edit, imageref)
+  ;
+}
+
+endflag:after {
+  content:
+    "\A"
+    "End flag image reference: "
+    oxy_urlChooser(edit, imageref)
+}
+
+alt-text:before,
+alt-text:after {
+  content: " ";
+}
+
+alt-text {
+  border:1px solid gray; 
+  padding:0;
+}
+

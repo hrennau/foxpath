@@ -1,0 +1,31 @@
+@import "relaxng.css";
+
+@namespace iso url('http://purl.oclc.org/dsdl/schematron');
+@namespace sch url('http://www.ascc.net/xml/schematron');
+
+
+/* serialize schematron */
+iso|*:before {
+    content : '<' oxy_name() oxy_attributes()'>';
+    color : blue;
+}
+iso|*{
+    -oxy-foldable:true;
+    display:block;
+}
+iso|*:after {
+    content : '</' oxy_name() '>';
+    color : blue;
+}
+sch|*:before {
+    content : '<' oxy_name() oxy_attributes()'>';
+    color : blue;
+}
+sch|*{
+    -oxy-foldable:true;
+    display:block;
+}
+sch|*:after {
+    content : '</' oxy_name() '>';
+    color : blue;
+}

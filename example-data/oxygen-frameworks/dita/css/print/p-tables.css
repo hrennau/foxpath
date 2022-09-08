@@ -1,0 +1,129 @@
+/*
+ * =================================================
+ * 
+ * CSS rules applying to tables.
+ * 
+ * =================================================
+ */
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+
+@media print {
+
+    
+    /*
+     * 
+     * Implementing rowspan and colspan.
+     * 
+     */
+    *[class~="topic/entry"][colspan] {
+       table-column-span:attr(colspan);
+    }
+	*[class~="topic/entry"][rowspan] {
+       table-row-span:attr(rowspan);
+    }
+    
+    
+    /*
+     *
+     * In order for the headers of a simpletable or properties table 
+     * to be repeated on the next page, the "header" is 
+     * wrapped into an artificial element in the post processing phase.
+     *
+     * This element must have display "table-header-group".
+     *
+     * The rest of the rows are wrapped in an element with "table-row-group".
+     *  
+     */
+     table-header-group{
+         display:table-header-group;
+     }
+     table-row-group{
+         display:table-row-group;
+     }
+
+	
+
+
+     /*
+      * DITA is using a tgroup element as parent of the cols, thead, tbody.
+      * This should be marked with display "table".
+      */
+     *[class~="topic/table"] {
+         display:block ;
+     }
+     *[class~="topic/table"] > *[class~="topic/tgroup"] {
+         display:table;
+         
+         /* Fixed, in order to be conformant to the DITA specification, if a column does not have a width, it should be considered 1* 
+            Prince ignores it. Chemsitry can deal with it. */
+         table-layout: fixed;
+         
+     }
+     *[class~="topic/table"] > *[class~="topic/title"] {
+         display:block;
+     }
+     
+     /*
+      * Prince uses the width set on the colspec "style" attribute, added by a post processing step in the DITA-CSS plugin.
+      * Chemistry uses the width property.
+      * In any case we have to mark the  topic/colspec as table-column.
+      */
+     *[class~="topic/colspec"] {
+         display:table-column;
+         width:attr(colwidth) !important;
+     }
+     /*
+      * Deal with @rowsep and @colsep. 
+      * 
+      * These attributes can be set on "table", "tgroup", "row", and 
+      * "entry" elements. The "tbody"/"thead" do not have such attributes.
+      * 
+      * The values are inherited from the parents. The last row does 
+      * not have a row separator, and the cells from the last column do 
+      * not have column separators.
+      */          
+     *[class~="topic/table"][rowsep = '1']> *[class~="topic/tgroup"]:not([rowsep]) > * > *[class~="topic/row"]:not([rowsep]):not(:last-child) > *[class~="topic/entry"]:not([rowsep]),
+	 *[class~="topic/tgroup"][rowsep = '1'] > * > *[class~="topic/row"]:not([rowsep]):not(:last-child) > *[class~="topic/entry"]:not([rowsep]),     
+	 *[class~="topic/row"][rowsep = '1']:not(:last-child) > *[class~="topic/entry"]:not([rowsep]),
+     *[class~="topic/row"]:not(:last-child) > *[class~="topic/entry"][rowsep = '1']{     
+        border-bottom:1pt solid black;
+      } 
+
+	 /* Add a line between the header and the table body, if there is a rowsep on the table or tgroup */ 
+     *[class~="topic/table" ][rowsep = '1'] > *[class~="topic/tgroup"] > *[class~="topic/thead"] > *[class~="topic/row"]:last-child > *[class~="topic/entry"],
+     *[class~="topic/tgroup"][rowsep = '1'] > *[class~="topic/thead"] > *[class~="topic/row"]:last-child > *[class~="topic/entry"] {
+        border-bottom:1pt solid black;
+      } 
+
+     *[class~="topic/table"][colsep = '1']  > *[class~="topic/tgroup"]:not([colsep]) > * > *[class~="topic/row"]:not([colsep]) > *[class~="topic/entry"]:not([colsep]):not(:last-child),
+     *[class~="topic/tgroup"][colsep = '1'] > * > *[class~="topic/row"]:not([colsep]) > *[class~="topic/entry"]:not([colsep]):not(:last-child),
+     *[class~="topic/row"][colsep = '1'] > *[class~="topic/entry"]:not([colsep]):not(:last-child),
+     *[class~="topic/entry"][colsep = '1']:not(:last-child){     
+        border-right:1pt solid black;
+      }
+
+	 /*
+	  * Table orientation.
+	  */
+	 @page table-landscape {
+		size:landscape;
+/* 		@top-left{
+			content:none;
+		}
+		@top-right{
+			content:none;
+		}
+ */	 }
+	
+	 @page table-portrait {
+		size:portrait;
+	 }
+
+     *[class~="topic/table"][orient='land'] {
+     	 page: table-landscape;
+     }
+     *[class~="topic/table"][orient='port'] {
+    	 page: table-portrait;
+     }
+
+}

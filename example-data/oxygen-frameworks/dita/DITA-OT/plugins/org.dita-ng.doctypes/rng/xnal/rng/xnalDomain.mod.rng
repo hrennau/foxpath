@@ -1,0 +1,1008 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ============================================================= 
+  MODULE:    DITA XNAL Domain - RNG              
+  VERSION:   1.2                                                
+  DATE:      November 2010                                       
+  ============================================================= -->
+<!--
+  Refer to the latest version of this file by the following URI:
+  urn:dita-ng:dita:rng:xnalDomain.mod.rng
+  To refer to this specific version, you may use this value:
+  urn:dita-ng:dita:rng:xnalDomain.mod.rng:1.2
+-->
+<!-- ============================================================= 
+  SYSTEM:     Darwin Information Typing Architecture (DITA)     
+  PURPOSE:    Define elements and specialization atttributed for 
+              the XNAL Domain
+  ORIGINAL CREATION DATE:  
+  September 2010                                                
+  (C) Copyright Syncro Soft 2010-2011                                
+  All Rights Reserved.                                          
+  ============================================================= -->
+<grammar xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" 
+  xmlns="http://relaxng.org/ns/structure/1.0">
+  
+  <!-- Define the domain values of this module -->
+  <define name="domains-atts-value" combine="choice">
+    <value>(topic xnal-d)</value>
+  </define>
+  
+  <define name="xnal-d-author">
+    <ref name="authorinformation.element"/>
+  </define>
+  <define name="author" combine="choice">
+    <ref name="xnal-d-author"/>
+  </define>
+  
+  
+  <define name="addressdetails">
+    <ref name="addressdetails.element"/>
+  </define>
+  <define name="administrativearea">
+    <ref name="administrativearea.element"/>
+  </define>
+  <define name="contactnumber">
+    <ref name="contactnumber.element"/>
+  </define>
+  <define name="contactnumbers">
+    <ref name="contactnumbers.element"/>
+  </define>
+  <define name="country">
+    <ref name="country.element"/>
+  </define>
+  <define name="emailaddress">
+    <ref name="emailaddress.element"/>
+  </define>
+  <define name="emailaddresses">
+    <ref name="emailaddresses.element"/>
+  </define>
+  <define name="firstname">
+    <ref name="firstname.element"/>
+  </define>
+  <define name="generationidentifier">
+    <ref name="generationidentifier.element"/>
+  </define>
+  <define name="honorific">
+    <ref name="honorific.element"/>
+  </define>
+  <define name="lastname">
+    <ref name="lastname.element"/>
+  </define>
+  <define name="locality">
+    <ref name="locality.element"/>
+  </define>
+  <define name="localityname">
+    <ref name="localityname.element"/>
+  </define>
+  <define name="middlename">
+    <ref name="middlename.element"/>
+  </define>
+  <define name="namedetails">
+    <ref name="namedetails.element"/>
+  </define>
+  <define name="organizationinfo">
+    <ref name="organizationinfo.element"/>
+  </define>
+  <define name="organizationname">
+    <ref name="organizationname.element"/>
+  </define>
+  <define name="organizationnamedetails">
+    <ref name="organizationnamedetails.element"/>
+  </define>
+  <define name="otherinfo">
+    <ref name="otherinfo.element"/>
+  </define>
+  <define name="personinfo">
+    <ref name="personinfo.element"/>
+  </define>
+  <define name="personname">
+    <ref name="personname.element"/>
+  </define>
+  <define name="postalcode">
+    <ref name="postalcode.element"/>
+  </define>
+  <define name="thoroughfare">
+    <ref name="thoroughfare.element"/>
+  </define>
+  <define name="url">
+    <ref name="url.element"/>
+  </define>
+  <define name="urls">
+    <ref name="urls.element"/>
+  </define>
+  <!-- ============================================================= -->
+  <!-- ELEMENT DECLARATIONS -->
+  <!-- ============================================================= -->
+  <!-- LONG NAME: Author Information -->
+  <define name="authorinformation.content">
+    <zeroOrMore>
+      <choice>
+        <ref name="organizationinfo"/>
+        <ref name="personinfo"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <!--
+    20080128: Removed enumeration for @type for DITA 1.2. Previous values:
+    creator, contributor, -dita-use-conref-target
+  -->
+  <define name="authorinformation.attributes">
+    <ref name="univ-atts"/>
+    <optional>
+      <attribute name="href"/>
+    </optional>
+    <optional>
+      <attribute name="format"/>
+    </optional>
+    <optional>
+      <attribute name="type"/>
+    </optional>
+    <optional>
+      <attribute name="scope">
+        <choice>
+          <value>external</value>
+          <value>local</value>
+          <value>peer</value>
+          <value>-dita-use-conref-target</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="keyref"/>
+    </optional>
+  </define>
+  <!--
+    doc:The <authorinformation> element contains detailed information about the author or authoring organization.
+    Category: xNAL elements
+  -->
+  <define name="authorinformation.element">
+    <element name="authorinformation">
+      <ref name="authorinformation.attlist"/>
+      <ref name="authorinformation.content"/>
+    </element>
+  </define>
+  <define name="authorinformation.attlist" combine="interleave">
+    <ref name="authorinformation.attributes"/>
+  </define>
+  <!-- LONG NAME: Name Details -->
+  <define name="namedetails.content">
+    <zeroOrMore>
+      <choice>
+        <ref name="organizationnamedetails"/>
+        <ref name="personname"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <define name="namedetails.attributes">
+    <ref name="data-element-atts"/>
+  </define>
+  <!--
+    doc:The <namedetails> element contains information about the name of the author or the authoring organization.
+    Category: xNAL elements
+  -->
+  <define name="namedetails.element">
+    <element name="namedetails">
+      <ref name="namedetails.attlist"/>
+      <ref name="namedetails.content"/>
+    </element>
+  </define>
+  <define name="namedetails.attlist" combine="interleave">
+    <ref name="namedetails.attributes"/>
+  </define>
+  <!-- LONG NAME: Organization Details -->
+  <define name="organizationnamedetails.content">
+    <optional>
+      <ref name="organizationname"/>
+    </optional>
+    <zeroOrMore>
+      <ref name="otherinfo"/>
+    </zeroOrMore>
+  </define>
+  <define name="organizationnamedetails.attributes">
+    <optional>
+      <attribute name="keyref"/>
+    </optional>
+    <ref name="univ-atts"/>
+    <optional>
+      <attribute name="outputclass"/>
+    </optional>
+  </define>
+  <!--
+    doc:The <organizationnamedetails> element contains information about the name of an authoring organization.
+    Category: xNAL elements
+  -->
+  <define name="organizationnamedetails.element">
+    <element name="organizationnamedetails">
+      <ref name="organizationnamedetails.attlist"/>
+      <ref name="organizationnamedetails.content"/>
+    </element>
+  </define>
+  <define name="organizationnamedetails.attlist" combine="interleave">
+    <ref name="organizationnamedetails.attributes"/>
+  </define>
+  <!-- LONG NAME: Organization Name -->
+  <define name="organizationname.content">
+    <zeroOrMore>
+      <ref name="ph.cnt"/>
+    </zeroOrMore>
+  </define>
+  <define name="organizationname.attributes">
+    <optional>
+      <attribute name="keyref"/>
+    </optional>
+    <ref name="univ-atts"/>
+    <optional>
+      <attribute name="outputclass"/>
+    </optional>
+  </define>
+  <!--
+    doc:The <organizationname> element contains name information about the authoring organization.
+    Category: xNAL elements
+  -->
+  <define name="organizationname.element">
+    <element name="organizationname">
+      <ref name="organizationname.attlist"/>
+      <ref name="organizationname.content"/>
+    </element>
+  </define>
+  <define name="organizationname.attlist" combine="interleave">
+    <ref name="organizationname.attributes"/>
+  </define>
+  <!-- LONG NAME: Person Name -->
+  <define name="personname.content">
+    <optional>
+      <ref name="honorific"/>
+    </optional>
+    <zeroOrMore>
+      <ref name="firstname"/>
+    </zeroOrMore>
+    <zeroOrMore>
+      <ref name="middlename"/>
+    </zeroOrMore>
+    <zeroOrMore>
+      <ref name="lastname"/>
+    </zeroOrMore>
+    <optional>
+      <ref name="generationidentifier"/>
+    </optional>
+    <zeroOrMore>
+      <ref name="otherinfo"/>
+    </zeroOrMore>
+  </define>
+  <define name="personname.attributes">
+    <ref name="data-element-atts"/>
+  </define>
+  <!--
+    doc:The <personname> element contains name information about the author.
+    Category: xNAL elements
+  -->
+  <define name="personname.element">
+    <element name="personname">
+      <ref name="personname.attlist"/>
+      <ref name="personname.content"/>
+    </element>
+  </define>
+  <define name="personname.attlist" combine="interleave">
+    <ref name="personname.attributes"/>
+  </define>
+  <!-- LONG NAME: Honorific -->
+  <define name="honorific.content">
+    <zeroOrMore>
+      <choice>
+        <text/>
+        <ref name="keyword"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <define name="honorific.attributes">
+    <ref name="data-element-atts"/>
+  </define>
+  <!--
+    doc:The <honorific> element contains the person's title, such as: Dr., Mr., Ms., HRH.. or Grand Exalted Wizard.
+    Category: xNAL elements
+  -->
+  <define name="honorific.element">
+    <element name="honorific">
+      <ref name="honorific.attlist"/>
+      <ref name="honorific.content"/>
+    </element>
+  </define>
+  <define name="honorific.attlist" combine="interleave">
+    <ref name="honorific.attributes"/>
+  </define>
+  <!-- LONG NAME: First Name -->
+  <define name="firstname.content">
+    <zeroOrMore>
+      <choice>
+        <text/>
+        <ref name="keyword"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <define name="firstname.attributes">
+    <ref name="data-element-atts"/>
+  </define>
+  <!--
+    doc:The <firstname> element contains the person's first name.
+    Category: xNAL elements
+  -->
+  <define name="firstname.element">
+    <element name="firstname">
+      <ref name="firstname.attlist"/>
+      <ref name="firstname.content"/>
+    </element>
+  </define>
+  <define name="firstname.attlist" combine="interleave">
+    <ref name="firstname.attributes"/>
+  </define>
+  <!-- LONG NAME: Middle Name -->
+  <define name="middlename.content">
+    <zeroOrMore>
+      <choice>
+        <text/>
+        <ref name="keyword"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <define name="middlename.attributes">
+    <ref name="data-element-atts"/>
+  </define>
+  <!--
+    doc:The <middlename> element contains the person's middle name or initial.
+    Category: xNAL elements
+  -->
+  <define name="middlename.element">
+    <element name="middlename">
+      <ref name="middlename.attlist"/>
+      <ref name="middlename.content"/>
+    </element>
+  </define>
+  <define name="middlename.attlist" combine="interleave">
+    <ref name="middlename.attributes"/>
+  </define>
+  <!-- LONG NAME: Last Name -->
+  <define name="lastname.content">
+    <zeroOrMore>
+      <choice>
+        <text/>
+        <ref name="keyword"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <define name="lastname.attributes">
+    <ref name="data-element-atts"/>
+  </define>
+  <!--
+    doc:The <lastname> element contains the person's last name.
+    Category: xNAL elements
+  -->
+  <define name="lastname.element">
+    <element name="lastname">
+      <ref name="lastname.attlist"/>
+      <ref name="lastname.content"/>
+    </element>
+  </define>
+  <define name="lastname.attlist" combine="interleave">
+    <ref name="lastname.attributes"/>
+  </define>
+  <!-- LONG NAME: Generation Identifier -->
+  <define name="generationidentifier.content">
+    <zeroOrMore>
+      <choice>
+        <text/>
+        <ref name="keyword"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <define name="generationidentifier.attributes">
+    <ref name="data-element-atts"/>
+  </define>
+  <!--
+    doc:The <generationidentifier> element contains information about the person's generation, such as: Jr, III, or VIII.
+    Category: xNAL elements
+  -->
+  <define name="generationidentifier.element">
+    <element name="generationidentifier">
+      <ref name="generationidentifier.attlist"/>
+      <ref name="generationidentifier.content"/>
+    </element>
+  </define>
+  <define name="generationidentifier.attlist" combine="interleave">
+    <ref name="generationidentifier.attributes"/>
+  </define>
+  <!-- LONG NAME: Other Information -->
+  <define name="otherinfo.content">
+    <zeroOrMore>
+      <ref name="words.cnt"/>
+    </zeroOrMore>
+  </define>
+  <define name="otherinfo.attributes">
+    <ref name="data-element-atts"/>
+  </define>
+  <!--
+    doc:The <otherinfo> element contains other name information about the author or authoring organization.
+    Category: xNAL elements
+  -->
+  <define name="otherinfo.element">
+    <element name="otherinfo">
+      <ref name="otherinfo.attlist"/>
+      <ref name="otherinfo.content"/>
+    </element>
+  </define>
+  <define name="otherinfo.attlist" combine="interleave">
+    <ref name="otherinfo.attributes"/>
+  </define>
+  <!-- LONG NAME: Address Details -->
+  <define name="addressdetails.content">
+    <zeroOrMore>
+      <choice>
+        <ref name="words.cnt"/>
+        <ref name="administrativearea"/>
+        <ref name="country"/>
+        <ref name="locality"/>
+        <ref name="thoroughfare"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <define name="addressdetails.attributes">
+    <optional>
+      <attribute name="keyref"/>
+    </optional>
+    <ref name="univ-atts"/>
+    <optional>
+      <attribute name="outputclass"/>
+    </optional>
+  </define>
+  <!--
+    doc:The <addressdetails> element contains information about the address of the author or authoring group.
+    Category: xNAL elements
+  -->
+  <define name="addressdetails.element">
+    <element name="addressdetails">
+      <ref name="addressdetails.attlist"/>
+      <ref name="addressdetails.content"/>
+    </element>
+  </define>
+  <define name="addressdetails.attlist" combine="interleave">
+    <ref name="addressdetails.attributes"/>
+  </define>
+  <!-- LONG NAME: Locality -->
+  <define name="locality.content">
+    <zeroOrMore>
+      <choice>
+        <ref name="words.cnt"/>
+        <ref name="localityname"/>
+        <ref name="postalcode"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <define name="locality.attributes">
+    <optional>
+      <attribute name="keyref"/>
+    </optional>
+    <ref name="univ-atts"/>
+    <optional>
+      <attribute name="outputclass"/>
+    </optional>
+  </define>
+  <!--
+    doc:The <locality> element contains information about the city and postal or ZIP code. It can contain the information directly, or by acting as a wrapper for <localityname> and <postalcode>.
+    Category: xNAL elements
+  -->
+  <define name="locality.element">
+    <element name="locality">
+      <ref name="locality.attlist"/>
+      <ref name="locality.content"/>
+    </element>
+  </define>
+  <define name="locality.attlist" combine="interleave">
+    <ref name="locality.attributes"/>
+  </define>
+  <!-- LONG NAME: Locality Name -->
+  <define name="localityname.content">
+    <zeroOrMore>
+      <ref name="words.cnt"/>
+    </zeroOrMore>
+  </define>
+  <define name="localityname.attributes">
+    <optional>
+      <attribute name="keyref"/>
+    </optional>
+    <ref name="univ-atts"/>
+    <optional>
+      <attribute name="outputclass"/>
+    </optional>
+  </define>
+  <!--
+    doc:The <localityname> element contains the name of the locality or city.
+    Category: xNAL elements
+  -->
+  <define name="localityname.element">
+    <element name="localityname">
+      <ref name="localityname.attlist"/>
+      <ref name="localityname.content"/>
+    </element>
+  </define>
+  <define name="localityname.attlist" combine="interleave">
+    <ref name="localityname.attributes"/>
+  </define>
+  <!-- LONG NAME: Administrative Area -->
+  <define name="administrativearea.content">
+    <zeroOrMore>
+      <ref name="words.cnt"/>
+    </zeroOrMore>
+  </define>
+  <define name="administrativearea.attributes">
+    <optional>
+      <attribute name="keyref"/>
+    </optional>
+    <ref name="univ-atts"/>
+    <optional>
+      <attribute name="outputclass"/>
+    </optional>
+  </define>
+  <!--
+    doc:The <administrativearea> element contains information about a county, state, or province.
+    Category: xNAL elements
+  -->
+  <define name="administrativearea.element">
+    <element name="administrativearea">
+      <ref name="administrativearea.attlist"/>
+      <ref name="administrativearea.content"/>
+    </element>
+  </define>
+  <define name="administrativearea.attlist" combine="interleave">
+    <ref name="administrativearea.attributes"/>
+  </define>
+  <!-- LONG NAME: Thoroughfare -->
+  <define name="thoroughfare.content">
+    <zeroOrMore>
+      <ref name="words.cnt"/>
+    </zeroOrMore>
+  </define>
+  <define name="thoroughfare.attributes">
+    <optional>
+      <attribute name="keyref"/>
+    </optional>
+    <ref name="univ-atts"/>
+    <optional>
+      <attribute name="outputclass"/>
+    </optional>
+  </define>
+  <!--
+    doc:The <thoroughfare> element contains information about the thoroughfare - for example, the street, avenue, or boulevard - on which an address is located.
+    Category: xNAL elements
+  -->
+  <define name="thoroughfare.element">
+    <element name="thoroughfare">
+      <ref name="thoroughfare.attlist"/>
+      <ref name="thoroughfare.content"/>
+    </element>
+  </define>
+  <define name="thoroughfare.attlist" combine="interleave">
+    <ref name="thoroughfare.attributes"/>
+  </define>
+  <!-- LONG NAME: Postal Code -->
+  <define name="postalcode.content">
+    <zeroOrMore>
+      <choice>
+        <text/>
+        <ref name="keyword"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <define name="postalcode.attributes">
+    <optional>
+      <attribute name="keyref"/>
+    </optional>
+    <ref name="univ-atts"/>
+    <optional>
+      <attribute name="outputclass"/>
+    </optional>
+  </define>
+  <!--
+    doc:The <postalcode> element contains information about the postal code or the ZIP code.
+    Category: xNAL elements
+  -->
+  <define name="postalcode.element">
+    <element name="postalcode">
+      <ref name="postalcode.attlist"/>
+      <ref name="postalcode.content"/>
+    </element>
+  </define>
+  <define name="postalcode.attlist" combine="interleave">
+    <ref name="postalcode.attributes"/>
+  </define>
+  <!-- LONG NAME: Country -->
+  <define name="country.content">
+    <zeroOrMore>
+      <choice>
+        <text/>
+        <ref name="keyword"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <define name="country.attributes">
+    <optional>
+      <attribute name="keyref"/>
+    </optional>
+    <ref name="univ-atts"/>
+    <optional>
+      <attribute name="outputclass"/>
+    </optional>
+  </define>
+  <!--
+    doc:The <country> element contains the name of a country.
+    Category: xNAL elements
+  -->
+  <define name="country.element">
+    <element name="country">
+      <ref name="country.attlist"/>
+      <ref name="country.content"/>
+    </element>
+  </define>
+  <define name="country.attlist" combine="interleave">
+    <ref name="country.attributes"/>
+  </define>
+  <!-- LONG NAME: Person Information -->
+  <define name="personinfo.content">
+    <optional>
+      <ref name="namedetails"/>
+    </optional>
+    <optional>
+      <ref name="addressdetails"/>
+    </optional>
+    <optional>
+      <ref name="contactnumbers"/>
+    </optional>
+    <optional>
+      <ref name="emailaddresses"/>
+    </optional>
+  </define>
+  <define name="personinfo.attributes">
+    <ref name="data-element-atts"/>
+  </define>
+  <!--
+    doc:The <personinfo> element is a wrapper containing all relevant data about a person, including name, address, and contact information.
+    Category: xNAL elements
+  -->
+  <define name="personinfo.element">
+    <element name="personinfo">
+      <ref name="personinfo.attlist"/>
+      <ref name="personinfo.content"/>
+    </element>
+  </define>
+  <define name="personinfo.attlist" combine="interleave">
+    <ref name="personinfo.attributes"/>
+  </define>
+  <!-- LONG NAME: Organization Information -->
+  <define name="organizationinfo.content">
+    <optional>
+      <ref name="namedetails"/>
+    </optional>
+    <optional>
+      <ref name="addressdetails"/>
+    </optional>
+    <optional>
+      <ref name="contactnumbers"/>
+    </optional>
+    <optional>
+      <ref name="emailaddresses"/>
+    </optional>
+    <optional>
+      <ref name="urls"/>
+    </optional>
+  </define>
+  <define name="organizationinfo.attributes">
+    <ref name="data-element-atts"/>
+  </define>
+  <!--
+    doc:The <organizationinfo> element contains detailed information about an authoring organization.
+    Category: xNAL elements
+  -->
+  <define name="organizationinfo.element">
+    <element name="organizationinfo">
+      <ref name="organizationinfo.attlist"/>
+      <ref name="organizationinfo.content"/>
+    </element>
+  </define>
+  <define name="organizationinfo.attlist" combine="interleave">
+    <ref name="organizationinfo.attributes"/>
+  </define>
+  <!-- LONG NAME: Contact Numbers -->
+  <define name="contactnumbers.content">
+    <zeroOrMore>
+      <ref name="contactnumber"/>
+    </zeroOrMore>
+  </define>
+  <define name="contactnumbers.attributes">
+    <ref name="data-element-atts"/>
+  </define>
+  <!--
+    doc:The <contactnumbers> element contains a list of telephone and fax numbers.
+    Category: xNAL elements
+  -->
+  <define name="contactnumbers.element">
+    <element name="contactnumbers">
+      <ref name="contactnumbers.attlist"/>
+      <ref name="contactnumbers.content"/>
+    </element>
+  </define>
+  <define name="contactnumbers.attlist" combine="interleave">
+    <ref name="contactnumbers.attributes"/>
+  </define>
+  <!-- LONG NAME: Contact Number -->
+  <!-- Note: set the type of number using @type -->
+  <define name="contactnumber.content">
+    <zeroOrMore>
+      <choice>
+        <text/>
+        <ref name="keyword"/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <define name="contactnumber.attributes">
+    <ref name="data-element-atts"/>
+  </define>
+  <!--
+    doc:A <contactnumber> element contains a telephone number.
+    Category: xNAL elements
+  -->
+  <define name="contactnumber.element">
+    <element name="contactnumber">
+      <ref name="contactnumber.attlist"/>
+      <ref name="contactnumber.content"/>
+    </element>
+  </define>
+  <define name="contactnumber.attlist" combine="interleave">
+    <ref name="contactnumber.attributes"/>
+  </define>
+  <!-- LONG NAME: Email Addresses -->
+  <define name="emailaddresses.content">
+    <zeroOrMore>
+      <ref name="emailaddress"/>
+    </zeroOrMore>
+  </define>
+  <define name="emailaddresses.attributes">
+    <ref name="data-element-atts"/>
+  </define>
+  <!--
+    doc:The <emailaddress> element contains a list of e-mail addresses.
+    Category: xNAL elements
+  -->
+  <define name="emailaddresses.element">
+    <element name="emailaddresses">
+      <ref name="emailaddresses.attlist"/>
+      <ref name="emailaddresses.content"/>
+    </element>
+  </define>
+  <define name="emailaddresses.attlist" combine="interleave">
+    <ref name="emailaddresses.attributes"/>
+  </define>
+  <!-- LONG NAME: Email Address -->
+  <define name="emailaddress.content">
+    <zeroOrMore>
+      <ref name="words.cnt"/>
+    </zeroOrMore>
+  </define>
+  <define name="emailaddress.attributes">
+    <ref name="data-element-atts"/>
+  </define>
+  <!--
+    doc:The <emailaddress> element contains an e-mail address.
+    Category: xNAL elements
+  -->
+  <define name="emailaddress.element">
+    <element name="emailaddress">
+      <ref name="emailaddress.attlist"/>
+      <ref name="emailaddress.content"/>
+    </element>
+  </define>
+  <define name="emailaddress.attlist" combine="interleave">
+    <ref name="emailaddress.attributes"/>
+  </define>
+  <!-- LONG NAME: URLs -->
+  <define name="urls.content">
+    <zeroOrMore>
+      <ref name="url"/>
+    </zeroOrMore>
+  </define>
+  <define name="urls.attributes">
+    <ref name="data-element-atts"/>
+  </define>
+  <!--
+    doc:The <urls> element contains a list of Uniform Resource Locators (URLs).
+    Category: xNAL elements
+  -->
+  <define name="urls.element">
+    <element name="urls">
+      <ref name="urls.attlist"/>
+      <ref name="urls.content"/>
+    </element>
+  </define>
+  <define name="urls.attlist" combine="interleave">
+    <ref name="urls.attributes"/>
+  </define>
+  <!-- LONG NAME: URL -->
+  <define name="url.content">
+    <zeroOrMore>
+      <ref name="words.cnt"/>
+    </zeroOrMore>
+  </define>
+  <define name="url.attributes">
+    <ref name="data-element-atts"/>
+  </define>
+  <!--
+    doc:The <url> element contains a Uniform Resource Locator (URL).
+    Category: xNAL elements
+  -->
+  <define name="url.element">
+    <element name="url">
+      <ref name="url.attlist"/>
+      <ref name="url.content"/>
+    </element>
+  </define>
+  <define name="url.attlist" combine="interleave">
+    <ref name="url.attributes"/>
+  </define>
+  <!-- ============================================================= -->
+  <!-- SPECIALIZATION ATTRIBUTE DECLARATIONS -->
+  <!-- ============================================================= -->
+  <define name="addressdetails.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/ph xnal-d/addressdetails "/>
+    </optional>
+  </define>
+  <define name="administrativearea.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/ph xnal-d/administrativearea "/>
+    </optional>
+  </define>
+  <define name="authorinformation.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/author xnal-d/authorinformation "/>
+    </optional>
+  </define>
+  <define name="contactnumber.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/data xnal-d/contactnumber "/>
+    </optional>
+  </define>
+  <define name="contactnumbers.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/data xnal-d/contactnumbers "/>
+    </optional>
+  </define>
+  <define name="country.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/ph xnal-d/country "/>
+    </optional>
+  </define>
+  <define name="emailaddress.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/data xnal-d/emailaddress "/>
+    </optional>
+  </define>
+  <define name="emailaddresses.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/data xnal-d/emailaddresses "/>
+    </optional>
+  </define>
+  <define name="firstname.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/data xnal-d/firstname "/>
+    </optional>
+  </define>
+  <define name="generationidentifier.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/data xnal-d/generationidentifier "/>
+    </optional>
+  </define>
+  <define name="honorific.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/data xnal-d/honorific "/>
+    </optional>
+  </define>
+  <define name="lastname.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/data xnal-d/lastname "/>
+    </optional>
+  </define>
+  <define name="locality.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/ph xnal-d/locality "/>
+    </optional>
+  </define>
+  <define name="localityname.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/ph xnal-d/localityname "/>
+    </optional>
+  </define>
+  <define name="middlename.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/data xnal-d/middlename "/>
+    </optional>
+  </define>
+  <define name="namedetails.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/data xnal-d/namedetails "/>
+    </optional>
+  </define>
+  <define name="organizationinfo.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/data xnal-d/organizationinfo "/>
+    </optional>
+  </define>
+  <define name="organizationname.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/ph xnal-d/organizationname "/>
+    </optional>
+  </define>
+  <define name="organizationnamedetails.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/ph xnal-d/organizationnamedetails "/>
+    </optional>
+  </define>
+  <define name="otherinfo.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/data xnal-d/otherinfo "/>
+    </optional>
+  </define>
+  <define name="personinfo.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/data xnal-d/personinfo "/>
+    </optional>
+  </define>
+  <define name="personname.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/data xnal-d/personname "/>
+    </optional>
+  </define>
+  <define name="postalcode.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/ph xnal-d/postalcode "/>
+    </optional>
+  </define>
+  <define name="thoroughfare.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/ph xnal-d/thoroughfare "/>
+    </optional>
+  </define>
+  <define name="url.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/data xnal-d/url "/>
+    </optional>
+  </define>
+  <define name="urls.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/data xnal-d/urls "/>
+    </optional>
+  </define>
+</grammar>
+<!-- ================== End DITA XNAL Domain  =================== -->

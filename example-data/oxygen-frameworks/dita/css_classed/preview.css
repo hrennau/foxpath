@@ -1,0 +1,25 @@
+@import "hide_colspec.css";
+
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+
+/*
+===========================================
+    DITA CSS for author preview area. 
+===========================================
+*/
+
+*[class~="topic/link"][href]:before,
+*[class~="topic/xref"][href]:before {
+    content:url("../img/link.png");
+}
+
+oxy|reference:before,
+oxy|entity:before {
+  display: none !important;
+  background-color:inherit !important;
+}
+
+oxy|reference,
+oxy|entity {
+    background-color: inherit !important;
+}

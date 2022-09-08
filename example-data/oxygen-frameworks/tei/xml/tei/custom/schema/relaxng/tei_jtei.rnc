@@ -1,0 +1,3318 @@
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace eg = "http://www.tei-c.org/ns/Examples"
+namespace egXML = "http://www.tei-c.org/ns/Examples"
+namespace rng = "http://relaxng.org/ns/structure/1.0"
+namespace sch = "http://purl.oclc.org/dsdl/schematron"
+namespace sqf = "http://www.schematron-quickfix.com/validator/process"
+default namespace tei = "http://www.tei-c.org/ns/1.0"
+namespace teix = "http://www.tei-c.org/ns/Examples"
+namespace xi = "http://www.w3.org/2001/XInclude"
+namespace xlink = "http://www.w3.org/1999/xlink"
+namespace xsl = "http://www.w3.org/1999/XSL/Transform"
+
+# Schema generated from ODD source 2017-07-10T18:24:16Z. 2014.
+# TEI Edition: Version 3.2.0. Last updated on
+#	10th July 2017, revision 0fcf651
+# TEI Edition Location: http://www.tei-c.org/Vault/P5/Version 3.2.0/
+#
+
+#
+macro.paraContent =
+  (text
+   | model.gLike
+   | model.phrase
+   | model.inter
+   | model.global
+   | model.lLike)*
+macro.limitedContent = (text | model.limitedPhrase | model.inter)*
+macro.phraseSeq = (text | model.gLike | model.phrase | model.global)*
+macro.phraseSeq.limited = (text | model.limitedPhrase | model.global)*
+macro.specialPara =
+  (text
+   | model.gLike
+   | model.phrase
+   | model.inter
+   | model.divPart
+   | model.global)*
+anyElement-egXML =
+  element * - (tei:* | egXML:egXML) {
+    attribute * { text }*,
+    (text | anyElement-egXML)*
+  }
+att.ascribed.attributes = att.ascribed.attribute.who
+att.ascribed.attribute.who =
+  
+  ## indicates the person, or group of people, to whom the element content is ascribed.
+  attribute who {
+    list { xsd:anyURI+ }
+  }?
+att.dimensions.attributes = empty
+att.written.attributes = att.written.attribute.hand
+att.written.attribute.hand =
+  
+  ## points to a handNote element describing the hand considered responsible for the textual content of the element concerned.
+  attribute hand { xsd:anyURI }?
+att.datable.w3c.attributes =
+  att.datable.w3c.attribute.when,
+  att.datable.w3c.attribute.notBefore,
+  att.datable.w3c.attribute.notAfter,
+  att.datable.w3c.attribute.from,
+  att.datable.w3c.attribute.to
+att.datable.w3c.attribute.when =
+  
+  ## supplies the value of the date or time in a standard form, e.g. yyyy-mm-dd.
+  attribute when {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+  }?
+att.datable.w3c.attribute.notBefore =
+  
+  ## specifies the earliest possible date for the event in standard form, e.g. yyyy-mm-dd.
+  attribute notBefore {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+  }?
+att.datable.w3c.attribute.notAfter =
+  
+  ## specifies the latest possible date for the event in standard form, e.g. yyyy-mm-dd.
+  attribute notAfter {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+  }?
+att.datable.w3c.attribute.from =
+  
+  ## indicates the starting point of the period in standard form, e.g. yyyy-mm-dd.
+  attribute from {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+  }?
+att.datable.w3c.attribute.to =
+  
+  ## indicates the ending point of the period in standard form, e.g. yyyy-mm-dd.
+  attribute to {
+    xsd:date
+    | xsd:gYear
+    | xsd:gMonth
+    | xsd:gDay
+    | xsd:gYearMonth
+    | xsd:gMonthDay
+    | xsd:time
+    | xsd:dateTime
+  }?
+sch:pattern [
+  id = "tei_jtei-att.datable.w3c-att-datable-w3c-when-constraint-rule-1"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context = "tei:*[@when]"
+    "\x{a}" ~
+    "        "
+    sch:report [
+      test = "@notBefore|@notAfter|@from|@to"
+      role = "nonfatal"
+      "The @when attribute cannot be used with any other att.datable.w3c attributes."
+    ]
+    "\x{a}" ~
+    "      "
+  ]
+  "\x{a}" ~
+  "   "
+]
+sch:pattern [
+  id = "tei_jtei-att.datable.w3c-att-datable-w3c-from-constraint-rule-2"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context = "tei:*[@from]"
+    "\x{a}" ~
+    "        "
+    sch:report [
+      test = "@notBefore"
+      role = "nonfatal"
+      "The @from and @notBefore attributes cannot be used together."
+    ]
+    "\x{a}" ~
+    "      "
+  ]
+  "\x{a}" ~
+  "   "
+]
+sch:pattern [
+  id = "tei_jtei-att.datable.w3c-att-datable-w3c-to-constraint-rule-3"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context = "tei:*[@to]"
+    "\x{a}" ~
+    "        "
+    sch:report [
+      test = "@notAfter"
+      role = "nonfatal"
+      "The @to and @notAfter attributes cannot be used together."
+    ]
+    "\x{a}" ~
+    "      "
+  ]
+  "\x{a}" ~
+  "   "
+]
+att.datable.attributes = att.datable.w3c.attributes
+att.divLike.attributes = empty
+att.global.responsibility.attributes =
+  att.global.responsibility.attribute.cert,
+  att.global.responsibility.attribute.resp
+att.global.responsibility.attribute.cert =
+  
+  ## (certainty) signifies the degree of certainty associated with the intervention or interpretation.
+  attribute cert {
+    xsd:double
+    | (
+       ##
+       "high"
+       | 
+         ##
+         "medium"
+       | 
+         ##
+         "low"
+       | 
+         ##
+         "unknown")
+  }?
+att.global.responsibility.attribute.resp =
+  
+  ## (responsible party) indicates the agency responsible for the intervention or interpretation, for example an editor or transcriber.
+  attribute resp {
+    list { xsd:anyURI+ }
+  }?
+att.editLike.attributes = att.dimensions.attributes
+att.global.rendition.attributes =
+  att.global.rendition.attribute.rend,
+  att.global.rendition.attribute.rendition
+att.global.rendition.attribute.rend =
+  
+  ## (rendition) indicates how the element in question was rendered or presented in the source text.
+  attribute rend {
+    list {
+      xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }+
+    }
+  }?
+att.global.rendition.attribute.rendition =
+  
+  ## points to a description of the rendering or presentation used for this element in the source text.
+  attribute rendition {
+    list { xsd:anyURI+ }
+  }?
+att.global.source.attributes = att.global.source.attribute.source
+att.global.source.attribute.source =
+  
+  ## specifies the source from which some aspect of this element is drawn.
+  attribute source {
+    list { xsd:anyURI+ }
+  }?
+att.global.attributes =
+  att.global.rendition.attributes,
+  att.global.responsibility.attributes,
+  att.global.source.attributes,
+  att.global.attribute.xmlid,
+  att.global.attribute.n,
+  att.global.attribute.xmllang,
+  att.global.attribute.xmlbase,
+  att.global.attribute.xmlspace
+att.global.attribute.xmlid =
+  
+  ## (identifier) provides a unique identifier for the element bearing the attribute.
+  attribute xml:id { xsd:ID }?
+att.global.attribute.n =
+  
+  ## (number) gives a number (or other label) for an element, which is not necessarily unique within the document.
+  attribute n { xsd:string }?
+att.global.attribute.xmllang =
+  
+  ## (language) indicates the language of the element content using a tag generated according to BCP 47.
+  attribute xml:lang {
+    xsd:language
+    | (
+       ##
+       "")
+  }?
+att.global.attribute.xmlbase =
+  
+  ## provides a base URI reference with which applications can resolve relative URI references into absolute URI references.
+  attribute xml:base { xsd:anyURI }?
+att.global.attribute.xmlspace =
+  
+  ## signals an intention about how white space should be managed by applications.
+  attribute xml:space {
+    
+    ## signals that the application's default white-space processing modes are acceptable
+    "default"
+    | 
+      ## indicates the intent that applications preserve all white space
+      "preserve"
+  }?
+att.media.attributes =
+  att.media.attribute.width, att.media.attribute.height
+att.media.attribute.width =
+  
+  ## Where the media are displayed, indicates the display width
+  attribute width {
+    xsd:token {
+      pattern =
+        "[\-+]?\d+(\.\d+)?(%|cm|mm|in|pt|pc|px|em|ex|gd|rem|vw|vh|vm)"
+    }
+  }?
+att.media.attribute.height =
+  
+  ## Where the media are displayed, indicates the display height
+  attribute height {
+    xsd:token {
+      pattern =
+        "[\-+]?\d+(\.\d+)?(%|cm|mm|in|pt|pc|px|em|ex|gd|rem|vw|vh|vm)"
+    }
+  }?
+att.resourced.attributes = att.resourced.attribute.url
+att.resourced.attribute.url =
+  
+  ## (uniform resource locator) specifies the URL from which the media concerned may be obtained.
+  attribute url { xsd:anyURI }
+att.naming.attribute.role =
+  
+  ## may be used to specify further information about the entity referenced by this name in the form of a set of whitespace-separated values, for example the occupation of a person, or the status of a place.
+  attribute role {
+    list {
+      xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }+
+    }
+  }?
+att.placement.attributes = att.placement.attribute.place
+att.placement.attribute.place =
+  
+  ## specifies where this item is placed.
+  ## Suggested values include: 1] below; 2] bottom; 3] margin; 4] top; 5] opposite; 6] overleaf; 7] above; 8] end; 9] inline; 10] inspace
+  attribute place {
+    list {
+      (
+       ## below the line
+       "below"
+       | 
+         ## at the foot of the page
+         "bottom"
+       | 
+         ## in the margin (left, right, or both)
+         "margin"
+       | 
+         ## at the top of the page
+         "top"
+       | 
+         ## on the opposite, i.e. facing, page
+         "opposite"
+       | 
+         ## on the other side of the leaf
+         "overleaf"
+       | 
+         ## above the line
+         "above"
+       | 
+         ## at the end of e.g. chapter or volume.
+         "end"
+       | 
+         ## within the body of the text.
+         "inline"
+       | 
+         ## in a predefined space, for example left by an earlier scribe.
+         "inspace"
+       | xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" })+
+    }
+  }?
+att.typed.attributes = att.typed.attribute.type
+att.typed.attribute.type =
+  
+  ## characterizes the element in some sense, using any convenient classification scheme or typology.
+  attribute type {
+    xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
+  }?
+sch:pattern [
+  id = "tei_jtei-att.typed-subtypeTyped-constraint-rule-4"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context = "tei:*[@subtype]"
+    "\x{a}" ~
+    "        "
+    sch:assert [
+      test = "@type"
+      "The "
+      sch:name [ ]
+      " element should not be categorized in detail with @subtype unless also categorized in general with @type"
+    ]
+    "\x{a}" ~
+    "      "
+  ]
+  "\x{a}" ~
+  "   "
+]
+att.pointing.attributes = att.pointing.attribute.target
+att.pointing.attribute.target =
+  
+  ## specifies the destination of the reference by supplying one or more URI References
+  attribute target {
+    list { xsd:anyURI+ }
+  }?
+att.tableDecoration.attributes =
+  att.tableDecoration.attribute.role,
+  att.tableDecoration.attribute.rows,
+  att.tableDecoration.attribute.cols
+att.tableDecoration.attribute.role =
+  
+  ## indicates the kind of information held in this cell or in each cell of this row.
+  [ a:defaultValue = "data" ]
+  attribute role {
+    
+    ##
+    "data"
+    | 
+      ##
+      "label"
+  }?
+att.tableDecoration.attribute.rows =
+  
+  ## indicates the number of rows occupied by this cell or row.
+  [ a:defaultValue = "1" ] attribute rows { xsd:nonNegativeInteger }?
+att.tableDecoration.attribute.cols =
+  
+  ## (columns) indicates the number of columns occupied by this cell or row.
+  [ a:defaultValue = "1" ] attribute cols { xsd:nonNegativeInteger }?
+model.nameLike.agent = name | orgName
+model.nameLike.agent_alternation = name | orgName
+model.nameLike.agent_sequence = name, orgName
+model.nameLike.agent_sequenceOptional = name?, orgName?
+model.nameLike.agent_sequenceOptionalRepeatable = name*, orgName*
+model.nameLike.agent_sequenceRepeatable = name+, orgName+
+model.segLike = notAllowed
+model.hiLike = hi
+model.hiLike_alternation = hi
+model.hiLike_sequence = hi
+model.hiLike_sequenceOptional = hi?
+model.hiLike_sequenceOptionalRepeatable = hi*
+model.hiLike_sequenceRepeatable = hi+
+model.emphLike =
+  foreign | emph | mentioned | soCalled | term | title | code | ident
+model.emphLike_alternation =
+  foreign | emph | mentioned | soCalled | term | title | code | ident
+model.emphLike_sequence =
+  foreign, emph, mentioned, soCalled, term, title, code, ident
+model.emphLike_sequenceOptional =
+  foreign?, emph?, mentioned?, soCalled?, term?, title?, code?, ident?
+model.emphLike_sequenceOptionalRepeatable =
+  foreign*, emph*, mentioned*, soCalled*, term*, title*, code*, ident*
+model.emphLike_sequenceRepeatable =
+  foreign+, emph+, mentioned+, soCalled+, term+, title+, code+, ident+
+model.highlighted = model.hiLike | model.emphLike
+model.dateLike = date
+model.dateLike_alternation = date
+model.dateLike_sequence = date
+model.dateLike_sequenceOptional = date?
+model.dateLike_sequenceOptionalRepeatable = date*
+model.dateLike_sequenceRepeatable = date+
+model.measureLike = num
+model.measureLike_alternation = num
+model.measureLike_sequence = num
+model.measureLike_sequenceOptional = num?
+model.measureLike_sequenceOptionalRepeatable = num*
+model.measureLike_sequenceRepeatable = num+
+model.egLike = eg | egXML
+model.egLike_alternation = eg | egXML
+model.egLike_sequence = eg, egXML
+model.egLike_sequenceOptional = eg?, egXML?
+model.egLike_sequenceOptionalRepeatable = eg*, egXML*
+model.egLike_sequenceRepeatable = eg+, egXML+
+model.graphicLike = graphic
+model.offsetLike = notAllowed
+model.offsetLike_alternation = notAllowed
+model.offsetLike_sequence = empty
+model.offsetLike_sequenceOptional = empty
+model.offsetLike_sequenceOptionalRepeatable = empty
+model.offsetLike_sequenceRepeatable = notAllowed
+model.pPart.msdesc = notAllowed
+model.pPart.editorial = abbr
+model.pPart.editorial_alternation = abbr
+model.pPart.editorial_sequence = abbr
+model.pPart.editorial_sequenceOptional = abbr?
+model.pPart.editorial_sequenceOptionalRepeatable = abbr*
+model.pPart.editorial_sequenceRepeatable = abbr+
+model.pPart.transcriptional = supplied
+model.pPart.transcriptional_alternation = supplied
+model.pPart.transcriptional_sequence = supplied
+model.pPart.transcriptional_sequenceOptional = supplied?
+model.pPart.transcriptional_sequenceOptionalRepeatable = supplied*
+model.pPart.transcriptional_sequenceRepeatable = supplied+
+model.pPart.edit = model.pPart.editorial | model.pPart.transcriptional
+model.ptrLike = ptr | ref
+model.lPart = notAllowed
+model.global.meta = notAllowed
+model.milestoneLike = lb
+model.gLike = notAllowed
+model.oddDecl = notAllowed
+model.oddDecl_alternation = notAllowed
+model.oddDecl_sequence = empty
+model.oddDecl_sequenceOptional = empty
+model.oddDecl_sequenceOptionalRepeatable = empty
+model.oddDecl_sequenceRepeatable = notAllowed
+model.phrase.xml = att | gi | tag | val
+model.specDescLike = notAllowed
+model.biblLike = bibl | listBibl
+model.biblLike_alternation = bibl | listBibl
+model.biblLike_sequence = bibl, listBibl
+model.biblLike_sequenceOptional = bibl?, listBibl?
+model.biblLike_sequenceOptionalRepeatable = bibl*, listBibl*
+model.biblLike_sequenceRepeatable = bibl+, listBibl+
+model.headLike = head
+model.headLike_alternation = head
+model.headLike_sequence = head
+model.headLike_sequenceOptional = head?
+model.headLike_sequenceOptionalRepeatable = head*
+model.headLike_sequenceRepeatable = head+
+model.labelLike = desc | label
+model.labelLike_alternation = desc | label
+model.labelLike_sequence = desc, label
+model.labelLike_sequenceOptional = desc?, label?
+model.labelLike_sequenceOptionalRepeatable = desc*, label*
+model.labelLike_sequenceRepeatable = desc+, label+
+model.listLike = \list | table | listPerson
+model.listLike_alternation = \list | table | listPerson
+model.listLike_sequence = \list, table, listPerson
+model.listLike_sequenceOptional = \list?, table?, listPerson?
+model.listLike_sequenceOptionalRepeatable = \list*, table*, listPerson*
+model.listLike_sequenceRepeatable = \list+, table+, listPerson+
+model.noteLike = note
+model.lLike = notAllowed
+model.lLike_alternation = notAllowed
+model.lLike_sequence = empty
+model.lLike_sequenceOptional = empty
+model.lLike_sequenceOptionalRepeatable = empty
+model.lLike_sequenceRepeatable = notAllowed
+model.pLike = p
+model.pLike_alternation = p
+model.pLike_sequence = p
+model.pLike_sequenceOptional = p?
+model.pLike_sequenceOptionalRepeatable = p*
+model.pLike_sequenceRepeatable = p+
+model.stageLike = notAllowed
+model.stageLike_alternation = notAllowed
+model.stageLike_sequence = empty
+model.stageLike_sequenceOptional = empty
+model.stageLike_sequenceOptionalRepeatable = empty
+model.stageLike_sequenceRepeatable = notAllowed
+model.eventLike = notAllowed
+model.global.edit = gap
+model.divPart = model.lLike | model.pLike
+model.persStateLike = affiliation
+model.personLike = person
+model.personPart =
+  model.biblLike | model.eventLike | model.persStateLike | name | idno
+model.placeNamePart = notAllowed
+model.placeNamePart_alternation = notAllowed
+model.placeNamePart_sequence = empty
+model.placeNamePart_sequenceOptional = empty
+model.placeNamePart_sequenceOptionalRepeatable = empty
+model.placeNamePart_sequenceRepeatable = notAllowed
+model.placeStateLike = model.placeNamePart
+model.placeStateLike_alternation = model.placeNamePart_alternation
+model.placeStateLike_sequence = model.placeNamePart_sequence
+model.placeStateLike_sequenceOptional =
+  model.placeNamePart_sequenceOptional?
+model.placeStateLike_sequenceOptionalRepeatable =
+  model.placeNamePart_sequenceOptionalRepeatable*
+model.placeStateLike_sequenceRepeatable =
+  model.placeNamePart_sequenceRepeatable+
+model.publicationStmtPart.agency = publisher
+model.publicationStmtPart.detail =
+  model.ptrLike | date | pubPlace | idno | availability
+model.availabilityPart = licence
+model.certLike = notAllowed
+model.descLike = desc
+model.quoteLike = quote | cit
+model.quoteLike_alternation = quote | cit
+model.quoteLike_sequence = quote, cit
+model.quoteLike_sequenceOptional = quote?, cit?
+model.quoteLike_sequenceOptionalRepeatable = quote*, cit*
+model.quoteLike_sequenceRepeatable = quote+, cit+
+model.qLike = model.quoteLike | q
+model.qLike_alternation = model.quoteLike_alternation | q
+model.qLike_sequence = model.quoteLike_sequence, q
+model.qLike_sequenceOptional = model.quoteLike_sequenceOptional?, q?
+model.qLike_sequenceOptionalRepeatable =
+  model.quoteLike_sequenceOptionalRepeatable*, q*
+model.qLike_sequenceRepeatable = model.quoteLike_sequenceRepeatable+, q+
+model.respLike = author | editor
+model.divWrapper = notAllowed
+model.divTopPart = model.headLike
+model.divTop = model.divWrapper | model.divTopPart
+model.frontPart.drama = notAllowed
+model.pLike.front = head
+model.divBottomPart = notAllowed
+model.divBottom = model.divWrapper | model.divBottomPart
+model.imprintPart = publisher | biblScope | pubPlace
+model.addressLike = email | affiliation
+model.addressLike_alternation = email | affiliation
+model.addressLike_sequence = email, affiliation
+model.addressLike_sequenceOptional = email?, affiliation?
+model.addressLike_sequenceOptionalRepeatable = email*, affiliation*
+model.addressLike_sequenceRepeatable = email+, affiliation+
+model.nameLike =
+  model.nameLike.agent
+  | model.offsetLike
+  | model.placeStateLike
+  | idno
+  | model.persNamePart
+model.nameLike_alternation =
+  model.nameLike.agent_alternation
+  | model.offsetLike_alternation
+  | model.placeStateLike_alternation
+  | idno
+  | model.persNamePart_alternation
+model.nameLike_sequence =
+  model.nameLike.agent_sequence,
+  model.offsetLike_sequence,
+  model.placeStateLike_sequence,
+  idno,
+  model.persNamePart_sequence
+model.nameLike_sequenceOptional =
+  model.nameLike.agent_sequenceOptional?,
+  model.offsetLike_sequenceOptional?,
+  model.placeStateLike_sequenceOptional?,
+  idno?,
+  model.persNamePart_sequenceOptional?
+model.nameLike_sequenceOptionalRepeatable =
+  model.nameLike.agent_sequenceOptionalRepeatable*,
+  model.offsetLike_sequenceOptionalRepeatable*,
+  model.placeStateLike_sequenceOptionalRepeatable*,
+  idno*,
+  model.persNamePart_sequenceOptionalRepeatable*
+model.nameLike_sequenceRepeatable =
+  model.nameLike.agent_sequenceRepeatable+,
+  model.offsetLike_sequenceRepeatable+,
+  model.placeStateLike_sequenceRepeatable+,
+  idno+,
+  model.persNamePart_sequenceRepeatable+
+model.global =
+  model.global.meta
+  | model.milestoneLike
+  | model.noteLike
+  | model.global.edit
+  | figure
+model.biblPart =
+  model.respLike
+  | model.imprintPart
+  | series
+  | bibl
+  | edition
+  | availability
+model.frontPart = model.frontPart.drama | listBibl
+model.pPart.data =
+  model.dateLike
+  | model.measureLike
+  | model.addressLike
+  | model.nameLike
+model.inter =
+  model.egLike
+  | model.oddDecl
+  | model.biblLike
+  | model.labelLike
+  | model.listLike
+  | model.stageLike
+  | model.qLike
+model.common = model.divPart | model.inter
+model.phrase =
+  model.segLike
+  | model.highlighted
+  | model.graphicLike
+  | model.pPart.msdesc
+  | model.pPart.edit
+  | model.ptrLike
+  | model.lPart
+  | model.phrase.xml
+  | model.specDescLike
+  | model.pPart.data
+model.limitedPhrase =
+  model.hiLike
+  | model.emphLike
+  | model.pPart.msdesc
+  | model.pPart.editorial
+  | model.ptrLike
+  | model.phrase.xml
+  | model.pPart.data
+model.divLike = \div
+model.divGenLike = notAllowed
+model.div1Like = notAllowed
+model.applicationLike = application
+model.teiHeaderPart = encodingDesc | profileDesc
+model.sourceDescPart = notAllowed
+model.encodingDescPart = projectDesc | tagsDecl | appInfo
+model.profileDescPart = particDesc | langUsage | textClass
+model.resourceLike = \text
+p =
+  
+  ## (paragraph) marks paragraphs in prose. [3.1. Paragraphs 7.2.5. Speech Contents]
+  element p {
+    macro.paraContent
+    >> sch:pattern [
+         id = "tei_jtei-p-abstractModel-p-constraint-report-4"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:p"
+           "\x{a}" ~
+           "               "
+           sch:report [
+             test =
+               "not(ancestor::floatingText) and (ancestor::tei:p or ancestor::tei:ab)          and not(parent::tei:exemplum                |parent::tei:item                |parent::tei:note                |parent::tei:q                |parent::tei:quote                |parent::tei:remarks                |parent::tei:said                |parent::tei:sp                |parent::tei:stage                |parent::tei:cell                |parent::tei:figure                )"
+             "\x{a}" ~
+             "        Abstract model violation: Paragraphs may not contain other paragraphs or ab elements.\x{a}" ~
+             "      "
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id = "tei_jtei-p-abstractModel-structure-l-constraint-report-5"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:p"
+           "\x{a}" ~
+           "               "
+           sch:report [
+             test =
+               "ancestor::tei:l[not(.//tei:note//tei:p[. = current()])]"
+             "\x{a}" ~
+             "        Abstract model violation: Lines may not contain higher-level structural elements such as div, p, or ab.\x{a}" ~
+             "      "
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    att.written.attributes,
+    empty
+  }
+foreign =
+  
+  ## identifies a word or phrase as belonging to some language other than that of the surrounding text. [3.3.2.1. Foreign Words or Expressions]
+  element foreign { macro.phraseSeq, att.global.attributes, empty }
+emph =
+  
+  ## (Emphasis (italicization)) The emph element is used for emphasized text, and will be rendered in italics. [3.3.2.2. Emphatic Words and Phrases 3.3.2. Emphasis, Foreign Words, and Unusual Language]
+  element emph { macro.paraContent, att.global.attributes, empty }
+hi =
+  
+  ## (highlighted) marks a word or phrase as graphically distinct from the surrounding text, for reasons concerning which no claim is made. [3.3.2.2. Emphatic Words and Phrases 3.3.2. Emphasis, Foreign Words, and Unusual Language]
+  element hi {
+    macro.paraContent,
+    att.global.attributes,
+    att.written.attributes,
+    empty
+  }
+quote =
+  
+  ## (quotation) contains a phrase or passage attributed by the narrator or author to some agency external to the text. [3.3.3. Quotation 4.3.1. Grouped Texts]
+  element quote {
+    macro.specialPara
+    >> sch:pattern [
+         id = "tei_jtei-quote-jtei.sch-core-constraint-rule-5"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:quote"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test =
+               "id(substring-after(@source, '#'))/(self::tei:ref[@type eq 'bibl']|self::tei:bibl[ancestor::tei:body])"
+             "\x{a}" ~
+             "                    "
+             sch:name [ ]
+             ' must be accompanied by a bibliographic reference (ref[@type="bibl"]) or a bibliographic description in the running text.\x{a}' ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    empty
+  }
+q =
+  
+  ## (quoted) contains material which is distinguished from the surrounding text using quotation marks or a similar method, for any one of a variety of reasons including, but not limited to: direct speech or thought, technical terms or jargon, authorial distance, quotations from elsewhere, and passages that are mentioned but not used. [3.3.3. Quotation]
+  element q {
+    macro.specialPara,
+    att.global.attributes,
+    att.ascribed.attributes,
+    empty
+  }
+cit =
+  
+  ## (cited block quotation) contains a quotation from some other document, together with a bibliographic reference to its source. In jTEI, this is used only for block quotations, and it will be rendered as a block. For inline quotations, use the quote element and link it to a reference using source. [3.3.3. Quotation 4.3.1. Grouped Texts 9.3.5.1. Examples]
+  element cit {
+    ((quote | model.biblLike | model.ptrLike)+)
+    >> sch:pattern [
+         id = "tei_jtei-cit-jtei.sch-cit-constraint-rule-6"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:cit"
+           role = "warning"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "tei:ref"
+             "\x{a}" ~
+             "                    "
+             sch:name [ ]
+             ' is normally expected to have a bibliographic reference (ref[@type="bibl"]). Please make sure you intended not to add one here.\x{a}' ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    empty
+  }
+mentioned =
+  
+  ## marks words or phrases mentioned, not used. [3.3.3. Quotation]
+  element mentioned { macro.phraseSeq, att.global.attributes, empty }
+soCalled =
+  
+  ## contains a word or phrase for which the author or narrator indicates a disclaiming of responsibility, for example by the use of scare quotes or italics. [3.3.3. Quotation]
+  element soCalled { macro.phraseSeq, att.global.attributes, empty }
+desc =
+  
+  ## (description) contains a brief description of the object documented by its parent element, typically a documentation element or an entity. [22.4.1. Description of Components]
+  element desc { macro.limitedContent, att.global.attributes, empty }
+term =
+  
+  ## contains a single-word, multi-word, or symbolic designation which is regarded as a technical term. [3.3.4. Terms, Glosses, Equivalents, and Descriptions]
+  element term { macro.phraseSeq, att.global.attributes, empty }
+gap =
+  
+  ## indicates a point where material has been omitted in a transcription, whether for editorial reasons described in the TEI header, as part of sampling practice, or because the material is illegible, invisible, or inaudible. [3.4.3. Additions, Deletions, and Omissions]
+  element gap {
+    ((model.descLike | model.certLike)*)
+    >> sch:pattern [
+         id = "tei_jtei-gap-jtei.sch-gap-constraint-rule-7"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:gap-period"
+           "\x{a}" ~
+           "                  "
+           sch:report [
+             test =
+               "following-sibling::node()[1][self::text()] and starts-with(following-sibling::node()[1], '.')"
+             "\x{a}" ~
+             "                    A "
+             sch:name [ ]
+             " element should follow a period rather than precede it when an ellipsis follows the end of a sentence.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id = "tei_jtei-gap-jtei.sch-gap-ws-constraint-rule-8"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:gap"
+           "\x{a}" ~
+           "                  "
+           sch:report [
+             test =
+               "preceding-sibling::node()[1][self::text()][matches(., '\.\s+$')]"
+             "\x{a}" ~
+             "                    A "
+             sch:name [ ]
+             " should follow a period directly, without preceding whitespace.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    att.editLike.attributes,
+    
+    ## gives the reason for omission
+    ## Suggested values include: 1] cancelled; 2] deleted; 3] editorial; 4] illegible; 5] inaudible; 6] irrelevant; 7] sampling
+    attribute reason {
+      list {
+        (
+         ##
+         "cancelled"
+         | 
+           ##
+           "deleted"
+         | 
+           ## for features omitted from transcription due to editorial policy
+           "editorial"
+         | 
+           ##
+           "illegible"
+         | 
+           ##
+           "inaudible"
+         | 
+           ##
+           "irrelevant"
+         | 
+           ##
+           "sampling"
+         | xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" })+
+      }
+    }?,
+    
+    ## in the case of text omitted from the transcription because of deliberate deletion by an identifiable hand, indicates the hand which made the deletion.
+    attribute hand { xsd:anyURI }?,
+    
+    ## in the case of text omitted because of damage, categorizes the cause of the damage, if it can be identified.
+    ## Sample values include: 1] rubbing; 2] mildew; 3] smoke
+    attribute agent {
+      xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
+    }?,
+    empty
+  }
+name =
+  
+  ## (name, proper noun) contains a proper noun or noun phrase. [3.5.1. Referring Strings]
+  element name {
+    macro.phraseSeq,
+    att.global.attributes,
+    att.datable.w3c.attribute.when,
+    att.datable.w3c.attribute.notBefore,
+    att.datable.w3c.attribute.from,
+    att.datable.w3c.attribute.to,
+    att.editLike.attributes,
+    empty
+  }
+email =
+  
+  ## (electronic mail address) contains an email address identifying a location to which email messages can be delivered. [3.5.2. Addresses]
+  element email { macro.phraseSeq, att.global.attributes, empty }
+num =
+  
+  ## (number) contains a number, written in any form. [3.5.3. Numbers and
+  ## Measures]
+  element num {
+    macro.phraseSeq,
+    att.global.attributes,
+    
+    ## indicates the type of numeric value. In jTEI, we particularly use num[@type='ordinal'] for e.g. 21st or 2nd; in rendering, this results in the non-numeric suffix to the number being output as superscript. Note, however, that ordinals for centuries should be spelled out, not written using digits (nineteenth century, not 19th century).
+    ## Suggested values include: 1] cardinal; 2] ordinal; 3] fraction; 4] percentage
+    attribute type {
+      
+      ## absolute number, e.g. 21, 21.5
+      "cardinal"
+      | 
+        ## ordinal number, e.g. 21st
+        "ordinal"
+      | 
+        ## fraction, e.g. one half or three-quarters
+        "fraction"
+      | 
+        ## a percentage
+        "percentage"
+      | xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
+    }?,
+    
+    ## supplies the value of the number in standard form.
+    attribute value {
+      xsd:double
+      | xsd:token { pattern = "(\-?[\d]+/\-?[\d]+)" }
+      | xsd:decimal
+    }?,
+    empty
+  }
+date =
+  
+  ## contains a date in any format. [3.5.4. Dates and Times 2.2.4. Publication, Distribution, Licensing, etc. 2.6. The Revision Description 3.11.2.4. Imprint, Size of a Document, and Reprint Information 15.2.3. The Setting Description 13.3.6. Dates and Times]
+  element date {
+    (text | model.gLike | model.phrase | model.global)*,
+    att.global.attributes,
+    att.datable.attributes,
+    att.editLike.attributes,
+    empty
+  }
+abbr =
+  
+  ## (abbreviation) contains an abbreviation of any sort. [3.5.5. Abbreviations and Their Expansions]
+  element abbr {
+    macro.phraseSeq,
+    att.global.attributes,
+    
+    ## allows the encoder to classify the abbreviation according to some convenient typology.
+    ## Sample values include: 1] suspension; 2] contraction; 3] brevigraph; 4] superscription; 5] acronym; 6] title; 7] organization; 8] geographic
+    attribute type {
+      xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
+    }?,
+    empty
+  }
+ptr =
+  
+  ## (pointer) defines a pointer to another location. [3.6. Simple Links and Cross-References 16.1. Links]
+  element ptr {
+    empty
+    >> sch:pattern [
+         id =
+           "tei_jtei-ptr-jtei.sch-ptr-multipleTargets-constraint-rule-9"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:ptr[not(@type='crossref')]"
+           "\x{a}" ~
+           "                  "
+           sch:report [
+             test =
+               "count(tokenize(normalize-space(@target), '\s+')) > 1"
+             "\x{a}" ~
+             "                    Multiple targets are only allowed for "
+             sch:name [ ]
+             "[@type='crossref'].\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id = "tei_jtei-ptr-ptrAtts-constraint-report-9"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:ptr"
+           "\x{a}" ~
+           "               "
+           sch:report [
+             test = "@target and @cRef"
+             "Only one of the\x{a}" ~
+             "attributes @target and @cRef may be supplied on "
+             sch:name [ ]
+             "."
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    
+    ## specifies the destination of the reference by supplying one or more URI References
+    attribute target {
+      list { xsd:anyURI+ }
+    },
+    
+    ## characterizes the element in some sense, using any convenient classification scheme or typology.
+    attribute type {
+      
+      ## (A cross-reference (reference to another part of the article).) To link to another part of your article, use , and point to the xml:id value of the target location: . The ptr element will be expanded to create an appropriate link to the target location.
+      "crossref"
+    }?,
+    empty
+  }
+ref =
+  
+  ## (reference) defines a reference to another location, possibly modified by additional text or comment. [3.6. Simple Links and Cross-References 16.1. Links]
+  element ref {
+    macro.paraContent
+    >> sch:pattern [
+         id =
+           "tei_jtei-ref-jtei.sch-ref-multipleTargets-constraint-rule-10"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:ref"
+           "\x{a}" ~
+           "                  "
+           sch:report [
+             test =
+               "count(tokenize(normalize-space(@target), '\s+')) > 1"
+             "\x{a}" ~
+             "                    "
+             sch:name [ ]
+             " with multiple targets is not supported.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id =
+           "tei_jtei-ref-jtei.sch-biblref-parentheses-constraint-rule-11"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:ref[@type eq 'bibl']"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "not(matches(., '^\(.*\)$'))"
+             "\x{a}" ~
+             "                    Parentheses are not part of bibliographic references. Please move them out of "
+             sch:name [ ]
+             ".\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id = "tei_jtei-ref-jtei.sch-biblref-target-constraint-rule-12"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:ref[@type eq 'bibl']"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test =
+               "id(substring-after(@target, '#'))/(self::tei:bibl|self::tei:person[ancestor::tei:particDesc/parent::tei:profileDesc])"
+             "\x{a}" ~
+             "                    A bibliographic reference must point to an entry in the bibliography.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id = "tei_jtei-ref-jtei.sch-biblref-type-constraint-rule-13"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context =
+             "tei:ref[id(substring-after(@target, '#'))/self::tei:bibl]"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "@type eq 'bibl'"
+             sqf:fix = "bibltype.add"
+             "\x{a}" ~
+             '                    A bibliographic reference must be typed as @type="bibl".\x{a}' ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                  "
+           sqf:fix [
+             id = "bibltype.add"
+             "\x{a}" ~
+             "                    "
+             sqf:description [
+               "\x{a}" ~
+               "                      "
+               sqf:title [ "Add @type='bibl'." ]
+               "\x{a}" ~
+               "                    "
+             ]
+             "\x{a}" ~
+             "                    "
+             sqf:add [
+               match = "."
+               node-type = "attribute"
+               target = "type"
+               select = "'bibl'"
+             ]
+             "\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                  \x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id = "tei_jtei-ref-refAtts-constraint-report-11"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:ref"
+           "\x{a}" ~
+           "               "
+           sch:report [
+             test = "@target and @cRef"
+             "Only one of the\x{a}" ~
+             "	attributes @target' and @cRef' may be supplied on "
+             sch:name [ ]
+             "\x{a}" ~
+             "               "
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    
+    ## specifies the destination of the reference by supplying one or more URI References
+    attribute target {
+      list { xsd:anyURI+ }
+    },
+    
+    ## characterizes the element in some sense, using any convenient classification scheme or typology.
+    attribute type {
+      
+      ## (A cross-reference (reference to another part of the article).) To link to another part of your article, use , and point to the xml:id value of the target location: .
+      "crossref"
+      | 
+        ## (A bibliographic reference (reference to an entry in the bibliography).) To link to a bibliographic description in the bibliography, use , and point to the xml:id value of the target location: .
+        "bibl"
+    }?,
+    empty
+  }
+\list =
+  
+  ## contains any sequence of items organized as a list. [3.7. Lists]
+  element list {
+    ((model.divTop | model.global)*,
+     ((item, model.global*)+
+      | (label, model.global*, item, model.global*)+),
+     (model.divBottom, model.global*)*)
+    >> sch:pattern [
+         id =
+           "tei_jtei-list-gloss-list-must-have-labels-constraint-rule-14"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:list[@type='gloss']"
+           "\x{a}" ~
+           "	              "
+           sch:assert [
+             test = "tei:label"
+             'The content of a "gloss" list should include a sequence of one or more pairs of a label element followed by an item element'
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attribute.xmlid,
+    att.global.attribute.n,
+    att.global.attribute.xmllang,
+    att.global.attribute.xmlbase,
+    att.global.attribute.xmlspace,
+    att.global.rendition.attribute.rendition,
+    att.global.responsibility.attribute.cert,
+    att.global.responsibility.attribute.resp,
+    att.global.source.attribute.source,
+    
+    ## (rendition) describes the way the list should be rendered. 
+    attribute rend {
+      list {
+        (
+         ## (A bulleted list) Bulleted lists will appear with each item preceded by a leading dot.
+         "bulleted"
+         | 
+           ## (An inline list) Inline lists appear within a paragraph of ordinary text; list items do not start on a new line, but follow immediately from the preceding text or item. The value "inline" may be combined with another value; for example, "ordered inline" means that the list will be rendered inline, but each item will be preceded by a number in parentheses: (1) first item (2) second item, and so on.
+           "inline"
+         | 
+           ## (A numbered list) Items in a numbered list will be preceded by a number. If the list is inline, then the number will be enclosed in parentheses, but if it is a block-level list (the default), the number will be followed by a period. 
+           "ordered"
+         | 
+           ## (A simple list (no bullets or numbers)) Items in a simple list will be rendered with no bullet or preceding number at all.
+           "simple")+
+      }
+    }?,
+    
+    ## describes the nature of the items in the list.
+    attribute type {
+      
+      ##
+      "gloss"
+    }?,
+    empty
+  }
+item =
+  
+  ## contains one component of a list. [3.7. Lists 2.6. The Revision Description]
+  element item { macro.specialPara, att.global.attributes, empty }
+label =
+  
+  ## contains any label or heading used to identify part of a text, typically but not exclusively in a list or glossary. [3.7. Lists]
+  element label {
+    macro.phraseSeq,
+    att.global.attributes,
+    att.written.attributes,
+    empty
+  }
+head =
+  
+  ## (heading) contains any type of heading, for example the title of a section, or the heading of a list, glossary, manuscript description, etc. [4.2.1. Headings and Trailers]
+  element head {
+    ((text
+      | model.gLike
+      | model.phrase
+      | model.inter
+      | model.lLike
+      | model.global)*)
+    >> sch:pattern [
+         id = "tei_jtei-head-jtei.sch-head-number-constraint-rule-15"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:head"
+           "\x{a}" ~
+           "                  "
+           sch:report [
+             test =
+               "matches(., '^\s*((figure|table|example|section) )?\d', 'i')"
+             "\x{a}" ~
+             "                    Headings are numbered and labeled automatically, please remove the hard-coded label from the text.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id = "tei_jtei-head-jtei.sch-figure-head-constraint-rule-16"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:figure/tei:head"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "@type = ('legend', 'license')"
+             "\x{a}" ~
+             "                    Figure titles must have a type 'legend' or 'license'.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    att.placement.attributes,
+    att.written.attributes,
+    
+    ## indicates the type of heading. In jTEI, we only use this attribute in the context of a head element in figure, where it must have one of two values.
+    attribute type {
+      xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
+    }?,
+    empty
+  }
+note =
+  
+  ## contains a note or annotation. [3.8.1. Notes and Simple Annotation 2.2.6. The Notes Statement 3.11.2.8. Notes and Statement of Language 9.3.5.4. Notes within Entries]
+  element note {
+    macro.specialPara
+    >> sch:pattern [
+         id = "tei_jtei-note-jtei.sch-note-constraint-rule-17"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:note"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test =
+               "not(following-sibling::text()[1][matches(., '^[,\.:;!?)\]]')])"
+             "\x{a}" ~
+             "                    Footnotes should follow punctuation marks, not precede them. Place \x{a}" ~
+             "                    your <note> element after the punctuation mark.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id = "tei_jtei-note-jtei.sch-note-blocks-constraint-rule-18"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:note"
+           "\x{a}" ~
+           "                  "
+           sch:report [
+             test =
+               ".//(tei:cit|tei:table|tei:list[not(tokenize(@rend, '\s+')[. eq 'inline'])]|tei:figure|eg:egXML|tei:eg)"
+             "\x{a}" ~
+             "                    No block-level elements are allowed inside note.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    att.written.attributes,
+    empty
+  }
+graphic =
+  
+  ## indicates the location of a graphic or illustration, either forming part of a text, or providing an image of it. [3.9. Graphics and Other Non-textual Components 11.1. Digital Facsimiles]
+  element graphic {
+    (model.descLike*)
+    >> sch:pattern [
+         id =
+           "tei_jtei-graphic-jtei.sch-graphic-dimensions-constraint-rule-19"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:graphic"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test =
+               "matches(@width, '\d+px') and matches(@height, '\d+px')"
+             "\x{a}" ~
+             "                    Width and height in pixels must be specified for any "
+             sch:name [ ]
+             ".\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id =
+           "tei_jtei-graphic-jtei.sch-graphic-context-constraint-rule-20"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:graphic"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "parent::tei:figure"
+             "\x{a}" ~
+             "                    "
+             sch:name [ ]
+             " may only occur inside figure.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    att.media.attributes,
+    att.resourced.attributes,
+    empty
+  }
+lb =
+  
+  ## (line beginning) marks the beginning of a new (typographic) line in some edition or version of a text. [3.10.3. Milestone
+  ## Elements 7.2.5. Speech Contents]
+  element lb { empty, att.global.attributes, empty }
+series =
+  
+  ## (series information) contains information about the series in which a book or other bibliographic item has appeared. [3.11.2.1. Analytic, Monographic, and Series Levels]
+  element series {
+    (text
+     | model.gLike
+     | title
+     | model.ptrLike
+     | editor
+     | biblScope
+     | idno
+     | model.global
+     | availability)*,
+    att.global.attributes,
+    empty
+  }
+author =
+  
+  ## in a bibliographic reference, contains the name(s) of an author, personal or corporate, of a work; for example in the same form as that provided by a recognized bibliographic name authority. [3.11.2.2. Titles, Authors, and Editors 2.2.1. The Title Statement]
+  element author {
+    macro.phraseSeq
+    >> sch:pattern [
+         id = "tei_jtei-author-jtei.sch-author-constraint-rule-21"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:titleStmt/tei:author"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "tei:name and tei:affiliation and tei:email"
+             "\x{a}" ~
+             "                    Author information in the <titleStmt> must include <name>, <affiliation> and <email>.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    empty
+  }
+editor =
+  
+  ## contains a secondary statement of responsibility for a bibliographic item, for example the name of an individual, institution or organization, (or of several such) acting as editor, compiler, translator, etc. [3.11.2.2. Titles, Authors, and Editors]
+  element editor {
+    macro.phraseSeq,
+    att.global.attributes,
+    
+    ## may be used to specify further information about the entity referenced by this name in the form of a set of whitespace-separated values, for example the occupation of a person, or the status of a place.
+    attribute role {
+      list {
+        (
+         ##
+         "translator"
+         | 
+           ##
+           "guest"
+         | 
+           ##
+           "chief"
+         | 
+           ##
+           "managing"
+         | 
+           ##
+           "technical")+
+      }
+    }?,
+    empty
+  }
+title =
+  
+  ## contains a title for any kind of work. [3.11.2.2. Titles, Authors, and Editors 2.2.1. The Title Statement 2.2.5. The Series Statement]
+  element title {
+    macro.paraContent,
+    att.global.attributes,
+    att.datable.attributes,
+    
+    ## classifies the title according to some convenient typology.
+    attribute type {
+      
+      ## (The main title of your article.) Academic articles often have a main title followed by a subtitle (sometimes with a colon separating them). If you have two such components in your article title, then in the titleStmt, use  and  to encode the two components of your title.
+      "main"
+      | 
+        ## (The subtitle of your article.) Academic articles often have a main title followed by a subtitle (sometimes with a colon separating them). If you have two such components in your article title, then in the titleStmt, use  and  to encode the two components of your title.
+        "sub"
+    }?,
+    
+    ## indicates the bibliographic level for a title, that is, whether it identifies an article, book, journal, series, or unpublished material.
+    attribute level {
+      
+      ## (analytic) the title applies to an analytic item, such as an article, poem, or other work published as part of a larger item.
+      "a"
+      | 
+        ## (monographic) the title applies to a monograph such as a book or other item considered to be a distinct publication, including single volumes of multi-volume works
+        "m"
+      | 
+        ## (journal) the title applies to any serial or periodical publication such as a journal, magazine, or newspaper
+        "j"
+      | 
+        ## (series) the title applies to a series of otherwise distinct publications such as a collection
+        "s"
+      | 
+        ## (unpublished) the title applies to any unpublished material (including theses and dissertations unless published by a commercial press)
+        "u"
+    }?,
+    empty
+  }
+publisher =
+  
+  ## provides the name of the organization responsible for the publication or distribution of a bibliographic item. [3.11.2.4. Imprint, Size of a Document, and Reprint Information 2.2.4. Publication, Distribution, Licensing, etc.]
+  element publisher { macro.phraseSeq, att.global.attributes, empty }
+biblScope =
+  
+  ## (scope of bibliographic reference) defines the scope of a bibliographic reference, for example as a list of page numbers, or a named subdivision of a larger work. [3.11.2.5. Scopes and Ranges in Bibliographic Citations]
+  element biblScope {
+    macro.phraseSeq,
+    att.global.attributes,
+    
+    ## identifies the unit of information conveyed by the element, e.g. columns, pages, volume, entry.
+    attribute unit {
+      
+      ##
+      "chapter"
+      | 
+        ##
+        "issue"
+      | 
+        ##
+        "page"
+      | 
+        ##
+        "part"
+      | 
+        ##
+        "volume"
+    }?,
+    empty
+  }
+pubPlace =
+  
+  ## (publication place) contains the name of the place where a bibliographic item was published. [3.11.2.4. Imprint, Size of a Document, and Reprint Information]
+  element pubPlace { macro.phraseSeq, att.global.attributes, empty }
+bibl =
+  
+  ## (bibliographic citation) contains a loosely-structured bibliographic citation of which the sub-components may or may not be explicitly tagged. [3.11.1. Methods of Encoding Bibliographic References and Lists of References 2.2.7. The Source Description 15.3.2. Declarable Elements]
+  element bibl {
+    ((text
+      | model.gLike
+      | model.highlighted
+      | model.pPart.data
+      | model.pPart.edit
+      | model.segLike
+      | model.ptrLike
+      | model.biblPart
+      | model.global)*)
+    >> sch:pattern [
+         id = "tei_jtei-bibl-jtei.sch-bibl-id-constraint-rule-22"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context =
+             "tei:back/tei:div[@type eq 'bibliography']//tei:bibl"
+           role = "warning"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "@xml:id"
+             "\x{a}" ~
+             "                    A bibliographic entry should have a unique value for @xml:id.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id = "tei_jtei-bibl-jtei.sch-bibl-orphan-constraint-rule-23"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context =
+             "tei:back/tei:div[@type eq 'bibliography']//tei:bibl"
+           role = "warning"
+           "\x{a}" ~
+           "                  "
+           sch:let [ name = "currId" value = "@xml:id" ]
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test =
+               "some $i in //tei:ref[@type='bibl'] satisfies tokenize($i/@target, '\s+')[replace(., '#', '') = $currId]"
+             "\x{a}" ~
+             '                    This bibliographic entry is an orphan: no ref[@type="bibl"] references to it occur in the text.\x{a}' ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    empty
+  }
+listBibl =
+  
+  ## (citation list) contains a list of bibliographic citations of any kind. [3.11.1. Methods of Encoding Bibliographic References and Lists of References 2.2.7. The Source Description 15.3.2. Declarable Elements]
+  element listBibl {
+    (model.headLike*, (model.biblLike | model.milestoneLike)+, empty*),
+    att.global.attributes,
+    empty
+  }
+particDesc =
+  
+  ## (participation description) describes the identifiable speakers, voices, or other participants in any kind of text or other persons named or otherwise referred to in a text, edition, or metadata. [15.2. Contextual Information]
+  element particDesc {
+    (model.pLike+ | (model.personLike | listPerson)+),
+    att.global.attributes,
+    empty
+  }
+table =
+  
+  ## contains text displayed in tabular form, in rows and columns. [14.1.1. TEI Tables]
+  element table {
+    ((model.headLike | model.global)*,
+     ((row, model.global*)+ | (model.graphicLike, model.global*)+),
+     (model.divBottom, model.global*)*)
+    >> sch:pattern [
+         id = "tei_jtei-table-jtei.sch-table-constraint-rule-24"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:table"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "not(ancestor::tei:list)"
+             "\x{a}" ~
+             "                    No tables are are allowed inside lists.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    att.typed.attributes,
+    
+    ## indicates the number of rows in the table.
+    attribute rows { xsd:nonNegativeInteger }?,
+    
+    ## (columns) indicates the number of columns in each row of the table.
+    attribute cols { xsd:nonNegativeInteger }?,
+    empty
+  }
+row =
+  
+  ## contains one row of a table. [14.1.1. TEI Tables]
+  element row {
+    cell+, att.global.attributes, att.tableDecoration.attributes, empty
+  }
+cell =
+  
+  ## contains one cell of a table. [14.1.1. TEI Tables]
+  element cell {
+    macro.specialPara,
+    att.global.attributes,
+    att.tableDecoration.attributes,
+    empty
+  }
+figure =
+  
+  ## (figure) groups elements representing or containing graphic information such as a graphic illustration, or a block of example code. Figure must contain either graphic, egXML (for example XML code) or eg (for non-XML code), and a mandatory head element containing the caption for the figure. Inline code examples may be provided through egXML and eg without the figure wrapper. [14.4. Specific Elements for Graphic Images]
+  element figure {
+    ((graphic | egXML | eg), head+),
+    att.global.attributes,
+    empty
+  }
+teiHeader =
+  
+  ## (TEI header) supplies descriptive and declarative metadata associated with a digital resource or set of resources. [2.1.1. The TEI Header and Its Components 15.1. Varieties of Composite Text]
+  element teiHeader {
+    (fileDesc, model.teiHeaderPart*, revisionDesc?),
+    att.global.attributes,
+    empty
+  }
+fileDesc =
+  
+  ## (file description) contains a full bibliographic description of an electronic file. [2.2. The File Description 2.1.1. The TEI Header and Its Components]
+  element fileDesc {
+    ((titleStmt, publicationStmt, seriesStmt?), sourceDesc+),
+    att.global.attributes,
+    empty
+  }
+titleStmt =
+  
+  ## (title statement) groups information about the title of a work and those responsible for its content. In jTEI, this must include a title and an author element for each author of the paper, which in turn must include name, affiliation and email. [2.2.1. The Title Statement 2.2. The File Description]
+  element titleStmt {
+    (title+, author+)
+    >> sch:pattern [
+         id = "tei_jtei-titleStmt-jtei.sch-title-constraint-rule-25"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:titleStmt"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "tei:title[@type = 'main']"
+             sqf:fix = "type.add"
+             "\x{a}" ~
+             '                    A title of type "main" is required in '
+             sch:name [ ]
+             ".\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                  "
+           sqf:fix [
+             id = "type.add"
+             "\x{a}" ~
+             "                    "
+             sqf:description [
+               "\x{a}" ~
+               "                      "
+               sqf:title [
+                 "Add a @type='main' attribute to the first title."
+               ]
+               "\x{a}" ~
+               "                    "
+             ]
+             "\x{a}" ~
+             "                    "
+             sqf:add [
+               match = "tei:title[not(@type='main')][1]"
+               node-type = "attribute"
+               target = "type"
+               "main"
+             ]
+             "\x{a}" ~
+             "                  "
+           ]
+           "                  \x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    empty
+  }
+edition =
+  
+  ## describes the particularities of one edition of a text. [2.2.2. The Edition Statement]
+  element edition { macro.phraseSeq, att.global.attributes, empty }
+publicationStmt =
+  
+  ## (publication statement) groups information concerning the publication or distribution of an electronic or other text. [2.2.4. Publication, Distribution, Licensing, etc. 2.2. The File Description]
+  element publicationStmt {
+    ((model.publicationStmtPart.agency,
+      model.publicationStmtPart.detail*)+
+     | model.pLike+),
+    att.global.attributes,
+    empty
+  }
+idno =
+  
+  ## (identifier) supplies any form of identifier used to identify some object, such as a bibliographic item, a person, a title, an organization, etc. in a standardized way. [2.2.4. Publication, Distribution, Licensing, etc. 2.2.5. The Series Statement 3.11.2.4. Imprint, Size of a Document, and Reprint Information]
+  element idno {
+    ((text | model.gLike | idno)*)
+    >> sch:pattern [
+         id = "tei_jtei-idno-jtei.sch-doi-order-constraint-rule-26"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context =
+             "tei:back/tei:div[@type eq 'bibliography']//tei:idno[@type eq 'doi']"
+           "\x{a}" ~
+           "                  "
+           sch:report [
+             test = "following-sibling::tei:ref"
+             "\x{a}" ~
+             "                    If a bibliographic entry has a formal DOI code, it should be placed at the very end of the bibliographic description.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    att.datable.attributes,
+    
+    ## categorizes the identifier, for example as an ISBN, Social Security number, etc.
+    ## Suggested values include: 1] ISBN; 2] ISSN; 3] DOI; 4] URI; 5] VIAF; 6] ESTC; 7] OCLC
+    attribute type {
+      
+      ## International Standard Book Number: a 13- or (if assigned prior to 2007) 10-digit identifying number assigned by the publishing industry to a published book or similar item, registered with the International ISBN Agency.
+      "ISBN"
+      | 
+        ## International Standard Serial Number: an eight-digit number to uniquely identify a serial publication.
+        "ISSN"
+      | 
+        ## Digital Object Identifier: a unique string of letters and numbers assigned to an electronic document.
+        "DOI"
+      | 
+        ## Uniform Resource Identifier: a string of characters to uniquely identify a resource which usually contains indication of the means of accessing that resource, the name of its host, and its filepath.
+        "URI"
+      | 
+        ## A data number in the Virtual Internet Authority File assigned to link different names in catalogs around the world for the same entity.
+        "VIAF"
+      | 
+        ## English Short-Title Catalogue number: an identifying number assigned to a document in English printed in the British Isles or North America before 1801.
+        "ESTC"
+      | 
+        ## union catalog number in WorldCat representing a resource held by one or more of the member libraries in the global cooperative Online Computer Library Center.
+        "OCLC"
+      | xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
+    }?,
+    empty
+  }
+availability =
+  
+  ## supplies information about the availability of a text, for example any restrictions on its use or distribution, its copyright status, any licence applying to it, etc. [2.2.4. Publication, Distribution, Licensing, etc.]
+  element availability {
+    (model.availabilityPart | model.pLike)+,
+    att.global.attributes,
+    empty
+  }
+licence =
+  
+  ## contains information about a licence or other legal agreement applicable to the text. [2.2.4. Publication, Distribution, Licensing, etc.]
+  element licence {
+    macro.specialPara,
+    att.global.attributes,
+    att.pointing.attributes,
+    att.datable.attributes,
+    empty
+  }
+seriesStmt =
+  
+  ## (series statement) groups information about the series, if any, to which a publication belongs. [2.2.5. The Series Statement 2.2. The File Description]
+  element seriesStmt {
+    (model.pLike+
+     | (title+, (editor)*, (idno | biblScope)*)),
+    att.global.attributes,
+    empty
+  }
+sourceDesc =
+  
+  ## (source description) describes the source from which an electronic text was derived or generated, typically a bibliographic description in the case of a digitized text, or a phrase such as "born digital" for a text which has no previous existence. [2.2.7. The Source Description]
+  element sourceDesc {
+    (model.pLike+
+     | (model.biblLike | model.sourceDescPart | model.listLike)+),
+    att.global.attributes,
+    empty
+  }
+encodingDesc =
+  
+  ## (encoding description) documents the relationship between an electronic text and the source or sources from which it was derived. [2.3. The Encoding Description 2.1.1. The TEI Header and Its Components]
+  element encodingDesc {
+    (model.encodingDescPart | model.pLike)+,
+    att.global.attributes,
+    empty
+  }
+projectDesc =
+  
+  ## (project description) describes in detail the aim or purpose for which an electronic file was encoded, together with any other relevant information concerning the process by which it was assembled or collected. [2.3.1. The Project Description 2.3. The Encoding Description 15.3.2. Declarable Elements]
+  element projectDesc { model.pLike+, att.global.attributes, empty }
+tagsDecl =
+  
+  ## (tagging declaration) provides detailed information about the tagging applied to a document. [2.3.4. The Tagging Declaration 2.3. The Encoding Description]
+  element tagsDecl {
+    rendition*,
+    att.global.attributes,
+    
+    ## indicates whether the element types listed exhaustively include all those found within text, or represent only a subset.
+    attribute partial { xsd:boolean }?,
+    empty
+  }
+rendition =
+  
+  ## supplies information about the rendition or appearance of one or more elements in the source text. [2.3.4. The Tagging Declaration]
+  element rendition {
+    macro.limitedContent
+    >> sch:pattern [
+         id = "tei_jtei-rendition-jtei.sch-rendition-constraint-rule-27"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:rendition"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test =
+               "some $i in //@rendition satisfies tokenize($i, '\s+')[replace(., '#', '') = current()/@xml:id]"
+             "\x{a}" ~
+             "                    Please remove all "
+             sch:name [ ]
+             " definitions that aren't actually being used in the article.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    
+    ## identifies the language used to describe the rendition.
+    attribute scheme {
+      
+      ##
+      "css"
+    }?,
+    
+    ## contains a selector or series of selectors specifying the elements to which the contained style description applies, expressed in the language specified in the scheme attribute.
+    attribute selector { xsd:string }?,
+    empty
+  }
+appInfo =
+  
+  ## (application information) records information about an application which has edited the TEI file. [2.3.10. The Application Information Element]
+  element appInfo {
+    model.applicationLike+, att.global.attributes, empty
+  }
+application =
+  
+  ## provides information about an application which has acted upon the document. [2.3.10. The Application Information Element]
+  element application {
+    (model.labelLike+, (model.ptrLike* | model.pLike*)),
+    att.global.attributes,
+    att.datable.w3c.attribute.when,
+    att.datable.w3c.attribute.notBefore,
+    att.datable.w3c.attribute.from,
+    att.datable.w3c.attribute.to,
+    
+    ## supplies an identifier for the application, independent of its version number or display name.
+    attribute ident { xsd:Name },
+    
+    ## supplies a version number for the application, independent of its identifier or display name.
+    attribute version {
+      xsd:token {
+        pattern = "[\d]+[a-z]*[\d]*(\.[\d]+[a-z]*[\d]*){0,3}"
+      }
+    },
+    empty
+  }
+profileDesc =
+  
+  ## (text-profile description) provides a detailed description of non-bibliographic aspects of a text, specifically the languages and sublanguages used, the situation in which it was produced, the participants and their setting. [2.4. The Profile Description 2.1.1. The TEI Header and Its Components]
+  element profileDesc {
+    model.profileDescPart*, att.global.attributes, empty
+  }
+langUsage =
+  
+  ## (language usage) describes the languages, sublanguages, registers, dialects, etc. represented within a text. [2.4.2. Language Usage 2.4. The Profile Description 15.3.2. Declarable Elements]
+  element langUsage {
+    (model.pLike+ | language+), att.global.attributes, empty
+  }
+language =
+  
+  ## characterizes a single language or sublanguage used within a text. [2.4.2. Language Usage]
+  element language {
+    macro.phraseSeq.limited,
+    att.global.attributes,
+    
+    ## (identifier) Supplies a language code constructed as defined in BCP 47 which is used to identify the language documented by this element, and which is referenced by the global xml:lang attribute.
+    attribute ident {
+      xsd:language
+      | (
+         ##
+         "")
+    },
+    empty
+  }
+textClass =
+  
+  ## (text classification) groups information which describes the nature or topic of a text in terms of a standard classification scheme, thesaurus, etc. [2.4.3. The Text Classification]
+  element textClass {
+    ((classCode | catRef)*, keywords),
+    att.global.attributes,
+    empty
+  }
+keywords =
+  
+  ## contains a list of keywords or phrases identifying the topic or nature of a text. [2.4.3. The Text Classification]
+  element keywords {
+    (term+ | \list),
+    att.global.attributes,
+    
+    ## identifies the controlled vocabulary within which the set of keywords concerned is defined, for example by a taxonomy element, or by some other resource.
+    attribute scheme { xsd:anyURI }?,
+    empty
+  }
+classCode =
+  
+  ## (classification code) contains the classification code used for this text in some standard classification system. [2.4.3. The Text Classification]
+  element classCode {
+    macro.phraseSeq.limited,
+    att.global.attributes,
+    
+    ## identifies the classification system in use, as defined by, e.g. a taxonomy element, or some other resource.
+    attribute scheme { xsd:anyURI },
+    empty
+  }
+catRef =
+  
+  ## (category reference) specifies one or more defined categories within some taxonomy or text typology. [2.4.3. The Text Classification]
+  element catRef {
+    empty,
+    att.global.attributes,
+    att.pointing.attributes,
+    
+    ## identifies the classification scheme within which the set of categories concerned is defined, for example by a taxonomy element, or by some other resource.
+    attribute scheme { xsd:anyURI }?,
+    empty
+  }
+revisionDesc =
+  
+  ## (revision description) summarizes the revision history for a file. [2.6. The Revision Description 2.1.1. The TEI Header and Its Components]
+  element revisionDesc {
+    (\list | listChange | change+), att.global.attributes, empty
+  }
+change =
+  
+  ## documents a change or set of changes made during the production of a source document, or during the revision of an electronic file. [2.6. The Revision Description 2.4.1. Creation 11.7. Identifying Changes and Revisions]
+  element change {
+    macro.specialPara,
+    att.ascribed.attributes,
+    att.datable.attributes,
+    att.global.attributes,
+    att.typed.attributes,
+    
+    ## points to one or more elements that belong to this change.
+    attribute target {
+      list { xsd:anyURI+ }
+    }?,
+    empty
+  }
+listChange =
+  
+  ## groups a number of change descriptions associated with either the creation of a source text or the revision of an encoded text. [2.6. The Revision Description 11.7. Identifying Changes and Revisions]
+  element listChange {
+    (listChange | change)+,
+    att.global.attributes,
+    att.typed.attributes,
+    
+    ## indicates whether the ordering of its child change elements is to be considered significant or not
+    [ a:defaultValue = "true" ] attribute ordered { xsd:boolean }?,
+    empty
+  }
+model.persNamePart = surname | forename | roleName
+model.persNamePart_alternation = surname | forename | roleName
+model.persNamePart_sequence = surname, forename, roleName
+model.persNamePart_sequenceOptional = surname?, forename?, roleName?
+model.persNamePart_sequenceOptionalRepeatable =
+  surname*, forename*, roleName*
+model.persNamePart_sequenceRepeatable = surname+, forename+, roleName+
+orgName =
+  
+  ## (organization name) contains an organizational name. [13.2.2. Organizational Names]
+  element orgName {
+    macro.phraseSeq,
+    att.global.attributes,
+    att.datable.w3c.attribute.when,
+    att.datable.w3c.attribute.notBefore,
+    att.datable.w3c.attribute.from,
+    att.datable.w3c.attribute.to,
+    att.editLike.attributes,
+    empty
+  }
+surname =
+  
+  ## contains a family (inherited) name, as opposed to a given, baptismal, or nick name. [13.2.1. Personal Names]
+  element surname { macro.phraseSeq, att.global.attributes, empty }
+forename =
+  
+  ## contains a forename, given or baptismal name. [13.2.1. Personal Names]
+  element forename { macro.phraseSeq, att.global.attributes, empty }
+roleName =
+  
+  ## contains a name component which indicates that the referent has a particular role or position in society, such as an official title or rank. [13.2.1. Personal Names]
+  element roleName { macro.phraseSeq, att.global.attributes, empty }
+affiliation =
+  
+  ## contains an informal description of a person's present or past affiliation with some organization, for example an employer or sponsor. [15.2.2. The Participant Description]
+  element affiliation {
+    macro.phraseSeq,
+    att.global.attributes,
+    att.editLike.attributes,
+    att.datable.w3c.attribute.when,
+    att.datable.w3c.attribute.notBefore,
+    att.datable.w3c.attribute.from,
+    att.datable.w3c.attribute.to,
+    
+    ## characterizes the element in some sense, using any convenient classification scheme or typology.
+    ## Sample values include: 1] sponsor; 2] recommend; 3] discredit; 4] pledged
+    attribute type {
+      xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
+    }?,
+    empty
+  }
+listPerson =
+  
+  ## (list of persons) contains a list of descriptions, each of which provides information about an identifiable person or a group of people, for example the participants in a language interaction, or the people referred to in a historical source. [13.3.2. The Person Element 15.2. Contextual Information 2.4. The Profile Description 15.3.2. Declarable Elements]
+  element listPerson {
+    (model.headLike*, (model.personLike | listPerson)+, empty*),
+    att.global.attributes,
+    att.typed.attributes,
+    empty
+  }
+person =
+  
+  ## provides information about an identifiable individual, for example a participant in a language interaction, or a person referred to in a historical source. [13.3.2. The Person Element 15.2.2. The Participant Description]
+  element person {
+    (model.pLike+ | (model.personPart | model.global)*),
+    att.global.attributes,
+    att.editLike.attributes,
+    
+    ## specifies a primary role or classification for the person.
+    attribute role {
+      list {
+        xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }+
+      }
+    }?,
+    
+    ## specifies the sex of the person.
+    attribute sex {
+      list {
+        xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }+
+      }
+    }?,
+    
+    ## specifies an age group for the person.
+    attribute age {
+      xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
+    }?,
+    empty
+  }
+att =
+  
+  ## (attribute) contains the name of an attribute appearing within running text. [22. Documentation Elements]
+  element att {
+    xsd:Name
+    >> sch:pattern [
+         id = "tei_jtei-att-jtei.sch-att-constraint-rule-28"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:att"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "not(matches(., '^@'))"
+             "\x{a}" ~
+             "                    Attribute delimiters are not allowed for "
+             sch:name [ ]
+             ": they are completed at processing time via XSLT.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    empty
+  }
+code =
+  
+  ## contains literal code from some formal language such as a programming language. [22.1.1. Phrase Level Terms]
+  element code {
+    text,
+    att.global.attributes,
+    
+    ## (formal language) a name identifying the formal language in which the code is expressed
+    attribute lang {
+      xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
+    }?,
+    empty
+  }
+eg =
+  
+  ## (example) contains any kind of illustrative example. [22.5. Element Specifications 22.5.4. Attribute List Specification]
+  element eg { macro.phraseSeq, att.global.attributes, empty }
+egXML =
+  
+  ## (example of XML) a single XML fragment demonstrating the use of some XML, such as elements, attributes, or processing instructions, etc., in which the egXML element functions as the root element. [22.1.1. Phrase Level Terms]
+  element egXML:egXML {
+    (text | anyElement-egXML)*,
+    att.global.attributes,
+    
+    ## indicates the intended validity of the example with respect to a schema.
+    [ a:defaultValue = "true" ]
+    attribute valid {
+      
+      ## the example is intended to be fully valid, assuming that its root element, or a provided root element, could have been used as a possible root element in the schema concerned.
+      "true"
+      | 
+        ## the example could be transformed into a valid document by inserting any number of valid attributes and child elements anywhere within it; or it is valid against a version of the schema concerned in which the provision of character data, list, element, or attribute values has been made optional.
+        "feasible"
+      | 
+        ## the example is not intended to be valid, and contains deliberate errors.
+        "false"
+    }?,
+    empty
+  }
+gi =
+  
+  ## (element name) contains the name (generic identifier) of an element. [22. Documentation Elements 22.5. Element Specifications]
+  element gi {
+    xsd:Name,
+    att.global.attributes,
+    
+    ## supplies the name of the scheme in which this name is defined.
+    ## Sample values include: 1] TEI; 2] DBK(docbook) ; 3] XX(unknown) ; 4] Schematron; 5] HTML
+    [ a:defaultValue = "TEI" ]
+    attribute scheme {
+      xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
+    }?,
+    empty
+  }
+ident =
+  
+  ## (identifier) contains an identifier or name for an object of some kind in a formal language. ident is used for tokens such as variable names, class names, type names, function names etc. in formal programming languages. [22.1.1. Phrase Level Terms]
+  element ident { text, att.global.attributes, empty }
+tag =
+  
+  ## contains text of a complete start- or end-tag, possibly including attribute specifications, but excluding the opening and closing markup delimiter characters. [22. Documentation Elements]
+  element tag {
+    text
+    >> sch:pattern [
+         id = "tei_jtei-tag-jtei.sch-tag-constraint-rule-29"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:tag"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "not(matches(., '^[<!?-]|[>/?\-]$'))"
+             "\x{a}" ~
+             "                    Tag delimiters such as angle brackets and tag-closing slashes are not allowed for "
+             sch:name [ ]
+             ": they are completed at processing time via XSLT.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    
+    ## indicates the type of XML tag intended
+    attribute type {
+      
+      ## a start-tag, with delimiters < and > is intended
+      "start"
+      | 
+        ## an end-tag, with delimiters </ and > is intended
+        "end"
+      | 
+        ## a empty tag, with delimiters < and /> is intended
+        "empty"
+      | 
+        ## a pi (processing instruction), with delimiters <? and ?> is intended
+        "pi"
+      | 
+        ## a comment, with delimiters <!-- and --> is intended
+        "comment"
+      | 
+        ## a marked-section, with delimiters <[CDATA[ and ]]> is intended
+        "ms"
+    }?,
+    
+    ## supplies the name of the schema in which this tag is defined.
+    ## Sample values include: 1] TEI(text encoding initiative) ; 2] DBK(docbook) ; 3] XX(unknown) ; 4] Schematron; 5] HTML
+    [ a:defaultValue = "TEI" ]
+    attribute scheme {
+      xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }
+    }?,
+    empty
+  }
+val =
+  
+  ## (value) contains a single attribute value. [22. Documentation Elements 22.5.4. Attribute List Specification]
+  element val {
+    text
+    >> sch:pattern [
+         id = "tei_jtei-val-jtei.sch-att-constraint-rule-30"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:val"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test =
+               "not(matches(., concat('^', $quotes, '|', $quotes, '$')))"
+             "\x{a}" ~
+             "                    Attribute value delimiters are not allowed for "
+             sch:name [ ]
+             ": they are completed at processing time via XSLT.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    empty
+  }
+TEI =
+  
+  ## (TEI document) contains a single TEI-conformant document, combining a single TEI header with one or more members of the model.resourceLike class. Multiple TEI elements may be combined to form a teiCorpus element. [4. Default Text Structure 15.1. Varieties of Composite Text]
+  element TEI {
+    (teiHeader, model.resourceLike+)
+    >> sch:ns [ prefix = "tei" uri = "http://www.tei-c.org/ns/1.0" ]
+    >> sch:ns [ prefix = "xs" uri = "http://www.w3.org/2001/XMLSchema" ]
+    >> sch:ns [
+         prefix = "rng"
+         uri = "http://relaxng.org/ns/structure/1.0"
+       ],
+    att.global.attributes,
+    att.typed.attributes,
+    empty
+  }
+\text =
+  
+  ## (text) contains the complete text of the article. Must include a front containing an abstract, a body containing the main text, and a back containing the bibliography and any appendices. [4. Default Text Structure 15.1. Varieties of Composite Text]
+  element text {
+    (model.global*,
+     (front, model.global*)?,
+     (body),
+     model.global*,
+     (back, model.global*)?)
+    >> sch:pattern [
+         id =
+           "tei_jtei-text-jtei.sch-article-keywords-constraint-rule-31"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context =
+             "tei:text[not(tei:body/tei:div[@type = ('editorialIntroduction')])]"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test =
+               "parent::tei:TEI/tei:teiHeader/tei:profileDesc/tei:textClass/tei:keywords"
+             "\x{a}" ~
+             "                    An article must have a keyword list in the header.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id =
+           "tei_jtei-text-jtei.sch-article-abstract-constraint-rule-32"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context =
+             "tei:text[not(tei:body/tei:div[@type = ('editorialIntroduction')])]"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "tei:front/tei:div[@type='abstract']"
+             "\x{a}" ~
+             "                    An article must have a front section with an abstract.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id = "tei_jtei-text-jtei.sch-article-back-constraint-rule-33"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context =
+             "tei:text[not(tei:body/tei:div[@type = ('editorialIntroduction')])]"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test =
+               "tei:back/tei:div[@type='bibliography']/tei:listBibl"
+             "\x{a}" ~
+             "                    An article must have a back section with a bibliography.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    att.written.attributes,
+    empty
+  }
+body =
+  
+  ## (text body) contains the whole body of a single unitary text, excluding any front or back matter. [4. Default Text Structure]
+  element body {
+    ((model.divTop | model.global)*,
+     ((((model.divLike | model.divGenLike), model.global*)+
+       | ((model.common, model.global*)+,
+          ((model.divLike | model.divGenLike), model.global*)*)),
+      (model.divBottom, model.global*)*)?)
+    >> sch:pattern [
+         id = "tei_jtei-body-jtei.sch-body-constraint-rule-34"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context =
+             "tei:body[child::tei:div[not(@type=('editorialIntroduction'))]]"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "count(child::tei:div) gt 1"
+             "\x{a}" ~
+             "                    If "
+             sch:name [ ]
+             " contains a div, and that div is not an editorial introduction, then there should be \x{a}" ~
+             "                    more than one div. Rather than using only a single div, you may place the content directly\x{a}" ~
+             "                    in the "
+             sch:name [ ]
+             " element.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    empty
+  }
+\div =
+  
+  ## (text division) contains a subdivision of the front, body, or back of a text. [4.1. Divisions of the Body]
+  element div {
+    ((model.divTop | model.global)*,
+     ((((model.divLike | model.divGenLike), model.global*)+
+       | ((model.common, model.global*)+,
+          ((model.divLike | model.divGenLike), model.global*)*)),
+      (model.divBottom, model.global*)*)?)
+    >> sch:pattern [
+         id = "tei_jtei-div-jtei.sch-divtypes-front-constraint-rule-35"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:div[@type = ('abstract', 'acknowledgements')]"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "parent::tei:front"
+             "\x{a}" ~
+             "                    Abstracts ("
+             sch:name [ ]
+             '[@type="abstract"]) and acknowledgements ('
+             sch:name [ ]
+             '[@type="acknowledgements"]) may only occur inside front.\x{a}' ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id = "tei_jtei-div-jtei.sch-divtypes-front2-constraint-rule-36"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:front/tei:div"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "@type=('abstract', 'acknowledgements')"
+             "\x{a}" ~
+             '                    Only abstracts (div[@type="abstract"]) and acknowledgements (div[@type="acknowledgements"]) may appear in the <front>.\x{a}' ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id = "tei_jtei-div-jtei.sch-divtypes-back-constraint-rule-37"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:div[@type = ('bibliography', 'appendix')]"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "parent::tei:back"
+             "\x{a}" ~
+             "                    Bibliography ("
+             sch:name [ ]
+             '[@type="bibliography"]) and appendices ('
+             sch:name [ ]
+             '[@type="appendix"]) may only occur inside back.\x{a}' ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id = "tei_jtei-div-jtei.sch-divtypes-body-constraint-rule-38"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:div[@type = ('editorialIntroduction')]"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "parent::tei:body"
+             "\x{a}" ~
+             "                    An editorial introduction ("
+             sch:name [ ]
+             '[@type="editorialIntroduction"]) may only occur inside body.\x{a}' ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id = "tei_jtei-div-jtei.sch-div-head-constraint-rule-39"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context =
+             "tei:div[not(@type = ('editorialIntroduction', 'bibliography', 'abstract', 'acknowledgements'))]"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "tei:head"
+             "\x{a}" ~
+             "                    A "
+             sch:name [ ]
+             " must contain a head.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id =
+           "tei_jtei-div-abstractModel-structure-l-constraint-report-15"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:div"
+           "\x{a}" ~
+           "               "
+           sch:report [
+             test = "ancestor::tei:l"
+             "\x{a}" ~
+             "        Abstract model violation: Lines may not contain higher-level structural elements such as div.\x{a}" ~
+             "      "
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ]
+    >> sch:pattern [
+         id =
+           "tei_jtei-div-abstractModel-structure-p-constraint-report-16"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:div"
+           "\x{a}" ~
+           "               "
+           sch:report [
+             test =
+               "ancestor::tei:p or ancestor::tei:ab and not(ancestor::tei:floatingText)"
+             "\x{a}" ~
+             "        Abstract model violation: p and ab may not contain higher-level structural elements such as div.\x{a}" ~
+             "      "
+           ]
+           "\x{a}" ~
+           "            "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    att.divLike.attributes,
+    att.written.attributes,
+    
+    ## characterizes the element in some sense, using any convenient classification scheme or typology.
+    attribute type {
+      
+      ## (Abstract for the article, appearing inside <front>.) Every article must include an abstract, consisting of one or two paragraphs. This appears in the <front> element and may not appear anywhere else.
+      "abstract"
+      | 
+        ## (Acknowledgements for the article, appearing inside <front>.) If an article includes a section for acknowledgements (for funders, supporters, etc.), it should be as brief as possible, and must appear in the <front> element and nowhere else.
+        "acknowledgements"
+      | 
+        ## (Appendix to the article, appearing inside <back>.) Any appendices must appear in the <back> of the article, following the bibliography.
+        "appendix"
+      | 
+        ## (Bibliography, appearing inside <back>.) Every article must include a bibliography, which appears as the first component of the <back> element, followed by any appendices.
+        "bibliography"
+      | 
+        ## (Editorial introduction, appearing inside <body>.) An editorial introduction to an issue must contain a <div type="editorialIntroduction">, which must appear in the <body> element and may not appear anywhere else.
+        "editorialIntroduction"
+    }?,
+    empty
+  }
+front =
+  
+  ## (front matter) contains any prefatory matter (headers, abstracts, title page, prefaces, dedications, etc.) found at the start of a document, before the main body. [4.6. Title Pages 4. Default Text Structure]
+  element front {
+    ((model.frontPart
+      | model.pLike
+      | model.pLike.front
+      | model.global)*,
+     (((model.div1Like,
+        (model.div1Like | model.frontPart | model.global)*)
+       | (model.divLike,
+          (model.divLike | model.frontPart | model.global)*)),
+      (model.divBottom, (model.divBottom | model.global)*)?)?)
+    >> sch:pattern [
+         id =
+           "tei_jtei-front-jtei.sch-front-abstract-constraint-rule-40"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:front"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "tei:div[@type='abstract']"
+             "\x{a}" ~
+             "                    "
+             sch:name [ ]
+             " must have an abstract (div[@type='abstract']).\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    empty
+  }
+back =
+  
+  ## (back matter) contains any appendixes, etc. following the main part of a text. [4.7. Back Matter 4. Default Text Structure]
+  element back {
+    ((model.frontPart
+      | model.pLike.front
+      | model.pLike
+      | model.listLike
+      | model.global)*,
+     ((model.div1Like,
+       (model.frontPart | model.div1Like | model.global)*)
+      | (model.divLike,
+         (model.frontPart | model.divLike | model.global)*))?,
+     (model.divBottomPart, (model.divBottomPart | model.global)*)?)
+    >> sch:pattern [
+         id = "tei_jtei-back-jtei.sch-back-constraint-rule-41"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:back"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "tei:div[@type='bibliography']/tei:listBibl"
+             "\x{a}" ~
+             "                    "
+             sch:name [ ]
+             ' must have a bibliography (div[@type="bibliography"]), which must be organized inside a listBibl element.\x{a}' ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    empty
+  }
+supplied =
+  
+  ## signifies text supplied by the transcriber or editor for any reason; for example because the original cannot be read due to physical damage, or because of an obvious omission by the author or scribe. [11.3.3.1. Damage, Illegibility, and Supplied Text]
+  element supplied {
+    macro.paraContent
+    >> sch:pattern [
+         id = "tei_jtei-supplied-jtei.sch-supplied-constraint-rule-42"
+         "\x{a}" ~
+         "            "
+         sch:rule [
+           context = "tei:supplied"
+           "\x{a}" ~
+           "                  "
+           sch:assert [
+             test = "not(matches(., '^\[|\]$'))"
+             "\x{a}" ~
+             "                    Please remove square brackets from "
+             sch:name [ ]
+             ": they are completed at processing time via XSLT.\x{a}" ~
+             "                  "
+           ]
+           "\x{a}" ~
+           "                "
+         ]
+         "\x{a}" ~
+         "         "
+       ],
+    att.global.attributes,
+    att.editLike.attributes,
+    
+    ## one or more words indicating why the text has had to be supplied, e.g. overbinding, faded-ink, lost-folio, omitted-in-original.
+    attribute reason {
+      list {
+        xsd:token { pattern = "(\p{L}|\p{N}|\p{P}|\p{S})+" }+
+      }
+    }?,
+    empty
+  }
+start = TEI
+sch:ns [ prefix = "sch" uri = "http://purl.oclc.org/dsdl/schematron" ]
+sch:ns [ prefix = "tei" uri = "http://www.tei-c.org/ns/1.0" ]
+sch:ns [ prefix = "xs" uri = "http://www.w3.org/2001/XMLSchema" ]
+sch:ns [ prefix = "xsl" uri = "http://www.w3.org/1999/XSL/Transform" ]
+sch:ns [ prefix = "eg" uri = "http://www.tei-c.org/ns/Examples" ]
+sch:pattern [
+  "\x{a}" ~
+  "                "
+  sch:let [ name = "double.quotes" value = """'["“”]'""" ]
+  "\x{a}" ~
+  "                "
+  sch:let [ name = "apos.typographic" value = "'[‘’]'" ]
+  "\x{a}" ~
+  "                "
+  sch:let [ name = "apos.straight" value = "''''" ]
+  "\x{a}" ~
+  "                "
+  sch:let [
+    name = "quotes"
+    value = """concat('[', $apos.straight, '"]')"""
+  ]
+  "\x{a}" ~
+  "              "
+]
+sch:pattern [
+  id = "tei_jtei-jtei.sch-straightApos-constraint-rule-43"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context =
+      "text()[not(ancestor::tei:eg|ancestor::eg:egXML|ancestor::tei:code|ancestor::tei:tag)]"
+    "\x{a}" ~
+    "                "
+    sch:report [
+      test = "matches(., $apos.straight)"
+      sqf:fix = "apostrophe.replace"
+      "\x{a}" ~
+      '                  "Straight apostrophe" characters are not permitted. Please use the\x{a}' ~
+      "                  Right Single Quotation Mark (U+2019 or ’) character instead. On the other hand, if the straight \x{a}" ~
+      "                  apostrophe characters function as quotation marks, please replace them with appropriate mark-up \x{a}" ~
+      "                  that will ensure the appropriate quotation marks will be generated consistently.\x{a}" ~
+      "                "
+    ]
+    "\x{a}" ~
+    "                "
+    sqf:fix [
+      id = "apostrophe.replace"
+      "\x{a}" ~
+      "                  "
+      sqf:description [
+        "\x{a}" ~
+        "                    "
+        sqf:title [ "Replace straight apostrophe with ’." ]
+        "\x{a}" ~
+        "                  "
+      ]
+      "\x{a}" ~
+      "                  "
+      sqf:stringReplace [ regex = "{$apos.straight}" "’" ]
+      "\x{a}" ~
+      "                "
+    ]
+    "\x{a}" ~
+    "              "
+  ]
+  "\x{a}" ~
+  "   "
+]
+sch:pattern [
+  id = "tei_jtei-jtei.sch-LRquotes-constraint-rule-44"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context =
+      "text()[not(ancestor::tei:eg|ancestor::eg:egXML|ancestor::tei:code|ancestor::tei:tag)][matches(., $apos.typographic)]"
+    "\x{a}" ~
+    "                "
+    sch:report [
+      test =
+        "matches(., '\W[’]\D') or matches(., '[‘](\W|$)') or matches(., '\w[‘]\w')"
+      "\x{a}" ~
+      "                  Left and Right Single Quotation Marks should be used in the right place.\x{a}" ~
+      "                "
+    ]
+    "\x{a}" ~
+    "              "
+  ]
+  "\x{a}" ~
+  "   "
+]
+sch:pattern [
+  id = "tei_jtei-jtei.sch-quotationMarks-constraint-rule-45"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context =
+      "text()[not(ancestor::tei:eg|ancestor::eg:egXML|ancestor::tei:code|ancestor::tei:tag)]"
+    "\x{a}" ~
+    "                "
+    sch:report [
+      test =
+        "matches(., $double.quotes) or matches(., '(^|\W)[‘][^‘’]+[’](\W|$)')"
+      "\x{a}" ~
+      "                  Quotation marks are not permitted in plain text. Please use appropriate mark-up that will ensure the appropriate quotation marks will be generated consistently.\x{a}" ~
+      "                "
+    ]
+    "\x{a}" ~
+    "              "
+  ]
+  "\x{a}" ~
+  "   "
+]
+sch:pattern [
+  id = "tei_jtei-jtei.sch-doubleHyphens-constraint-rule-46"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context =
+      "text()[not(ancestor::tei:eg|ancestor::eg:egXML|ancestor::tei:code|ancestor::tei:tag|ancestor::tei:ref)]"
+    "\x{a}" ~
+    "                "
+    sch:assert [
+      test = "not(contains(., '--'))"
+      sqf:fix = "dash.replace"
+      "\x{a}" ~
+      "                  Double hyphens should not be used for dashes. Please use \x{a}" ~
+      "                  the EM Dash (U+2014 or —) instead.\x{a}" ~
+      "                "
+    ]
+    "\x{a}" ~
+    "                "
+    sqf:fix [
+      id = "dash.replace"
+      "\x{a}" ~
+      "                  "
+      sqf:description [
+        "\x{a}" ~
+        "                    "
+        sqf:title [ "Replace double hyphens with —." ]
+        "\x{a}" ~
+        "                  "
+      ]
+      "\x{a}" ~
+      "                  "
+      sqf:stringReplace [ regex = "--" "—" ]
+      "\x{a}" ~
+      "                "
+    ]
+    "\x{a}" ~
+    "              "
+  ]
+  "\x{a}" ~
+  "   "
+]
+sch:pattern [
+  id = "tei_jtei-jtei.sch-rangeHyphen-constraint-rule-47"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context =
+      "text()[not(ancestor::tei:eg|ancestor::eg:egXML|ancestor::tei:code|ancestor::tei:tag|ancestor::tei:idno)][not(. = parent::*/@*)]"
+    "\x{a}" ~
+    "                "
+    sch:assert [
+      test = "not(matches(., '\d-\d'))"
+      sqf:fix = "hyphen.replace"
+      "\x{a}" ~
+      "                  Numeric ranges should not be indicated with a hyphen. Please use \x{a}" ~
+      "                  the EN Dash (U+2013 or –) character instead.\x{a}" ~
+      "                "
+    ]
+    "\x{a}" ~
+    "                "
+    sqf:fix [
+      id = "hyphen.replace"
+      "\x{a}" ~
+      "                  "
+      sqf:description [
+        "\x{a}" ~
+        "                    "
+        sqf:title [ "Replace hyphen with –." ]
+        "\x{a}" ~
+        "                  "
+      ]
+      "\x{a}" ~
+      "                  "
+      sqf:stringReplace [ regex = "(\d)-(\d)" "$1–$2" ]
+      "\x{a}" ~
+      "                "
+    ]
+    "\x{a}" ~
+    "              "
+  ]
+  "\x{a}" ~
+  "   "
+]
+sch:pattern [
+  id = "tei_jtei-jtei.sch-ieEg-constraint-rule-48"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context =
+      "text()[not(ancestor::tei:eg|ancestor::eg:egXML|ancestor::tei:code|ancestor::tei:tag)]"
+    "\x{a}" ~
+    "                "
+    sch:report [
+      test = "matches(., '(i\.e\.|e\.g\.)[^,]', 'i')"
+      sqf:fix = "comma.add"
+      "\x{a}" ~
+      '                  You should put a comma after "i.e." and "e.g.". \x{a}' ~
+      "                "
+    ]
+    "\x{a}" ~
+    "                "
+    sqf:fix [
+      id = "comma.add"
+      "\x{a}" ~
+      "                  "
+      sqf:description [
+        "\x{a}" ~
+        "                    "
+        sqf:title [ "Add a comma." ]
+        "\x{a}" ~
+        "                  "
+      ]
+      "\x{a}" ~
+      "                  "
+      sqf:stringReplace [
+        regex = "([iI]\.[eE]\.|[eE]\.[gG]\.)([^,])"
+        "$1,$2"
+      ]
+      "\x{a}" ~
+      "                "
+    ]
+    "\x{a}" ~
+    "              "
+  ]
+  "\x{a}" ~
+  "   "
+]
+sch:pattern [
+  id = "tei_jtei-jtei.sch-localLinkTarget-constraint-rule-49"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context =
+      "@*[not(ancestor::eg:egXML)][name() = ('corresp', 'target', 'from', 'to', 'ref', 'rendition', 'resp', 'source')][some $i in tokenize(., '\s+') satisfies starts-with($i, '#')]"
+    "\x{a}" ~
+    "                "
+    sch:assert [
+      test =
+        "every $i in tokenize(., '\s+')[starts-with(., '#')] satisfies id( substring-after($i, '#'))"
+      "\x{a}" ~
+      "                  There's no local target for this link. Please make sure you use an existing @xml:id value.\x{a}" ~
+      "                "
+    ]
+    "\x{a}" ~
+    "              "
+  ]
+  "\x{a}" ~
+  "   "
+]
+sch:pattern [
+  id = "tei_jtei-jtei.sch-quoteDelim-constraint-rule-50"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context =
+      "tei:title[@level eq 'a']|tei:mentioned|tei:soCalled|tei:quote|tei:q"
+    "\x{a}" ~
+    "                "
+    sch:assert [
+      test =
+        "not(matches(., concat('^', $double.quotes, '|', $double.quotes, '$')))"
+      sqf:fix = "quotation.remove"
+      "\x{a}" ~
+      "                  Quotation mark delimiters are not allowed for "
+      sch:name [ ]
+      ": they are completed at processing time via XSLT.\x{a}" ~
+      "                "
+    ]
+    "\x{a}" ~
+    "                "
+    sqf:fix [
+      id = "quotation.remove"
+      "\x{a}" ~
+      "                  "
+      sqf:description [
+        "\x{a}" ~
+        "                    "
+        sqf:title [ "Remove quotation marks." ]
+        "\x{a}" ~
+        "                  "
+      ]
+      "\x{a}" ~
+      "                  "
+      sqf:stringReplace [
+        regex =
+          "{concat('^', $double.quotes, '|', $double.quotes, '$')}"
+      ]
+      "\x{a}" ~
+      "                "
+    ]
+    "\x{a}" ~
+    "              "
+  ]
+  "\x{a}" ~
+  "   "
+]
+sch:pattern [
+  id = "tei_jtei-jtei.sch-crossref-id-constraint-rule-51"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context =
+      "tei:body//tei:div[not(@type='editorialIntroduction')]|tei:figure|tei:table"
+    role = "warning"
+    "\x{a}" ~
+    "                "
+    sch:assert [
+      test = "@xml:id"
+      "\x{a}" ~
+      "                  You're strongly advised to add an @xml:id attribute to "
+      sch:name [ ]
+      " to ease formal cross-referencing \x{a}" ~
+      "                  with (ptr|ref)[@type='crossref']\x{a}" ~
+      "                "
+    ]
+    "\x{a}" ~
+    "              "
+  ]
+  "\x{a}" ~
+  "   "
+]
+sch:pattern [
+  id = "tei_jtei-jtei.sch-formalCrossref-constraint-rule-52"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context =
+      "text()[not(ancestor::tei:eg|ancestor::eg:egXML|ancestor::tei:code|ancestor::tei:tag|ancestor::tei:ref[not(@type='crossref')])]"
+    role = "warning"
+    "\x{a}" ~
+    "                "
+    sch:assert [
+      test =
+        "not(matches(., '(table|figure|example|section) \d+([.,]\d+)* ((above)|(below))', 'i'))"
+      "\x{a}" ~
+      "                  Please replace literal references to tables, figures, examples, and sections with a formal crosslink:\x{a}" ~
+      '                  (ptr|ref)[@type="crossref"]\x{a}' ~
+      "                "
+    ]
+    "\x{a}" ~
+    "              "
+  ]
+  "\x{a}" ~
+  "   "
+]
+sch:pattern [
+  id = "tei_jtei-jtei.sch-crossrefTargetType-constraint-rule-53"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context = "tei:ptr[@type='crossref']|tei:ref[@type='crossref']"
+    "\x{a}" ~
+    "                "
+    sch:assert [
+      test =
+        "id(substring-after(@target, '#'))/(self::tei:div|self::tei:figure|self::tei:table|self::tei:note)"
+      "\x{a}" ~
+      "                  Cross-links ("
+      sch:name [ ]
+      '[@type="crossref"]) should be targeted at div, figure, table, or note elements.\x{a}' ~
+      "                "
+    ]
+    "\x{a}" ~
+    "              "
+  ]
+  "\x{a}" ~
+  "   "
+]
+sch:pattern [
+  id = "tei_jtei-jtei.sch-crossrefType-constraint-rule-54"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context =
+      "tei:ptr[not(@type='crossref')]|tei:ref[not(@type='crossref')]"
+    "\x{a}" ~
+    "                "
+    sch:report [
+      test =
+        "id(substring-after(@target, '#'))/(self::tei:div|self::tei:figure|self::tei:table)"
+      sqf:fix = "crossreftype.add"
+      "\x{a}" ~
+      "                  Please type internal cross-references as 'crossref' ("
+      sch:name [ ]
+      '[@type="crossref"]).\x{a}' ~
+      "                "
+    ]
+    "\x{a}" ~
+    "                "
+    sqf:fix [
+      id = "crossreftype.add"
+      "\x{a}" ~
+      "                  "
+      sqf:description [
+        "\x{a}" ~
+        "                    "
+        sqf:title [ "Add @type='crossref'." ]
+        "\x{a}" ~
+        "                  "
+      ]
+      "\x{a}" ~
+      "                  "
+      sqf:add [
+        match = "."
+        node-type = "attribute"
+        target = "type"
+        select = "'crossref'"
+      ]
+      "\x{a}" ~
+      "                "
+    ]
+    "\x{a}" ~
+    "              "
+  ]
+  "\x{a}" ~
+  "   "
+]
+sch:pattern [
+  id = "tei_jtei-jtei.sch-centuries-constraint-rule-55"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context = "text()[not(ancestor::tei:quote or ancestor::tei:title)]"
+    "\x{a}" ~
+    "                "
+    sch:assert [
+      test =
+        "not(matches(., '\d\d?((th)|(st)|(rd)|(nd))[- ]centur((y)|(ies))', 'i'))"
+      "\x{a}" ~
+      '                  Centuries such as "the nineteenth century" should be spelled out, not written with digits.\x{a}' ~
+      "                "
+    ]
+    "\x{a}" ~
+    "              "
+  ]
+  "\x{a}" ~
+  "   "
+]
+sch:pattern [
+  id = "tei_jtei-jtei.sch-teiVersion-constraint-rule-56"
+  "\x{a}" ~
+  "      "
+  sch:rule [
+    context =
+      "@target[contains(., 'http://www.tei-c.org/release/doc/tei-p5-doc')]"
+    "\x{a}" ~
+    "                "
+    sch:assert [
+      test = "false()"
+      "\x{a}" ~
+      "                  Please refer to the exact version of the TEI Guidelines, and link to the version that can be found in the Vault section. For an overview of all archived versions, see http://www.tei-c.org/Vault/P5/.\x{a}" ~
+      "                  \x{a}" ~
+      "                  If you're referring to the English version, the correct URL will likely take the form of http://www.tei-c.org/Vault/P5/{$version-number}/doc/tei-p5-doc/en/html/.\x{a}" ~
+      "                "
+    ]
+    "\x{a}" ~
+    "              "
+  ]
+  "\x{a}" ~
+  "   "
+]

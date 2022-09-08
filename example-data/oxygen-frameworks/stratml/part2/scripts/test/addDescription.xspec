@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+  stylesheet="../addDescription.xsl">
+  <x:scenario
+    label="Test creating a new description inside the document root element">
+    <x:context>
+      <PerformancePlanOrReport/>
+    </x:context>
+    <x:expect label="A new Description element">
+      <Description>${caret}</Description>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario
+    label="Test add description when a Description already exists.">
+    <x:context>
+      <Description>Some content</Description>
+    </x:context>
+    <x:expect label="The caret should be inside the Description">
+      <Description>Some content${caret}</Description>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario
+    label="Create Description inside Vision">
+    <x:context>
+      <Vision>
+        <Something>...</Something>
+      </Vision>
+    </x:context>
+    <x:expect label="The Description shoul be the first element">
+      <Vision>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Vision>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario
+    label="Create Description inside Mission">
+    <x:context>
+      <Mission>
+        <Something>...</Something>
+      </Mission>
+    </x:context>
+    <x:expect label="The Description shoul be the first element">
+      <Mission>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Mission>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create Description inside TargetResult">
+    <x:context>
+      <TargetResult>
+        <Something>...</Something>
+      </TargetResult>
+    </x:context>
+    <x:expect label="The Description shoul be the first element">
+      <TargetResult>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </TargetResult>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create Description inside ActualResult">
+    <x:context>
+      <ActualResult>
+        <Something>...</Something>
+      </ActualResult>
+    </x:context>
+    <x:expect label="The Description shoul be the first element">
+      <ActualResult>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </ActualResult>
+    </x:expect>
+  </x:scenario>
+  
+  
+  <x:scenario
+    label="Create Description inside Organization">
+    <x:context>
+      <Organization>
+        <Something>...</Something>
+      </Organization>
+    </x:context>
+    <x:expect label="The Description shoul be the first element">
+      <Organization>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Organization>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create Description inside Organization after Name">
+    <x:context>
+      <Organization>
+        <Name>test</Name>
+        <Something>...</Something>
+      </Organization>
+    </x:context>
+    <x:expect label="The Description shoul be the after Name">
+      <Organization>
+        <Name>test</Name>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Organization>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create Description inside Organization after Acronym">
+    <x:context>
+      <Organization>
+        <Acronym>test</Acronym>
+        <Something>...</Something>
+      </Organization>
+    </x:context>
+    <x:expect label="The Description shoul be the after Acronym">
+      <Organization>
+        <Acronym>test</Acronym>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Organization>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create Description inside Organization after Identifier">
+    <x:context>
+      <Organization>
+        <Name>test</Name>
+        <Identifier>X12</Identifier>
+        <Something>...</Something>
+      </Organization>
+    </x:context>
+    <x:expect label="The Description shoul be the after Identifier">
+      <Organization>
+        <Name>test</Name>
+        <Identifier>X12</Identifier>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Organization>
+    </x:expect>
+  </x:scenario>
+
+  <x:scenario
+    label="Create Description inside Relationship">
+    <x:context>
+      <Relationship>
+        <Something>...</Something>
+      </Relationship>
+    </x:context>
+    <x:expect label="The Description shoul be the first element">
+      <Relationship>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Relationship>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create Description inside Relationship after Identifier">
+    <x:context>
+      <Relationship>
+        <Identifier>X12</Identifier>
+        <Something>...</Something>
+      </Relationship>
+    </x:context>
+    <x:expect label="The Description shoul be the after Identifier">
+      <Relationship>
+        <Identifier>X12</Identifier>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Relationship>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create Description inside Relationship after Name">
+    <x:context>
+      <Relationship>
+        <Identifier>X12</Identifier>
+        <Name>test</Name>
+        <Something>...</Something>
+      </Relationship>
+    </x:context>
+    <x:expect label="The Description shoul be the after Name">
+      <Relationship>
+        <Identifier>X12</Identifier>
+        <Name>test</Name>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Relationship>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create Description inside Stakeholder">
+    <x:context>
+      <Stakeholder>
+        <Something>...</Something>
+      </Stakeholder>
+    </x:context>
+    <x:expect label="The Description shoul be the first element">
+      <Stakeholder>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Stakeholder>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create Description inside Stakeholder after Name">
+    <x:context>
+      <Stakeholder>
+        <Name>test</Name>
+        <Something>...</Something>
+      </Stakeholder>
+    </x:context>
+    <x:expect label="The Description shoul be the after Name">
+      <Stakeholder>
+        <Name>test</Name>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Stakeholder>
+    </x:expect>
+  </x:scenario>
+    
+  <x:scenario
+    label="Create Description inside Role">
+    <x:context>
+      <Role>
+        <Something>...</Something>
+      </Role>
+    </x:context>
+    <x:expect label="The Description shoul be the first element">
+      <Role>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Role>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create Description inside Role after Name">
+    <x:context>
+      <Role>
+        <Name>test</Name>
+        <Something>...</Something>
+      </Role>
+    </x:context>
+    <x:expect label="The Description shoul be the after Name">
+      <Role>
+        <Name>test</Name>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Role>
+    </x:expect>
+  </x:scenario>
+    
+  <x:scenario
+    label="Create Description inside Goal">
+    <x:context>
+      <Goal>
+        <Something>...</Something>
+      </Goal>
+    </x:context>
+    <x:expect label="The Description shoul be the first element">
+      <Goal>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Goal>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create Description inside Goal after Name">
+    <x:context>
+      <Goal>
+        <Name>test</Name>
+        <Something>...</Something>
+      </Goal>
+    </x:context>
+    <x:expect label="The Description shoul be the after Name">
+      <Goal>
+        <Name>test</Name>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Goal>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create Description inside Objective">
+    <x:context>
+      <Objective>
+        <Something>...</Something>
+      </Objective>
+    </x:context>
+    <x:expect label="The Description shoul be the first element">
+      <Objective>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Objective>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create Description inside Objective after Name">
+    <x:context>
+      <Objective>
+        <Name>test</Name>
+        <Something>...</Something>
+      </Objective>
+    </x:context>
+    <x:expect label="The Description shoul be the after Name">
+      <Objective>
+        <Name>test</Name>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Objective>
+    </x:expect>
+  </x:scenario>
+  
+    
+  <x:scenario
+    label="Create Description inside Value">
+    <x:context>
+      <Value>
+        <Something>...</Something>
+      </Value>
+    </x:context>
+    <x:expect label="The Description shoul be the first element">
+      <Value>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Value>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create Description inside Value after Name">
+    <x:context>
+      <Value>
+        <Name>test</Name>
+        <Something>...</Something>
+      </Value>
+    </x:context>
+    <x:expect label="The Description shoul be the after Name">
+      <Value>
+        <Name>test</Name>
+        <Description>${caret}</Description>
+        <Something>...</Something>
+      </Value>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Scenario for testing function addElement">
+    <x:call template="addElement"/>
+    <x:expect label="A new Description with the caret inside">
+      <Description>${caret}</Description>
+    </x:expect>
+  </x:scenario>
+</x:description>

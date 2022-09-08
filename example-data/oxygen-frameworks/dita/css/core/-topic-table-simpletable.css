@@ -1,0 +1,64 @@
+/* ==================================================
+ * 
+ * <simpletable>
+ * 
+ * The simpletable element is used for tables that are regular 
+ * in structure and do not need a caption. Choose the simpletable 
+ * element when you want to show information in regular rows and 
+ * columns. For example, multi-column tabular data such as phone 
+ * directory listings or parts lists are good candidates for 
+ * simpletable. 
+ */
+*[class ~= "topic/simpletable"]{
+  display:table;
+  border-collapse:collapse;
+  border:thin solid;
+  margin: 0.5em 0 0.5em 0;
+  -oxy-foldable:true;
+}
+
+/* ==================================================
+ * 
+ * <strow>
+ * 
+ * The strow element contains a single row inside of a 
+ * simpletable element.
+ * 
+ * <sthead>
+ * 
+ * The sthead element contains an optional header row for 
+ * a simpletable element.
+ */
+*[class ~= "topic/strow"],
+*[class ~= "topic/sthead"]{
+  display:table-row;
+}
+*[class ~= "topic/sthead"] > *[class ~= "topic/stentry"]{
+  font-weight:bold;
+}
+*[class ~= "topic/stentry"]{
+  display:table-cell;
+  padding:0.2em 0.4em;
+}
+
+@media print{
+  /*
+   * In oxygen media the entries have a column and row separators. We need this only in print 
+   */
+  *[class ~= "topic/stentry"]{
+    border:thin solid;
+  }
+}
+
+
+/*
+ * Deals with the keycol attribute
+ */
+
+*[class ~= "topic/simpletable"][keycol="1"] > *[class ~= "topic/strow"] > *[class ~= "topic/stentry"]:first-child,
+*[class ~= "topic/simpletable"][keycol="2"] > *[class ~= "topic/strow"] > *[class ~= "topic/stentry"]:nth-child(2),
+*[class ~= "topic/simpletable"][keycol="3"] > *[class ~= "topic/strow"] > *[class ~= "topic/stentry"]:nth-child(3),
+*[class ~= "topic/simpletable"][keycol="4"] > *[class ~= "topic/strow"] > *[class ~= "topic/stentry"]:nth-child(4){
+  font-weight:bold;
+} 
+

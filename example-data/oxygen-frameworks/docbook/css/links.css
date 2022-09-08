@@ -1,0 +1,36 @@
+@namespace xlink url('http://www.w3.org/1999/xlink');
+
+
+*[href]:before{
+  link:attr(href);
+}
+
+*[xlink|href]:before{
+  link:attr(xlink|href);
+}
+
+
+ulink[url]:before{
+  link:attr(url);
+}
+
+
+link[xlink|href]:before, xref[xlink|href]:before, coref[xlink|href]:before, biblioref[xlink|href]:before {
+  link:attr(xlink|href);
+}
+
+link:before, xref:before, coref:before, biblioref:before {
+  link: "#" attr(linkend);
+}
+
+xref {
+    content: oxy_label(text, oxy_getSomeText(oxy_link-text(), 150, true), background-color, rgb(240, 240, 240));
+}
+
+/*EXM-28946 Show url value in empty ulink and link element content*/
+ulink[url]:empty{
+    content:oxy_label(text, oxy_getSomeText(attr(url), 150, true), background-color, rgb(240, 240, 240));
+}
+link[xlink|href]:empty{
+    content:oxy_label(text, oxy_getSomeText(attr(xlink|href), 150, true), background-color, rgb(240, 240, 240));
+}

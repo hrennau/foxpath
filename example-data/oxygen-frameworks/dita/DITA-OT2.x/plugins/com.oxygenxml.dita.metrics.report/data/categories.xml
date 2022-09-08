@@ -1,0 +1,2460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domains>
+   <category name="base">
+      <element name="data-about" definedIn="commonElements.mod">
+         <documentation>The &lt;data-about&gt; element identifies the subject of a property when the
+        subject isn't associated with the context in which the property is specified. The property
+        itself is expressed by the &lt;data&gt; element. The &lt;data-about&gt; element handles exception
+        cases where a property must be expressed somewhere other than inside the actual subject of
+        the property. The &lt;data-about&gt; element is particularly useful as a basis for
+        specialization in combination with the &lt;data&gt; element. 
+        Category: Miscellaneous elements</documentation>
+      </element>
+      <element name="data" definedIn="commonElements.mod">
+         <documentation>The &lt;data&gt; element represents a property within a DITA topic or map. While
+        the &lt;data&gt; element can be used directly to capture properties, it is particularly useful
+        as a basis for specialization. Default processing treats the property values as an unknown
+        kind of metadata, but custom processing can match the name attribute or specialized element
+        to format properties as sidebars or other adornments or to harvest properties for automated
+        processing. 
+        Category: Miscellaneous elements</documentation>
+      </element>
+      <element name="unknown" definedIn="commonElements.mod">
+         <documentation>The &lt;unknown&gt; element is an open extension that allows information
+        architects to incorporate xml fragments that do not necessarily fit into an existing DITA
+        use case. The base processing for &lt;unknown&gt; is to suppress unless otherwise instructed.
+        Category: Specialization elements</documentation>
+      </element>
+      <element name="foreign" definedIn="commonElements.mod">
+         <documentation>The &lt;foreign&gt; element is an open extension that allows information
+        architects to incorporate existing standard vocabularies for non-textual content. like
+        MathML and SVG, as inline objects. If &lt;foreign&gt; contains more than one alternative
+        content element, they will all be processed. Specialization of &lt;foreign&gt; should be
+        implemented as a domain, but for those looking for more control over the content can
+        implement foreign vocabulary as an element specialization. 
+        Category: Specialization elements</documentation>
+      </element>
+      <element name="title" definedIn="commonElements.mod">
+         <documentation>The &lt;title&gt; element contains a heading or label for the main parts of a
+        topic, including the topic as a whole, its sections and examples, and its labelled content,
+        such as figures and tables. Beginning with DITA 1.1, the element may also be used to provide
+        a title for a map. 
+        Category: Topic elements</documentation>
+      </element>
+      <element name="navtitle" definedIn="commonElements.mod">
+         <documentation>The navigation title (&lt;navtitle&gt;) element is one of a set of alternate
+        titles that can be included inside the &lt;titlealts&gt; element. This navigation title may
+        differ from the first level heading that shows in the main browser window. Use &lt;navtitle&gt;
+        when the actual title of the topic isn't appropriate for use in navigation panes or online
+        contents (for example, because the actual title is too long). 
+        Category: Topic elements</documentation>
+      </element>
+      <element name="shortdesc" definedIn="commonElements.mod">
+         <documentation>The short description (&lt;shortdesc&gt;) element occurs between the topic title
+        and the topic body, as the initial paragraph-like content of a topic, or it can be embedded
+        in an abstract element. The short description, which represents the purpose or theme of the
+        topic, is also intended to be used as a link preview and for searching. When used within a
+        DITA map, the short description of the &lt;topicref&gt; can be used to override the short
+        description in the topic.
+        Category: Topic elements</documentation>
+      </element>
+      <element name="desc" definedIn="commonElements.mod">
+         <documentation>The &lt;desc&gt; element contains the description of the current element. A
+        description should provide more information than the title. This is its behavior in
+        fig/table/linklist, for example. In xref/link, it provides a description of the target;
+        processors that support it may choose to display this as hover help. In object, it contains
+        alternate content for use when in contexts that cannot display the object. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="p" definedIn="commonElements.mod">
+         <documentation>A paragraph element (&lt;p&gt;) is a block of text containing a single main
+        idea. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="note" definedIn="commonElements.mod">
+         <documentation>A &lt;note&gt; element contains information, differentiated from the main text,
+        which expands on or calls attention to a particular point. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="longquoteref" definedIn="commonElements.mod">
+         <documentation>The &lt;longquoteref&gt; element provides a reference to the source of a long
+        quote. The long quote (&lt;lq&gt;) element itself allows an href attribute to specify the
+        source of a quote, but it does not allow other standard linking attributes such as keyref,
+        scope, and format. The &lt;longquoteref&gt; element should be used for references that make use
+        of these attributes. </documentation>
+      </element>
+      <element name="lq" definedIn="commonElements.mod">
+         <documentation>The long quote (&lt;lq&gt;) element indicates content quoted from another
+        source. Use the quote element &lt;q&gt; for short, inline quotations, and long quote &lt;lq&gt;
+        for quotations that are too long for inline use, following normal guidelines for quoting
+        other sources. You can store a URL to the source of the quotation in the href attribute; the
+        href value may point to a DITA topic. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="q" definedIn="commonElements.mod">
+         <documentation>A quotation element (&lt;q&gt;) indicates content quoted from another source.
+        This element is used for short quotes which are displayed inline. Use the long quote element
+        (&lt;lq&gt;) for quotations that should be set off from the surrounding text. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="sl" definedIn="commonElements.mod">
+         <documentation>The simple list (&lt;sl&gt;) element contains a simple list of items of short,
+        phrase-like content, such as in documenting the materials in a kit or package. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="sli" definedIn="commonElements.mod">
+         <documentation>A simple list item (&lt;sli&gt;) is a single item in a simple list &lt;sl&gt;.
+        Simple list items have phrase or text content, adequate for describing package contents, for
+        example. When a DITA topic is formatted for output, the items of a simple list are placed
+        each on its own line, with no other prefix such as a number (as in an ordered list) or
+        bullet (as in an unordered list). 
+        Category: Body elements</documentation>
+      </element>
+      <element name="ul" definedIn="commonElements.mod">
+         <documentation>In an unordered list (&lt;ul&gt;), the order of the list items is not
+        significant. List items are typically styled on output with a "bullet" character, depending
+        on nesting level. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="ol" definedIn="commonElements.mod">
+         <documentation>An ordered list (&lt;ol&gt;) is a list of items sorted by sequence or order of
+        importance. 
+        Category: List elements</documentation>
+      </element>
+      <element name="li" definedIn="commonElements.mod">
+         <documentation>A list (&lt;li&gt;) item is a single item in an ordered &lt;ol&gt; or unordered
+        &lt;ul&gt; list. When a DITA topic is formatted for output, numbers and alpha characters are
+        usually output with list items in ordered lists, while bullets and dashes are usually output
+        with list items in unordered lists. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="itemgroup" definedIn="commonElements.mod">
+         <documentation>The &lt;itemgroup&gt; element is reserved for use in specializations of DITA. As
+        a container element, it can be used to sub-divide or organize elements that occur inside a
+        list item, definition, or parameter definition. 
+        Category: Specialization elements</documentation>
+      </element>
+      <element name="dl" definedIn="commonElements.mod">
+         <documentation>A definition list (&lt;dl&gt;) is a list of terms and corresponding definitions.
+        The term (&lt;dt&gt;) is usually flush left. The description or definition (&lt;dd&gt;) is usually
+        either indented and on the next line, or on the same line to the right of the term.
+        Category: Body elements</documentation>
+      </element>
+      <element name="dlhead" definedIn="commonElements.mod">
+         <documentation>The &lt;dlhead&gt; element contains optional headings for the term and
+        description columns in a definition list. The definition list heading contains a heading
+        &lt;dthd&gt; for the column of terms and an optional heading &lt;ddhd&gt;for the column of
+        descriptions. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="dthd" definedIn="commonElements.mod">
+         <documentation>The definition term heading (&lt;dthd&gt;) element is contained in a definition
+        list head (&lt;dlhead&gt;) and provides an optional heading for the column of terms in a
+        description list. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="ddhd" definedIn="commonElements.mod">
+         <documentation>The definition descriptions heading (&lt;ddhd&gt;) element contains an optional
+        heading or title for a column of descriptions or definitions in a definition list.
+        Category: Body elements</documentation>
+      </element>
+      <element name="dlentry" definedIn="commonElements.mod">
+         <documentation>In a definition list, each list item is defined by the definition list entry
+        (&lt;dlentry&gt;) element. The definition list entry element includes a term &lt;dt&gt; and one or
+        more definitions or descriptions &lt;dd&gt; of that term. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="dt" definedIn="commonElements.mod">
+         <documentation>The definition term &lt;dt&gt; element contains a term in a definition list
+        entry. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="dd" definedIn="commonElements.mod">
+         <documentation>The definition description (&lt;dd&gt;) element contains the description of a
+        term in a definition list entry. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="fig" definedIn="commonElements.mod">
+         <documentation>The figure (&lt;fig&gt;) element is a display context (sometimes called an
+        exhibit) with an optional title for a wide variety of content. Most commonly, the figure
+        element contains an image element (a graphic or artwork), but it can contain several kinds
+        of text objects as well. A title is placed inside the figure element to provide a caption to
+        describe the content. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="figgroup" definedIn="commonElements.mod">
+         <documentation>The &lt;figgroup&gt; element is used only for specialization at this time.
+        Figure groups can be used to contain multiple cross-references, footnotes or keywords, but
+        not multipart images. Multipart images in DITA should be represented by a suitable media
+        type displayed by the &lt;object&gt; element. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="pre" definedIn="commonElements.mod">
+         <documentation>The preformatted element (&lt;pre&gt;) preserves line breaks and spaces entered
+        manually by the author in the content of the element, and also presents the content in a
+        monospaced type font (depending on your output formatting processor). Do not use &lt;pre&gt;
+        when a more semantically specific element is appropriate, such as &lt;codeblock&gt;. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="lines" definedIn="commonElements.mod">
+         <documentation>The &lt;lines&gt; element may be used to represent dialogs, lists, text
+        fragments, and so forth. The &lt;lines&gt; element is similar to &lt;pre&gt; in that hard line
+        breaks are preserved, but the font style is not set to monospace, and extra spaces inside
+        the lines are not preserved. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="text" definedIn="commonElements.mod">
+         <documentation>The text element associates no semantics with its content. It exists to serve
+        as a container for text where a container is needed (e.g., for conref, or for restricted
+        content models in specializations). Unlike ph, text cannot contain images. Unlike keyword,
+        text does not imply keyword-like semantics. The text element contains only text data, or
+        nested text elements. All universal attributes are available on text.</documentation>
+      </element>
+      <element name="keyword" definedIn="commonElements.mod">
+         <documentation>The &lt;keyword&gt; element identifies a keyword or token, such as a single
+        value from an enumerated list, the name of a command or parameter, product name, or a lookup
+        key for a message. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="term" definedIn="commonElements.mod">
+         <documentation>The &lt;term&gt; element identifies words that may have or require extended
+        definitions or explanations. In future development of DITA, for example, terms might provide
+        associative linking to matching glossary entries. 
+        Category: Specialization elements</documentation>
+      </element>
+      <element name="ph" definedIn="commonElements.mod">
+         <documentation>The phrase (&lt;ph&gt;) element is used to organize content for reuse or
+        conditional processing (for example, when part of a paragraph applies to a particular
+        audience). It can be used by specializations of DITA to create semantic markup for content
+        at the phrase level, which then allows (but does not require) specific processing or
+        formatting. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="tm" definedIn="commonElements.mod">
+         <documentation>The trademark (&lt;tm&gt;) element in DITA is used to markup and identify a term
+        or phrase that is trademarked. Trademarks include registered trademarks, service marks,
+        slogans and logos. 
+        Category: Miscellaneous elements</documentation>
+      </element>
+      <element name="boolean" definedIn="commonElements.mod">
+         <documentation>The &lt;boolean&gt; element is used to express one of two opposite values, such
+        as yes or no, on or off, true or false, high or low, and so forth. The element itself is
+        empty; the value of the element is stored in its state attribute, and the semantic
+        associated with the value is typically in a specialized name derived from this element.
+        Category: Specialization elements</documentation>
+      </element>
+      <element name="state" definedIn="commonElements.mod">
+         <documentation>The &lt;state&gt; element specifies a name/value pair whenever it is necessary
+        to represent a named state that has a variable value. The element is primarily intended for
+        use in specializations to represent specific states (like logic circuit states, chemical
+        reaction states, airplane instrumentation states, and so forth). 
+        Category: Specialization elements</documentation>
+      </element>
+      <element name="image" definedIn="commonElements.mod">
+         <documentation>Include artwork or images in a DITA topic by using the &lt;image&gt; element.
+        The &lt;image&gt; element has optional attributes that indicate whether the placement of the
+        included graphic or artwork should be inline (like a button or icon) or on a separate line
+        for a larger image. There are also optional attributes that indicate the size to which the
+        included graphic or artwork should be scaled. An href attribute is required on the image
+        element, as this attribute creates a pointer to the image, and allows the output formatting
+        processor to bring the image into the text flow. To make the intent of the image more
+        accessible for users using screen readers or text-only readers, always include a description
+        of the image's content in the alt element. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="alt" definedIn="commonElements.mod">
+         <documentation>The alt element provides alternate text for an image. It is equivalent to the
+        alt attribute on the image element; the attribute is deprecated, so the alt element should
+        be used instead. As an element, alt provides direct text entry within an XML editor and is
+        more easily accessed than an attribute for translation. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="longdescref" definedIn="commonElements.mod">
+         <documentation>A reference to a textual description of the graphic or object. This element
+        is a replacement for the longdescref attribute on image and object
+        elements.</documentation>
+      </element>
+      <element name="object" definedIn="commonElements.mod">
+         <documentation>DITA's &lt;object&gt; element corresponds to the HTML &lt;object&gt; element.
+        Category: Body elements</documentation>
+      </element>
+      <element name="param" definedIn="commonElements.mod">
+         <documentation>The parameter (&lt;param&gt;) element specifies a set of values that may be
+        required by an &lt;object&gt; at runtime. Any number of &lt;param&gt; elements may appear in the
+        content of an object in any order, but must be placed at the start of the content of the
+        enclosing object. This element is comparable to the XHMTL &lt;param&gt; element. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="simpletable" definedIn="commonElements.mod">
+         <documentation>The &lt;simpletable&gt; element is used for tables that are regular in structure
+        and do not need a caption. Choose the simple table element when you want to show information
+        in regular rows and columns. For example, multi-column tabular data such as phone directory
+        listings or parts lists are good candidates for simpletable. Another good use of simpletable
+        is for information that seems to beg for a "three-part definition list"—just use the keycol
+        attribute to indicate which column represents the "key" or term-like column of your
+        structure. 
+        Category: Table elements</documentation>
+      </element>
+      <element name="sthead" definedIn="commonElements.mod">
+         <documentation>The simpletable header (&lt;sthead&gt;) element contains the table's header row.
+        The header row is optional in a simple table. 
+        Category: Table elements</documentation>
+      </element>
+      <element name="strow" definedIn="commonElements.mod">
+         <documentation>The &lt;simpletable&gt; row (&lt;strow&gt;) element specifies a row in a simple
+        table. 
+        Category: Table elements</documentation>
+      </element>
+      <element name="stentry" definedIn="commonElements.mod">
+         <documentation>The simpletable entry (&lt;stentry&gt;) element represents a single table cell,
+        like &lt;entry&gt; in &lt;table&gt;. You can place any number of stentry cells in either an
+        &lt;sthead&gt; element (for headings) or &lt;strow&gt; element (for rows of data). 
+        Category: Table elements</documentation>
+      </element>
+      <element name="draft-comment" definedIn="commonElements.mod">
+         <documentation>The &lt;draft-comment&gt; element allows simple review and discussion of topic
+        contents within the marked-up content. Use the &lt;draft-comment&gt; element to ask a question
+        or make a comment that you would like others to review. To indicate the source of the draft
+        comment or the status of the comment, use the author, time or disposition attributes.
+        Category: Miscellaneous elements</documentation>
+      </element>
+      <element name="required-cleanup" definedIn="commonElements.mod">
+         <documentation>A &lt;required-cleanup&gt; element is used as a placeholder for migrated
+        elements that cannot be appropriately tagged without manual intervention. As the element
+        name implies, the intent for authors is to clean up the contained material and eventually
+        get rid of the &lt;required-cleanup&gt; element. Authors should not insert this element into
+        documents. 
+        Category: Specialization elements</documentation>
+      </element>
+      <element name="fn" definedIn="commonElements.mod">
+         <documentation>Use footnote (&lt;fn&gt;) to annotate text with notes that are not appropriate
+        for inclusion in line or to indicate the source for facts or other material used in the
+        text. 
+        Category: Miscellaneous elements</documentation>
+      </element>
+      <element name="indexterm" definedIn="commonElements.mod">
+         <documentation>An &lt;indexterm&gt; element allows the author to indicate that a certain word
+        or phrase should produce an index entry in the generated index. 
+        Category: Miscellaneous elements</documentation>
+      </element>
+      <element name="index-base" definedIn="commonElements.mod">
+         <documentation>The &lt;index-base&gt; element allows indexing extensions to be added by
+        specializing off this element. It does not in itself have any meaning and should be ignored
+        in processing. 
+        Category: Miscellaneous elements</documentation>
+      </element>
+      <element name="indextermref" definedIn="commonElements.mod">
+         <documentation>This element is not completely defined, and is reserved for future use.
+        Category: Miscellaneous elements</documentation>
+      </element>
+      <element name="cite" definedIn="commonElements.mod">
+         <documentation>The &lt;cite&gt; element is used when you need a bibliographic citation that
+        refers to a book or article. It specifically identifies the title of the resource. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="xref" definedIn="commonElements.mod">
+         <documentation>Use the cross-reference (&lt;xref&gt;) element to link to a different location
+        within the current topic, or a different topic within the same help system, or to external
+        sources, such as Web pages, or to a location in another topic. The href attribute on the
+        &lt;xref&gt; element provides the location of the target. 
+        Category: Body elements</documentation>
+      </element>
+      <element name="exportanchors" definedIn="delayResolutionDomain.mod"/>
+      <element name="anchorid" definedIn="delayResolutionDomain.mod"/>
+      <element name="anchorkey" definedIn="delayResolutionDomain.mod"/>
+      <element name="hazardstatement" definedIn="hazardstatementDomain.mod">
+         <documentation>The &lt;hazardstatement&gt; element contains hazard warning information. It is
+        based on the regulations of the ANSI Z535 and the ISO 3864 standards. It gives the author
+        the opportunity to select the hazard statement, to add one or more safety signs and to add
+        the required phrases.</documentation>
+      </element>
+      <element name="hazardsymbol" definedIn="hazardstatementDomain.mod">
+         <documentation>A graphic representation intended to convey a message without the use of
+        words. It may represent a hazard, a hazardous situation, a precaution to avoid a hazard, a
+        result of not avoiding a hazard, or any combination of these messages.</documentation>
+      </element>
+      <element name="messagepanel" definedIn="hazardstatementDomain.mod">
+         <documentation>The &lt;messagepanel&gt; element describes the area of a safety sign or label
+        that contains the word message which identifies a hazard, indicates how to avoid the hazard,
+        and advises of the probable consequences of not avoiding the hazard.</documentation>
+      </element>
+      <element name="typeofhazard" definedIn="hazardstatementDomain.mod">
+         <documentation>&lt;typeofhazard&gt; element is the container for the first text entry of a
+        safety label. It contains the description of the type of hazard, such as "Moving parts
+        can crush and cut".</documentation>
+      </element>
+      <element name="consequence" definedIn="hazardstatementDomain.mod">
+         <documentation>The &lt;consequence&gt; element is the container for the second text entry of a
+        safety label. It contains the description of the consequences of not avoiding the hazard,
+        such as "Keep guard in place".</documentation>
+      </element>
+      <element name="howtoavoid" definedIn="hazardstatementDomain.mod">
+         <documentation>The &lt;howtoavoid&gt; element is the container for the third text entry of a
+        safety label. It contains the description of how to avoid the hazard, such as "Lock out
+        power before servicing".</documentation>
+      </element>
+      <element name="b" definedIn="highlightDomain.mod">
+         <documentation>The bold (&lt;b&gt;) element is used to apply bold highlighting to the content
+        of the element. Use this element only when there is not some other more proper element. For
+        example, for specific items such as GUI controls, use the &lt;uicontrol&gt; element. This
+        element is part of the DITA highlighting domain. 
+        Category: Typographic elements</documentation>
+      </element>
+      <element name="u" definedIn="highlightDomain.mod">
+         <documentation>The underline (&lt;u&gt;) element is used to apply underline highlighting to the
+        content of the element. 
+        Category: Typographic elements</documentation>
+      </element>
+      <element name="i" definedIn="highlightDomain.mod">
+         <documentation>The italic (&lt;i&gt;) element is used to apply italic highlighting to the
+        content of the element. 
+        Category: Typographic elements</documentation>
+      </element>
+      <element name="tt" definedIn="highlightDomain.mod">
+         <documentation> The teletype (&lt;tt&gt;) element is used to apply monospaced highlighting to
+        the content of the element. 
+        Category: Typographic elements </documentation>
+      </element>
+      <element name="sup" definedIn="highlightDomain.mod">
+         <documentation>The superscript (&lt;sup&gt;) element indicates that text should be
+        superscripted, or vertically raised in relationship to the surrounding text. Superscripts
+        are usually a smaller font than the surrounding text. Use this element only when there is
+        not some other more proper tag. This element is part of the DITA highlighting domain.
+        Category: Typographic elements</documentation>
+      </element>
+      <element name="sub" definedIn="highlightDomain.mod">
+         <documentation>A subscript (&lt;sub&gt;) indicates that text should be subscripted, or placed
+        lower in relationship to the surrounding text. Subscripted text is often a smaller font than
+        the surrounding text. Formatting may vary depending on your output process. This element is
+        part of the DITA highlighting domain. Category: Typographic elements</documentation>
+      </element>
+      <element name="index-see" definedIn="indexingDomain.mod">
+         <documentation>An &lt;index-see&gt; element within an &lt;indexterm&gt; redirects the reader to
+        another index entry that the reader should reference instead of the current one. 
+        Category: Indexing domain elements</documentation>
+      </element>
+      <element name="index-see-also" definedIn="indexingDomain.mod">
+         <documentation>An &lt;index-see-also&gt; element within an &lt;indexterm&gt; redirects the reader
+        to another index entry that the reader should reference in addition to the current one.
+        Category: Indexing domain elements</documentation>
+      </element>
+      <element name="index-sort-as" definedIn="indexingDomain.mod">
+         <documentation>The &lt;index-sort-as&gt; element specifies a sort phrase under which an index
+        entry would be sorted. 
+        Category: Indexing domain elements</documentation>
+      </element>
+      <element name="map" definedIn="map.mod"/>
+      <element name="navref" definedIn="map.mod"/>
+      <element name="topicref" definedIn="map.mod"/>
+      <element name="anchor" definedIn="map.mod"/>
+      <element name="reltable" definedIn="map.mod"/>
+      <element name="relheader" definedIn="map.mod"/>
+      <element name="relcolspec" definedIn="map.mod"/>
+      <element name="relrow" definedIn="map.mod"/>
+      <element name="relcell" definedIn="map.mod"/>
+      <element name="topicmeta" definedIn="map.mod"/>
+      <element name="linktext" definedIn="map.mod"/>
+      <element name="searchtitle" definedIn="map.mod"/>
+      <element name="topichead" definedIn="mapGroup.mod">
+         <documentation>The &lt;topichead&gt; element provides a title-only entry in a navigation map,
+        as an alternative to the fully-linked title provided by the &lt;topicref&gt; element. 
+        Category: Mapgroup elements</documentation>
+      </element>
+      <element name="topicgroup" definedIn="mapGroup.mod">
+         <documentation>The &lt;topicgroup&gt; element is for creating groups of &lt;topicref&gt; elements
+        without affecting the hierarchy, as opposed to nested &lt; topicref&gt; elements within a
+        &lt;topicref&gt;, which does imply a structural hierarchy. It is typically used outside a
+        hierarchy to identify groups for linking without affecting the resulting toc/navigation
+        output. 
+        Category: Mapgroup elements</documentation>
+      </element>
+      <element name="anchorref" definedIn="mapGroup.mod">
+         <documentation>The contents of an &lt;anchorref&gt; element are rendered both in the original
+        authored location and at the location of the referenced &lt;anchor&gt; element. The referenced
+        &lt;anchor&gt; element can be defined in the current map or another map.</documentation>
+      </element>
+      <element name="mapref" definedIn="mapGroup.mod">
+         <documentation>The &lt;mapref&gt; element is a convenience element that has the same meaning as
+        a &lt;topicref&gt; element that explicitly sets the format attribute to "ditamap". The
+        hierarchy of the referenced map is merged into the container map at the position of the
+        reference, and the relationship tables of the child map are added to the parent
+        map.</documentation>
+      </element>
+      <element name="topicset" definedIn="mapGroup.mod">
+         <documentation>The &lt;topicset&gt; element defines a complete unit of content that can be
+        reused in other DITA maps or other &lt;topicset&gt; elements. The &lt;topicset&gt; element can be
+        especially useful for task composition in which larger tasks that are composed indefinitely
+        of smaller tasks. The id attribute on a &lt;topicset&gt; is required, which ensures that the
+        complete unit is available for reuse in other contexts.</documentation>
+      </element>
+      <element name="topicsetref" definedIn="mapGroup.mod">
+         <documentation>The &lt;topicsetref&gt; element references a &lt;topicset&gt; element. The
+        referenced &lt;topicset&gt; element can be defined in the current map or in another
+        map.</documentation>
+      </element>
+      <element name="keydef" definedIn="mapGroup.mod">
+         <documentation>The &lt;keydef&gt; element is a convenience element that is used to define keys
+        without any of the other effects that occur when using a &lt;topicref&gt; element: no content
+        is included in output, no title is included in the table of contents, and no linking or
+        other relationships are defined. The &lt;keydef&gt; element is not the only way to define keys;
+        its purpose is to simplify the process by defaulting several attributes to achieve the
+        described behaviors.</documentation>
+      </element>
+      <element name="author" definedIn="metaDecl.mod">
+         <documentation>The &lt;author&gt; metadata element contains the name of the topic's author.
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="source" definedIn="metaDecl.mod">
+         <documentation>The &lt;source&gt; element contains a reference to a resource from which the
+        present topic is derived, either completely or in part. The element can contain a
+        description of the resource; the href reference can be a string or a URL that points to it.
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="publisher" definedIn="metaDecl.mod">
+         <documentation>The &lt;publisher&gt; metadata element contains the name of the person, company,
+        or organization responsible for making the content or subject of the topic available.
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="copyright" definedIn="metaDecl.mod">
+         <documentation>The &lt;copyright&gt; element is used for a single copyright entry. It includes
+        the copyright years and the copyright holder. Multiple &lt;copyright&gt; statements are
+        allowed. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="copyryear" definedIn="metaDecl.mod">
+         <documentation>The &lt;copyryear&gt; element contains the copyright year as specified by the
+        year attribute.
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="copyrholder" definedIn="metaDecl.mod">
+         <documentation>The copyright holder (&lt;copyrholder&gt;) element names the entity that holds
+        legal rights to the material contained in the topic. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="critdates" definedIn="metaDecl.mod">
+         <documentation>The &lt;critdates&gt; element contains the critical dates in a document life
+        cycle, such as the creation date and multiple revision dates. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="created" definedIn="metaDecl.mod">
+         <documentation>The &lt;created&gt; element specifies the document creation date using the date
+        attribute. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="revised" definedIn="metaDecl.mod">
+         <documentation>The &lt;revised&gt; element in the prolog is used to maintain tracking dates
+        that are important in a topic development cycle, such as the last modification date, the
+        original availability date, and the expiration date. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="permissions" definedIn="metaDecl.mod">
+         <documentation>The &lt;permissions&gt; prolog element can indicate any preferred controls for
+        access to a topic. Topics can be filtered based on the permissions element. This capability
+        depends on your output formatting process. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="category" definedIn="metaDecl.mod">
+         <documentation>The &lt;category&gt; element can represent any category by which a topic might
+        be classified for retrieval or navigation; for example, the categories could be used to
+        group topics in a generated navigation bar. Topics can belong to multiple categories.
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="metadata" definedIn="metaDecl.mod">
+         <documentation>The &lt;metadata&gt; section of the prolog contains information about a topic
+        such as audience and product information. Metadata can be used by computational processes to
+        select particular topics or to prepare search indexes or to customize navigation. Elements
+        inside of &lt;metadata&gt; provide information about the content and subject of a topic; prolog
+        elements outside of &lt;metadata&gt; provide lifecycle information for the content unit (such
+        as the author or copyright), which are unrelated to the subject. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="audience" definedIn="metaDecl.mod">
+         <documentation>The &lt;audience&gt; metadata element indicates, through the value of its type
+        attribute, the intended audience for a topic. Since a topic can have multiple audiences, you
+        can include multiple audience elements. For each audience you specify, you can identify the
+        high-level task (job) they are trying to accomplish and the level of experience
+        (experiencelevel) expected. The audience element may be used to provide a more detailed
+        definition of values used throughout the map or topic on the audience attribute. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="keywords" definedIn="metaDecl.mod">
+         <documentation>The &lt;keywords&gt; element contains a list of key words (using &lt;indexterm&gt;
+        or &lt;keyword&gt; markup) that can be used by a search engine. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="prodinfo" definedIn="metaDecl.mod">
+         <documentation>The &lt;prodinfo&gt; metadata element in the prolog contains information about
+        the product or products that are the subject matter of the current topic. The prodinfo
+        element may be used to provide a more detailed definition of values used throughout the map
+        or topic on the product attribute. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="prodname" definedIn="metaDecl.mod">
+         <documentation>The &lt;prodname&gt; metadata element contains the name of the product that is
+        supported by the information in this topic. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="vrmlist" definedIn="metaDecl.mod">
+         <documentation>The &lt;vrmlist&gt; element contains a set of &lt;vrm&gt; elements for logging the
+        version, release, and modification information for multiple products or versions of products
+        to which the topic applies. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="vrm" definedIn="metaDecl.mod">
+         <documentation>The vrm empty element contains information about a single product's version,
+        modification, and release, to which the current topic applies. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="brand" definedIn="metaDecl.mod">
+         <documentation>The &lt;brand&gt; element indicates the manufacturer or brand associated with
+        the product described by the parent &lt;prodinfo&gt; element. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="series" definedIn="metaDecl.mod">
+         <documentation>The &lt;series&gt; metadata element contains information about the product
+        series that the topic supports. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="platform" definedIn="metaDecl.mod">
+         <documentation>The &lt;platform&gt; metadata element contains a description of the operating
+        system and/or hardware related to the product being described by the &lt;prodinfo&gt; element.
+        The platform element may be used to provide a more detailed definition of values used
+        throughout the map or topic on the platform attribute. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="prognum" definedIn="metaDecl.mod">
+         <documentation>The &lt;prognum&gt; metadata element identifies the program number of the
+        associated program product. This is typically an order number or a product tracking code
+        that could be replaced by an order number when a product completes development. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="featnum" definedIn="metaDecl.mod">
+         <documentation>The &lt;featnum&gt; element contains the feature number of a product in the
+        metadata. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="component" definedIn="metaDecl.mod">
+         <documentation>The &lt;component&gt; element describes the component of the product that this
+        topic is concerned with. For example, a product might be made up of many components, each of
+        which is installable separately. Components might also be shared by several products so that
+        the same component is available for installation with many products. An implementation may
+        (but need not) use this identification to check cross-component dependencies when some
+        components are installed, but not others. An implementation may also (but need not) use the
+        identification make sure that topics are hidden, removed, or flagged in some way when the
+        component they describe isn't installed. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="othermeta" definedIn="metaDecl.mod">
+         <documentation>The &lt;othermeta&gt; element can be used to identify properties not otherwise
+        included in &lt;metadata&gt; and assign name/content values to those properties. The name
+        attribute identifies the property and the content attribute specifies the property's value.
+        The values in this attribute are output as HTML metadata elements, and have no defined
+        meaning for other possible outputs such as PDF. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="resourceid" definedIn="metaDecl.mod">
+         <documentation>The &lt;resourceid&gt; element provides an identifier for applications that
+        require them in a particular format, when the normal id attribute of the topic can't be
+        used. Each resourceid entry should be unique. It is one of the metadata elements that can be
+        included within the prolog of a topic, along with document tracking and product information,
+        etc. The element has no content, but takes an id attribute and an appname attribute.
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="table" definedIn="tblDecl.mod"/>
+      <element name="tgroup" definedIn="tblDecl.mod">
+         <documentation>The &lt;tgroup&gt; element in a table contains column, row, spanning, header and
+        footer specifications, and the body (&lt;tbody&gt;) of the table. 
+        Category: Table elements</documentation>
+      </element>
+      <element name="colspec" definedIn="tblDecl.mod">
+         <documentation>The &lt;colspec&gt; element contains a column specification for a table,
+        including assigning a column name and number, cell content alignment, and column width.
+        Category: Table elements</documentation>
+      </element>
+      <element name="thead" definedIn="tblDecl.mod">
+         <documentation>The table header (&lt;thead&gt;) element precedes the table body (&lt;tbody&gt;)
+        element in a complex table. 
+        Category: Table elements</documentation>
+      </element>
+      <element name="tbody" definedIn="tblDecl.mod">
+         <documentation>The &lt;tbody&gt; element contains the rows in a table. 
+        Category: Table elements</documentation>
+      </element>
+      <element name="row" definedIn="tblDecl.mod">
+         <documentation>The &lt;row&gt; element contains a single row in a table &lt;tgroup&gt;. 
+        Category: Table elements</documentation>
+      </element>
+      <element name="entry" definedIn="tblDecl.mod">
+         <documentation>The &lt;entry&gt; element defines a single cell in a table. 
+        Category: Table elements</documentation>
+      </element>
+      <element name="topic" definedIn="topic.mod">
+         <documentation>The &lt;topic&gt; element is the top-level DITA element for a single-subject
+        topic or article. Other top-level DITA elements that are more content-specific are
+        &lt;concept&gt;, &lt;task&gt;, &lt;reference&gt;, and &lt;glossary&gt;. 
+        Category: Topic elements</documentation>
+      </element>
+      <element name="titlealts" definedIn="topic.mod">
+         <documentation>The alternate title element (&lt;titlealts&gt;) is optional, but can occur after
+        the topic title. Two elements can be inserted as sub-elements of &lt;titlealts&gt;: navigation
+        title &lt;navtitle&gt; and search title &lt;searchtitle&gt;. 
+        Category: Topic elements</documentation>
+      </element>
+      <element name="searchtitle" definedIn="topic.mod">
+         <documentation>When your DITA topic is transformed to XHTML, the &lt;searchtitle&gt; element is
+        used to create a title element at the top of the resulting HTML file. This title is normally
+        used in search result summaries by some search engines, such as that in Eclipse
+        (http://eclipse.org); if not set, the XHTML's title element defaults to the source topic's
+        title content (which may not be as well optimized for search summaries) 
+        Category: Topic elements</documentation>
+      </element>
+      <element name="abstract" definedIn="topic.mod">
+         <documentation>The abstract element occurs between the topic title and the topic body, as
+        the initial content of a topic. It can contain paragraph-level content as well as one or
+        more shortdesc elements which can be used for providing link previews or summaries. The
+        &lt;abstract&gt; element cannot be overridden by maps, but its contained &lt;shortdesc&gt;
+        elements can be, for the purpose of creating link summaries or previews. 
+        Category: Topic elements</documentation>
+      </element>
+      <element name="body" definedIn="topic.mod">
+         <documentation>The &lt;body&gt; element is the container for the main content of a &lt;topic&gt;.
+        Category: Topic elements</documentation>
+      </element>
+      <element name="bodydiv" definedIn="topic.mod">
+         <documentation>The &lt;bodydiv&gt; element is used to contain informal blocks of information
+        within the body of a topic. The bodydiv element is specifically designed to be a grouping
+        element, without any explicit semantics, other than to organize subsets of content into
+        logical groups that are not intended or should not be contained as a topic. As such, it does
+        not contain an explicit title to avoid enabling the creation of deeply nested content that
+        would otherwise be written as separate topics. Content that requires a title should use a
+        section element or a nested topic.</documentation>
+      </element>
+      <element name="no-topic-nesting" definedIn="topic.mod">
+         <documentation>The &lt;no-topic-nesting&gt; element is a placeholder in the DITA architecture.
+        It is not actually used by the default DITA document types; it is for use only when creating
+        a validly customized document type where the information designer wants to eliminate the
+        ability to nest topics. Not intended for use by authors, and has no associated output
+        processing. 
+        Category: Specialization elements</documentation>
+      </element>
+      <element name="section" definedIn="topic.mod">
+         <documentation>The &lt;section&gt; element represents an organizational division in a topic.
+        Sections are used to organize subsets of information that are directly related to the topic.
+        For example, the titles Reference Syntax, Example and Properties might represent
+        section-level discourse within a topic about a command-line process—the content in each
+        section relates uniquely to the subject of that topic. Multiple sections within a single
+        topic do not represent a hierarchy, but rather peer divisions of that topic. Sections cannot
+        be nested. A section may have an optional title. 
+        Category: Topic elements</documentation>
+      </element>
+      <element name="sectiondiv" definedIn="topic.mod">
+         <documentation>The &lt;sectiondiv&gt; element allows logical grouping of content within a
+        section. There is no additional semantic associated with the sectiondiv element, aside from
+        its function as a container for other content. The sectiondiv element does not contain a
+        title; the lowest level of titled content within a topic is the section itself. If
+        additional hierarchy is required, nested topics should be used in place of the
+        section.</documentation>
+      </element>
+      <element name="example" definedIn="topic.mod">
+         <documentation>The &lt;example&gt; element is a section with the specific role of containing
+        examples that illustrate or support the current topic. The &lt;example&gt; element has the same
+        content model as &lt;section&gt;. 
+        Category: Topic elements</documentation>
+      </element>
+      <element name="prolog" definedIn="topic.mod">
+         <documentation>The &lt;prolog&gt; element contains information about the topic as an whole (for
+        example, author information or subject category) that is either entered by the author or
+        machine-maintained. Much of the metadata inside the &lt;prolog&gt; will not be displayed with
+        the topic on output, but may be used by processes that generate search indexes or customize
+        navigation. 
+        Category: Prolog elements</documentation>
+      </element>
+      <element name="related-links" definedIn="topic.mod">
+         <documentation>The related information links of a topic (&lt;related-links&gt; element) are
+        stored in a special section following the body of the topic. After a topic is processed into
+        it final output form, the related links are usually displayed at the end of the topic,
+        although some Web-based help systems might display them in a separate navigation frame.
+        Category: Topic elements</documentation>
+      </element>
+      <element name="link" definedIn="topic.mod">
+         <documentation>The &lt;link&gt; element defines a relationship to another topic. Links
+        represent the types and roles of topics in a web of information, and therefore represent
+        navigational links within that web. Links are typically sorted on output based on their
+        attributes. The optional container elements for link (&lt;linkpool&gt; and &lt;linklist&gt;) allow
+        authors to define groups with common attributes, or to preserve the authored sequence of
+        links on output. Links placed in a &lt;linkpool&gt; may be rearranged for display purposes
+        (combined with other local or map-based links); links in a &lt;linklist&gt; should be displayed
+        in the order they are defined. Refer to those elements for additional explanation. 
+        Category: Related Links elements</documentation>
+      </element>
+      <element name="linktext" definedIn="topic.mod">
+         <documentation>The &lt;linktext&gt; element provides the literal label or line of text for a
+        link. In most cases, the text of a link can be resolved during processing by cross reference
+        with the target resource. Use the &lt;linktext&gt; element only when the target cannot be
+        reached, such as when it is a peer or external link, or the target is local but not in DITA
+        format. When used inside a topic, it will be used as the text for the specified link; when
+        used within a map, it will be used as the text for generated links that point to the
+        specified topic. 
+        Category: Related Links elements</documentation>
+      </element>
+      <element name="linklist" definedIn="topic.mod">
+         <documentation>The &lt;linklist&gt; element defines an author-arranged group of links. Within
+        &lt;linklist&gt;, the organization of links on final output is in the same order as originally
+        authored in the DITA topic. 
+        Category: Related Links elements</documentation>
+      </element>
+      <element name="linkinfo" definedIn="topic.mod">
+         <documentation>The &lt;linkinfo&gt; element allows you to place a descriptive paragraph
+        following a list of links in a &lt;linklist&gt; element. Category: 
+        Related Links elements</documentation>
+      </element>
+      <element name="linkpool" definedIn="topic.mod">
+         <documentation>The &lt;linkpool&gt; element defines a group of links that have common
+        characteristics, such as type or audience or source. When links are not in a &lt;linklist&gt;
+        (that is, they are in &lt;related-links&gt; or &lt;linkpool&gt; elements), the organization of
+        links on final output is determined by the output process, not by the order that the links
+        actually occur in the DITA topic. 
+        Category: Related Links elements</documentation>
+      </element>
+      <element name="imagemap" definedIn="utilitiesDomain.mod">
+         <documentation>The imagemap element supports the basic functionality of the HTML client-side
+        image map markup. Imagemap allows you to designate a linkable area or region over an image,
+        allowing a link in that region to display another topic. 
+        Category: Utilities elements</documentation>
+      </element>
+      <element name="area" definedIn="utilitiesDomain.mod">
+         <documentation>The area element supports the basic functionality of the HTML image map
+        markup. 
+        Category: Utilities elements</documentation>
+      </element>
+      <element name="shape" definedIn="utilitiesDomain.mod">
+         <documentation>The shape element defines the shape of a linkable area in an imagemap.
+        Category: Utilities elements</documentation>
+      </element>
+      <element name="coords" definedIn="utilitiesDomain.mod">
+         <documentation>The coords element specifies the coordinates of the linkable region in an
+        imagemap area. 
+        Category: Utilities elements</documentation>
+      </element>
+   </category>
+   <category name="bookmap">
+      <element name="bookmap" definedIn="bookmap.mod">
+         <documentation>The &lt;bookmap&gt; element is a map file used to organize DITA content into a
+        traditional book format. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="bookmeta" definedIn="bookmap.mod">
+         <documentation>The &lt;bookmeta&gt; element contains information about the book that is not
+        considered book content, such as copyright information, author information, and any
+        classifications. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="frontmatter" definedIn="bookmap.mod">
+         <documentation>The &lt;frontmatter&gt; element contains the material that precedes the main
+        body of a document. It may include items such as an abstract, a preface, and various types
+        of book lists such as a &lt;toc&gt;, &lt;tablelist&gt;, or &lt;figurelist&gt;. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="backmatter" definedIn="bookmap.mod">
+         <documentation>The &lt;backmatter&gt; element contains the material that follows the main body
+        of a document and any appendixes. It may include items such as a colophon, legal notices,
+        and various types of book lists such as a glossary or an index. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="publisherinformation" definedIn="bookmap.mod">
+         <documentation>The &lt;publisherinformation&gt; contains information about what group or person
+        published the book, where it was published, and certain details about its publication
+        history. Other publication history information is found in the &lt;bookchangehistory&gt;
+        element. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="person" definedIn="bookmap.mod">
+         <documentation>The &lt;person&gt; element contains information about the name of a person. Note
+        that unlike the &lt;personname&gt; element, the &lt;person&gt; element is not restricted to
+        describing the names of authors. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="organization" definedIn="bookmap.mod">
+         <documentation>The &lt;organization&gt; element contains the name of an organization. Note that
+        unlike &lt;organizationname&gt;, the &lt;organization&gt; element is not restricted to usage
+        within &lt;authorinformation&gt;; it does not have to contain the name of an authoring
+        organization. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="bookchangehistory" definedIn="bookmap.mod">
+         <documentation>The &lt;bookchangehistory&gt; element contains information about the history of
+        the book's creation and publishing lifecycle, who wrote, reviewed, edited, and tested the
+        book, and when these events took place. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="bookid" definedIn="bookmap.mod">
+         <documentation>The &lt;bookid&gt; element contains the publisher's identification information
+        for the book, such as part number, edition number and ISBN number. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="summary" definedIn="bookmap.mod">
+         <documentation>The &lt;summary&gt; element contains a text summary associated with a book event
+        (such as &lt;approved&gt; or &lt;reviewed&gt;) or with the list of copyrights for the book.
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="printlocation" definedIn="bookmap.mod">
+         <documentation>The &lt;printlocation&gt; element indicates the location where the book was
+        printed. Customarily, the content is restricted to the name of the country. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="published" definedIn="bookmap.mod">
+         <documentation>The &lt;published&gt; element contains information about the person or
+        organization publishing the book, the dates when it was started and completed, and any
+        special restrictions associated with it. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="publishtype" definedIn="bookmap.mod">
+         <documentation>The &lt;publishtype&gt; element indicates whether the book is generally
+        available or is restricted in some way. The value attribute indicates the restrictions.
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="revisionid" definedIn="bookmap.mod">
+         <documentation>The &lt;revisionid&gt; element indicates the revision number or revision ID of
+        the book. The processing implementation determines how the level is displayed. Common
+        methods include using a dash, for example "-01". or a period, such as ".01". 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="started" definedIn="bookmap.mod">
+         <documentation>The &lt;started&gt; element indicates a start date for some type of book event,
+        such as a review, editing, or testing. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="completed" definedIn="bookmap.mod">
+         <documentation>The &lt;completed&gt; element indicates a completion date for some type of book
+        event, such as a review, editing, or testing. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="year" definedIn="bookmap.mod">
+         <documentation>The &lt;year&gt; element denotes a year. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="month" definedIn="bookmap.mod">
+         <documentation>The &lt;month&gt; element denotes a month of the year. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="day" definedIn="bookmap.mod">
+         <documentation>The &lt;day&gt; element denotes a day of the month. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="reviewed" definedIn="bookmap.mod">
+         <documentation>The &lt;reviewed&gt; element contains information about when and by whom the
+        book was reviewed during its publication history. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="edited" definedIn="bookmap.mod">
+         <documentation>The &lt;edited&gt; element contains information about when and by whom the book
+        was edited during its publication history. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="tested" definedIn="bookmap.mod">
+         <documentation>The &lt;tested&gt; element contains information about when and by whom the book
+        was tested during its publication history. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="approved" definedIn="bookmap.mod">
+         <documentation>The &lt;approved&gt; element contains information about when and by whom the
+        book was approved during its publication history. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="bookevent" definedIn="bookmap.mod">
+         <documentation>The &lt;bookevent&gt; element indicates a general event in the publication
+        history of a book. This is an appropriate element for specialization if the current set of
+        specific book event types, that is, review, edit, test or approval, does not meed your
+        needs. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="bookeventtype" definedIn="bookmap.mod">
+         <documentation>The &lt;bookeventtype&gt; element indicates the specific nature of a
+        &lt;bookevent&gt;, such as updated, indexed, or deprecated. The required name attribute
+        indicates the event's type. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="bookpartno" definedIn="bookmap.mod">
+         <documentation>The &lt;bookpartno&gt; element contains the book's part number; such as 99F1234.
+        This is generally the number that the publisher uses to identify the book for tracking
+        purposes. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="edition" definedIn="bookmap.mod">
+         <documentation>The &lt;edition&gt; element contains the edition number information, such as
+        First Edition, or Third Edition, used by a publisher to identify a book. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="isbn" definedIn="bookmap.mod">
+         <documentation>The &lt;isbn&gt; element contains the book's International Standard Book Number
+        (ISBN). 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="booknumber" definedIn="bookmap.mod">
+         <documentation>The &lt;booknumber&gt; element contains the book's form number, such as
+        SC21-1920. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="volume" definedIn="bookmap.mod">
+         <documentation>The &lt;volume&gt; element contains the book's volume number, such as Volume 2.
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="maintainer" definedIn="bookmap.mod">
+         <documentation>The &lt;maintainer&gt; element contains information about who maiintains the
+        document; this can be an organization or a person. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="bookrights" definedIn="bookmap.mod">
+         <documentation>The &lt;bookrights&gt; element contains the information about the legal rights
+        associated with the book, including copyright dates and owners. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="copyrfirst" definedIn="bookmap.mod">
+         <documentation>The &lt;copyfirst&gt; element contains the first copyright year within a
+        multiyear copyright statement. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="copyrlast" definedIn="bookmap.mod">
+         <documentation>The &lt;copylast&gt; element contains the last copyright year within a multiyear
+        copyright statement. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="bookowner" definedIn="bookmap.mod">
+         <documentation>The &lt;bookowner&gt; element contains the owner of the copyright. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="bookrestriction" definedIn="bookmap.mod">
+         <documentation>The &lt;bookrestriction&gt; element indicates whether the book is classified, or
+        restricted in some way. The value attribute indicates the restrictions; this may be a string
+        like "All Rights Reserved," representing the publisher's copyright restrictions. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="booktitle" definedIn="bookmap.mod">
+         <documentation>The &lt;booktitle&gt; element contains the title information for a book. ,
+        including &lt;booklibrary&gt; data, a &lt;maintitle&gt; and subtitle (&lt;titlealt&gt;) as required.
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="booklibrary" definedIn="bookmap.mod">
+         <documentation>The &lt;booklibrary&gt; element contains the library information for a book.
+        Library entries contain information about the series, library, or collection of documents to
+        which the book belongs. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="mainbooktitle" definedIn="bookmap.mod">
+         <documentation>The &lt;mainbooktitle&gt; element contains the primary title information for a
+        book. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="booktitlealt" definedIn="bookmap.mod">
+         <documentation>The &lt;booktitlealt&gt; element contains the alternative title, subtitle, or
+        short title for a book. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="draftintro" definedIn="bookmap.mod">
+         <documentation>The &lt;draftintro&gt; element references a topic used as an introduction to the
+        draft of this book. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="bookabstract" definedIn="bookmap.mod">
+         <documentation>The &lt;bookabstract&gt; element references a topic used within a bookmap as a
+        brief summary of book content, generally output as part of the book's front matter. It is
+        used to help the reader quickly evaluate the book's purpose. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="dedication" definedIn="bookmap.mod">
+         <documentation>The &lt;dedication&gt; element references a topic containing a dedication for
+        the book, such as to a person or group. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="preface" definedIn="bookmap.mod">
+         <documentation>The &lt;preface&gt; element references introductory information about a book,
+        such as the purpose and structure of the document. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="chapter" definedIn="bookmap.mod">
+         <documentation>The &lt;chapter&gt; element references a topic as a chapter within a book.
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="part" definedIn="bookmap.mod">
+         <documentation>The &lt;part&gt; element references a part topic for the book. A new part is
+        started. Use &lt;part&gt; to divide a document's chapters into logical groupings. For example,
+        in a document that contains both guide and reference information, you can define two parts,
+        one containing the guide information and the other containing the reference information.
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="appendix" definedIn="bookmap.mod">
+         <documentation>The &lt;appendix&gt; element references a topic as a appendix within a book.
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="appendices" definedIn="bookmap.mod">
+         <documentation>The &lt;appendices&gt; element is an optional wrapper for &lt;appendix&gt; elements
+        within a bookmap.</documentation>
+      </element>
+      <element name="notices" definedIn="bookmap.mod">
+         <documentation>The &lt;notices&gt; element references special notice information, for example,
+        legal notices about supplementary copyrights and trademarks associated with the book. .
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="amendments" definedIn="bookmap.mod">
+         <documentation>The &lt;amendments&gt; element references a list of amendments or updates to the
+        book. It indicates to the processing software that the author wants an amendments list
+        generated at the particular location. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="colophon" definedIn="bookmap.mod">
+         <documentation>The &lt;colophon&gt; element references a topic describing how this document was
+        created. In publishing, a colophon describes details of the production of a book. This
+        information generally includes the typefaces used, and often the names of their designers;
+        the paper, ink and details of the binding materials and methods may also receive mention. In
+        the case of technical books, a colophon may specify the software used to prepare the text
+        and diagrams for publication. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="booklists" definedIn="bookmap.mod">
+         <documentation>The &lt;booklists&gt; element references lists of various kinds within the book.
+        For example, it can be used within front matter to reference a &lt;toc&gt;, &lt;tablelist&gt;, and
+        &lt;figurelist&gt;, or within back matter to reference a &lt;glossarylist&gt;, &lt;indexlist&gt;, and
+        &lt;abbrevlist&gt;. It indicates to the processing software that the author wants the lists
+        generated at the &lt;booklists&gt; location. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="toc" definedIn="bookmap.mod">
+         <documentation>The &lt;toc&gt; element references the table of contents within the book. It
+        indicates to the processing software that the author wants a table of contents generated at
+        the particular location. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="figurelist" definedIn="bookmap.mod">
+         <documentation>The &lt;figurelist&gt; element references a list of figures in the book. It
+        indicates to the processing software that the author wants a list of figures generated at
+        the particular location. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="tablelist" definedIn="bookmap.mod">
+         <documentation>The &lt;tablelist&gt; element references a list of tables within the book. It
+        indicates to the processing software that the author wants a list of tables generated at the
+        particular location. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="abbrevlist" definedIn="bookmap.mod">
+         <documentation>The &lt;abbrevlist&gt; element references a list of abbreviations. It indicates
+        to the processing software that the author wants an abbreviation list generated at the
+        particular location. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="trademarklist" definedIn="bookmap.mod">
+         <documentation>The &lt;trademarklist&gt; element references a list of trademarks within the
+        book. It indicates to the processing software that the author wants a list of trademarks
+        generated at the particular location. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="bibliolist" definedIn="bookmap.mod">
+         <documentation>The &lt;bibliolist&gt; element references a list of bibliographic entries within
+        the book. It indicates to the processing software that the author wants a bibliography,
+        containing links to related books, articles, published papers, or other types of material,
+        generated at the particular location. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="glossarylist" definedIn="bookmap.mod">
+         <documentation>The &lt;glossarylist&gt; element references a list of glossary entries within
+        the book. It indicates to the processing software that the author wants a glossary list
+        generated at the particular location. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="indexlist" definedIn="bookmap.mod">
+         <documentation>The &lt;indexlist&gt; element lists the index entries in the book. It indicates
+        to the processing software that the author wants an index generated at the particular
+        location. 
+        Category: Bookmap elements</documentation>
+      </element>
+      <element name="booklist" definedIn="bookmap.mod">
+         <documentation>The &lt;booklist&gt; element is a general purpose element, designed for use in
+        specializations, that references a list of particular types of topics within the book. It
+        indicates to the processing software that the author wants that list of topics generated at
+        the particular location. For example, it could be used in a specialization to reference the
+        location of a list of program listings or of authors of topics. 
+        Category: Bookmap elements</documentation>
+      </element>
+   </category>
+   <category name="learning">
+      <element name="learningAssessment" definedIn="learningAssessment.mod">
+         <documentation>A Learning Assessment presents questions or interactions that measure
+        progress, encourage recollection, and stimulate reinforcement of the learning content, and
+        can be presented before the content as a pre-assessment or as a post-assessment test. The
+        interactions use a sub-set of the Question-Test Interoperability (QTI) specification,
+        implemented as a DITA domain specialization.</documentation>
+      </element>
+      <element name="learningAssessmentbody" definedIn="learningAssessment.mod">
+         <documentation>The &lt;learningAssessmentbody&gt; element is the main body-level element in a
+        learningAssessment topic.</documentation>
+      </element>
+      <element name="learningBase" definedIn="learningBase.mod">
+         <documentation>The learningBase topic type is not used to deliver any actual learning
+        content, but instead provides a set of common elements for use in the other more specific
+        learning content types: learningOverview,learningContent, learningSummary,
+        learningAssessment, and learningPlan.</documentation>
+      </element>
+      <element name="learningBasebody" definedIn="learningBase.mod">
+         <documentation>The &lt;learningBasebody&gt; element is the main body-level element in a
+        learningBase topic. The learningBase topic provides a set of base elements for use in the
+        other specialized learning types. It is not generally intended for creating actual content.
+        As such, each of the body sections in learningBase are optional.</documentation>
+      </element>
+      <element name="lcIntro" definedIn="learningBase.mod">
+         <documentation>The &lt;lcIntro&gt; provides a detailed introduction and description of the
+        content to be delivered, in cases where the &lt;shortdesc&gt; is not adequate to fully describe
+        the content. It may also include instructor notes.</documentation>
+      </element>
+      <element name="lcObjectives" definedIn="learningBase.mod">
+         <documentation>The &lt;lcObjectives&gt; lists or describes the learning
+        goals.</documentation>
+      </element>
+      <element name="lcObjectivesStem" definedIn="learningBase.mod">
+         <documentation>The &lt;lcObjectivesStem&gt; provides a leading sentence to introduce a list of
+        learning objectives.</documentation>
+      </element>
+      <element name="lcObjectivesGroup" definedIn="learningBase.mod">
+         <documentation>The &lt;lcObjectivesGroup&gt; contains a list of one or more learning
+        objectives.</documentation>
+      </element>
+      <element name="lcObjective" definedIn="learningBase.mod">
+         <documentation>The &lt;lcObjective&gt; describes a single learning objective.</documentation>
+      </element>
+      <element name="lcAudience" definedIn="learningBase.mod">
+         <documentation>The &lt;lcAudience&gt; describes characteristics of the learners who take the
+        instruction.</documentation>
+      </element>
+      <element name="lcDuration" definedIn="learningBase.mod">
+         <documentation>The &lt;lcDuration&gt; provides an estimated duration for the learning
+        activity.</documentation>
+      </element>
+      <element name="lcTime" definedIn="learningBase.mod">
+         <documentation>The &lt;lcTime&gt; specifies the time expected to complete an
+        activity.</documentation>
+      </element>
+      <element name="lcPrereqs" definedIn="learningBase.mod">
+         <documentation>The &lt;lcPrereqs&gt; describes the knowledge, experience, or other
+        prerequisites needed to complete the content.</documentation>
+      </element>
+      <element name="lcSummary" definedIn="learningBase.mod">
+         <documentation>The &lt;lcSummary&gt; provides a textual summary that describes the main
+        learning goals and lessons learned.</documentation>
+      </element>
+      <element name="lcNextSteps" definedIn="learningBase.mod">
+         <documentation>The &lt;lcNextSteps&gt; suggests next steps to reinforce the knowledge
+        learned.</documentation>
+      </element>
+      <element name="lcReview" definedIn="learningBase.mod">
+         <documentation>The &lt;lcReview&gt; provides a review of the main points.</documentation>
+      </element>
+      <element name="lcResources" definedIn="learningBase.mod">
+         <documentation>The &lt;lcResources&gt; provides a list of related resources and information
+        about them, such as related articles or samples on the web. </documentation>
+      </element>
+      <element name="lcChallenge" definedIn="learningBase.mod">
+         <documentation>The &lt;lcChallenge&gt; refers to what it is that you want the student to
+        practice. For example, if you're studying network diagrams, and challenge might be "see
+        if you can put this network into its proper sequence" or "see if you understand this
+        network flow".</documentation>
+      </element>
+      <element name="lcInstruction" definedIn="learningBase.mod">
+         <documentation>The &lt;lcInstruction&gt; describes the specifics of a learning
+        activity.</documentation>
+      </element>
+      <element name="lcInteraction" definedIn="learningBase.mod">
+         <documentation>The &lt;lcInteraction&gt; is a wrapper element for all the interactions of the
+        assessment. The interactions themselves are based on a basic set of assessment types
+        implemented as a DITA domain specialization.</documentation>
+      </element>
+      <element name="learningContent" definedIn="learningContent.mod">
+         <documentation>A Learning Content topic provides the learning content itself, and enables
+        direct use of content from DITA task, concept, and reference topics, as well as additional
+        content of any topic type that supports specific objectives declared in the Learning
+        Overview topic type. A Learning Content topic comprises a set of self-contained content
+        about a single terminal learning objective supported by zero or more enabling learning
+        objectives.</documentation>
+      </element>
+      <element name="learningContentbody" definedIn="learningContent.mod">
+         <documentation>The &lt;learningContentbody&gt; element is the main body-level element in a
+        learningContent topic.</documentation>
+      </element>
+      <element name="lcInstructornote" definedIn="learningDomain.mod">
+         <documentation>Use the &lt;lcInstructornote&gt; element to provide information or notes you want to provide to the course instructor. These notes can be condionalized out of content you intend to deliver to the learner. </documentation>
+      </element>
+      <element name="lcTrueFalse" definedIn="learningDomain.mod">
+         <documentation>A lcTrueFalse interaction presents the learner with two choices, one correct, the other incorrect, often presented as true/false or yes/no responses. </documentation>
+      </element>
+      <element name="lcSingleSelect" definedIn="learningDomain.mod">
+         <documentation>An lcSingleSelect interaction presents three or more choices, only one of which is correct. </documentation>
+      </element>
+      <element name="lcMultipleSelect" definedIn="learningDomain.mod">
+         <documentation>In an lcMultipleSelect interaction, the learner must indicate two or more correct answers from a list of choices. </documentation>
+      </element>
+      <element name="lcSequencing" definedIn="learningDomain.mod">
+         <documentation>An lcSequencing interaction asks the learner to arrange a list of choices into a predefined order, such as small to large. </documentation>
+      </element>
+      <element name="lcMatching" definedIn="learningDomain.mod">
+         <documentation>In an lcMatching interaction, the learner identifies the correct choice that matches another choice. </documentation>
+      </element>
+      <element name="lcHotspot" definedIn="learningDomain.mod">
+         <documentation>In a lcHotspot interaction, the learner clicks on a region of the screen to indicate a choice. </documentation>
+      </element>
+      <element name="lcOpenQuestion" definedIn="learningDomain.mod">
+         <documentation>Use &lt;lcOpenQuestion&gt; to pose an open-ended question in an assessment interaction. </documentation>
+      </element>
+      <element name="lcQuestion" definedIn="learningDomain.mod">
+         <documentation>Use the &lt;lcQuestion&gt; element in an interaction to ask the question. </documentation>
+      </element>
+      <element name="lcOpenAnswer" definedIn="learningDomain.mod">
+         <documentation>Use &gt;lcOpenAnswer&lt; to provide a suggested answer for an &gt;lcOpenQuestion&lt; interaction. </documentation>
+      </element>
+      <element name="lcAnswerOptionGroup" definedIn="learningDomain.mod">
+         <documentation>The &lt;lcAnswerOptionGroup&gt; element provides a container for the options for a true-false, single-select, or multiple-select assessment interaction. </documentation>
+      </element>
+      <element name="lcSequenceOptionGroup" definedIn="learningDomain.mod">
+         <documentation>The &lt;lcSequenceOptionGroup&gt; element provides the options for an assessment sequence interaction. </documentation>
+      </element>
+      <element name="lcAsset" definedIn="learningDomain.mod">
+         <documentation>The &lt;lcAsset&gt; element in an assessment interaction provides the images or other graphic assets to support the interaction. </documentation>
+      </element>
+      <element name="lcSequenceOption" definedIn="learningDomain.mod">
+         <documentation>The &lt;lcSequenceOption&gt; element in an assessment interaction provides the contents of an item in a sequence interaction. </documentation>
+      </element>
+      <element name="lcFeedback" definedIn="learningDomain.mod">
+         <documentation>The &lt;lcFeedback&gt; element in an assessment interaction provides information to the learner about a correct or incorrect response. </documentation>
+      </element>
+      <element name="lcFeedbackCorrect" definedIn="learningDomain.mod">
+         <documentation>The &lt;lcFeedbackCorrect&gt; element in an assessment interaction provides feedback to the learner about a correct response. </documentation>
+      </element>
+      <element name="lcFeedbackIncorrect" definedIn="learningDomain.mod">
+         <documentation>The &lt;lcFeedbackIncorrect&gt; element in an assessment interaction provides feedback about incorrect response. </documentation>
+      </element>
+      <element name="lcAnswerOption" definedIn="learningDomain.mod">
+         <documentation>The &lt;lcAnswerOption&gt; element in an assessment interaction provides the content and feedback for a question option, and can indicate the correct option. </documentation>
+      </element>
+      <element name="lcAnswerContent" definedIn="learningDomain.mod">
+         <documentation>The &lt;lcAnswerContent&gt; element in a learning assessment interaction provides the content for an answer option, which the learner can select as correct or incorrect. </documentation>
+      </element>
+      <element name="lcMatchTable" definedIn="learningDomain.mod">
+         <documentation>The &lt;lcMatchTable&gt; element in an assessment interaction provides a format for matching items. </documentation>
+      </element>
+      <element name="lcMatchingHeader" definedIn="learningDomain.mod">
+         <documentation>The &lt;lcMatchingHeader&gt; element in an assessment interaction provides column headings for items to present in a matching table. </documentation>
+      </element>
+      <element name="lcMatchingPair" definedIn="learningDomain.mod">
+         <documentation>The &lt;lcMatchingPair&gt; element in an assessment interaction provides a table row with the pair of items that comprise a correct match in a matching interaction. </documentation>
+      </element>
+      <element name="lcItem" definedIn="learningDomain.mod">
+         <documentation>The &lt;lcItem&gt; element in an assessment interaction provides the content for an item that matches the match item in a match table. </documentation>
+      </element>
+      <element name="lcMatchingItem" definedIn="learningDomain.mod">
+         <documentation>The &lt;lcMatchingItem&gt; element in an assessment interaction provides the content for the matching side of a matching pair of items in a match table interaction. </documentation>
+      </element>
+      <element name="lcMatchingItemFeedback" definedIn="learningDomain.mod"/>
+      <element name="lcHotspotMap" definedIn="learningDomain.mod">
+         <documentation>A lcHotspotMap interaction lets you designate an action area or region over an image, allowing a click in that region to get scored as correct or incorrect in respoinse to an interaction question. </documentation>
+      </element>
+      <element name="lcArea" definedIn="learningDomain.mod">
+         <documentation>A lcArea defines an area of a hotspot image that contains a correct or incorrect choice in a hotspot assessment interaction. </documentation>
+      </element>
+      <element name="lcAreaShape" definedIn="learningDomain.mod"/>
+      <element name="lcAreaCoords" definedIn="learningDomain.mod"/>
+      <element name="lcCorrectResponse" definedIn="learningDomain.mod">
+         <documentation>The &lt;lcCorrectResponse&gt; element in an assessment interaction indicates a correct response. </documentation>
+      </element>
+      <element name="lcSequence" definedIn="learningDomain.mod">
+         <documentation>The &lt;lcSequence&gt; element in an assessment interaction provides the position of a sequence option in a sequence. </documentation>
+      </element>
+      <element name="lcInteractionBase" definedIn="learningInteractionBaseDomain.mod"/>
+      <element name="lcQuestionBase" definedIn="learningInteractionBaseDomain.mod"/>
+      <element name="learningGroup" definedIn="learningMapdomain.mod">
+         <documentation>learningGroupintroduces and groups learning objects into higher-level organizations, such as course-level, module-level, or lesson-level. </documentation>
+      </element>
+      <element name="learningObject" definedIn="learningMapdomain.mod">
+         <documentation>learningObject organizes topic references to DITA learning topics as a learning object. </documentation>
+      </element>
+      <element name="learningPlanRef" definedIn="learningMapdomain.mod">
+         <documentation>Use a learningPlanRef element to include a topic reference to a learning plan topic as part of a learningObject. </documentation>
+      </element>
+      <element name="learningOverviewRef" definedIn="learningMapdomain.mod">
+         <documentation>Use a learningOverviewRef element to include a topic reference to a learning overview topic as part of a learningObject. </documentation>
+      </element>
+      <element name="learningSummaryRef" definedIn="learningMapdomain.mod">
+         <documentation>Use a learningSummaryRef to include topic reference to a learning summary topic in a DITA learning object. </documentation>
+      </element>
+      <element name="learningContentRef" definedIn="learningMapdomain.mod">
+         <documentation>Use a learningContentRef element to include a topic reference to a learning content topic as part of a DITA learningObject. </documentation>
+      </element>
+      <element name="learningContentComponentRef" definedIn="learningMapdomain.mod"/>
+      <element name="learningPreAssessmentRef" definedIn="learningMapdomain.mod">
+         <documentation>Use a learningPreAssessmentRef element to include a topic reference to a learning assessment topic as part of a DITA learningObject. </documentation>
+      </element>
+      <element name="learningPostAssessmentRef" definedIn="learningMapdomain.mod">
+         <documentation>Use a learningPostAssessmentRef element to include a topic reference to a learning assessment topic as part of a DITA learningObject. </documentation>
+      </element>
+      <element name="lcLom" definedIn="learningMetadataDomain.mod">
+         <documentation>The &lt;lcLom&gt; provides a set of specialized data elements to use to specify metadata in the learning topics and learning map domain. </documentation>
+      </element>
+      <element name="lomStructure" definedIn="learningMetadataDomain.mod">
+         <documentation>The &lt;lomStructure&gt; provides learning metadata about the underlying organizational structure of the resource. </documentation>
+      </element>
+      <element name="lomCoverage" definedIn="learningMetadataDomain.mod">
+         <documentation>The &lt;lomCoverage&gt; provides learning metadata about the temporal or spatial characteristics of the content, such as historical context. </documentation>
+      </element>
+      <element name="lomAggregationLevel" definedIn="learningMetadataDomain.mod">
+         <documentation>The &lt;lomAggregationLevel&gt; describes the functional size of the learning resource. </documentation>
+      </element>
+      <element name="lomTechRequirement" definedIn="learningMetadataDomain.mod">
+         <documentation>The &lt;lomTechRequirement&gt; provides learning metadata about the operating system(s) under which the learning resource can run. </documentation>
+      </element>
+      <element name="lomInstallationRemarks" definedIn="learningMetadataDomain.mod">
+         <documentation>The &lt;lomInstallationRemarks&gt; provides learning metadata about how to install and needed resources. </documentation>
+      </element>
+      <element name="lomOtherPlatformRequirements" definedIn="learningMetadataDomain.mod">
+         <documentation>The &lt;lomOtherPlatformRequirements&gt; provides learning metadata information about other software and hardware requirements. </documentation>
+      </element>
+      <element name="lomInteractivityType" definedIn="learningMetadataDomain.mod">
+         <documentation>The &lt;lomInteractivityType&gt; provides learning metadata about the the type of interactivity supported by the resource. </documentation>
+      </element>
+      <element name="lomLearningResourceType" definedIn="learningMetadataDomain.mod">
+         <documentation>The &lt;lomLearningResourceType&gt; provides learning metadata about the specific kind of resource used, most dominant kind first. </documentation>
+      </element>
+      <element name="lomInteractivityLevel" definedIn="learningMetadataDomain.mod">
+         <documentation>The &lt;lomInteractivityLevel&gt; provides learning metadata about the level of interactivity between an end user and the learning object. </documentation>
+      </element>
+      <element name="lomSemanticDensity" definedIn="learningMetadataDomain.mod">
+         <documentation>The &lt;lomSemanticDensity&gt; provides learning metadata about a subjective measure of the learning object's usefulness as compared to its size or duration. </documentation>
+      </element>
+      <element name="lomIntendedUserRole" definedIn="learningMetadataDomain.mod">
+         <documentation>The &lt;lomIntendedUserRole&gt; provides learning metadata about the normal user of the resource, most dominant first. </documentation>
+      </element>
+      <element name="lomContext" definedIn="learningMetadataDomain.mod">
+         <documentation>The &lt;lomContext&gt; provides learning metadata about the typical learning environment where use of learning object is intended to take place. </documentation>
+      </element>
+      <element name="lomTypicalAgeRange" definedIn="learningMetadataDomain.mod">
+         <documentation>The &lt;lomTypicalAgeRange&gt; provides learning metadata about the age of the typical intended user. </documentation>
+      </element>
+      <element name="lomDifficulty" definedIn="learningMetadataDomain.mod">
+         <documentation>The &lt;lomDifficulty&gt; provides learning metadata about how hard it is to work through the resource for the typical target audience. </documentation>
+      </element>
+      <element name="lomTypicalLearningTime" definedIn="learningMetadataDomain.mod">
+         <documentation>The &lt;lomTypicalLearningTime&gt; provides learning metadata about the approximate or typical time it takes to work with the resource. </documentation>
+      </element>
+      <element name="learningOverview" definedIn="learningOverview.mod">
+         <documentation>A Learning Overview topic identifies the learning objectives, includes other information helpful to the learner, such as prerequisites, duration, intended audience, and can include information and strategies that seeks to gain attention and stimulate recall of prior learning. </documentation>
+      </element>
+      <element name="learningOverviewbody" definedIn="learningOverview.mod">
+         <documentation>The &lt;learningOverviewbody&gt; element is the main body-level element in a learningOverview topic. A learningOverviewbody has a very specific structure, with the following elements in this order: &lt;lcIntro&gt;, &lt;lcAudience&gt;, &lt;lcDuration&gt;, &lt;lcPrereqs&gt;, &lt;lcObjectives&gt;, &lt;lcResources&gt;, followed by one or more &lt;section&gt; elements. Each of the learningOverviewbody sections are optional. </documentation>
+      </element>
+      <element name="learningPlan" definedIn="learningPlan.mod">
+         <documentation>A Learning Plan topic describes learning needs and goals, instructional design models, task analyses, learning taxonomies, and other information necessary to the lesson planning process. </documentation>
+      </element>
+      <element name="learningPlanbody" definedIn="learningPlan.mod">
+         <documentation>The &lt;learningPlanbody&gt; element is the main body-level element in a learningPlan topic. </documentation>
+      </element>
+      <element name="lcProject" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcProject&gt; provides learning content project plan description information. </documentation>
+      </element>
+      <element name="lcClient" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcClient&gt; provides the person or organization sponsoring or requiring the learning event development. </documentation>
+      </element>
+      <element name="lcPlanTitle" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcPlanTitle&gt; provides a title for this plan. </documentation>
+      </element>
+      <element name="lcCIN" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcCIN&gt; provides an alternate identifier for the project title. </documentation>
+      </element>
+      <element name="lcModDate" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcModDate&gt; provides the project modification date. </documentation>
+      </element>
+      <element name="lcDelivDate" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcDelivDate&gt; provides the project delivery date. </documentation>
+      </element>
+      <element name="lcPlanSubject" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcPlanSubject&gt; provides a complete description of the subject of the planned learning. </documentation>
+      </element>
+      <element name="lcPlanDescrip" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcPlanDescrip&gt; provides a plan description. </documentation>
+      </element>
+      <element name="lcPlanPrereqs" definedIn="learningPlan.mod">
+         <documentation>&lt;lcPlanPrereqs&gt; provides the knowledge, skills, abilities, courses and other activities learners must have satisfied to take the instruction. </documentation>
+      </element>
+      <element name="lcNeedsAnalysis" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcNeedsAnalysis&gt; describes the training requirement and identifies the need to develop or revise content. These include periodic training gap analyses, changes to operational or maintenance requirements, and changes to equipment or systems. </documentation>
+      </element>
+      <element name="lcOrganizational" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcOrganizational&gt; describes an organization's learning requirements. </documentation>
+      </element>
+      <element name="lcGeneralDescription" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcGeneralDescription&gt; provides a space to develop a general description about the organization's training needs. </documentation>
+      </element>
+      <element name="lcGoals" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcGoals&gt; provides the outcomes desired by the organization to be addressed by the training effort. These goals may require concurrent efforts outside of training such as technology acquisition, reorganization, and so forth. </documentation>
+      </element>
+      <element name="lcNeeds" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcNeeds&gt; provides the needs behind the outcomes described by the &lt;lcGoals&gt;. </documentation>
+      </element>
+      <element name="lcValues" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcValues&gt; describes affective components of desired instructional outcomes. </documentation>
+      </element>
+      <element name="lcOrgConstraints" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcOrgConstraints&gt; provides organizational aspects that may limit the organization's ability to effectively use the instruction to meet its goals. </documentation>
+      </element>
+      <element name="lcPlanAudience" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcPlanAudience&gt; describes characteristics of the learners who take the instruction. </documentation>
+      </element>
+      <element name="lcEdLevel" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcEdLevel&gt; provides the range of learners' education level and the relevancy to the learning plan. </documentation>
+      </element>
+      <element name="lcAge" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcAge&gt; provides the age range of the intended learner audience, for use by curriculum developers and course planners. </documentation>
+      </element>
+      <element name="lcBackground" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcBackground&gt; provides the learners' professional background and the relevancy to the learning plan. </documentation>
+      </element>
+      <element name="lcSkills" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcSkills&gt; describes the learners' current skill set and the relevancy to the learning plan. </documentation>
+      </element>
+      <element name="lcKnowledge" definedIn="learningPlan.mod">
+         <documentation>&lt;lcKnowledge&gt; provides the learners' current knowledge of the learning topics. </documentation>
+      </element>
+      <element name="lcMotivation" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcMotivation&gt; provides the reasons why the learners want and/or need to take the instruction. </documentation>
+      </element>
+      <element name="lcSpecChars" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcSpecChars&gt; provides learner characteristics specific to the population that will influence the design, including learning disabilities, physical handicaps, and so forth. </documentation>
+      </element>
+      <element name="lcWorkEnv" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcWorkEnv&gt; describes the working conditions and contexts in which the training will be applied. </documentation>
+      </element>
+      <element name="lcWorkEnvDescription" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcWorkEnvDescription&gt; provides the general working environment in which the training will be applied. </documentation>
+      </element>
+      <element name="lcPlanResources" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcPlanResources&gt; describes resource needs. </documentation>
+      </element>
+      <element name="lcProcesses" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcProcesses&gt; describes processes learners routinely follow. </documentation>
+      </element>
+      <element name="lcTask" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcTask&gt; captures a work item to be performed, as part of the learning plan. </documentation>
+      </element>
+      <element name="lcTaskItem" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcTaskItem&gt; describes a discreet task to be taught. </documentation>
+      </element>
+      <element name="lcAttitude" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcAttitude&gt; describes mental state that influences the choices of personal actions. </documentation>
+      </element>
+      <element name="lcGapAnalysis" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcGapAnalysis&gt; compares existing learning objectives to current job task analysis. </documentation>
+      </element>
+      <element name="lcGapItem" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcGapItem&gt; describes gaps between existing training objectives and related job-task-analysis content. </documentation>
+      </element>
+      <element name="lcPlanObjective" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcPlanObjective&gt; describes the objective to be addressed by a gap analysis or intervention. </documentation>
+      </element>
+      <element name="lcJtaItem" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcJtaItem&gt; provides description of job task analysis (JTA) as related to a particular learning objective. </documentation>
+      </element>
+      <element name="lcGapItemDelta" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcGapItemDelta&gt; describes the gap between the learning objective and the task analysis. </documentation>
+      </element>
+      <element name="lcIntervention" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcIntervention&gt; describes the approach and strategies to building the learning materials, based on the needs analysis. </documentation>
+      </element>
+      <element name="lcInterventionItem" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcInterventionItem&gt; describes how learning content is built, based on a systems approach to analyzing, designing, developing, implementing, and evaluating any instructional experience. </documentation>
+      </element>
+      <element name="lcLearnStrat" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcLearnStrat&gt; describes the manner in which the learning content will be instructed. This should be a high level design that applies instructional-design theories and models. </documentation>
+      </element>
+      <element name="lcAssessment" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcAssessment&gt; describes assessment plans. </documentation>
+      </element>
+      <element name="lcDelivery" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcDelivery&gt; describes the delivery method for this learning content. </documentation>
+      </element>
+      <element name="lcTechnical" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcTechnical&gt; describes the technical requirements to the learning content and how those requirements are supported by the instructional design. </documentation>
+      </element>
+      <element name="lcLMS" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcLMS&gt; provides the LMS name and version number used in the learning event. </documentation>
+      </element>
+      <element name="lcNoLMS" definedIn="learningPlan.mod">
+         <documentation>Use &lt;lcNoLMS&gt; when you plan to deliver the content as a standalone package, without a learning management system (LMS). </documentation>
+      </element>
+      <element name="lcHandouts" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcHandouts&gt; provides aspects of the course that are provided by the instructor in support of the course learning objectives. </documentation>
+      </element>
+      <element name="lcClassroom" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcClassroom&gt; describes the classroom environment. </documentation>
+      </element>
+      <element name="lcOJT" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcOJT&gt; is &amp;#34;the job training&amp;#34; and describes aspects of the course taking place in the work environment. </documentation>
+      </element>
+      <element name="lcConstraints" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcConstraints&gt; describes the organizational or technical aspects that may limit the organization's ability to effectively use the instruction to meet its goals. </documentation>
+      </element>
+      <element name="lcW3C" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcW3C&gt; provides requirements for use of world wide web consortium standards. </documentation>
+      </element>
+      <element name="lcPlayers" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcPlayers&gt; describes tools and plugins used for time-sequenced display at runtime. </documentation>
+      </element>
+      <element name="lcGraphics" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcGraphics&gt; describes standards and system requirements for displaying graphics and other related content types. </documentation>
+      </element>
+      <element name="lcViewers" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcViewers&gt; describes viewers used for time-sequenced display at runtime. </documentation>
+      </element>
+      <element name="lcResolution" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcResolution&gt; describes the required computer screen resolution for the online instruction. </documentation>
+      </element>
+      <element name="lcFileSizeLimitations" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcFileSizeLimitations&gt; describes any file size limitation in the download environment. </documentation>
+      </element>
+      <element name="lcDownloadTime" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcDownloadTime&gt; describes the maximum time allowed for download time in the client's delivery environment. </documentation>
+      </element>
+      <element name="lcSecurity" definedIn="learningPlan.mod">
+         <documentation>The &lt;lcSecurity&gt; describes the security requirements in the delivered instruction. </documentation>
+      </element>
+      <element name="learningSummary" definedIn="learningSummary.mod">
+         <documentation>A Learning Summary recaps and provides context for the achievement or accomplishment of learning objectives, provides guidance to reinforce learning and long-term memory, and may pose questions to enhance encoding and verification of the learning content. </documentation>
+      </element>
+      <element name="learningSummarybody" definedIn="learningSummary.mod">
+         <documentation>The &lt;learningSummarybody&gt; element is the main body-level element in a learningSummary topic. </documentation>
+      </element>
+   </category>
+   <category name="machineryIndustry"/>
+   <category name="subjectScheme">
+      <element name="topicsubject" definedIn="classifyDomain.mod">
+         <documentation>The &lt;topicsubject&gt; element identifies the subjects for which the topic or collection of topics provides the authoritative treatment. The subjects can be identified by keys (if defined in the scheme) or, if the subject definition topic exists, by href (as with ordinary topic references). Additional secondary subjects can be specified by nested &lt;subjectref&gt; elements. </documentation>
+      </element>
+      <element name="topicapply" definedIn="classifyDomain.mod">
+         <documentation>The &lt;topicapply&gt; element identifies subjects that qualify the content for filtering or flagging but not retrieval. The &lt;topicapply&gt; element can identify a single subject. Additional subjects can be specified by nested &lt;subjectref&gt; elements. </documentation>
+      </element>
+      <element name="subjectref" definedIn="classifyDomain.mod">
+         <documentation>The &lt;subjectref&gt; element identifies a subject to classify content. The &lt;subjectref&gt; can identify the subject with a keyref attribute (if the scheme has a &lt;subjectdef&gt; with a keys attribute that assigns a key to the subject) or an href attribute (if a topic captures the consensus definition for the subject). </documentation>
+      </element>
+      <element name="topicSubjectTable" definedIn="classifyDomain.mod">
+         <documentation>The &lt;topicSubjectTable&gt; element is a specialized relationship table which allows a map to use relationship tables to associate topics with subjects. In a &lt;topicSubjectTable&gt;, the first column is reserved for references to content. Subsequent columns are reserved for subjects that classify the content, each column supplying the subjects for a different category as identified in the header. The table resembles a traditional relationship table in which the first column identifies the source and the other columns identify the targets, but the relationship reflects the subjects covered by the content rather than linking between documents. </documentation>
+      </element>
+      <element name="topicSubjectHeader" definedIn="classifyDomain.mod">
+         <documentation>The &lt;topicSubjectHeader&gt; element specifies constraints on the subjects used in classifications. </documentation>
+      </element>
+      <element name="topicSubjectRow" definedIn="classifyDomain.mod">
+         <documentation>The &lt;topicSubjectRow&gt; is a grouping element that contains one row of a subject table. It contains topic references in the first column, and relates those references to the subjects in each following column. </documentation>
+      </element>
+      <element name="topicCell" definedIn="classifyDomain.mod">
+         <documentation>The &lt;topicCell&gt; element contains topics that will be associated with subjects in each following column of the current row in the &lt;topicSubjectTable&gt;. </documentation>
+      </element>
+      <element name="subjectCell" definedIn="classifyDomain.mod">
+         <documentation>The &lt;subjectCell&gt; element contains subjects that are associated with topics in the first column of the current row in the &lt;topicSubjectTable&gt;. The subjects themselves have no defined relationship across columns, other than the fact that they apply to the same content. </documentation>
+      </element>
+      <element name="subjectScheme" definedIn="subjectScheme.mod">
+         <documentation>A subjectScheme is a specialized DITA map that defines a collection of controlled values rather than a collection of topics. </documentation>
+      </element>
+      <element name="schemeref" definedIn="subjectScheme.mod">
+         <documentation>A &lt;schemeref&gt; element provides a reference to another scheme. Typically, the referenced scheme defines a base set of controlled values extended by the current scheme. The values in the referenced scheme are merged with the current scheme; the result is equivalent to specifying all of the values in a single map. </documentation>
+      </element>
+      <element name="hasNarrower" definedIn="subjectScheme.mod">
+         <documentation>For subjects within the &lt;hasNarrower&gt; element, the container subject is more general than each of the contained subjects. That is, this element makes the default hierarchical relationship explicit, although the way in which a relationship is narrower is not specified. </documentation>
+      </element>
+      <element name="hasKind" definedIn="subjectScheme.mod">
+         <documentation>Specifies that the contained hierarchy expresses KIND-OF relationships between subjects. </documentation>
+      </element>
+      <element name="hasPart" definedIn="subjectScheme.mod">
+         <documentation>The &lt;hasPart&gt; element specifies that the contained hierarchy expresses PART-OF relationships between subjects. </documentation>
+      </element>
+      <element name="hasInstance" definedIn="subjectScheme.mod">
+         <documentation>Specifies that the contained hierarchy expresses INSTANCE-OF relationships between subjects. In an INSTANCE-OF hierarchy, the child subject is a specific entity or object and the parent subject is a type, kind, or class of entity or object. For example, New York City is a specific instance of a city. </documentation>
+      </element>
+      <element name="hasRelated" definedIn="subjectScheme.mod">
+         <documentation>The &lt;hasRelated&gt; element identifies an associative relationship between the container subject and each of the contained subjects. </documentation>
+      </element>
+      <element name="subjectdef" definedIn="subjectScheme.mod">
+         <documentation>The &lt;subjectdef&gt; element defines a subject (also known as a controlled value) within a scheme. To make the subject easy to identify, a &lt;subjectdef&gt; may use a keys attribute to assign a key to the subject. A subject with a key can be identified elsewhere with a keyref. The &lt;subjectdef&gt; may use a navtitle element or attribute to supply a label for the subject. The &lt;subjectdef&gt; may also refer to a topic that captures the consensus definition for the subject. If a &lt;subjectdef&gt; refers to a topic, the &lt;subjectdef&gt; must also have the locktitle attribute set to &amp;#34;yes&amp;#34; in order to use the navtitle instead of the topic title to label the subject. </documentation>
+      </element>
+      <element name="subjectHead" definedIn="subjectScheme.mod">
+         <documentation>The &lt;subjectHead&gt; element provides a heading for a group of subjects. The subjectHead element itself does not reference a file and cannot be referenced as a key, so it does not define any controlled values. </documentation>
+      </element>
+      <element name="subjectHeadMeta" definedIn="subjectScheme.mod">
+         <documentation>The &lt;subjectHeadMeta&gt; element allows a navigation title and short description to be associated with a subject heading. </documentation>
+      </element>
+      <element name="enumerationdef" definedIn="subjectScheme.mod">
+         <documentation>The &lt;enumerationdef&gt; element identifies one attribute and one or more categories that contain the controlled values for the enumeration. The type attribute has a default value of keys. </documentation>
+      </element>
+      <element name="elementdef" definedIn="subjectScheme.mod">
+         <documentation>The &lt;elementdef&gt; element identifies an element on which an attribute is enumerated. When the &lt;elementdef&gt; is left out of an &lt;enumerationdef&gt; element, the enumeration is bound to the attribute in all elements. </documentation>
+      </element>
+      <element name="attributedef" definedIn="subjectScheme.mod">
+         <documentation>The &lt;attributedef&gt; element defines an attribute as an enumeration by specifying controlled values from a scheme. </documentation>
+      </element>
+      <element name="defaultSubject" definedIn="subjectScheme.mod">
+         <documentation>The &lt;defaultSubject&gt; element is used within an attribute enumeration to set the default value for that attribute in cases where no value is specified on the attribute. The default subject must be one of the controlled values within the categories specified for the attribute. </documentation>
+      </element>
+      <element name="relatedSubjects" definedIn="subjectScheme.mod">
+         <documentation>The &lt;relatedSubjects&gt; element establishes associative relationships between each child subject and every other child subject (unless the association is restricted by the linking attribute of the subjects). </documentation>
+      </element>
+      <element name="subjectRelTable" definedIn="subjectScheme.mod">
+         <documentation>The &lt;subjectRelTable&gt; element is a specialized relationship table which establishes relationships between the subjects in different columns of the same row. </documentation>
+      </element>
+      <element name="subjectRelHeader" definedIn="subjectScheme.mod">
+         <documentation>The &lt;subjectRelHeader&gt; element specifies the roles played by subjects in associations. </documentation>
+      </element>
+      <element name="subjectRel" definedIn="subjectScheme.mod">
+         <documentation>The &lt;subjectRel&gt; element contains a set of subjects that are related in some manner. Each group of subjects is contained in a &lt;subjectRole&gt; element; the associations between different columns in the same row are evaluated in the same way as those in a &lt;relrow&gt; (from which &lt;subjectRel&gt; is specialized) but define relationships between the subjects instead of links between topic documents. </documentation>
+      </element>
+      <element name="subjectRole" definedIn="subjectScheme.mod">
+         <documentation>The &lt;subjectRole&gt; element contains a set of subjects that are related to other subjects in the same row of the current &lt;subjectRelTable&gt;. By default, no relationship is defined between multiple subjects in the same &lt;subjectRole&gt; element. </documentation>
+      </element>
+   </category>
+   <category name="technicalContent">
+      <element name="abbreviated-form" definedIn="abbreviateDomain.mod">
+         <documentation>The &lt;abbreviated-form&gt; element represents a reference to a term that may
+        appear in an abbreviated form (often an acronym). The long and short forms of the term are
+        generally defined in a &lt;glossentry&gt; topic. Processors should display the referenced term
+        when rendering an &lt;abbreviated-form&gt; element.</documentation>
+      </element>
+      <element name="concept" definedIn="concept.mod">
+         <documentation>The &lt;concept&gt; element is the top-level element for a topic that answers
+        the question what is? Concepts provide background information that users must know before
+        they can successfully work with a product or interface. Often, a concept is an extended
+        definition of a major abstraction such as a process or function. It might also have an
+        example or a graphic, but generally the structure of a concept is fairly simple. 
+        Category: Concept elements</documentation>
+      </element>
+      <element name="conbody" definedIn="concept.mod">
+         <documentation>The &lt;conbody&gt; element is the main body-level element for a concept. Like
+        the &lt;body&gt; element of a general &lt;topic&gt;, &lt;conbody&gt; allows paragraphs, lists, and
+        other elements as well as sections and examples. But &lt;conbody&gt; has a constraint that a
+        section or an example can be followed only by other sections or examples. 
+        Category: Concept elements</documentation>
+      </element>
+      <element name="conbodydiv" definedIn="concept.mod">
+         <documentation>The &lt;conbodydiv&gt; element is similar to the &lt;bodydiv&gt; element in that it
+        provides an informal container for content that may be grouped within a concept. There are
+        no additional semantics attached to the conbodydiv element; it is purely a grouping element
+        provided to help organize content.</documentation>
+      </element>
+      <element name="dita" definedIn="ditabase">
+         <documentation>The &lt;dita&gt; element provides a top-level container for multiple topics when
+        you create documents using the ditabase document type. The &lt;dita&gt; element lets you create
+        any sequence of concept, task, and reference topics, and the ditabase document type lets you
+        further nest these topic types inside each other. The &lt;dita&gt; element has no particular
+        output implications; it simply allows you to create multiple topics of different types at
+        the same level in a single document. 
+        Category: Ditabase document type</documentation>
+      </element>
+      <element name="glossentry" definedIn="glossentry.mod">
+         <documentation>The &lt;glossentry&gt; element defines a single sense of a glossary term. The
+        expected book processing is to sort and group the glossary entries based on the localized
+        term so a back-of-the-book glossary can contain a collated list of terms with the
+        definitions of the senses of the terms indented under the terms. The glossary can have a
+        different organization in different languages depending on the translation of the terms. One
+        possible online processing is to associate a hotspot for mentions of terms in &lt;term&gt;
+        elements and display the definition on hover or click. Glossary entries for different term
+        senses can be reused independently of one another. 
+        Category: Glossentry elements</documentation>
+      </element>
+      <element name="glossterm" definedIn="glossentry.mod">
+         <documentation>The &lt;glossterm&gt; element specifies the preferred term associated with a
+        definition of a sense. If the same term has multiple senses, create a separate
+        &lt;glossentry&gt; topic for each sense. 
+        Category: Glossentry elements</documentation>
+      </element>
+      <element name="glossdef" definedIn="glossentry.mod">
+         <documentation>The &lt;glossdef&gt; element specifies the definition of one sense of a term. If
+        a term has multiple senses, create a separate &lt;glossentry&gt; topic to define each sense.
+        Category: Glossentry elements</documentation>
+      </element>
+      <element name="glossBody" definedIn="glossentry.mod">
+         <documentation>The &lt;glossbody&gt; element is used to provide details about a glossary term
+        (such as part of speech or additional forms of the term).</documentation>
+      </element>
+      <element name="glossAbbreviation" definedIn="glossentry.mod">
+         <documentation>The &lt;glossAbbreviation&gt; element provides an abbreviated form of the term
+        contained in a &lt;glossterm&gt; element. </documentation>
+      </element>
+      <element name="glossAcronym" definedIn="glossentry.mod">
+         <documentation>The &lt;glossAcronym&gt; element defines an acronym as an alternate form for the
+        term defined in the &lt;glossterm&gt; element.</documentation>
+      </element>
+      <element name="glossShortForm" definedIn="glossentry.mod">
+         <documentation>The &lt;glossShortForm&gt; element provides a shorter alternative to the primary
+        term specified in the &lt;glossterm&gt; element.</documentation>
+      </element>
+      <element name="glossSynonym" definedIn="glossentry.mod">
+         <documentation>Provides a term that is a synonym of the primary value in the &lt;glossterm&gt;
+        element.</documentation>
+      </element>
+      <element name="glossPartOfSpeech" definedIn="glossentry.mod">
+         <documentation>Identifies the part of speech for the preferred and alternate terms.
+        Alternate terms must have the same part of speech as the preferred term because all terms in
+        the glossentry topic designate the same subject. If the part of speech isn't specified, the
+        default is a noun for the standard enumeration.</documentation>
+      </element>
+      <element name="glossStatus" definedIn="glossentry.mod">
+         <documentation>Identifies the usage status of a preferred or alternate term. If the status
+        isn't specified, the &lt;glossterm&gt; provides a preferred term and an alternate term provides
+        an allowed term.</documentation>
+      </element>
+      <element name="glossProperty" definedIn="glossentry.mod">
+         <documentation>The &lt;glossProperty&gt; element is an extension point which allows additional
+        details about the preferred term or its subject.</documentation>
+      </element>
+      <element name="glossSurfaceForm" definedIn="glossentry.mod">
+         <documentation> The &lt;glossSurfaceForm&gt; element specifies an unambiguous presentation of
+        the &lt;glossterm&gt; that may combine multiple forms. The surface form is suitable to
+        introduce the term in new contexts.</documentation>
+      </element>
+      <element name="glossUsage" definedIn="glossentry.mod">
+         <documentation>The &lt;glossUsage&gt; element provides information about the correct use of a
+        term, such as where or how it can be used.</documentation>
+      </element>
+      <element name="glossScopeNote" definedIn="glossentry.mod">
+         <documentation>A clarification of the subject designated by the &lt;glossterm&gt; such as
+        examples of included or excluded companies or products. For instance, a scope note for
+        "Linux" might explain that the term doesn't apply to UNIX products and give some
+        examples of Linux products that are included as well as UNIX products that are
+        excluded.</documentation>
+      </element>
+      <element name="glossSymbol" definedIn="glossentry.mod">
+         <documentation>The &lt;glossSymbol&gt; element identifies a standard image associated with the
+        subject of the &lt;glossterm&gt;.</documentation>
+      </element>
+      <element name="glossAlt" definedIn="glossentry.mod">
+         <documentation>The &lt;glossAlt&gt; element contains a variant term for the preferred term. The
+        variant should have the same meaning as the term in the &lt;glossterm&gt; element; the variant
+        is simply another way to refer to the same term. There may be many ways to refer to a term;
+        each variant is placed in its own &lt;glossAlt&gt; element.</documentation>
+      </element>
+      <element name="glossAlternateFor" definedIn="glossentry.mod">
+         <documentation>The &lt;glossAlternateFor&gt; element indicates when a variant term has a relationship to another variant term as well as to the preferred term.</documentation>
+      </element>
+      <element name="glossgroup" definedIn="glossgroup.mod">
+         <documentation>The &lt;glossgroup&gt; element may be used to contain multiple &lt;glossentry&gt;
+        topics within a single collection.</documentation>
+      </element>
+      <element name="glossref" definedIn="glossrefDomain.mod">
+         <documentation>The &lt;glossref&gt; element is a convenience element for creating a reference
+        to a glossary topic. It has a required keys attribute, which forces the author to create a
+        key by which inline terms may reference their definition. For example, when glossentry
+        topics are used to define acronyms, this will remind authors to create a key which
+        &lt;abbreviated-form&gt; elements may use to reference the short and expanded versions of that
+        acronym.</documentation>
+      </element>
+      <element name="codeph" definedIn="programmingDomain.mod">
+         <documentation>The code phrase (&lt;codeph&gt;) element represents a snippet of code within the main flow of text. The code phrase is displayed in a monospaced font for emphasis. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="codeblock" definedIn="programmingDomain.mod">
+         <documentation>The &lt;codeblock&gt; element represents lines of program code. Like the &lt;pre&gt; element, content of this element has preserved line endings and is output in a monospaced font. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="coderef" definedIn="programmingDomain.mod">
+         <documentation>The codref element allows a reference to an external file that contains literal code. When evaluated the coderef element should cause the target code to be displayed inline. If the target contains non-XML characters such as &lt; and &amp;amp;, those will need to be handled in a way that they may be displayed correctly by the final rendering engine. </documentation>
+      </element>
+      <element name="option" definedIn="programmingDomain.mod">
+         <documentation>The &lt;option&gt; element describes an option that can be used to modify a command (or something else, like a configuration). This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="var" definedIn="programmingDomain.mod">
+         <documentation>Within a syntax diagram, the &lt;var&gt; element defines a variable for which the user must supply content, such as their user name or password. It is represented in output in an italic font. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="parmname" definedIn="programmingDomain.mod">
+         <documentation>When referencing the name of an application programming interface parameter within the text flow of your topic, use the parameter name (&lt;parmname&gt;) element to markup the parameter. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="synph" definedIn="programmingDomain.mod">
+         <documentation>The syntax phrase (&lt;synph&gt;) element is a container for syntax definition elements. It is used when a complete syntax diagram is not needed, but some of the syntax elements, such as kwd, oper, delim, are used within the text flow of the topic content. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="oper" definedIn="programmingDomain.mod">
+         <documentation>The operator (&lt;oper&gt;) element defines an operator within a syntax definition. Typical operators are equals (=), plus (+) or multiply (*). This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="delim" definedIn="programmingDomain.mod">
+         <documentation>Within a syntax diagram, the delimiter (&lt;delim&gt;) element defines a character marking the beginning or end of a section or part of the complete syntax. Typical delimiter characters are the parenthesis, comma, tab, vertical bar or other special characters. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="sep" definedIn="programmingDomain.mod">
+         <documentation>The separator (&lt;sep&gt;) element defines a separator character that is inline with the content of a syntax diagram. The separator occurs between keywords, operators or groups in a syntax definition. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="apiname" definedIn="programmingDomain.mod">
+         <documentation>The &lt;apiname&gt; element provides the name of an application programming interface (API) such as a Java class name or method name. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="parml" definedIn="programmingDomain.mod">
+         <documentation>The parameter list (&lt;parml&gt;) element contains a list of terms and definitions that describes the parameters in an application programming interface. This is a special kind of definition list that is designed for documenting programming parameters. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="plentry" definedIn="programmingDomain.mod">
+         <documentation>The parameter list entry element (&lt;plentry&gt;) contains one or more parameter terms and definitions (pd and pt). This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="pt" definedIn="programmingDomain.mod">
+         <documentation>A parameter term, within a parameter list entry, is enclosed by the &lt;pt&gt; element. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="pd" definedIn="programmingDomain.mod">
+         <documentation>A parameter definition, within a parameter list entry, is enclosed by the &lt;pd&gt; element. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="syntaxdiagram" definedIn="programmingDomain.mod">
+         <documentation>The syntax diagram (&lt;syntaxdiagram&gt;) element is the main container for all the syntax elements that make up a syntax definition. The syntax diagram represents the syntax of a statement from a computer language, or a command, function call or programming language statement. Traditionally, the syntax diagram is formatted with railroad tracks that connect the units of the syntax together, but this presentation may differ depending on the output media. The syntax diagram element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="synblk" definedIn="programmingDomain.mod">
+         <documentation>The syntax block (&lt;synblk&gt;) element organizes small pieces of a syntax definition into a larger piece. The syntax block element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="groupseq" definedIn="programmingDomain.mod">
+         <documentation>The &lt;groupseq&gt; element is part of the subset of elements that define syntax diagrams in DITA. A group is a logical set of pieces of syntax that go together. Within the syntax definition, groups of keywords, delimiters and other syntax units act as a combined unit, and they occur in a specific sequence, as delimited by the &lt;groupseq&gt; element. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="groupchoice" definedIn="programmingDomain.mod">
+         <documentation>The &lt;groupchoice&gt; element is part of the subset of elements that define syntax diagrams in DITA. A group is a logical set of pieces of syntax that go together. A group choice specifies that the user must make a choice about which part of the syntax to use. Groups are often nested. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="groupcomp" definedIn="programmingDomain.mod">
+         <documentation>The &lt;groupcomp&gt; element is part of the subset of elements that define syntax diagrams in DITA. A group is a logical set of pieces of syntax that go together. The group composite means that the items that make up the syntax diagram will be formatted close together rather than being separated by a horizontal or vertical line, which is the usual formatting method. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="fragment" definedIn="programmingDomain.mod">
+         <documentation>Within a syntax definition, a &lt;fragment&gt; is a labeled subpart of the syntax. The &lt;fragment&gt; element allows breaking out logical chunks of a large syntax diagram into named fragments. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="fragref" definedIn="programmingDomain.mod">
+         <documentation>The fragment reference (&lt;fragref&gt;) element provides a logical reference to a syntax definition fragment so that you can reference a syntax fragment multiple times, or pull a large section of syntax out of line for easier reading. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="synnote" definedIn="programmingDomain.mod">
+         <documentation>The syntax note (&lt;synnote&gt;) element contains a note (similar to a footnote) within a syntax definition group or fragment. The syntax note explains aspects of the syntax that cannot be expressed in the markup itself. The note will appear at the bottom of the syntax diagram instead of at the bottom of the page. The syntax block element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="synnoteref" definedIn="programmingDomain.mod">
+         <documentation>The syntax note (&lt;synnoteref&gt;) reference element references a syntax note element (&lt;synnote&gt;) that has already been defined elsewhere in the syntax diagram. The same notation can be used in more than one syntax definition. The syntax note reference element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="repsep" definedIn="programmingDomain.mod">
+         <documentation>The repeat separator (&lt;repsep&gt;) element in a syntax diagram defines a group of syntax elements that can (or should) be repeated. If the &lt;repsep&gt; element contains a separator character, such as a plus (+), this indicates that the character must be used between repetitions of the syntax elements. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="kwd" definedIn="programmingDomain.mod">
+         <documentation>The &lt;kwd&gt; element defines a keyword within a syntax diagram. A keyword must be typed or output, either by the user or application, exactly as specified in the syntax definition. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="reference" definedIn="reference.mod">
+         <documentation>The &lt;reference&gt; element defines a top-level container for a reference topic. Reference topics document programming constructs or facts about a product. Examples of reference topics include language elements, class descriptions, commands, functions, statements, protocols, types, declarators, operands, and API information, which provide quick access to facts, but no explanation of concepts or procedures. Reference topics have the same high-level structure as any other topic type, with a title, short description, and body. Within the body, reference topics are typically organized into one or more sections, property lists, and tables. The reference topic type provides general rules that apply to all kinds of reference information, using elements like &lt;refsyn&gt; for syntax or signatures, and &lt;properties&gt; for lists of properties and values.
+    Category: Reference elements
+  </documentation>
+      </element>
+      <element name="refbody" definedIn="reference.mod">
+         <documentation>The &lt;refbody&gt; element is a container for the main content of the reference topic. Reference topics limit the body structure to tables (both simple and standard), property lists, syntax sections, and generic sections and examples, in any sequence or number.
+    Category: Reference elements
+  </documentation>
+      </element>
+      <element name="refbodydiv" definedIn="reference.mod">
+         <documentation>The &lt;refbodydiv&gt; element is similar to the &lt;bodydiv&gt; element in that it provides an informal container for content that may be grouped within a reference. Reference topics place many restrictions on their content compared to generic topics; the &lt;refbodydiv&gt; element maintains these restrictions by only allowing elements that are already available within the body of a reference. There are no additional semantics attached to the &lt;refbodydiv&gt; element; it is purely a grouping element provided to help organize content. </documentation>
+      </element>
+      <element name="refsyn" definedIn="reference.mod">
+         <documentation>The &lt;refsyn&gt; element is a special section inside a reference topic. The section often contains syntax or signature content (for example, a command-line utility's calling syntax, or an API's signature). The &lt;refsyn&gt; contains a brief, possibly diagrammatic description of the subject's interface or high-level structure.
+    Category: Reference elements
+  </documentation>
+      </element>
+      <element name="properties" definedIn="reference.mod">
+         <documentation>The &lt;properties&gt; element gives a list of properties for the subject of the current topic, for example whether a class is public or protected. Each property can include the type, value, and a description. The typical rendering is usually in a table-like format. To represent multiple values for a type, just create additional property elements and use only the &lt;propvalue&gt; element (and &lt;propdesc&gt; when needed) for each successive value.
+    Category: Reference elements
+  </documentation>
+      </element>
+      <element name="prophead" definedIn="reference.mod">
+         <documentation>The prophead element supports regular headings for the properties element.
+    Category: Reference elements
+  </documentation>
+      </element>
+      <element name="proptypehd" definedIn="reference.mod">
+         <documentation>The proptypehd element supports regular headings for the type column of a properties table.
+    Category: Reference elements
+  </documentation>
+      </element>
+      <element name="propvaluehd" definedIn="reference.mod">
+         <documentation>The propvaluehd element supports regular headings for the value column of a properties table.
+    Category: Reference elements
+  </documentation>
+      </element>
+      <element name="propdeschd" definedIn="reference.mod">
+         <documentation>The propdeschd element supports regular headings for the description column of a properties table.
+    Category: Reference elements
+  </documentation>
+      </element>
+      <element name="property" definedIn="reference.mod">
+         <documentation>The &lt;property&gt; element represents a property of the current topic's subject. For example, if the current topic is a class, the property might show that the class is protected rather than public. It contains three optional elements: type, value, and description.
+    Category: Reference elements
+  </documentation>
+      </element>
+      <element name="proptype" definedIn="reference.mod">
+         <documentation>The proptype element describes the type of property.
+    Category: Reference elements
+  </documentation>
+      </element>
+      <element name="propvalue" definedIn="reference.mod">
+         <documentation>The &lt;propvalue&gt; element indicates the value or values for the current property type. You can put values in separate rows if they need separate descriptions, and just leave the &lt;proptype&gt; element blank.
+    Category: Reference elements
+  </documentation>
+      </element>
+      <element name="propdesc" definedIn="reference.mod">
+         <documentation>The &lt;propdesc&gt; element is used to provide a short description of the property type and its listed values (or just the value).
+    Category: Reference elements
+  </documentation>
+      </element>
+      <element name="msgph" definedIn="softwareDomain.mod">
+         <documentation>The message phrase (&lt;msgph&gt;) element contains the text content of a message produced by an application or program. It can also contain the variable name (varname) element to illustrate where variable text content can occur in the message. This element is part of the DITA software domain, a special set of DITA elements designed to document software tasks, concepts and reference information.
+    Category: Software elements
+  </documentation>
+      </element>
+      <element name="msgblock" definedIn="softwareDomain.mod">
+         <documentation>The message block (&lt;msgblock&gt;) element contains a multi-line message or set of messages. The message block can contain multiple message numbers and message descriptions, each enclosed in a &lt;msgnum&gt; and &lt;msgph&gt; element. It can also contain the message content directly. This element is part of the DITA software domain, a special set of DITA elements designed to document software tasks, concepts and reference information.
+    Category: Software elements
+  </documentation>
+      </element>
+      <element name="msgnum" definedIn="softwareDomain.mod">
+         <documentation>The message number (&lt;msgnum&gt;) element contains the number of a message produced by an application or program. This element is part of the DITA software domain, a special set of DITA elements designed to document software tasks, concepts and reference information.
+    Category: Software elements
+  </documentation>
+      </element>
+      <element name="cmdname" definedIn="softwareDomain.mod">
+         <documentation>The command name (&lt;cmdname&gt;) element specifies the name of a command when it is part of a software discussion. This element is part of the DITA software domain, a special set of DITA elements designed to document software tasks, concepts and reference information.
+    Category: Software elements
+  </documentation>
+      </element>
+      <element name="varname" definedIn="softwareDomain.mod">
+         <documentation>The variable name (&lt;varname&gt;) element defines a variable that must be supplied to a software application. The variable name element is very similar to the variable (var) element, but variable name is used outside of syntax diagrams. This element is part of the DITA software domain, a special set of DITA elements designed to document software tasks, concepts and reference information.
+    Category: Software elements
+  </documentation>
+      </element>
+      <element name="filepath" definedIn="softwareDomain.mod">
+         <documentation>The &lt;filepath&gt; element indicates the name and optionally the location of a referenced file by specifying the directory containing the file, and other directories that may precede it in the system hierarchy. This element is part of the DITA software domain, a special set of DITA elements designed to document software tasks, concepts and reference information.
+    Category: Software elements
+  </documentation>
+      </element>
+      <element name="userinput" definedIn="softwareDomain.mod">
+         <documentation>The user input (&lt;userinput&gt;) element represens the text a user should input in response to a program or system prompt. This element is part of the DITA software domain, a special set of DITA elements designed to document software tasks, concepts and reference information.
+    Category: Software elements
+  </documentation>
+      </element>
+      <element name="systemoutput" definedIn="softwareDomain.mod">
+         <documentation>The system output (&lt;systemoutput&gt;) element represents computer output or responses to a command or situation. A generalized element, it represents any kind of output from the computer, so the author may wish to choose more specific markup, such as msgph, for messages from the application. The system output element is part of the DITA software domain, a special set of DITA elements designed to document software tasks, concepts and reference information.
+    Category: Software elements
+  </documentation>
+      </element>
+      <element name="task" definedIn="task.mod">
+         <documentation>The &lt;task&gt; element is the top-level element for a task topic. Tasks are the main building blocks for task-oriented user assistance. They generally provide step-by-step instructions that will enable a user to perform a task. A task answers the question of "how to?" by telling the user precisely what to do and the order in which to do it. Tasks have the same high-level structure as other topics, with a title, short description and body.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="taskbody" definedIn="task.mod">
+         <documentation>The &lt;taskbody&gt; element is the main body-level element inside a task topic. A task body has a very specific structure, with the following elements in this order: &lt;prereq&gt;, &lt;context&gt;, &lt;steps&gt;, &lt;result&gt;, &lt;example&gt; and &lt;postreq&gt;. Each of the body sections are optional.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="prereq" definedIn="task.mod">
+         <documentation>The pre-requisite (&lt;prereq&gt;) section of a task should document things the user needs to know or do before starting the current task. Prerequisite links will be placed in a list after the related-links section; on output the &lt;prereq&gt; links from the related-links section are added to the &lt;prereq&gt; section.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="context" definedIn="task.mod">
+         <documentation>The &lt;context&gt; section of a task provides background information for the task. This information helps the user understand what the purpose of the task is and what they will gain by completing the task. This section should be brief and does not replace or recreate a concept topic on the same subject, although the context section may include some conceptual information.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="steps-informal" definedIn="task.mod">
+         <documentation>The &lt;steps-informal&gt; element allows authors to describe procedural task information that would not normally be described as steps. </documentation>
+      </element>
+      <element name="steps" definedIn="task.mod">
+         <documentation>The &lt;steps&gt; section of a task provides the main content of the task topic. The task is described as a series of steps that the user must follow to accomplish the task. One or more &lt;steps&gt; elements is required inside the &lt;steps&gt; section.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="steps-unordered" definedIn="task.mod">
+         <documentation>Like the &lt;steps&gt; element, the &lt;steps-unordered&gt; section of a task provides the main content of the task topic, but particularly for cases in which the order of steps may vary from one situation to another. One or more steps is required inside the &lt;steps-unordered&gt; section.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="stepsection" definedIn="task.mod">
+         <documentation>The &lt;stepsection&gt; element provides expository text before a step element. Although the element is specialized from &lt;li&gt; and has the same content model as a list item, this is not considered a step, and rendering engines may choose to skip this element when numbering steps. </documentation>
+      </element>
+      <element name="step" definedIn="task.mod">
+         <documentation>The &lt;step&gt; element represents an action that a user must follow to accomplish a task. Each step in a task must contain a command &lt;cmd&gt; element which describes the particular action the user must do to accomplish the overall task. The step element can also contain information &lt;info&gt;, substeps &lt;substeps&gt;, tutorial information &lt;tutorialinfo&gt;, a step example &lt;stepxmp&gt;, choices &lt;choices&gt; or a stepresult &lt;stepresult&gt;, although these are optional.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="cmd" definedIn="task.mod">
+         <documentation>The command (&lt;cmd&gt;) element is required as the first element inside a &lt;step&gt;. It provides the active voice instruction to the user for completing the step, and should not be more than one sentence. If the step needs additional explanation, this can follow the &lt;cmd&gt; element inside an &lt;info &gt; element.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="info" definedIn="task.mod">
+         <documentation>The information element (&lt;info&gt;) occurs inside a &lt;step&gt; element to provide additional information about the step.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="substeps" definedIn="task.mod">
+         <documentation>The &lt;substeps&gt; element allows you to break a step down into a series of separate actions, and should be used only if necessary. Try to describe the steps of a task in a single level of steps. If you need to use more than one level of substep nesting, you should probably rewrite the task to simplify it.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="substep" definedIn="task.mod">
+         <documentation>A &lt;substep&gt; element has the same structure as a &lt;step&gt;, except that it does not allow lists of choices or substeps within it, in order to prevent unlimited nesting of steps.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="tutorialinfo" definedIn="task.mod">
+         <documentation>The tutorial info (&lt;tutorialinfo&gt;) element contains additional information that is useful when the task is part of a tutorial.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="stepxmp" definedIn="task.mod">
+         <documentation>The step example (&lt;stepxmp&gt;) element is used to illustrate a step of a task. The example can be a couple of words, or an entire paragraph.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="choices" definedIn="task.mod">
+         <documentation>The &lt;choices&gt; element contains a list of &lt;choice&gt; elements. It is used when the user will need to choose one of several actions while performing the steps of a task.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="choice" definedIn="task.mod">
+         <documentation>Each &lt;choice&gt; element describes one way that the user could accomplish the current step.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="choicetable" definedIn="task.mod">
+         <documentation>The &lt;choicetable&gt; element contains a series of optional choices available within a step of a task.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="chhead" definedIn="task.mod">
+         <documentation>The &lt;chhead&gt; element is a container inside the &lt;choicetable&gt; element that provides specific heading text to override the default Options and Description headings. The &lt;chhead&gt; element contains both a &lt;choptionhd&gt; and &lt;chdeschd&gt; element as a pair.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="choptionhd" definedIn="task.mod">
+         <documentation>The &lt;choptionhd&gt; element provides a specific label for the list of options that a user chooses from to accomplish a step. The default label for options is Option.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="chdeschd" definedIn="task.mod">
+         <documentation>The &lt;chdeschd&gt; option provides a specific label for the list of descriptions of options that a user must choose to accomplish a step of a task. The default label overridden by &lt;chdeschd&gt; is Description.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="chrow" definedIn="task.mod">
+         <documentation>The &lt;chrow&gt; element is a container inside the &lt;choicetable&gt; element. The &lt;chrow&gt; element contains both a &lt;choption&gt; and &lt;chdesc&gt; element as a pair.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="choption" definedIn="task.mod">
+         <documentation>The &lt;choption&gt; element describes an option that a user could choose to accomplish a step of a task. In a user interface, for example, this might be the name of radio button.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="chdesc" definedIn="task.mod">
+         <documentation>The &lt;chdesc&gt; element is a description of an option that a user chooses while performing a step to accomplish a task. It explains why the user would choose that option, and might explain the result of the choice when it is not immediately obvious.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="stepresult" definedIn="task.mod">
+         <documentation>The &lt;stepresult&gt; element provides information on the expected outcome of a step. If a user interface is being documented, the outcome could describe a dialog box opening, or the appearance of a progress indicator. Step results are useful to assure a user that they are on track, but should not be used for every step, as this quickly becomes tedious.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="result" definedIn="task.mod">
+         <documentation>The &lt;result&gt; element describes the expected outcome for the task as a whole.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="postreq" definedIn="task.mod">
+         <documentation>The &lt;postreq&gt; element describes steps or tasks that the user should do after the successful completion of the current task. It is often supported by links to the next task or tasks in the &lt;related-links&gt; section.
+    Category: Task elements
+  </documentation>
+      </element>
+      <element name="prelreqs" definedIn="taskreqDomain.mod">
+         <documentation>The preliminary-requirements (&lt;prelreqs&gt;) section of a task should document things the user needs to know or do before starting the current task. The &lt;prelreqs&gt; element is similar to &lt;prereq&gt; but contains a more descriptive content model then &lt;prereq&gt;. </documentation>
+      </element>
+      <element name="closereqs" definedIn="taskreqDomain.mod">
+         <documentation>The closing-requirements (&lt;closereqs&gt;) element describes steps or tasks that the user should do after the successful completion of the current task. closereqs is similar to postreq but contains a more descriptive content model then postreq and has been developed basically to meet the requirements in the machinery industry. </documentation>
+      </element>
+      <element name="reqconds" definedIn="taskreqDomain.mod">
+         <documentation>The required-conditions (&lt;reqconds&gt;) element contains the description of all required conditions that have to be fulfilled before performing a task. </documentation>
+      </element>
+      <element name="noconds" definedIn="taskreqDomain.mod">
+         <documentation>The No-Required-Condition (&lt;noconds&gt;) element has to be used when there is no required condition. The information that no condition is required is as important as the information which conditions are required. </documentation>
+      </element>
+      <element name="reqcond" definedIn="taskreqDomain.mod">
+         <documentation>The Required-Condition (&lt;reqcond&gt;) element has to be used to describe the required condition. </documentation>
+      </element>
+      <element name="reqcontp" definedIn="taskreqDomain.mod">
+         <documentation>The Required-Condition-Technical-Publication (&lt;reqcontp&gt;) element has to be used to list or describe further applicable documents. </documentation>
+      </element>
+      <element name="reqpers" definedIn="taskreqDomain.mod">
+         <documentation>The Required-Personnel (&lt;reqpers&gt;) element contains information on the personnel required for the task. </documentation>
+      </element>
+      <element name="personnel" definedIn="taskreqDomain.mod">
+         <documentation>The &lt;personnel&gt; element indicates the number of personnel required for the task. </documentation>
+      </element>
+      <element name="perscat" definedIn="taskreqDomain.mod">
+         <documentation>The Personnel-Category (&lt;perscat&gt;) element contains the required category level of the person. </documentation>
+      </element>
+      <element name="perskill" definedIn="taskreqDomain.mod">
+         <documentation>The Personnel-Skill-Level (&lt;perskill&gt;) element describes the required skill level of the person. </documentation>
+      </element>
+      <element name="esttime" definedIn="taskreqDomain.mod">
+         <documentation>The Estimated-Time-Spent (&lt;esttime&gt;) element contains information on the estimated time required for a task. </documentation>
+      </element>
+      <element name="supequip" definedIn="taskreqDomain.mod">
+         <documentation>The Support-Equipment (&lt;supequip&gt;) element lists any required support equipment for the task, along with optional descriptions. </documentation>
+      </element>
+      <element name="nosupeq" definedIn="taskreqDomain.mod">
+         <documentation>The No-Support-Equipment (&lt;nosupeq&gt;) element has to be used when there is no support equipment required. The information that no support equipment is required is as important as the information which support equipment is required. </documentation>
+      </element>
+      <element name="supeqli" definedIn="taskreqDomain.mod">
+         <documentation>The Support-Equipment-List (&lt;supeqli&gt;) element has to be used to list any support equipment required for the task. </documentation>
+      </element>
+      <element name="supequi" definedIn="taskreqDomain.mod">
+         <documentation>The Support-Equipment-Item (&lt;supequi&gt;) element describes the support equipment. </documentation>
+      </element>
+      <element name="supplies" definedIn="taskreqDomain.mod">
+         <documentation>The &lt;supplies&gt; element has to be used to list and maybe to describe any supplies required for the task. </documentation>
+      </element>
+      <element name="nosupply" definedIn="taskreqDomain.mod">
+         <documentation>The No-Supplies (&lt;nosupply&gt;) element has to be used when there are no supplies required. The information that no supplies are required is as important as the information which supplies are is required. </documentation>
+      </element>
+      <element name="supplyli" definedIn="taskreqDomain.mod">
+         <documentation>The Supply-List (&lt;supplyli&gt;) element has to be used to list any supplies required for the task. </documentation>
+      </element>
+      <element name="supply" definedIn="taskreqDomain.mod">
+         <documentation>The &lt;supply&gt; element describes the supply. </documentation>
+      </element>
+      <element name="spares" definedIn="taskreqDomain.mod">
+         <documentation>The &lt;spares&gt; element lists spare parts required for a task, and may include descriptions of those parts. </documentation>
+      </element>
+      <element name="nospares" definedIn="taskreqDomain.mod">
+         <documentation>The No-Spares (&lt;nospares&gt;) element has to be used when there are no spares required for the task. As the information that no spares are required is as important as the information which spare is required. </documentation>
+      </element>
+      <element name="sparesli" definedIn="taskreqDomain.mod">
+         <documentation>The Spares-List (&lt;sparesli&gt;) element has to be used to list any spares required for the task. </documentation>
+      </element>
+      <element name="spare" definedIn="taskreqDomain.mod">
+         <documentation>The spare element describes a spare part required for the task, and may include a description of the part. </documentation>
+      </element>
+      <element name="safety" definedIn="taskreqDomain.mod">
+         <documentation>The Safety-Condition (&lt;safety&gt;) element has to be used to list and maybe to describe any safety condition that has to be taken in account for the task. </documentation>
+      </element>
+      <element name="nosafety" definedIn="taskreqDomain.mod">
+         <documentation>The No-Safety-Conditions (&lt;nosafety&gt;) element has to be used to indicate that there are no safety requirements for the task. The information that no safety requirements have to be taken in account is as important as the information which safety conditions has to be considered. </documentation>
+      </element>
+      <element name="safecond" definedIn="taskreqDomain.mod">
+         <documentation>The Safety-Conditions (&lt;safecond&gt;) element has to be used if there are safety requirements. </documentation>
+      </element>
+      <element name="uicontrol" definedIn="uiDomain.mod">
+         <documentation>The user interface control (&lt;uicontrol&gt;) element is used to mark up names
+        of buttons, entry fields, menu items, or other objects that allow the user to control the
+        interface. Use the &lt;uicontrol&gt; element inside a &lt;menucascade&gt; element to identify a
+        sequence of menu choices in a nested menu, such as File New. This element is part of the
+        DITA user interface domain, a special set of DITA elements designed to document user
+        interface tasks, concepts and reference information. 
+        Category: User interface elements</documentation>
+      </element>
+      <element name="wintitle" definedIn="uiDomain.mod">
+         <documentation>The window title &lt;wintitle&gt; element can be used to mark up names of
+        windows or dialogs, or other user interface elements at the same level of grouping,
+        including wizard titles, wizard page titles, and window pane titles. This element is part of
+        the DITA user interface domain, a special set of DITA elements designed to document user
+        interface tasks, concepts and reference information. 
+        Category: User interface elements</documentation>
+      </element>
+      <element name="menucascade" definedIn="uiDomain.mod">
+         <documentation>The &lt;menucascade&gt; element is used to document a series of menu choices.
+        The &lt;menucascade&gt; element contains one or more user interface control (&lt;uicontrol&gt;)
+        elements, for example: Start &gt; Programs &gt; Accessories &gt; Notepad. If there is more than one
+        &lt;uicontrol&gt; element, the formatter shows connecting characters between the menu items to
+        represent the menu cascade. This element is part of the DITA user interface domain, a
+        special set of DITA elements designed to document user interface tasks, concepts and
+        reference information. 
+        Category: User interface elements</documentation>
+      </element>
+      <element name="shortcut" definedIn="uiDomain.mod">
+         <documentation>The &lt;shortcut&gt; element identifies a keyboard shortcut for a menu or window
+        action. This element is part of the DITA user interface domain, a special set of DITA
+        elements designed to document user interface tasks, concepts and reference information.
+        Category: User interface elements</documentation>
+      </element>
+      <element name="screen" definedIn="uiDomain.mod">
+         <documentation>The &lt;screen&gt; element contains or refers to a textual representation of a
+        computer screen or user interface panel (window). 
+        Category: User interface elements</documentation>
+      </element>
+   </category>
+   <category name="xnal">
+      <element name="authorinformation" definedIn="xnalDomain.mod">
+         <documentation>The &lt;authorinformation&gt; element contains detailed information about the author or authoring organization.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="namedetails" definedIn="xnalDomain.mod">
+         <documentation>The &lt;namedetails&gt; element contains information about the name of the author or the authoring organization.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="organizationnamedetails" definedIn="xnalDomain.mod">
+         <documentation>The &lt;organizationnamedetails&gt; element contains information about the name of an authoring organization.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="organizationname" definedIn="xnalDomain.mod">
+         <documentation>The &lt;organizationname&gt; element contains name information about the authoring organization.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="personname" definedIn="xnalDomain.mod">
+         <documentation>The &lt;personname&gt; element contains name information about the author.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="honorific" definedIn="xnalDomain.mod">
+         <documentation>The &lt;honorific&gt; element contains the person's title, such as: Dr., Mr., Ms., HRH.. or Grand Exalted Wizard.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="firstname" definedIn="xnalDomain.mod">
+         <documentation>The &lt;firstname&gt; element contains the person's first name.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="middlename" definedIn="xnalDomain.mod">
+         <documentation>The &lt;middlename&gt; element contains the person's middle name or initial.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="lastname" definedIn="xnalDomain.mod">
+         <documentation>The &lt;lastname&gt; element contains the person's last name.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="generationidentifier" definedIn="xnalDomain.mod">
+         <documentation>The &lt;generationidentifier&gt; element contains information about the person's generation, such as: Jr, III, or VIII.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="otherinfo" definedIn="xnalDomain.mod">
+         <documentation>The &lt;otherinfo&gt; element contains other name information about the author or authoring organization.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="addressdetails" definedIn="xnalDomain.mod">
+         <documentation>The &lt;addressdetails&gt; element contains information about the address of the author or authoring group.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="locality" definedIn="xnalDomain.mod">
+         <documentation>The &lt;locality&gt; element contains information about the city and postal or ZIP code. It can contain the information directly, or by acting as a wrapper for &lt;localityname&gt; and &lt;postalcode&gt;.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="localityname" definedIn="xnalDomain.mod">
+         <documentation>The &lt;localityname&gt; element contains the name of the locality or city.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="administrativearea" definedIn="xnalDomain.mod">
+         <documentation>The &lt;administrativearea&gt; element contains information about a county, state, or province.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="thoroughfare" definedIn="xnalDomain.mod">
+         <documentation>The &lt;thoroughfare&gt; element contains information about the thoroughfare - for example, the street, avenue, or boulevard - on which an address is located.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="postalcode" definedIn="xnalDomain.mod">
+         <documentation>The &lt;postalcode&gt; element contains information about the postal code or the ZIP code.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="country" definedIn="xnalDomain.mod">
+         <documentation>The &lt;country&gt; element contains the name of a country.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="personinfo" definedIn="xnalDomain.mod">
+         <documentation>The &lt;personinfo&gt; element is a wrapper containing all relevant data about a person, including name, address, and contact information.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="organizationinfo" definedIn="xnalDomain.mod">
+         <documentation>The &lt;organizationinfo&gt; element contains detailed information about an authoring organization.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="contactnumbers" definedIn="xnalDomain.mod">
+         <documentation>The &lt;contactnumbers&gt; element contains a list of telephone and fax numbers.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="contactnumber" definedIn="xnalDomain.mod">
+         <documentation>A &lt;contactnumber&gt; element contains a telephone number.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="emailaddresses" definedIn="xnalDomain.mod">
+         <documentation>The &lt;emailaddress&gt; element contains a list of e-mail addresses.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="emailaddress" definedIn="xnalDomain.mod">
+         <documentation>The &lt;emailaddress&gt; element contains an e-mail address.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="urls" definedIn="xnalDomain.mod">
+         <documentation>The &lt;urls&gt; element contains a list of Uniform Resource Locators (URLs).
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="url" definedIn="xnalDomain.mod">
+         <documentation>The &lt;url&gt; element contains a Uniform Resource Locator (URL).
+    Category: xNAL elements
+  </documentation>
+      </element>
+   </category>
+</domains>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nav class="navbar navbar-default wh_header"
+     xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:whc="http://www.oxygenxml.com/webhelp/components">
+    <div class="container">
+        <div class="wh_header_flex_container">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    <whc:include_html href="${webhelp.fragment.before.logo_and_title}"/>
+                    <!--
+                            This component will be generated when the next parameters are specified in the transformation scenario:
+                            'webhelp.logo.image' and 'webhelp.logo.image.target.url'.
+                            See: http://oxygenxml.com/doc/versions/17.1/ug-editor/#topics/dita_webhelp_output.html.
+                    -->
+                    <whc:webhelp_logo class="hidden-xs"/>
+                    <whc:webhelp_publication_title/>
+                    <whc:include_html href="${webhelp.fragment.after.logo_and_title}"/>
+                </div>
+                
+                <!-- The menu button for mobile devices is copied in the output only when the 'webhelp.show.top.menu' parameter is set to 'yes' -->
+                <button type="button" data-target=".wh_top_menu_and_indexterms_link" id="wh_menu_mobile_button" data-toggle="collapse" class="navbar-toggle collapsed wh_toggle_button">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse">
+                <whc:include_html href="${webhelp.fragment.before.top_menu}"/>
+                <whc:webhelp_top_menu />
+                <whc:webhelp_indexterms_link/>
+                <whc:include_html href="${webhelp.fragment.after.top_menu}"/>
+            </div>
+        </div>
+    </div>
+</nav>

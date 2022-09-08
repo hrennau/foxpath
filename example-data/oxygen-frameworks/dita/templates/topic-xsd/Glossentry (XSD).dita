@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<glossentry id="glossentry_${id}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:oasis:names:tc:dita:xsd:glossary.xsd">
+    <glossterm>${caret}</glossterm>
+    <glossdef></glossdef>
+    <prolog></prolog>
+    <glossBody></glossBody>
+</glossentry>

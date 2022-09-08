@@ -1,0 +1,162 @@
+@namespace d url('http://www.oxygenxml.com/ns/doc/xsl');
+
+d|* {
+  white-space :normal !important;
+}
+
+d|*:before, d|*:after {
+  content:none !important;
+}
+d|* {
+  padding-left:1px !important;
+}
+
+
+d|a[href]:before {
+    link: attr(href);
+    content:url(img/link.png)!important;
+    display:inline;
+    text-decoration:underline;
+    color:navy;
+    background-color:inherit;
+}
+
+d|a {
+  display:inline;
+  text-decoration:underline;
+  color:navy;
+  background-color:inherit;
+}
+
+d|ref:before {
+    content:'[' attr(name) ']'!important;
+    display:inline;
+    color:navy;
+    background-color:inherit;
+    padding-right : 4px;
+}
+
+d|ref {
+  display:inline;
+  color:navy;
+  background-color:transparent;
+}
+
+
+
+d|b {
+  display : inline;
+  font-weight:bold;
+}
+d|i {
+  display :inline;
+  font-style:italic;
+}
+
+d|desc:before {
+  content : 'Description:' !important;
+  display :block;
+  color : black;
+  font-weight : bold;
+}
+
+d|param:before {
+  content : '@param ' attr(name) ':' !important;
+  display :block;
+  color : black;
+  font-weight : bold;
+  background-color :#FEFAF0;
+}
+
+d|param {
+  display :block;
+  color : black; 
+}
+
+d|return:before {
+  content : '@return:' !important;
+  display :block;
+  color : black;
+  font-weight : bold;
+  background-color :#FEFAF0;
+}
+
+d|return {
+  display :block;
+  color : black; 
+}
+
+d|doc {
+  color : black;
+  background-color : #FFFCF2;
+  border-right :2px solid gray;
+  border-bottom :2px solid gray;
+  border-left :1px solid #BBBBBB;
+  border-top :1px solid #BBBBBB;
+  display : block;
+  padding-left:1em;
+  padding-right:10px;
+  padding-bottom:6px;
+  padding-left:10px;
+  padding-top:6px;
+  margin : 20px;
+  font-weight :normal;
+}
+
+d|doc[scope='stylesheet'] > d|desc:before {
+  content : 'Stylesheet description:' !important;
+  display :block;
+}
+
+d|doc[scope='stylesheet'] {
+  background-color : #FFFFF2;
+}
+
+d|p{ 
+    display: block;
+    margin: 0.5ex 0 !important;
+}
+
+d|pre {
+    font-family:monospace;
+    font-size:smaller;
+    white-space: pre !important;
+    margin: 0.5ex 0 !important;
+}
+
+
+d|ul {
+    display:block;
+    counter-reset:licount;
+    margin-top: 1.33ex;
+    margin-bottom: 1.33ex;
+}
+
+d|ul > d|li {
+    display:list-item;
+    list-style-type:disc;
+    margin-left: 2em;
+}
+
+d|ul > d|li d|ul > d|li {
+    list-style-type:square;
+}
+d|ul > d|li d|ul > d|li d|ul > li {
+    list-style-type:circle;
+}
+d|ul > d|li d|ul > d|li d|ul > d|li d|ul > d|li {
+    list-style-type:disc;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

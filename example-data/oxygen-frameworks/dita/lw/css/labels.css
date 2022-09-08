@@ -1,0 +1,480 @@
+.br:hover {
+  outline: 1px solid #EEEEEE;
+  -moz-outline-radius: 4px;
+}
+.br:focus-within {
+  outline: 1px solid #EEEEFF;
+}
+body > p,
+section > p {
+  position: relative;
+}
+body > p:before(100001),
+section > p:before(100001) {
+  font-family: arial, helvetica, sans-serif;
+  display: block;
+  position: absolute;
+  content: 'paragraph';
+  font-size: 0.5rem;
+  top: -0.5rem;
+  text-align: right;
+  right: -1.2rem;
+  color: #CCCCCC;
+  border-bottom: 1px solid #EEEEEE;
+  border-right: 1px solid #EEEEEE;
+  padding-right: 4px;
+  width: 5rem;
+  letter-spacing: 0;
+  border-radius: 4px;
+  font-weight: bold;
+}
+body > p:before(100001):hover,
+section > p:before(100001):hover {
+  color: #5555AA;
+  font-weight: bold;
+  background-color: #FAFAFA;
+  border-bottom: 1px solid #CCCCCC;
+  border-right: 1px solid #CCCCCC;
+}
+body > p:hover,
+section > p:hover {
+  outline: 1px solid #EEEEEE;
+  -moz-outline-radius: 4px;
+}
+body > p:focus-within,
+section > p:focus-within {
+  outline: 1px solid #EEEEFF;
+}
+prolog {
+  position: relative;
+}
+prolog:before(100001) {
+  font-family: arial, helvetica, sans-serif;
+  display: block;
+  position: absolute;
+  content: 'prolog information';
+  font-size: 0.5rem;
+  top: -0.8rem;
+  text-align: right;
+  right: -0.2rem;
+  color: #CCCCCC;
+  border-bottom: 1px solid #EEEEEE;
+  border-right: 1px solid #EEEEEE;
+  padding-right: 4px;
+  width: 5rem;
+  letter-spacing: 0;
+  border-radius: 4px;
+  font-weight: bold;
+}
+prolog:before(100001):hover {
+  color: #5555AA;
+  font-weight: bold;
+  background-color: #FAFAFA;
+  border-bottom: 1px solid #CCCCCC;
+  border-right: 1px solid #CCCCCC;
+}
+section > title {
+  position: relative;
+}
+section > title:before(100001) {
+  font-family: arial, helvetica, sans-serif;
+  display: block;
+  position: absolute;
+  content: 'title';
+  font-size: 0.5rem;
+  top: -0.5rem;
+  text-align: right;
+  right: -1.2rem;
+  color: #CCCCCC;
+  border-bottom: 1px solid #EEEEEE;
+  border-right: 1px solid #EEEEEE;
+  padding-right: 4px;
+  width: 5rem;
+  letter-spacing: 0;
+  border-radius: 4px;
+  font-weight: bold;
+}
+section > title:before(100001):hover {
+  color: #5555AA;
+  font-weight: bold;
+  background-color: #FAFAFA;
+  border-bottom: 1px solid #CCCCCC;
+  border-right: 1px solid #CCCCCC;
+}
+section > title:hover {
+  outline: 1px solid #EEEEEE;
+  -moz-outline-radius: 4px;
+}
+section > title:focus-within {
+  outline: 1px solid #EEEEFF;
+}
+shortdesc {
+  position: relative;
+}
+shortdesc:before(100001) {
+  font-family: arial, helvetica, sans-serif;
+  display: block;
+  position: absolute;
+  content: 'short description';
+  font-size: 0.5rem;
+  top: -0.6rem;
+  text-align: right;
+  right: -2rem;
+  color: #CCCCCC;
+  border-bottom: 1px solid #EEEEEE;
+  border-right: 1px solid #EEEEEE;
+  padding-right: 4px;
+  width: 5rem;
+  letter-spacing: 0;
+  border-radius: 4px;
+  font-weight: bold;
+}
+shortdesc:before(100001):hover {
+  color: #5555AA;
+  font-weight: bold;
+  background-color: #FAFAFA;
+  border-bottom: 1px solid #CCCCCC;
+  border-right: 1px solid #CCCCCC;
+}
+shortdesc:hover {
+  outline: 1px solid #EEEEEE;
+  -moz-outline-radius: 4px;
+}
+shortdesc:focus-within {
+  outline: 1px solid #EEEEFF;
+}
+body {
+  position: relative;
+}
+body:before(100001) {
+  font-family: arial, helvetica, sans-serif;
+  display: block;
+  position: absolute;
+  content: 'content';
+  font-size: 0.5rem;
+  top: -0.5rem;
+  text-align: right;
+  right: -1.2rem;
+  color: #CCCCCC;
+  border-bottom: 1px solid #EEEEEE;
+  border-right: 1px solid #EEEEEE;
+  padding-right: 4px;
+  width: 5rem;
+  letter-spacing: 0;
+  border-radius: 4px;
+  font-weight: bold;
+}
+body:before(100001):hover {
+  color: #5555AA;
+  font-weight: bold;
+  background-color: #FAFAFA;
+  border-bottom: 1px solid #CCCCCC;
+  border-right: 1px solid #CCCCCC;
+}
+section {
+  position: relative;
+}
+section:before(100001) {
+  font-family: arial, helvetica, sans-serif;
+  display: block;
+  position: absolute;
+  content: 'section';
+  font-size: 0.5rem;
+  top: -0.6rem;
+  text-align: right;
+  right: -1.2rem;
+  color: #CCCCCC;
+  border-bottom: 1px solid #EEEEEE;
+  border-right: 1px solid #EEEEEE;
+  padding-right: 4px;
+  width: 5rem;
+  letter-spacing: 0;
+  border-radius: 4px;
+  font-weight: bold;
+}
+section:before(100001):hover {
+  color: #5555AA;
+  font-weight: bold;
+  background-color: #FAFAFA;
+  border-bottom: 1px solid #CCCCCC;
+  border-right: 1px solid #CCCCCC;
+}
+body > pre,
+section > pre {
+  position: relative;
+}
+body > pre:before(100001),
+section > pre:before(100001) {
+  font-family: arial, helvetica, sans-serif;
+  display: block;
+  position: absolute;
+  content: 'preformated text';
+  font-size: 0.5rem;
+  top: -0.7rem;
+  text-align: right;
+  right: -1.5rem;
+  color: #CCCCCC;
+  border-bottom: 1px solid #EEEEEE;
+  border-right: 1px solid #EEEEEE;
+  padding-right: 4px;
+  width: 5rem;
+  letter-spacing: 0;
+  border-radius: 4px;
+  font-weight: bold;
+}
+body > pre:before(100001):hover,
+section > pre:before(100001):hover {
+  color: #5555AA;
+  font-weight: bold;
+  background-color: #FAFAFA;
+  border-bottom: 1px solid #CCCCCC;
+  border-right: 1px solid #CCCCCC;
+}
+body > pre:hover,
+section > pre:hover {
+  outline: 1px solid #EEEEEE;
+  -moz-outline-radius: 4px;
+}
+body > pre:focus-within,
+section > pre:focus-within {
+  outline: 1px solid #EEEEFF;
+}
+fig {
+  position: relative;
+}
+fig:before(100001) {
+  font-family: arial, helvetica, sans-serif;
+  display: block;
+  position: absolute;
+  content: 'figure';
+  font-size: 0.5rem;
+  top: -0.5rem;
+  text-align: right;
+  right: -1.2rem;
+  color: #CCCCCC;
+  border-bottom: 1px solid #EEEEEE;
+  border-right: 1px solid #EEEEEE;
+  padding-right: 4px;
+  width: 5rem;
+  letter-spacing: 0;
+  border-radius: 4px;
+  font-weight: bold;
+}
+fig:before(100001):hover {
+  color: #5555AA;
+  font-weight: bold;
+  background-color: #FAFAFA;
+  border-bottom: 1px solid #CCCCCC;
+  border-right: 1px solid #CCCCCC;
+}
+fig:hover {
+  outline: 1px solid #EEEEEE;
+  -moz-outline-radius: 4px;
+}
+fig:focus-within {
+  outline: 1px solid #EEEEFF;
+}
+body > dl,
+section > dl {
+  position: relative;
+}
+body > dl:before(100001),
+section > dl:before(100001) {
+  font-family: arial, helvetica, sans-serif;
+  display: block;
+  position: absolute;
+  content: 'definition list';
+  font-size: 0.5rem;
+  top: -0.5rem;
+  text-align: right;
+  right: -1.2rem;
+  color: #CCCCCC;
+  border-bottom: 1px solid #EEEEEE;
+  border-right: 1px solid #EEEEEE;
+  padding-right: 4px;
+  width: 5rem;
+  letter-spacing: 0;
+  border-radius: 4px;
+  font-weight: bold;
+}
+body > dl:before(100001):hover,
+section > dl:before(100001):hover {
+  color: #5555AA;
+  font-weight: bold;
+  background-color: #FAFAFA;
+  border-bottom: 1px solid #CCCCCC;
+  border-right: 1px solid #CCCCCC;
+}
+body > dl:hover,
+section > dl:hover {
+  outline: 1px solid #EEEEEE;
+  -moz-outline-radius: 4px;
+}
+body > dl:focus-within,
+section > dl:focus-within {
+  outline: 1px solid #EEEEFF;
+}
+body > ol,
+section > ol {
+  position: relative;
+}
+body > ol:before(100001),
+section > ol:before(100001) {
+  font-family: arial, helvetica, sans-serif;
+  display: block;
+  position: absolute;
+  content: 'ordered list';
+  font-size: 0.5rem;
+  top: -0.5rem;
+  text-align: right;
+  right: -1.2rem;
+  color: #CCCCCC;
+  border-bottom: 1px solid #EEEEEE;
+  border-right: 1px solid #EEEEEE;
+  padding-right: 4px;
+  width: 5rem;
+  letter-spacing: 0;
+  border-radius: 4px;
+  font-weight: bold;
+}
+body > ol:before(100001):hover,
+section > ol:before(100001):hover {
+  color: #5555AA;
+  font-weight: bold;
+  background-color: #FAFAFA;
+  border-bottom: 1px solid #CCCCCC;
+  border-right: 1px solid #CCCCCC;
+}
+body > ol:hover,
+section > ol:hover {
+  outline: 1px solid #EEEEEE;
+  -moz-outline-radius: 4px;
+}
+body > ol:focus-within,
+section > ol:focus-within {
+  outline: 1px solid #EEEEFF;
+}
+body > ul,
+section > ul {
+  position: relative;
+}
+body > ul:before(100001),
+section > ul:before(100001) {
+  font-family: arial, helvetica, sans-serif;
+  display: block;
+  position: absolute;
+  content: 'unordered list';
+  font-size: 0.5rem;
+  top: -0.5rem;
+  text-align: right;
+  right: -1.2rem;
+  color: #CCCCCC;
+  border-bottom: 1px solid #EEEEEE;
+  border-right: 1px solid #EEEEEE;
+  padding-right: 4px;
+  width: 5rem;
+  letter-spacing: 0;
+  border-radius: 4px;
+  font-weight: bold;
+}
+body > ul:before(100001):hover,
+section > ul:before(100001):hover {
+  color: #5555AA;
+  font-weight: bold;
+  background-color: #FAFAFA;
+  border-bottom: 1px solid #CCCCCC;
+  border-right: 1px solid #CCCCCC;
+}
+body > ul:hover,
+section > ul:hover {
+  outline: 1px solid #EEEEEE;
+  -moz-outline-radius: 4px;
+}
+body > ul:focus-within,
+section > ul:focus-within {
+  outline: 1px solid #EEEEFF;
+}
+body > object,
+section > object {
+  position: relative;
+}
+body > object:before(100001),
+section > object:before(100001) {
+  font-family: arial, helvetica, sans-serif;
+  display: block;
+  position: absolute;
+  content: 'external object';
+  font-size: 0.5rem;
+  top: -0.5rem;
+  text-align: right;
+  right: -1.2rem;
+  color: #CCCCCC;
+  border-bottom: 1px solid #EEEEEE;
+  border-right: 1px solid #EEEEEE;
+  padding-right: 4px;
+  width: 5rem;
+  letter-spacing: 0;
+  border-radius: 4px;
+  font-weight: bold;
+}
+body > object:before(100001):hover,
+section > object:before(100001):hover {
+  color: #5555AA;
+  font-weight: bold;
+  background-color: #FAFAFA;
+  border-bottom: 1px solid #CCCCCC;
+  border-right: 1px solid #CCCCCC;
+}
+body > object:hover,
+section > object:hover {
+  outline: 1px solid #EEEEEE;
+  -moz-outline-radius: 4px;
+}
+body > object:focus-within,
+section > object:focus-within {
+  outline: 1px solid #EEEEFF;
+}
+topic > title {
+  position: relative;
+}
+topic > title:before(100001) {
+  font-family: arial, helvetica, sans-serif;
+  display: block;
+  position: absolute;
+  content: 'title';
+  font-size: 0.5rem;
+  top: -0.8rem;
+  text-align: right;
+  right: 0;
+  color: #CCCCCC;
+  border-bottom: 1px solid #EEEEEE;
+  border-right: 1px solid #EEEEEE;
+  padding-right: 4px;
+  width: 5rem;
+  letter-spacing: 0;
+  border-radius: 4px;
+  font-weight: bold;
+}
+topic > title:before(100001):hover {
+  color: #5555AA;
+  font-weight: bold;
+  background-color: #FAFAFA;
+  border-bottom: 1px solid #CCCCCC;
+  border-right: 1px solid #CCCCCC;
+}
+topic > title:hover {
+  outline: 1px solid #EEEEEE;
+  -moz-outline-radius: 4px;
+}
+topic > title:focus-within {
+  outline: 1px solid #EEEEFF;
+}
+object {
+  display: block;
+}
+body > * {
+  margin-top: 1em!important;
+}
+section > * {
+  margin-top: 1em!important;
+}

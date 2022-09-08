@@ -1,0 +1,3 @@
+<project name="com.oxygenxml.pdf.images">
+  <import file="build_custom.xml"/>
+</project>

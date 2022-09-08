@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Descriptor for an XML Refactoring operation. 
+    
+    It contains the information needed for rendering and running an XML Refactoring operation:
+    * name - the operation name;
+    * description - the operation description;
+    * script - the XQuery/XSLT script associated with this operation;
+    * parameters - the operation parameters.    
+    
+    Note that the XQuery Update facility is not enabled by default. To develop an XQuery Update script you should:
+    * create a new 'XQuery transformation' scenario
+    * set the transformer to Saxon-EE XQuery
+    * in the engine advanced options dialog check Enable XQuery Update ("-update:(on|off)")
+-->
+<refactoringOperationDescriptor 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.oxygenxml.com/ns/xmlRefactoring" id="op_${id}" name="Operation name">
+    <description>The description of the operation.</description>    
+    <script type="XQUERY_UPDATE" href="xqu_document.xq"/>
+    <parameters>
+        <description>Parameters short description.</description>
+        <parameter label="Name" name="param_name_in_script" type="TEXT" optional="false">   
+            <description>Description</description>
+            <!-- 
+                You can specify a list with possible values. 
+                Delete the next element if this information is not available.                
+            -->
+            <possibleValues>
+                <value name="v1" default="true">v1</value>
+                <value name="v2">v2</value>
+            </possibleValues>
+        </parameter>
+    </parameters>
+</refactoringOperationDescriptor>

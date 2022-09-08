@@ -1,0 +1,97 @@
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * display-atts attribute group
+ * 
+ * http://docs.oasis-open.org/dita/v1.2/os/spec/common/display-atts.html#display-atts
+ * 
+ * The "display-atts" attribute group includes attributes 
+ * whose values may be used for affecting the display of 
+ * a topic or element.
+ * 
+ * ==================================================
+ * ==================================================
+ */
+
+
+/*
+ * ==================================================
+ * 
+ * @scale
+ * 
+ * Specifies a percentage, selected from an enumerated 
+ * list, that is used to resize fonts in relation to 
+ * the normal text size. This attribute is primarily 
+ * useful for print-oriented display.
+ * 
+ * The scale attribute provides an acknowledged style-based 
+ * property directly on DITA elements. For the table and 
+ * fig elements, the intent of the property is to allow 
+ * authors to adjust font sizes on the content of the 
+ * containing element, primarily for print accomodation.
+ *  
+ * An image in these contexts is to be scaled only by its 
+ * own direct scale property. If not specifically scaled, 
+ * such an image is unchanged by the scale property of 
+ * its parent table or fig. 
+ */
+*[scale="50"]  {	font-size: 50%; }
+*[scale="60"]  {	font-size: 60%; }
+*[scale="70"]  {	font-size: 70%; }
+*[scale="80"]  {	font-size: 80%; }
+*[scale="90"]  {	font-size: 90%; }
+*[scale="100"] {	font-size: 100%; }
+*[scale="110"] {	font-size: 110%; }
+*[scale="120"] {	font-size: 120%; }
+*[scale="140"] {	font-size: 140%; }
+*[scale="160"] {	font-size: 160%; }
+*[scale="180"] {	font-size: 180%; }
+*[scale="200"] {	font-size: 200%; }
+
+
+
+/*
+ * ==================================================
+ * 
+ * @frame
+ * 
+ * Specifies which portion of a border should surround 
+ * the element.
+ */
+*[frame]{
+    border-style:none;
+    border-width:1px;
+}
+*[frame="top"]{	
+  border-top-style:solid; 
+}
+*[frame="bottom"]{	
+  border-bottom-style:solid; 
+}
+*[frame="topbot"]{
+	border-top-style:solid;
+	border-bottom-style:solid;
+}
+*[frame="sides"]{
+  border-left-style:solid;
+	border-right-style:solid;
+}
+*[frame="all"] {	
+  border-style:solid; 
+}	
+*[frame="none"]{	
+  border-style:none;  
+}
+
+
+/*
+ * ==================================================
+ * 
+ * @expanse
+ * 
+ * Determines the horizontal placement of the element. 
+ *
+ * 
+ * oXygen does not support this attribute!  
+ */

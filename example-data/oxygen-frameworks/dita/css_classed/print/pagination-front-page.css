@@ -1,0 +1,26 @@
+
+@media print {
+    /*
+     * 
+     * Title Page
+     * 
+     */
+    front-page {
+        page: front-page; 
+    }
+    front-page-title {
+        display:block;
+        text-align:center;
+        margin-top:3in;
+        font-size:2em;
+    }
+    @page front-page {
+        @top {          content:none }
+        @bottom {       content:none }
+        @bottom-right { content:none }
+        @bottom-left {  content:none }
+        @top-right {    content:none }
+        @top-left {     content:none }
+    }
+
+}

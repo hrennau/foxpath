@@ -1,0 +1,20 @@
+<FindBugsFilter>
+	<Match>
+		<Bug pattern="EI_EXPOSE_REP" />
+	</Match>
+	<Match>
+		<Bug pattern="EI_EXPOSE_REP2" />
+	</Match>
+	<Match>
+		<Bug pattern="CN_IDIOM_NO_SUPER_CALL" />
+	</Match>	
+	<Match>
+		<Class name="~.*Token*.*" />
+	</Match>
+	<Match>
+		<Class name="~.*Parser.*" />
+	</Match>
+	<Match>
+		<Class name="~.*ParseException.*" />
+	</Match>
+</FindBugsFilter>

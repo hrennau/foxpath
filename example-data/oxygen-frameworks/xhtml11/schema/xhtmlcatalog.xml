@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Comment the DTD declaration to avoid looking for it on the web.
+  Alternatively we can place a copy of the DTD locally and refer to it.
+-->
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+  <rewriteURI uriStartString="http://www.w3.org/MarkUp/SCHEMA/" rewritePrefix="./"/>
+  <system systemId="http://www.w3.org/MarkUp/DTD/xhtml-lat1.ent" uri="../dtd/xhtml-lat1.ent"/>
+  <system systemId="http://www.w3.org/MarkUp/DTD/xhtml-symbol.ent" uri="../dtd/xhtml-symbol.ent"/>
+  <system systemId="http://www.w3.org/MarkUp/DTD/xhtml-special.ent" uri="../dtd/xhtml-special.ent"/>
+</catalog>

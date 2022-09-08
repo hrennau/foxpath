@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+    targetNamespace="http://www.oxygenxml.com/ns/doc/schema-internal"
+    xmlns="http://www.oxygenxml.com/ns/doc/schema-internal">
+    <xs:annotation>
+        <xs:documentation>
+	        Customization for XML Schema documentation for overriding some componets.
+	    </xs:documentation>
+    </xs:annotation>
+    <xs:override schemaLocation="http://www.oxygenxml.com/ns/doc/schema-internal/xsdDocSchema.xsd">
+        <xs:simpleType name="directiveType">
+            <xs:annotation>
+                <xs:documentation> 
+                    For XML Schema resources specifies if the schema is included, imported, redefined or overriden.
+                    For WSDL resources specified resource is imported or is the main one.
+                </xs:documentation>
+            </xs:annotation>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="include"/>
+                <xs:enumeration value="import"/>
+                <xs:enumeration value="redefine"/>
+                <xs:enumeration value="override"/>
+                <xs:enumeration value="wsdlImport"/>
+            </xs:restriction>
+        </xs:simpleType>
+
+        <xs:simpleType name="refTypeAttributeType">
+            <xs:annotation>
+                <xs:documentation>
+                    Adds both XML Schema and WSDL component types.
+                </xs:documentation>
+            </xs:annotation>
+            <xs:restriction base="xs:string">
+                <xs:enumeration value="Element"/>
+                <xs:enumeration value="Attribute"/>
+                <xs:enumeration value="Schema"/>
+                <xs:enumeration value="Main_schema"/>
+                <xs:enumeration value="Element_Group"/>
+                <xs:enumeration value="Attribute_Group"/>
+                <xs:enumeration value="Simple_Type"/>
+                <xs:enumeration value="Complex_Type"/>
+                <xs:enumeration value="Notation"/>
+                <xs:enumeration value="Included_schema"/>
+                <xs:enumeration value="Imported_schema"/>
+                <xs:enumeration value="Redefined_schema"/>
+                <xs:enumeration value="Overridden_schema"/>
+
+                <!-- WSDL componet types -->
+                <xs:enumeration value="Definition"/>
+                <xs:enumeration value="Service"/>
+                <xs:enumeration value="Binding"/>
+                <xs:enumeration value="PortType"/>
+                <xs:enumeration value="PortType_operation"/>
+                <xs:enumeration value="Message"/>
+                <xs:enumeration value="Main_definition"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:override>
+</xs:schema>

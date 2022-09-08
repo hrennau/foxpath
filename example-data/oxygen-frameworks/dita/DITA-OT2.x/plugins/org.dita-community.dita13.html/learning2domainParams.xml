@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension>
+  <param name="lc-number-questions" expression="${arg.lc.html.numberQuestions}" if="arg.lc.html.numberQuestions"/>  
+  <param name="lc-show-feedback" expression="${arg.lc.html.showFeedback}" if="arg.lc.html.showFeedback"/>  
+  <param name="lc-style-correct-responses" expression="${arg.lc.html.styleCorrectResponses}" if="arg.lc.html.styleCorrectResponses"/>  
+  <param name="lc-question-number-format" expression="${arg.lc.html.questionNumberFormat}" if="arg.lc.html.questionNumberFormat"/>  
+  <param name="lc-question-number-prefix" expression="${arg.lc.html.questionNumberPrefix}" if="arg.lc.html.questionNumberPrefix"/>  
+  <param name="lc-question-number-suffix" expression="${arg.lc.html.questionNumberSuffix}" if="arg.lc.html.questionNumberSuffix"/>  
+  <param name="lc-answer-option-number-format" expression="${arg.lc.html.answerOptionNumberFormat}" if="arg.lc.html.answerOptionNumberFormat"/>
+  <param name="lc-show-only-correct-answer" expression="${arg.lc.html.showOnlyCorrectAnswer}" if="arg.lc.html.showOnlyCorrectAnswer"/>
+  <param name="lc-show-only-feedback" expression="${arg.lc.html.showOnlyFeedback}" if="arg.lc.html.showOnlyFeedback"/>
+  <param name="lc-hide-question-labels" expression="${arg.lc.html.hideQuestionLabels}" if="arg.lc.html.hideQuestionLabels"/>
+</extension>

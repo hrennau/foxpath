@@ -1,0 +1,4 @@
+/*Common CSS for the default EPUB transformation. Used to wrap programlistings to page width.*/
+pre{
+ white-space:pre-wrap;
+}

@@ -1,0 +1,36 @@
+/*
+ * =====================================================
+ * 
+ * The page breaks occur after each topic marked as a
+ * chapter from the XSL.
+ * 
+ * =====================================================
+ */
+
+*[class ~= "topic/topic"][break-before = "true"] {
+    page-break-before:always;
+}
+
+
+
+/*
+ * =====================================================
+ * 
+ * Rules for avoiding breaking the pages in unexpected 
+ * places (between titles and content for instance )
+ * 
+ * =====================================================
+ */
+*[class ~= "topic/title"] {
+    page-break-after:avoid;
+}
+
+*[class ~= "topic/row"] {
+    page-break-inside:avoid;
+}
+*[class ~= "topic/strow"] {
+    page-break-inside:avoid;
+}
+*[class ~= "topic/fig"] {
+    page-break-inside:avoid;
+}

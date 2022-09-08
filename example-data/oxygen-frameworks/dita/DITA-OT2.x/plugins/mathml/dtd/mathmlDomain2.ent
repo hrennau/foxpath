@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    <public publicId="-//FIRELAB//ENTITIES DITA 1.1 MathML Domain 3//EN" uri="mathmlDomain2.ent"/>
+    <system systemId="http://www.smoke-fire.us/svn/firelab/common/trunk/xml/firelab-doctypes/mathmlDomain2.ent" uri="mathmlDomain2.ent"/>
+-->
+
+<!ENTITY % math-d-foreign      "mathph | math"            >
+<!ENTITY % math-d-unknown      "eqdefsph | eqdefstbl"     >
+<!ENTITY % math-d-fig          "equation"                 >
+<!ENTITY % math-d-dl           "eqsymbols"                >
+<!ENTITY % math-d-dlentry      "eqsymbol"                 >
+<!ENTITY % math-d-dt           "symname"                  > 
+<!ENTITY % math-d-dd           "symdesc | symdescph"      >
+
+
+<!ENTITY   math-d-att     "(topic math-d)" >

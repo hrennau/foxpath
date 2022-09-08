@@ -1,0 +1,13 @@
+
+   html5.metadata.class |= html5.template
+   html5.flow.class |= html5.template
+   html5.phrasing.class |= html5.template
+
+html5.template = element template {html5.global.common.attrs & any}
+
+any =
+  (element * {
+     attribute * { text }*,
+     any
+   }
+   | text)*

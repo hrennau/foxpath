@@ -1,0 +1,41 @@
+@import "dita.css";
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+
+@font-face {
+    font-family:"caligraffitti";
+    font-style:normal;
+    src:url("../fonts/Calligraffitti-Regular.ttf");
+}
+
+
+/*
+ * Topic and Map Titles.
+ */
+*[class ~= "map/map"][title]:before,
+*[class ~= "map/map"] > *[class ~= "topic/title"],
+*[class ~= "topic/topic"] > *[class ~= "topic/title"]{
+   color:#990066;
+}
+
+/*
+ * Plain content and topcirefs in the map.
+ */
+:root {
+    font-family: "Gabriola", "Lucida Handwritting", "caligraffitti", serif;
+    font-size:1.2em;
+    line-height:1.5;
+}
+
+@media oxygen AND (os:windows) {
+    :root {       
+        line-height:normal;
+    }    
+}
+
+@media oxygen AND (min-width:25cm) AND (platform:standalone),
+    oxygen AND (min-width:25cm) AND (platform:eclipse) {
+  /* When the size is large, put a background around the 'page' */
+  oxy|document{
+    background-color:#450075;
+  }  
+}

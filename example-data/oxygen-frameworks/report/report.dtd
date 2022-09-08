@@ -1,0 +1,23 @@
+<!ELEMENT systemID (#PCDATA)>
+<!ELEMENT type (#PCDATA)>
+<!ELEMENT line (#PCDATA)>
+<!ELEMENT report (#PCDATA | incident)*>
+<!ATTLIST report xmlns CDATA #IMPLIED>
+<!ELEMENT start (#PCDATA | line | column)*>
+<!ELEMENT column (#PCDATA)>
+<!ELEMENT length (#PCDATA)>
+<!ELEMENT description (#PCDATA)>
+<!ELEMENT engine (#PCDATA)>
+<!ELEMENT severity (#PCDATA)>
+<!ELEMENT inputFile (#PCDATA)>
+<!ELEMENT location (#PCDATA | start | end | length)*>
+<!ELEMENT end (#PCDATA | line | column)*>
+<!ELEMENT operationDescription (mainValidationFile | scenario | schemas | documentType | inputFile)*>
+<!ELEMENT mainValidationFile (#PCDATA)>
+<!ELEMENT scenario (#PCDATA)>
+<!ELEMENT schemas (schema)*>
+<!ELEMENT documentType (#PCDATA)>
+<!ELEMENT schema (#PCDATA)>
+<!ELEMENT xpath_location (#PCDATA)>
+<!ELEMENT additionalInfo (#PCDATA)>
+<!ELEMENT incident (#PCDATA | engine | severity | description | systemID | type | operationDescription | location | xpath_location | additionalInfo)*>

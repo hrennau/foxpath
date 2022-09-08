@@ -1,0 +1,32 @@
+<plugin id="org.dita4publishers.kindle">
+  
+  <extension-point id="dita.conductor.xhtml.param" name="XHTML XSLT parameters"/>
+  
+  <feature extension="package.support.name" value="Eliot Kimber"/>
+  <feature extension="package.support.email" value="ekimber@contrext.com"/>
+  
+  <!-- all other required plugins are declared in the epub plugin so not re-declaring requirements
+    here-->
+  <require plugin="org.dita4publishers.epub"/>
+  
+  <extension id="xsl.transtype-kindle"/> 
+  
+  <template file="build_transtype-kindle_template.xml"/>
+  
+  <template file="xsl/map2kindle_template.xsl"/> <!-- relative path to the template file of your customization -->
+  
+  <feature extension="dita.conductor.transtype.check" value="kindle" type="txt"/>
+  <feature extension="dita.conductor.target.relative" file="build.xml"/>
+  
+  <!-- For the new way of specifying metadata with parameters contributed by the transtype, see
+    the base epub plugin.xml or this github issue:
+        https://github.com/dita-ot/dita-ot/issues/1757
+   -->
+  <transtype name="kindle" extends="epub" desc="Kindle (DITA 4 Publishers)">
+    <param name="kindlegen.executable"
+      desc="File path to the kindlegen executable.
+      e.g. &quot;/Users/ekimber/apps/KindleGen_Mac_i386_v1.1/kindlegen&quot;."
+      type="file"/>
+  </transtype>
+
+</plugin>

@@ -1,0 +1,7 @@
+﻿Office Open XML (OOXML) files were downloaded as part of the Office Open XML ECMA Specification from <http://www.ecma-international.org/publications/standards/Ecma-376.htm>
+
+Copyright - ECMA International, "made available without restriction"
+http://www.ecma-international.org/memento/Ecmabylaws.htm - section 9.4
+
+Patent License - Microsoft Open Specification Promise (OSP)
+http://www.microsoft.com/interop/osp/

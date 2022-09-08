@@ -1,0 +1,126 @@
+/* DITA bookmap elements using extensions*/
+*[class~="bookmap/bookmap"]:before {
+    content: oxy_capitalize(oxy_local-name());
+}
+
+*[class~="bookmap/part"]:before{
+    content: url("../img/part.png") oxy_capitalize(oxy_local-name()) " [" oxy_attributes() " ]";
+}
+
+*[class~="bookmap/chapter"]:before{
+    content: url("../img/chapter.png") oxy_capitalize(oxy_local-name()) " " counter(chapter) " [" oxy_attributes() " ]" !important;
+}
+
+*[class~="bookmap/chapter"][toc="no"]:before{
+    content: url("../img/chapter.png") oxy_capitalize(oxy_local-name()) " [" oxy_attributes() " ]" !important;
+}
+
+/*EXM-28843 Add a count number for each chapter.*/
+*[class~="bookmap/chapter"]{
+    counter-increment:chapter;
+}
+*[class~="bookmap/chapter"][toc="no"]{
+    counter-increment:none;
+}
+
+*[class~="map/map"]{
+    counter-reset:chapter;
+}
+
+*[class~="bookmap/appendix"]:before{
+    content: url("../img/appendix.png") oxy_capitalize(oxy_local-name()) " [" oxy_attributes() " ]";
+}
+
+*[class~="bookmap/bookmap"] > *[class~="bookmap/booktitle"]:before,
+*[class~="bookmap/bookmap"] > *[class~="bookmap/frontmatter"]:before, 
+*[class~="bookmap/bookmap"] > *[class~="bookmap/backmatter"]:before {
+    content: oxy_capitalize(oxy_local-name());
+}
+
+*[class~="bookmap/publisherinformation"]:before,
+*[class~="bookmap/person"]:before,
+*[class~="bookmap/organization"]:before,
+*[class~="bookmap/printlocation"]:before,
+*[class~="bookmap/published"]:before,
+*[class~="bookmap/publishtype"]:before,
+*[class~="bookmap/revisionid"]:before,
+*[class~="bookmap/started"]:before,
+*[class~="bookmap/year"]:before,
+*[class~="bookmap/month"]:before,
+*[class~="bookmap/day"]:before,
+*[class~="bookmap/completed"]:before,
+*[class~="bookmap/bookid"]:before,
+*[class~="bookmap/bookpartno"]:before,
+*[class~="bookmap/edition"]:before,
+*[class~="bookmap/isbn"]:before,
+*[class~="bookmap/booknumber"]:before,
+*[class~="bookmap/volume"]:before,
+*[class~="bookmap/maintainer"]:before,
+*[class~="bookmap/bookchangehistory"]:before,
+*[class~="bookmap/reviewed"]:before,
+*[class~="bookmap/edited"]:before,
+*[class~="bookmap/tested"]:before,
+*[class~="bookmap/approved"]:before,
+*[class~="bookmap/bookevent"]:before,
+*[class~="bookmap/bookeventtype"]:before,
+*[class~="bookmap/bookrights"]:before,
+*[class~="bookmap/copyrfirst"]:before,
+*[class~="bookmap/copyrlast"]:before,
+*[class~="bookmap/bookowner"]:before,
+*[class~="bookmap/bookrestriction"]:before,
+*[class~="bookmap/summary"]:before {
+    display:inline;
+    content: oxy_capitalize(oxy_local-name()) ": ";
+    font-size: smaller;
+    font-weight: bold;
+    color: #333333;
+    background-color:inherit;
+}
+
+*[class~="bookmap/bookeventtype"] {
+    content: oxy_capitalize(oxy_local-name()) " [" oxy_attributes() " ]";
+    color: #333333;
+    background-color:inherit;
+}
+
+*[class~="bookmap/publishtype"],
+*[class~="bookmap/bookrestriction"] {
+    content: oxy_capitalize(oxy_local-name()) " [" oxy_attributes() " ]";
+    color: #333333;
+    background-color:inherit;
+}
+
+*[class~="bookmap/notices"]:before,
+*[class~="bookmap/dedication"]:before,
+*[class~="bookmap/colophon"]:before,
+*[class~="bookmap/bookabstract"]:before,
+*[class~="bookmap/draftintro"]:before,
+*[class~="bookmap/preface"]:before {
+    content: oxy_capitalize(oxy_local-name()) " [" oxy_attributes() " ]";
+}
+
+*[class~="bookmap/toc"]:before,
+*[class~="bookmap/figurelist"]:before,
+*[class~="bookmap/tablelist"]:before,
+*[class~="bookmap/abbrevlist"]:before,
+*[class~="bookmap/trademarklist"]:before,
+*[class~="bookmap/bibliolist"]:before,
+*[class~="bookmap/indexlist"]:before,
+*[class~="bookmap/booklist"]:before,
+*[class~="bookmap/booklists"]:before {
+    display: inline;
+    color: #333333;
+    background-color:inherit;
+    content: oxy_capitalize(oxy_local-name());
+}
+
+*[class~="bookmap/glossarylist"]:before {
+    content: oxy_capitalize(oxy_local-name());
+}
+
+*[class~="bookmap/dedication"]:before,
+*[class~="bookmap/colophon"]:before,
+*[class~="bookmap/amendments"]:before,
+*[class~="bookmap/bookabstract"]:before {
+    content: oxy_capitalize(oxy_local-name());
+}

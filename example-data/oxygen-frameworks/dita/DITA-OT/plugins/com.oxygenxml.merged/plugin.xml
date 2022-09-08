@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="com.oxygenxml.merge">
+  <feature extension="dita.conductor.transtype.check" value="merged" type="txt"/>
+  <transtype name="merged" desc="Merge DITA content to single file"/>
+  <feature extension="dita.conductor.target.relative" file="integrator.xml"/>
+</plugin>

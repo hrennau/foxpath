@@ -1,0 +1,72 @@
+@import "../xhtml/css/xhtml.css";
+@namespace xs url('http://www.w3.org/2001/XMLSchema');
+
+
+xs|schema{
+    font-family:sans-serif;
+    font-size:0.7em;
+    display:block;
+    
+    background-color:#DDDDDD;
+    border-left:1px solid gray;
+    border-bottom:1px solid gray;
+    padding-top:1em;
+    padding-bottom:1em;
+    padding-left:2em;
+    padding-right:2em;
+}
+
+/*xs|documentation,*/
+
+xs|*{
+    display : block;
+    padding-left:1em;
+}
+
+/* The annotation is foldable, it is too much if the documentation is also foldable.*/
+xs|documentation{
+    padding-left:1em;
+    display:block;
+}
+
+xs|schema > *,
+xs|schema >xs|redefine > *{
+    margin-top:2em;
+    margin-bottom:2em;
+    padding-top:1.5em;
+    padding-bottom:1.5em;
+    border:1px solid #66AAFF;
+    background-color:white;
+}
+
+xs|schema > *,
+xs|schema > xs|redefine > *{
+    font-weight:bold;
+}
+
+xs|schema > * *,
+xs|schema > xs|redefine > * *{
+    font-weight:normal;
+}
+
+
+xs|*:before {
+    content : '<' oxy_name() oxy_attributes()'>';
+    color : rgb(0,0,150);
+}
+xs|*{
+    -oxy-foldable:true;
+}
+xs|*:after {
+    content : '</' oxy_name() '>';
+    color : rgb(0,0,150);
+}
+
+xs|documentation:after, 
+xs|documentation:before {
+    content:"";
+    display:none;
+}
+xs|documentation{
+    -oxy-foldable:false;
+}

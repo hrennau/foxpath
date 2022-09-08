@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  
+  <taskdef resource="net/sf/antcontrib/antlib.xml"/>
+  
+  <target name="docx.init">
+    <property name="force-unique" value="true"/>
+    <property name="docx.dir" location="${dita.plugin.com.elovirta.ooxml.dir}/docx"/>
+    <property name="dotx.file" location="${dita.plugin.com.elovirta.ooxml.dir}/resources/Normal.docx"/>
+    <property name="args.rellinks" value="nofamily"/>
+    <property name="preprocess.copy-image.skip" value="true"/>
+    <property name="preprocess.copy-html.skip" value="true"/>
+    <property environment="env"/>
+    <condition property="inkscape.exec" value="/Applications/Inkscape.app/Contents/Resources/bin/inkscape">
+      <available file="/Applications/Inkscape.app/Contents/Resources/bin/inkscape"/>
+    </condition>
+    <condition property="inkscape.exec" value="${env.ProgramFiles(x86)}\Inkscape\Inkscape.exe">
+      <available file="${env.ProgramFiles(x86)}\Inkscape\Inkscape.exe"/>
+    </condition>
+    <condition property="inkscape.exec" value="${env.PROGRAMFILES}\Inkscape\Inkscape.exe">
+      <available file="${env.PROGRAMFILES}\Inkscape\Inkscape.exe"/>
+    </condition>
+  </target>
+  
+  <target name="dita2docx"
+          depends="docx.init,
+                   build-init,
+                   preprocess,
+                   docx.image-metadata,
+                   docx.svg2emf,
+                   docx.template,
+                   docx.convert,
+                   docx.package"/>
+  
+  <target name="docx.image-metadata" description="Read image metadata">
+    <pipeline message="Read image metadata." taskname="image-metadata" tempdir="${dita.temp.dir}">
+      <module class="org.dita.dost.module.ImageMetadataModule">
+        <param name="outputdir" location="${output.dir}"/>
+      </module>
+    </pipeline>
+  </target>
+  
+  <target name="docx.svg2emf" if="inkscape.exec" unless="docx.inkscape.skip">
+    <mkdir dir="${dita.temp.dir}/docx/word/media"/>
+    <for param="svg.file">
+      <path>
+        <fileset dir="${user.input.dir}">
+          <include name="**/*.svg"/>
+        </fileset>
+      </path>
+      <sequential>
+        <local name="svg.name"/>
+        <local name="emf.file"/>
+        <basename property="svg.name" file="@{svg.file}" suffix=".svg"/>
+        <property name="emf.file" location="${dita.temp.dir}/docx/word/media/${svg.name}.emf"/>
+        <echo taskname="inkscape">Converting @{svg.file} to ${emf.file}</echo>
+        <exec executable="${inkscape.exec}" taskname="inkscape">
+          <arg value="-z" />
+          <arg value="--export-emf=${emf.file}" />
+          <arg file="@{svg.file}"/>
+        </exec>
+      </sequential>
+    </for>
+  </target>
+  
+  <target name="docx.template">
+    <unzip src="${dotx.file}" dest="${dita.temp.dir}/dotx">
+      <patternset>
+        <exclude name="**/.DS_Store"/>
+        <exclude name="__MACOSX/**"/>
+      </patternset>
+    </unzip>
+    <copy todir="${dita.temp.dir}/docx" overwrite="true">
+      <fileset dir="${dita.temp.dir}/dotx"/>
+    </copy>
+  </target>
+  
+  <target name="docx.convert">
+    <dirname property="dita.temp.dir.fullpath" file="${dita.temp.dir}/dummy.file"/>
+    <pipeline message="topicmerge"
+              inputmap="${dita.temp.dir.fullpath}/${user.input.file}"
+              tempdir="${dita.temp.dir.fullpath}">
+      <module class="org.dita.dost.module.TopicMergeModule">
+        <param name="output" location="${dita.temp.dir.fullpath}/${dita.map.filename.root}_MERGED.xml"/>
+        <param name="style" location="${dita.plugin.org.dita.pdf2.dir}/xsl/common/topicmerge.xsl"/>
+      </module>
+    </pipeline>
+    
+    <property name="image.dir" location="${user.input.dir}/.."/>
+    <property name="clean.input.file" location="${dita.temp.dir.fullpath}/${dita.map.filename.root}_CLEANED.xml"/>
+    <property name="document.flat.xsl" location="${docx.dir}/word/document.flat.xsl"/>
+    <xslt style="${document.flat.xsl}"
+          in="${dita.temp.dir.fullpath}/${dita.map.filename.root}_MERGED.xml"
+          out="${clean.input.file}"
+          force="true">
+      <xmlcatalog refid="dita.catalog"/>
+    </xslt>
+    
+    <makeurl property="dotx.dir.uri" file="${dita.temp.dir}/dotx"/>
+    <makeurl property="user.input.dir.url" file="${user.input.dir}"/>    
+
+    <property name="core.xsl" location="${docx.dir}/docProps/core.xsl"/>
+    <xslt style="${core.xsl}"
+          in="${clean.input.file}"
+          out="${dita.temp.dir}/docx/docProps/core.xml"
+          force="true">
+      <xmlcatalog refid="dita.catalog"/>
+    </xslt>
+    <property name="custom.xsl" location="${docx.dir}/docProps/custom.xsl"/>
+    <xslt style="${custom.xsl}"
+          in="${clean.input.file}"
+          out="${dita.temp.dir}/docx/docProps/custom.xml"
+          force="true">
+      <xmlcatalog refid="dita.catalog"/>
+    </xslt>
+
+    <property name="document.xsl" location="${docx.dir}/word/document.xsl"/>
+    <xslt style="${document.xsl}"
+          in="${clean.input.file}"
+          out="${dita.temp.dir}/docx/word/document.xml"
+          force="true">
+      <param name="image.dir" expression="${image.dir}"/>
+      <param name="template.dir" expression="${dotx.dir.uri}"/>
+      <param name="input.dir.url" expression="${user.input.dir.url}"/>
+      <xmlcatalog refid="dita.catalog"/>
+    </xslt>
+    <property name="comments.xsl" location="${docx.dir}/word/comments.xsl"/>
+    <xslt style="${comments.xsl}"
+          in="${clean.input.file}"
+          out="${dita.temp.dir}/docx/word/comments.xml"
+          force="true">
+      <param name="template.dir" expression="${dotx.dir.uri}"/>
+      <xmlcatalog refid="dita.catalog"/>
+    </xslt>
+    <property name="numbering.xsl" location="${docx.dir}/word/numbering.xsl"/>
+    <xslt style="${numbering.xsl}"
+          in="${clean.input.file}"
+          out="${dita.temp.dir}/docx/word/numbering.xml"
+          force="true">
+      <param name="template.dir" expression="${dotx.dir.uri}"/>
+      <xmlcatalog refid="dita.catalog"/>
+    </xslt>
+    <property name="footnotes.xsl" location="${docx.dir}/word/footnotes.xsl"/>
+    <xslt style="${footnotes.xsl}"
+          in="${clean.input.file}"
+          out="${dita.temp.dir}/docx/word/footnotes.xml"
+          force="true">
+      <param name="template.dir" expression="${dotx.dir.uri}"/>
+      <xmlcatalog refid="dita.catalog"/>
+    </xslt>
+    <property name="document.xml.xsl" location="${docx.dir}/word/_rels/document.xml.xsl"/>
+    <xslt style="${document.xml.xsl}"
+          in="${clean.input.file}"
+          out="${dita.temp.dir}/docx/word/_rels/document.xml.rels"
+          force="true">
+      <param name="template.dir" expression="${dotx.dir.uri}"/>
+      <xmlcatalog refid="dita.catalog"/>
+    </xslt>
+    <makeurl property="clean.input.file.uri" file="${clean.input.file}"/>
+    <xslt style="${docx.dir}/[Content_Types].xsl"
+          in="${dita.temp.dir}/dotx/[Content_Types].xml"
+          out="${dita.temp.dir}/docx/[Content_Types].xml"
+          force="true">
+      <param name="input.uri" expression="${clean.input.file.uri}"/>
+      <xmlcatalog refid="dita.catalog"/>
+    </xslt>
+  </target>
+    
+  <target name="docx.package" depends="docx.package.media">
+    <condition property="outputFile.extension" value="docm" else="docx">
+      <matches  string="${dotx.file}" pattern="\.dotm$"/>
+    </condition>
+    <property name="outputFile" location="${dita.map.output.dir}/${dita.map.filename.root}.${outputFile.extension}"/>
+    <delete file="${outputFile}"/>
+    <zip zipfile="${outputFile}">
+      <fileset dir="${dita.temp.dir}/docx"/>
+    </zip>
+  </target>
+  
+  <target name="docx.package.media">
+    <!--copy todir="${dita.temp.dir}/docx/word/media">
+      <fileset dir="${user.input.dir}/" includesfile="${dita.temp.dir}/${imagefile}">
+        <exclude name="**/*.mml"/>
+        <exclude name="**/*.svg"/>
+      </fileset>
+    </copy-->
+    <copy todir="${dita.temp.dir}/docx/word/media">
+      <dita-fileset format="image"/>
+    </copy>
+    <delete>
+      <fileset dir="${dita.temp.dir}/docx/word/media" erroronmissingdir="false">
+        <include name="**/*.mml"/>
+        <include name="**/*.svg"/>
+      </fileset>
+    </delete>
+  </target>
+    
+</project>

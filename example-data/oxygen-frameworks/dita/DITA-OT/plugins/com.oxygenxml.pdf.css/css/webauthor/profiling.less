@@ -1,0 +1,25 @@
+.profile(@att, @layer) {
+    *[@{att}] {
+      border:1px solid green; 
+    }
+    
+    *[@{att}]:after(@{layer}) {
+    font-size:0.75em;
+    content:
+      ' (if @{att} is '
+      oxy_label(text, oxy_concat("'", oxy_replace(attr(@att), ' ', "' or '"), "'"), color, blue)
+      ') ';
+    background-color:#CCFFAA;
+  }    
+}
+
+
+@media oxygen AND (platform:"webapp") {
+  .profile(product,         1000001);
+  .profile(audience,        1000003);
+  .profile(platform,        1000005);
+  .profile(deliveryTarget,  1000007);
+  .profile(props,           1000001);
+  .profile(otherprops,      1000011);
+  .profile(rev,             1000013);
+}

@@ -1,0 +1,117 @@
+@import "tei_oxygen.css";
+@import "relaxng/relaxng.css";
+@import "isosch/iso-schematron.css";
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------
+----- Oxygen modifications to the TEI css available at  http://tei.svn.sourceforge.net/viewvc/tei/trunk/TEICSS/  ------
+----- This file contains rules that are addressed explicitly to the TEI ODD documents. 
+------------------------------------------------------------------------------------------------------------------------------------------------------*/
+moduleRef {
+    display:block;
+}
+moduleRef:before {
+    display:inline;
+    content: "Refer module: *";
+}
+moduleRef[key]:before {
+    display:inline;
+    content:"Refer module: " attr(key);
+}
+moduleRef[include]:before {
+    display:inline;
+    content:"Include elements: " attr(include);
+}
+moduleRef[except]:before {
+    display:inline;
+    content:"Except elements: " attr(except);
+}
+
+attDef {
+    display:block;
+    content:attr(ident) " ";
+    font-weight:bold !important;
+}
+
+attDef:before {
+    display:inline;
+    content: "Attribute: ";
+    font-weight:normal;
+}
+
+valList {
+    margin-left:10px;
+    display:block;
+    font-weight:normal;
+    -oxy-foldable:true;
+}
+
+valList:before {
+    content: "Possible values: ";
+}
+
+defaultVal {
+    display:block;
+    margin-left:10px;
+    content:"Default value: ";
+    font-weight:normal;
+}
+
+valItem:before {
+    content: attr(ident) " ";
+    font-weight:bold;
+}
+
+valItem {
+    margin-left:10px;
+    display:list-item;
+}
+
+classes {
+    display:block;
+    content: "Class membership, mode '" attr(mode) "' :";
+}
+
+memberOf {
+    display:block;
+    content: "Add in class: " attr(key);
+}
+
+memberOf[mode="delete"] {
+    display:block;
+    content: "Remove from class: " attr(key);
+}
+
+elementSpec {
+    display:block;
+    content:attr(ident) " ";
+    font-weight:bold;
+}
+
+elementSpec * {
+    font-weight:normal;
+}
+
+elementSpec:before {
+    content: "Add element: ";
+    font-weight:normal;
+}
+
+elementSpec[mode='change']:before {
+    content: "Change element: ";
+}
+
+elementSpec[mode='delete']:before {
+    content: "Delete element: ";
+}
+
+elementSpec[mode='replace']:before {
+    content: "Replace element: ";
+}
+
+classSpec[mode] {
+    content: oxy_capitalize(attr(mode)) " class " attr(ident); 
+}
+
+classSpec {
+    content: "Add class " attr(ident); 
+}

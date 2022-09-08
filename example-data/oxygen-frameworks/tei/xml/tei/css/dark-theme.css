@@ -1,0 +1,121 @@
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+
+@media oxygen-dark-theme, oxygen-high-contrast-black{
+
+    *:before,
+    *,
+    *:after{
+        color:inherit !important;
+        background-color:inherit !important;
+        border-color:inherit !important;
+    }
+
+    oxy|comment{
+        color:#3DB39B !important;
+        background-color:transparent !important;
+    }
+
+    oxy|reference,
+    oxy|entity{
+        background-color:transparent !important;
+    }
+
+    div > head,
+    body > div > head,
+    body > div > div > head,
+    body > div > div > div > head,
+    body > div > div > div > div > head{
+        color:#3377FF !important;
+        border-bottom:1px solid #0050F0 !important;
+    }
+
+    add,
+    corr{
+        color:#179C32 !important;
+    }
+
+
+    att,
+    gi,
+    tag,
+    ref,
+    term{
+        color:#59ACFF !important;
+    }
+
+
+    cell[role = 'label']{
+        background-color:#838383 !important;
+    }
+
+    del,
+    ptr:before,
+    rdg:before,
+    sic,
+    Button{
+        color:#960000 !important;
+    }
+
+    eg,
+    Label{
+        color:#009999 !important;
+    }
+
+    graphic,
+    div1 > head:before,
+    div2 > head:before,
+    div3 > head:before,
+    body > div > head:before,
+    body > div > div > head:before,
+    body > div > div > div > head:before{
+        color:#EEEEEE !important;
+    }
+
+    hi{
+        color:#B512B2 !important;
+    }
+
+    ptr{
+        color:#2860ED !important;
+    }
+
+    ref:before{
+        color:#CCCCCC !important;
+    }
+
+    unclear{
+        color:silver !important;
+    }
+
+    teiHeader{
+        color:#59ACFF !important;
+        background-color:#383838 !important;
+        border:solid white 1pt !important;
+    }
+
+    table{
+        border:1px solid #383838 !important;
+    }
+
+    back{
+        border:thin #960000 solid !important;
+    }
+
+    cell{
+        border:1px solid #CCCCCC !important;
+    }
+
+    titlePage{
+        border:thin white solid !important;
+    }
+}
+
+@media oxygen-high-contrast-black{
+    div > head,
+    body > div > head,
+    body > div > div > head,
+    body > div > div > div > head,
+    body > div > div > div > div > head{
+        color:#0050F0 !important;
+    }
+}

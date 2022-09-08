@@ -1,0 +1,814 @@
+/*
+
+Oxygen WebHelp Plugin
+Copyright (c) 1998-2017 Syncro Soft SRL, Romania.  All rights reserved.
+
+*/
+
+/*Start RTL*/
+html[dir="rtl"] #link_signUp,html[dir="rtl"] .bt_admin,html[dir="rtl"] div.version,html[dir="rtl"] div.product,html[dir="rtl"] div.date,html[dir="rtl"] .actions{
+    float: left;
+}
+html[dir="rtl"] div.version,html[dir="rtl"] div.product{
+    padding-right: 10px;
+    padding-left: 0;
+}
+html[dir="rtl"] div.date{
+    padding-right: 17px;
+    padding-left: 0;
+}
+html[dir="rtl"] .actions{
+    margin-right: 7px;
+}
+html[dir="rtl"] .bt_edit,html[dir="rtl"] .bt_approve,html[dir="rtl"] .bt_suspend,html[dir="rtl"] .bt_delete{
+    margin-left: 0 !important;
+    margin-right: 10px !important;
+    float: left;
+}
+html[dir="rtl"] #comments{
+    background-position: right;
+    padding: 5px 0 5px 5px;
+}
+html[dir="rtl"] #cm_count{
+    margin-right: 35px;
+    margin-left: 0;
+}
+html[dir="rtl"] #cm_count, #cm_title{
+    padding-right: 5px;
+    padding-left: 0;
+}
+html[dir="rtl"] #comments #userAccount{
+    left:15px;
+    float: left;
+}
+html[dir="rtl"] .bt_new,html[dir="rtl"] .cleditorGroup,
+html[dir="rtl"] .cleditorButton,html[dir="rtl"] div.cmTitle,
+html[dir="rtl"] #link_lostPwd,html[dir="rtl"] div.name,
+html[dir="rtl"] .commentState,
+html[dir="rtl"] .minus,
+html[dir="rtl"] .plus{
+    float: right;
+}
+html[dir="rtl"] .minus,html[dir="rtl"] .plus{
+    margin-right: 0;
+    margin-left: 7px;
+}
+html[dir="rtl"] #userAccount #bt_logIn,html[dir="rtl"]  #userAccount #bt_signUp{
+    margin: 0 10px 0 0;
+}
+html[dir="rtl"] .bt_close{
+    float: left;
+    background-position: right;
+}
+html[dir="rtl"] #approveAll{
+    left:0;
+    right: auto;
+}
+html[dir="rtl"] ul.commentStyle li div.content{
+    padding: 0 15px 5px 7px;
+}
+html[dir="rtl"] ul.commentStyle li ul.commentStyle li{
+    margin-left: 0;
+    margin-right: 30px;
+}
+/*End RTL*/
+#cm_count, #cm_title {
+    line-height: 2em;
+}
+.accountSettings {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 40px;
+    width: 20px;
+    height: 20px;
+    padding: 5px;
+    margin: 6px 13px 0 4px;
+    background-size: 20px 20px;
+}
+
+#cmts {
+	clear: both;
+}
+#commentsContainer {
+	clear: both;
+	margin: 7px 7px 7px 0;
+}
+
+.anonymous_post_cmt {
+	clear: both;
+	display: block;
+	text-align: center;
+	font-weight: bold;
+	margin-top:10px;
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 0.8em;
+	text-decoration: none;
+	padding: 15px;
+	width: 30%;
+}
+
+#comments {
+    float:left;
+    font-size: 12px;
+	width: 100%;
+	padding: 5px 5px 5px 0;
+	vertical-align: middle;
+	background-image: url('../img/icon_comment24x24.png');
+    background-repeat: no-repeat;
+    background-position: 10px 50%;
+}
+
+.float_comments{
+    position: fixed;
+	left:0;
+    top:0;
+    z-index: 9999;
+    width: 100%;
+	background-color: #fff;
+}
+.realperson-challenge {
+	margin-top: 10px;
+}
+
+div.cmTitle{
+	float:left; 	
+	padding: 5px 0 5px 0;
+	margin: 7px 35px;
+	right: 15px;	
+}
+
+#comments #userAccount {
+	padding: 1em 0 0 0;
+	margin: 0;
+	right: 15px;
+	float:right;
+	display: inline-block;
+}
+ul.commentStyle {
+	list-style: none;
+	padding: 0
+}
+
+ul.commentStyle li {
+	clear: both;
+	padding: 0;
+	margin-left: 5px;
+}
+
+ul.commentStyle li ul.commentStyle li {
+	margin-left: 30px;
+}
+
+ul.commentStyle li:first-child {
+}
+
+ul.commentStyle li div.content {
+	clear: both;
+	padding: 0 7px 5px 15px;
+	margin: 0;
+}
+
+div.liContent {
+	padding: .5em 0;
+	margin: .5em 0 1em 0;
+}
+
+div.liContent div.liContent {
+	padding-left: 165px;
+}
+
+div.liContent:hover,div.suspended:hover {
+}
+
+.liContent .head {
+    float: left;
+    display: inline-block;
+    width: 97%;
+    padding: 0 0 0 10px;
+}
+
+.minus,.plus {
+	background-image: url('../img/expand.png');
+    background-repeat:no-repeat;
+    background-postion:-16px 0;
+	padding: 0 5px 5px 5px;
+    width: 10px;
+    height: 10px;
+	margin-top: 2px;
+	margin-right: 7px;
+	cursor: pointer;
+	float: left;
+}
+
+.plus {
+	background-position: 0 0;
+}
+
+.minus {
+	background-position: -16px 0;
+}
+
+div.name {
+	float: left;
+	padding:0 0 10px 0;
+    font-weight:bold
+}
+
+div.date {
+    float: right;
+    font-size: 0.8em;
+    padding-left: 17px;
+}
+
+div.version {
+	font-size: 0.9em;
+	padding-left: 10px;
+	float: right;
+	vertical-align: middle;
+}
+div.product {
+	font-size: 0.9em;
+	padding-left: 10px;
+	float: right;
+	vertical-align: middle;
+}
+
+.bt_admin {
+	display: inline-block;
+	float: right;
+	width: 300px;
+}
+
+.commentState {
+	float: left;
+	font-size: 0.8em;
+	width: 60px;
+	text-align: center;
+	margin-left: 7px;
+}
+
+.level {
+	padding: 0 10px 0 10px;
+}
+
+.actions {
+	float: right;
+}
+
+.btn:HOVER,.bt_cancel:hover,#bt_recover:hover,#bt_signUp:hover,#logIn:hover,#l_bt_submit_log:hover,.span_bt:hover,#bt_passwd:hover,#bt_profile:hover, #bt_close:hover, #l_bt_submit_nc:hover
+	{
+}
+
+
+.l_wantEmail_group input{margin-right: .5em}
+
+.bt_edit,.bt_approve,.bt_suspend,.bt_delete{
+	text-align: center;
+	cursor: pointer;
+    margin: -5px 0 0 10px !important;
+	float: right;
+}
+
+.bt_edit[disabled],.bt_edit[disabled]:HOVER,.bt_delete[disabled],.bt_delete[disabled]:HOVER,#l_bt_submit_nc[disabled] {
+    cursor: auto;
+}
+#oldComments {
+	clear: both;
+}
+
+#bt_new {
+    clear: both;
+    position: relative;
+    display: inline-block;
+    margin-top:10px;
+    padding: 10px 0 15px 0;
+	width: 100%
+}
+
+.bt_new{
+	float: left;
+	cursor: pointer;
+	font-size: 0.8em;
+	text-decoration: none;
+	padding: 5px 10px 5px 10px;
+	min-width: 60px;
+    margin-top: 0 !important;
+}
+
+#bt_approveAll{
+	margin-top: -3.5em;
+}
+
+.bt_new:hover {
+}
+#l_addNewCmt {
+    margin-top: 0 !important;
+}
+.bt_reply {
+	font-size: 0.9em;
+	margin:auto;
+	float:inherit;
+}
+
+.bt_reply:hover {
+	cursor: pointer;
+}
+
+#loginResponse {
+	font-style: italic
+}
+
+#accountInfo{
+	margin-right: .5em;
+}
+
+#u_Profile form {
+	margin-bottom: 15px;
+}
+
+.u_response {
+	min-height: 2em;
+}
+
+#commentsContainer div,#commentsContainer span {
+	line-height: 1.5em;
+}
+#o_captcha .realperson-text{
+	line-height: 3px;
+}
+
+#cm_count, #preload {
+	width: 180px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+}
+
+#cm_count,#cm_title {
+	font-size: 1.2em;
+	padding-left: 5px;
+}
+
+/*	Log In data */
+#signUp {
+	width: 350px;
+	position: absolute;
+	clear: both;
+	padding: 10px;
+	z-index: 100;
+	left:50%;
+	top:50%;
+	transform: translate(-50%, -50%);
+	background-color: #fff;
+}
+
+#signUp {
+	width: 350px;
+}
+
+.login {
+	font-size: 1em;
+	width: 96%;
+	padding: 2%;
+}
+
+.login thead td {
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
+.login td:FIRST-CHILD {
+	width: 50%
+}
+
+.loginAlternative {
+	width: 93%;
+	/*padding: 10px;*/
+}
+
+.loginAlternative span {
+	padding: 0 5px 10px 5px;
+	margin: 0
+}
+
+.loginAlternative span:hover {
+	cursor: pointer;
+}
+
+#link_lostPwd {
+	float: left;
+	font-size: .9em;
+	cursor:pointer;
+}
+
+#link_signUp {
+	float: right;
+}
+/*	/ Log In data */
+#signUp table thead td {
+  text-align:left;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+#signUp #signUpResponse{
+  padding:15px 0 10px 0;
+  font-size:0.9em;
+  font-weight:normal;  
+}
+
+#signUp #signUpResponse #bt_close{
+  font-size:0.8em;
+  font-style:normal;
+  font-weight:normal;
+  margin-left:auto;
+  margin-right:auto;
+  display:inherit;
+  text-align: center;
+  width:100px;  
+}
+
+#signUp table td:FIRST-CHILD {
+	width: 45%
+}
+
+.inputTable {
+	width: 180px;
+}
+
+#signUp table {
+	font-size: 1em;
+	width: 100%;
+}
+
+
+/* Insert new comment */
+#newComment {
+	width: 96%;
+	margin: 10px;
+	padding: 10px;
+	font-size: 1em;
+	vertical-align: bottom;
+}
+
+#newComment form {
+	padding: 0;
+	margin: 0
+}
+
+#commentTitle {
+	padding-bottom: 4px;
+	display: inline-block;
+}
+
+/* Close button */
+.bt_close {
+	clear: both;
+    position: relative;
+    background-image: url("../img/close.png");
+    background-repeat: no-repeat;
+	cursor: pointer;
+	width: 20px;
+	height: 20px;
+	padding: 0 4px 0 4px;
+	text-align: center;
+	float: right;
+	margin-top: 10px;
+}
+
+.bt_close:HOVER {
+	background-image: url("../img/close_hover.png");
+}
+
+#newComment .bt_close {
+	margin: 0;
+}
+/* / Close button */
+
+#preload img {
+  padding: 0 5px 0 5px;
+  margin-bottom:0;
+}
+
+.moderationInfo {
+	color: #b17019;
+	padding-left:1em;
+}
+.moderationInfo .glyphicon{
+	padding-right: .3em
+}
+
+.mustBeModerate {
+	margin-bottom: 10px
+}
+
+/* ADMIN */
+#cm_title span {
+	padding: 8px
+}
+
+#approveAll {
+	position: absolute;
+	right: 0;
+}
+
+#bt_approveAll {
+	cursor: pointer;
+}
+
+#confirmDelete #commentToDelete {
+    max-height: 300px;
+    min-height: 100px;
+    overflow: auto;
+	text-align: left;
+	padding: 10px;
+	margin: 5px
+}
+
+.cleditorMain {
+	padding: 0 1px 1px;
+	margin-bottom: 1em;
+}
+
+.cleditorMain iframe {
+	border: none;
+	margin: 0;
+	padding: 0
+}
+
+.cleditorMain textarea {
+	border: none;
+	margin: 0;
+	padding: 0;
+	overflow-y: scroll;
+	font: 10pt Arial, Verdana;
+	resize: none;
+	outline: none /* webkit grip focus */
+}
+
+.cleditorToolbar {
+	background-image: url('../img/toolbar.gif');
+    background-repeat: repeat
+}
+
+.cleditorGroup {
+	float: left;
+	height: 26px
+}
+
+.cleditorButton {
+	float: left;
+	width: 24px;
+	height: 24px;
+	margin: 1px 0 1px 0;
+	background-image: url('../img/buttons.gif')
+}
+
+.cleditorDisabled {
+	opacity: 0.3;
+	filter: alpha(opacity =   30)
+}
+
+.cleditorDivider {
+	float: left;
+	width: 1px;
+	height: 23px;
+	margin: 1px 0 1px 0;
+}
+
+.cleditorPopup {
+	position: absolute;
+	font: 10pt Arial, Verdana;
+	cursor: default;
+	z-index: 10000
+}
+
+.cleditorList div {
+	padding: 2px 4px 2px 4px
+}
+
+.cleditorList p,.cleditorList h1,.cleditorList h2,.cleditorList h3,.cleditorList h4,.cleditorList h5,.cleditorList h6,.cleditorList font
+{
+	padding: 0;
+	margin: 0;
+}
+
+.cleditorColor {
+	width: 150px;
+	padding: 1px 0 0 1px
+}
+
+.cleditorColor div {
+	float: left;
+	width: 14px;
+	height: 14px;
+	margin: 0 1px 1px 0
+}
+
+.cleditorPrompt {
+	padding: 4px;
+	font-size: 8.5pt
+}
+
+.cleditorPrompt input,.cleditorPrompt textarea {
+	font: 8.5pt Arial, Verdana;
+}
+
+.cleditorMsg {
+	width: 150px;
+	padding: 4px;
+	font-size: 8.5pt
+}
+
+.textError {
+	font-weight: bold;
+}
+
+.textInfo {
+	font-weight: normal;
+}
+
+#loginData label{
+	font-weight: normal;
+}
+
+#show_profile .dropdown-toggle{
+	background-color: transparent;
+	border:0;
+	padding:0;
+}
+
+#show_profile .avatar_userName{
+	padding: 1em 0 0 4em;
+	height: 40px;
+	background-image: url("../img/avatar.png");
+	background-repeat: no-repeat;
+	background-position:1em 65%;
+}
+
+#show_profile .caret {
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 5px solid #000000;
+}
+
+#show_profile .dropdown-menu>li>a{
+	padding: 6px 20px;
+}
+
+#loginData .nav-tabs li.active{
+	background-color: #def0ff;
+}
+#loginData .nav-tabs{
+	margin-top: 2em;
+}
+#loginData .modal-dialog{
+	max-width: 450px;
+}
+.modal {
+	top: 15%;
+}
+.modal-header{
+	border-bottom:0
+}
+.gtSign {
+	padding: 3px 0 3px 0;
+	width: 15px;
+	height: 20px;
+	margin-top: 15px;
+	text-align: center;
+	font-size: 1em;
+	float: left;
+}
+
+#v_preload {
+	height: 30px;
+	font-weight: bold;
+	font-size: 1.2em;
+	float: left;
+	padding: 10px 10px 10px 10px;
+}
+
+#setVersionInfo {
+	clear: both;
+	padding: 10px;
+}
+
+#ll_exp_sel {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.selected {
+	padding: 10px;
+}
+
+#loginData .nav-tabs.nav-justified>.active>a{
+	border-bottom: 2px solid #bd6d6d;
+	border-radius: 0;
+}
+
+.bandL {
+	float: left;
+}
+
+.ex_close {
+	background-image: url("../img/close.png");
+    background-position: 0 0;
+	width: 10px;
+	height: 10px;
+	float: right;
+	cursor: pointer;
+}
+
+.ex_close:HOVER {
+	background-image: url("../img/close_hover.png");
+	cursor: pointer;
+}
+
+.bt_inactiv, input[disabled='disabled'], input[disabled='disabled']:HOVER {
+	min-width: 60px;
+	cursor: pointer;
+	padding: 6px 10px 6px 10px;
+	margin-top: 15px;
+	display: inline-block;
+	font-size: 0.9em;
+	text-align: center;
+}
+
+.hrPadding {
+	padding: 20px 10px 0 10px;
+}
+
+div.table {
+	width: 99%;	
+}
+
+div.tbHRow {
+	width: 98%;
+	height:100%;
+	float: left;
+	padding: 5px 0 5px 0;
+	text-align: center;
+}
+
+div.tbHCell {
+	float: left;
+	width: 10%;	
+}
+
+div.tbRow {
+	float: left;
+	width: 99%;
+	padding-bottom: 5px;
+	vertical-align: middle;
+}
+div.tbRow:hover {
+}
+
+div.tbCell {
+	float: left;		
+	vertical-align: middle;		
+	padding-left:5px;  
+}
+div.tbCell p{
+	
+}
+#newPassword {
+    float: none;
+    position: absolute;
+    clear: both;
+    width: 40%;
+	padding: 10px;
+	top: 20%;
+	left: 50%;
+	margin-top: -10%; /*set to a negative number 1/2 of your height*/
+	margin-left: -20%; /*set to a negative number 1/2 of your width*/
+	z-index: 100;
+}
+div#info{
+	font-size:xx-small;
+}
+.sharePName, #shareWithTitle{
+	font-size: 0.8em;
+	padding: 0 3px;
+}
+.sharePName{
+	font-weight:bold;	
+}
+.sharePID{
+	display: none;
+}
+div#shareWith{
+	clear: both;
+	display: block;
+	margin-bottom: 1em;
+}
+div#fbUnavailable{
+	clear: both;
+	width: 100%;
+	text-align: center;
+	color: #a52a2a;
+}
+.red{color: red}

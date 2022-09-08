@@ -1,0 +1,463 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Dita and the Prince</title>
+    </head>
+    <body>
+        <section>
+            <h2>Single Styling</h2>
+            <p>We had cases in which people come to us and say: <q>We like the idea of single
+                    source, but we need a way to style the output which is fast, easy to do and
+                    consistent across the variety of output media.</q>
+            </p>
+            <p>We discovered that the majority of users do not need completely different styling for
+                the Web or print outputs. More than that, they need to be aware of how the output
+                looks directly when they are editing the content. </p>
+            <p>We need a way of avoiding situations in which our customers are happy with one of
+                their outputs and need to redo their work in a completely other styling language.
+                What they need is both <b>single source </b> and <b>single styling</b>. </p>
+            <p>Currently there are two major standard ways of styling XML, the XSL-FO and CSS. </p>
+            <p>Let's see how they line up:</p>
+            <table>
+                <caption>CSS versus XSL-FO</caption>
+                <thead>
+                    <tr>
+                        <th>Capability</th>
+                        <th>CSS</th>
+                        <th>XSL-FO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Adoption</td>
+                        <td>Massive</td>
+                        <td>Very limited</td>
+                    </tr>
+                    <tr>
+                        <td>Complexity</td>
+                        <td>Simple</td>
+                        <td>Complicated</td>
+                    </tr>
+                </tbody>
+                <tbody></tbody>
+                <tbody>
+                    <tr>
+                        <td>Can style PDF output</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Can style HTML output</td>
+                        <td>Yes</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Can be used when editing</td>
+                        <td>Yes</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Print Quality</td>
+                        <td>Good</td>
+                        <td>Excellent</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>So the winner is CSS, as long as you do not already have an excellent team with high
+                skills of XSL-FO. </p>
+            <p>DITA-OT and Prince XML are a good combination, and can make use of the existing
+                DITA-OT infrastructure.</p>
+        </section>
+        <section>
+            <h2>Generating PDF using XSL and XSL-FO</h2>
+            <p>DITA-OT comes out of the box with a plug-in for converting your maps to PDF:
+                    <b>org.dita.pdf2</b>. It is widely used, and performs nicely.. as long as you do
+                not need to change the page layout.</p>
+            <p>To obtain a PDF from a DITA map, this plug-in makes the following steps:</p>
+            <ol>
+                <li>Creates a single file containing the resolved, or "merged" DITA map with all its
+                    topics. <p><img src="img/merging_topics.png" alt="merging_topics.png" /></p><p>What
+                        is nice about this file is that:</p><ul>
+                        <li>all the conrefs are solved</li>
+                        <li>images and other resources have absolute references </li>
+                        <li>there is a TOC, expressed using elements from <b>opentopic</b>
+                            namespace, with generated ID references to the topics and short
+                            descriptions.<pre>&lt;opentopic:map xmlns:opentopic="http://www.idiominc.com/opentopic" ... >
+        &lt;title class="- topic/title ">DITA Topic Map&lt;/title>
+        &lt;topicref class="- map/topicref " href="<b>#unique_1</b>" id="unique_1" type="task"
+            ohref="task.dita"
+            first_topic_id="#unique_1">
+            &lt;topicmeta class="- map/topicmeta ">
+                &lt;navtitle class="- topic/navtitle ">This is a Mega Task!&lt;/navtitle>
+                &lt;linktext class="- map/linktext ">This is a Mega Task!&lt;/linktext>
+                &lt;shortdesc class="- map/shortdesc "> <b>This task shows styles for different DITA
+                    elements.</b>&lt;/shortdesc>
+            &lt;/topicmeta>
+        &lt;/topicref>
+        &lt;topicref ...........>
+        &lt;topicref ...........>
+ &lt;/opentopic:map></pre></li>
+                    </ul></li>
+                <li>The second step creates a file derived from the "merged" DITA map file,
+                    containing also the indexterms: <p><img src="img/creating_index.png"
+                            alt="creating_index.png" /></p><p>The index is a tree structure grouping
+                        all the indexterms from the merged topics, using elements from the
+                            <b>opentopic-index</b> namespace. For instance, when having in a DITA
+                        topic:</p><pre>&lt;indexterm>primary&lt;indexterm>secondary&lt;indexterm>tertiary&lt;/indexterm>&lt;/indexterm>&lt;/indexterm></pre><p>This
+                        is converted
+                        in:</p><pre> &lt;opentopic-index:index.groups>
+  &lt;opentopic-index:index.group>
+     &lt;opentopic-index:label><b>P</b>&lt;/opentopic-index:label>
+            ...
+            &lt;<b>opentopic-index:index.entry</b> value="<b>primary</b>">
+                ...
+                &lt;<b>opentopic-index:index.entry</b> value="<b>secondary</b>">
+                    ....
+                    &lt;<b>opentopic-index:index.entry</b> value="<b>tertiary</b>">
+
+                        &lt;opentopic-index:formatted-value>tertiary&lt;/opentopic-index:formatted-value>
+                        &lt;opentopic-index:refID value="<b>primary:secondary:tertiary:</b>"/>
+
+             &lt;/<b>opentopic-index:index.entry</b>>
+         &lt;/<b>opentopic-index:index.entry</b>>
+     &lt;/<b>opentopic-index:index.entry</b>>
+  &lt;/opentopic-index:index.group>
+&lt;/opentopic-index:index.groups></pre><p>Also,
+                        in the merged content, the old <b>indexterm</b> DITA elements are converted
+                        to <b>opentopic-index:index.entry</b> elements with the same structure as
+                        above. </p></li>
+                <li>The third step applies XSL processing to get the final FO file and uses XEP or
+                    FOP to convert the FO file into PDF.<p><img src="img/producing_pdf.png"
+                            alt="producing_pdf.png" /></p></li>
+            </ol>
+        </section>
+        <section>
+            <h2>Generating PDF using XSL and CSS</h2>
+            <section>
+                <h3>Preparing the merged file for CSS</h3>
+                <p>As seen above, there are several steps DITA-OT is performing to get the PDF done,
+                    the last one being linked to the XSL-FO processing. The <b>stage1a.xml</b> file
+                    contains enough information to get a good printout: it has the TOC, the index,
+                    the link references are made using unique IDs, and the URLs of the external
+                    resources, like images are absolute. To convert such a document using Prince
+                    should be pretty straight forward. You will see in the following how different
+                    issues were addressed.</p>
+                <p><img src="img/switching_to_css.png" alt="switching_to_css.png" /></p>
+                <p>The <b>stage1a.xml.pp</b> is obtained after further processing the
+                        <b>stage1a.xml</b> by adding:</p>
+                <ol>
+                    <li>TOC processing:<ul>
+                            <li>Mark every topic reference to a chapter with an attribute
+                                    <b>@is-chapter='true'</b> so it can be rendered differently in
+                                the TOC.</li>
+                            <li>Cleaning the TOC, keeping only the <b>navtitle</b>s. Make sure these
+                                elements have a <b>href</b> to the target topic.</li>
+                            <li>Creates an entry in the TOC pointing to the ID of the index
+                                section.</li>
+                        </ul></li>
+                    <li>Content processing:<ul>
+                            <li>Mark each chapter with  <b>@is-chapter='true'</b>.</li>
+                            <li>If there are relative image references, makes them absolute using
+                                the <b>$args.input</b> parameter.</li>
+                        </ul></li>
+                    <li>Reviewing comments and change tracking:<ul>
+                            <li>Convert the comments and change tracking processing instructions to
+                                elements, so they can be styled in the output. (CSS cannot match
+                                processing instructions.)</li>
+                        </ul></li>
+                    <li>Index preparation:<ul>
+                            <li>Generates an ID to each of the indexterm from the content.</li>
+                            <li>Makes a reference to the generated ID from the index structure.</li>
+                        </ul></li>
+                </ol>
+            </section>
+            <section>
+                <h3>Using the CSS Paged Media Module</h3>
+                <p>Let's see what is the current status of the CSS in relation to the printed output
+                    and how can we use it to format our merged map. Starting from CSS 3 there is
+                    functionality for: </p>
+                <ul>
+                    <li>pagination</li>
+                    <li>page margins</li>
+                    <li>page size and orientation</li>
+                    <li>headers and footers</li>
+                    <li>image DPI</li>
+                    <li>generated content enable page numbering and running headers / footers.</li>
+                </ul>
+                <p>Many of the convertors from XML and CSS to PDF have adopted the CSS 3
+                    specification, but they are still using a lot of extensions.</p>
+                <section>
+                    <h4>Setting the page size and margins</h4>
+                    <p>It is very simple, it all resumes to setting the size and margins for an
+                        ordinary DIV element, but this time using the <b>@page</b> at-rule syntax. I
+                        will choose the A4 size:</p>
+                    <pre>@page{
+    padding-top:0.2em;
+    padding-bottom:0.2em;
+    size: 8.27in 11.69in;
+    margin: 0.75in 0.25in 0.75in 1in;
+}</pre>
+                </section>
+                <section>
+                    <h4>Page breaks</h4>
+                    <p>The pdf2 DITA-OT plug-in forces page breaks between chapters. The CSS
+                        equivalent is:</p>
+                    <pre> *[class ~= "topic/topic"][is-chapter = "true"]{
+    page-break-before:always;
+}</pre>
+                </section>
+                <section><h4>Page titles and numbers</h4>Consider you want to show in the header of
+                    each page the following information:<ol>
+                        <li>The name of the book</li>
+                        <li>The name of the chapter</li>
+                        <li>The page number</li>
+                    </ol><p>In CSS you can collect values from the elements and refer them from the
+                        generated content. </p><p>To collect the name of the current chapter, we can
+                        use a selector that matches the titles of the first level topics (the
+                        chapters) and puts the content of the title in a string-set
+                            (<b>chaptertitle</b>).</p><pre>*[class ~= "map/map"] >  
+ *[class ~= "topic/topic"] > 
+  *[class ~= "topic/title"] { 
+    string-set: <b>chaptertitle</b> content() 
+}</pre><p>Similarly,
+                        to get the map title in a string-set
+                        (<b>maptitle</b>):</p><pre>*[class ~= "map/map"] { 
+    string-set: <b>maptitle</b> attr(title) 
+}</pre><p>Now,
+                        to place them in the right place: for the left pages (consider reading the
+                        book) use the top left side, otherwise the right top
+                    side:</p><pre>@page :left{
+    @top-left {
+       content: string(<b>maptitle</b>) " | " string(<b>chaptertitle</b>) " | " counter(<b>page</b>);
+       font-size:8pt;
+    }
+ }
+@page :right{
+    @top-right {
+       content: string(<b>maptitle</b>) " | " string(<b>chaptertitle</b>) " | " counter(<b>page</b>);
+       font-size:8pt;
+    }
+}</pre></section>
+                <section>
+                    <h4>Setting the image resolution</h4>
+                    <p>A lot of people ask us on support about using the same images for the print
+                        and web output, outlining the resolution differences. While an image looks
+                        fine in the browser, at 72dpi, it looks totally different when printed at
+                        300 dpi. Any PDF formatter needs to know the pixel density of the image.
+                        Some formats keep this meta-data directly in the image file, others not.</p>
+                    <p>When using Prince you can specify the image resolution using a property
+                        extension:</p>
+                    <pre> @media print{
+    *[class ~= "map/map"] {
+        prince-image-resolution: 196dpi; 
+    }      
+ }</pre>
+                    <p>This means that the entire merged map should consider 196dpi for images .</p>
+                </section>
+                <section>
+                    <h4>Links</h4>
+                    <p>PDFs can be either read on a device, or printed on paper. If used on a
+                        device, the links can be decorated with an underline, to be more visible,
+                        and should be click-able. There is a different story when printing such a
+                        document: the links should indicate the page number of the target, so the
+                        reader can browse the book and find the target. Here is how we can tackle
+                        both in CSS:</p>
+                    <pre>*[class ~= "topic/xref"][href]:after {
+    content: " [page " <b>target-counter</b>(attr(href), <b>page</b>) "]";
+    <b>link</b>: attr(href);
+} </pre>
+                    <p>So, the DITA snippet:</p>
+                    <pre>...This will be discussed in &lt;xref href="installation.dita">installation&lt;/xref>...</pre>
+                    <p>Gets rendered in PDF like:</p>
+                    <pre>...This will be discussed in <a>installation [page 433]</a>...</pre>
+                    <p>As you can see, it is underlined and click-able as a link but shows also the
+                        page number in the eventuality the content gets printed on paper.</p>
+                    <p>The <b>target-counter</b> is in the standard CSS Level 3, but the <b>link</b>
+                        property is specific only to Prince and oXygen.</p>
+                </section>
+                <section><h4>Table of Contents (TOC)</h4><p>Our table of contents should have the
+                        following features:</p><ul>
+                        <li>Should present the titles of the topics in the left, indented
+                            proportionally to their depth</li>
+                        <li>The chapters should be bolded.</li>
+                        <li>Draw a dotted line from the title to the page number that is aligned to
+                            the right</li>
+                        <li>The pages containing the TOC should be special: have a title in the
+                            header and roman page numbers in the  footer.</li>
+                    </ul><p>Sounds complicated, but is quite simple in CSS. Let's start with the
+                        first two issues:</p><p>Make the chapters standout: bold them and increase
+                        the font size. For this, use the <b>@is-chapter</b> attribute added in the
+                        preprocessing
+                        step:</p><pre>*[class ~= "map/topicref"][is-chapter] {
+    font-weight: bold;
+    font-size:1.5em;
+}</pre><p>And
+                        make the other titles at lower levels look
+                        normal:</p><pre>*[class ~= "map/topicref"][is-chapter] > 
+ *[class ~= "map/topicref"]:not(is-chapter)  { 
+    font-weight: normal;
+    font-size:0.67em;
+}</pre><p>The
+                        dotted line between the chapter name and the page number is called the
+                        "leader" (usually is a repeating pattern used to visually connect content
+                        across horizontal spaces). There is a standard way to specify the leader
+                        properties in CSS Level 3. </p><p>Now place a leader after the content of
+                        the <b>navtitle</b> element and add the page
+                        number:</p><pre>*[class ~= "map/topicref"] 
+ *[class ~= "topic/navtitle"]:after {
+        display:inline;
+        content: <b>leader</b>('.') <b>target-counter</b>(attr(href), <b>page</b>);
+        link:attr(href);
+}</pre><p>The
+                            <b>leader</b> takes here as argument a dot character, but it can be any
+                        string (You can use also the <b>solid</b> constant to draw a continuous
+                        line).</p><p>The <b>target-counter</b> is able to determine from the href
+                        the page on which is located the referenced element.</p><p>To format the TOC
+                        pages, let's define a special page layout, named <b>table-of-contents</b>:
+                    </p><pre> @page <b>table-of-contents</b> {
+        @top          { content: "Table of Contents" }
+        @bottom       { content: counter(<b>page</b>, lower-roman) }
+        @bottom-right { content: none }
+        @bottom-left  { content: none }
+        @top-right    { content: none }
+        @top-left     { content: none }
+    }</pre>If
+                    you remember, the <b>stage1a.xml</b> file defines the TOC using the element
+                        <i>&lt;opentopic:map xmlns:opentopic="http://www.idiominc.com/opentopic" ...
+                        ></i>. We will associate to this element the defined page layout, and will
+                    take care to reset the <b>page</b>
+                    counter:<pre>*[class ~= "map/map"] >
+  map { /* The local name of the opentopic:map */
+        display: block;
+        page: <b>table-of-contents</b>;
+        counter-reset: <b>page</b> 1;
+}</pre></section>
+                <section>
+                    <h4>Index</h4>
+                    <p>No serious printed material comes without an index. Fortunately, because
+                        Prince supports a blend of CSS and JavaScript we can get the job done.</p>
+                    <p>From the data perspective, the <b>stage1a.xml.pp</b> file contains now:</p>
+                    <ol>
+                        <li>The index terms in the content, each of them with an ID</li>
+                        <li>At the end of the document, a tree structure pointing to the index
+                            terms.<pre>  &lt;opentopic-index:index.groups id="d1e387">
+        &lt;opentopic-index:index.group>
+            &lt;opentopic-index:label>P&lt;/opentopic-index:label>
+            &lt;opentopic-index:index.entry value="pruning">
+                &lt;opentopic-index:formatted-value>pruning&lt;/opentopic-index:formatted-value>
+                &lt;opentopic-index:refID value="pruning:">
+<b>                    &lt;oxy:index-link href="#d1e80"> [d1e80] &lt;/oxy:index-link>
+                    &lt;oxy:index-link href="#d1e301"> [d1e301] &lt;/oxy:index-link>
+</b>                &lt;/opentopic-index:refID></pre></li>
+                    </ol>
+                    <p>We can format this structure, determine the page for each indexterm by using
+                        the <b>target-counter</b> and use the <b>link</b> property to make the index
+                        click-able. We need something like this:</p>
+                    <pre>[P]
+ pruning 5, 6, 7
+    tools 5
+        folding saw 5</pre>
+                    <p>The main problem is avoiding duplicate pages for the same index term. It
+                        would be messy to have something like:</p>
+                    <pre>[P]
+ pruning 5, 6, 6, 6, 7
+    tools 5, 5, 5
+        folding saw 5, 5</pre>
+                    <p>We can use a two phase process, as recommended by the Prince support
+                        team:</p>
+                    <p><img src="img/deduplicating_index.png" alt="deduplicating_index.png" /></p>
+                    <ol>
+                        <li>The first Prince invocation will generate an associative list between
+                            the index terms IDs and pages.<p>For this, let's trigger from the CSS
+                                the invocation of a JavaScript function called <b>index</b> for each
+                                of the <b>index-link</b>
+                                element:</p><pre><b>index-link</b>[href] {
+    content: <b>prince-script</b>(<b>index</b>, attr(href), target-counter(attr(href), page)) !important;
+}</pre><p>The
+                                    <b>index</b> function captures both the value of the <b>href</b>
+                                attribute, usually the ID of the index term, and the page number as
+                                returned by the <b>target-counter</b> CSS
+                                function:</p><pre>var refs = {};
+
+function <b>index</b>(href, counter) {
+    refs[href] = counter;    
+    return counter;
+}</pre><p>Then,
+                                when the Prince processing is over, it saves the collected values
+                                into the console. The PDF output is discarded.</p></li>
+                        <li>The second Prince invocation uses the collected page numbers and removes
+                            from the input document tree (DOM) the <b>index-link</b> elements
+                            pointing to the same page for a specific indexterm. This filtering is
+                            done before the PDF generation begins and is done using JavaScript. The
+                            final PDF is obtained.</li>
+                    </ol>
+                    <p>The CSS specification misses the idea of generated index. As you can see, you
+                        can get a good index section, but there is a performance penalty, as the PDF
+                        gets generated twice. For large books this could prove too costly.</p>
+                </section>
+                <section>
+                    <h4>Footnotes</h4>
+                    <p>To create footnotes in DITA, you should use the <b>fn</b> element:</p>
+                    <pre>
+... The memory storage capacity of the computer is 2 GB<b>&lt;fn>A GB (gigabyte) is equal to 
+1000 million bytes&lt;/fn></b> with error correcting support ...
+  </pre>
+                    <p>The DITA-OT pdf2 renders it in PDF like this:</p>
+                    <pre>... The memory storage capacity of the computer is 2 GB<sup>1</sup> with error correcting support ...
+_________________________________________________________________________________________
+<sup>1</sup>A GB (gigabyte) is equal to 1000 million bytes</pre>
+                    <p>Footnotes are now first class citizens in CSS. We can make them float in the
+                        "footnote" area:</p>
+                    <pre>fn {
+   float:footnote;
+   counter-increment: fn-count;        
+}</pre>
+                    <p>We can also style the footnote call:</p>
+                    <pre>fn::footnote-call {
+   content: counter(fn-count);
+   font-size: 83%;
+   vertical-align: super;
+   line-height: none;
+}</pre>
+                    <p>And also we can style the entire area where the footnotes are displayed:</p>
+                    <pre>@page {
+    @footnotes {
+        border-top: solid black thin;
+        padding-top: 8pt;
+    }
+}</pre>
+                </section>
+                <section><h4>Sidebar Comment Callouts</h4><p>In oXygen you can comment things. The
+                        comments appear as colored callouts (or balloons) besides the commented
+                        text. Let's try the same thing in CSS. </p><p>The preprocessing step already
+                        converted the oXygen comment processing instructions into elements, so they
+                        can be matched by the CSS rules. In this way we have a
+                        <b>comment-anchor</b>, similar to a footnote call, that should stay in the
+                        document, and a <b>comment</b> element, which can float to one
+                        side.</p><pre>&lt;oxy:comment-anchor id="sc_1" hr_id="1"/>
+
+&lt;oxy:comment href="#sc_1" hr_id="1">
+    &lt;oxy:comment-author>Mary&lt;/oxy:comment-author>
+    &lt;oxy:comment-text>Remove the infested branches.&lt;/oxy:comment-text>
+    &lt;oxy:comment-date>2012/05/10&lt;/oxy:comment-date>
+&lt;/oxy:comment></pre><p>The
+                        CSS:</p><pre>comment {
+      display:block;
+      position:relative;
+      link:attr(href);
+      float: left;
+      clear:left;
+      ......
+}    
+comment:before {
+      content:'[' attr(hr_id) '] ';
+} 
+    
+comment-anchor:before {
+      content:'[' attr(hr_id) ']';
+      background-color: yellow;
+}</pre><img
+                        src="img/side-notes-pdf.png" alt="side-notes-pdf.png" /></section>
+            </section>
+        </section>
+    </body>
+</html>

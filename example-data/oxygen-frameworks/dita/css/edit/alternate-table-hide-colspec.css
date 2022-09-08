@@ -1,0 +1,11 @@
+/**
+ * Hides the table column specifications.
+ */
+ 
+*[class~="topic/colspec"] {
+    display: none !important;    
+}
+
+*[class~="topic/tgroup"]:before {
+    display: none !important;    
+}

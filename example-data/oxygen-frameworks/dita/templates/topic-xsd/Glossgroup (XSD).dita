@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glossgroup id="glossgroup_${id}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:oasis:names:tc:dita:xsd:glossarygroup.xsd">
+    <title>${caret}</title>
+    <glossentry id="ddl">
+        <glossterm></glossterm>
+        <glossdef></glossdef>
+        <prolog></prolog>
+        <glossBody></glossBody>
+    </glossentry>
+</glossgroup>

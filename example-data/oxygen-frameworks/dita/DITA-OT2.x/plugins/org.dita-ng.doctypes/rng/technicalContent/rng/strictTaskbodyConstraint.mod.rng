@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ============================================================= 
+  MODULE:    DITA Strict Taskbody Constraint - RNG              
+  VERSION:   1.2                                                
+  DATE:      November 2010                                       
+  ============================================================= -->
+<!--
+  Refer to the latest version of this file by the following URI:
+  urn:dita-ng:dita:rng:strictTaskbodyConstraint.mod.rng
+  To refer to this specific version, you may use this value:
+  urn:dita-ng:dita:rng:strictTaskbodyConstraint.mod.rng:1.2
+-->
+<!-- ============================================================= 
+  SYSTEM:     Darwin Information Typing Architecture (DITA)     
+  PURPOSE:    Declaring the domain restrictions for the strict task
+              constraint module
+  ORIGINAL CREATION DATE:  
+  September 2010                                                
+  (C) Copyright Syncro Soft 2010-2011                                
+  All Rights Reserved.                                          
+  ============================================================= -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0">
+  <!-- Define the domain values of this module -->
+  <define name="domains-atts-value" combine="choice">
+    <value>(topic task strictTaskbody-c)</value>
+    <value>(topic task)</value>
+  </define>
+  
+  <include href="../../base/rng/topic.mod.rng">
+    <define name="example">
+      <ref name="example.element"/>
+    </define>
+  </include>
+  <include href="task.mod.rng">
+    <define name="taskbody.content">
+      <optional>
+        <ref name="prereq"/>
+      </optional>
+      <optional>
+        <ref name="context"/>
+      </optional>
+      <optional>
+        <choice>
+          <ref name="steps"/>
+          <ref name="steps-unordered"/>
+        </choice>
+      </optional>
+      <optional>
+        <ref name="result"/>
+      </optional>
+      <optional>
+        <ref name="example"/>
+      </optional>
+      <optional>
+        <ref name="postreq"/>
+      </optional>
+    </define>
+    <define name="context">
+      <ref name="context.element"/>
+    </define>
+    <define name="postreq">
+      <ref name="postreq.element"/>
+    </define>
+    <define name="result">
+      <ref name="result.element"/>
+    </define>
+    <define name="prereq">
+      <ref name="prereq.element"/>
+    </define>
+    <define name="steps-unordered">
+      <ref name="steps-unordered.element"/>
+    </define>
+    <define name="steps">
+      <ref name="steps.element"/>
+    </define>
+  </include>
+  
+</grammar>

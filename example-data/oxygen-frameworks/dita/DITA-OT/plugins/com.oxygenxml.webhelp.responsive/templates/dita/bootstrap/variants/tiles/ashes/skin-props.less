@@ -1,0 +1,120 @@
+/* Font */
+@fontFamily: "PT Sans";
+@availableFontWeights: "400,700";
+@fontUrl: "https://fonts.googleapis.com/css?family=PT+Sans:@{availableFontWeights}";
+
+/* Theme colors */
+@themeColor: rgb(41, 49, 54);
+@themeLightColor: rgb(58, 68, 74);
+@contentColor: #444;
+@linkColor: @themeOppositeColor;
+@contentBgr: #ffffff;
+@headerColor: #ffffff;
+@themeOppositeColor: rgb(97, 168, 223);
+
+/* Header */
+@headerBgr: rgb(41, 49, 54);
+@publicationTitleColor: @headerColor;
+
+/* Footer */
+@footerBgr: @menuBgr;
+@footerColor: @menuColor;
+@footerLinkColor: @linkColor;
+
+/* Menus */
+@menuBgr: @headerBgr;
+@menuColor: rgb(122, 129, 134);
+@hoveredMenuBgr: rgb(68,80,88);
+@hoveredMenuColor: @menuColor;
+
+@submenuBgr: @themeOppositeColor;
+@submenuColor: @themeColor;
+@hoveredSubmenuColor: #ffffff;
+
+@mobileMenuToggleColor: @themeColor;
+@mobileMenuToggleBgr: @themeLightColor;
+
+/* Indexterms link */
+@indextermsLinkCol: @menuColor;
+
+/* Search area */
+@searchBgr: @themeLightColor;
+@searchPageBgr: @contentBgr;
+@searchFieldBorderColor: @themeLightColor;
+@searchFieldColor: @themeLightColor;
+@searchFieldBgr: @headerColor;
+@searchFieldBorderRadius: 4px;
+@searchButtonHoverColor: @themeOppositeColor;
+
+
+/* Main page content area */
+
+@mainPageContentColor: @themeColor;
+@mainPageContentBgr: #fbfbfb;
+
+.mainPageBgr {
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+.mainPageContentAreaBgr {
+  background-color: @mainPageContentBgr;
+}
+
+/* Tiles */
+@tileTitleColor: @themeOppositeColor;
+@tileShortDescColor: @themeLightColor;
+
+/* TOC */
+@tocEntryBgr: @mainPageContentBgr;
+@tocEntryColor: @themeOppositeColor;
+@tocShortDescColor: @themeLightColor;
+
+@tocEntryHoverColor: #ffffff;
+@tocEntryHoverBgr: @themeOppositeColor;
+
+@tocBorderColor: @themeLightColor;
+
+/* Breadcrumb */
+@breadcrumbColor: #ffffff;
+@breadcrumbActiveLinkColor: @linkColor;
+@breadcrumbBorderColor: @themeLightColor;
+@breadcrumbBgr: @themeLightColor;
+
+
+/* Side TOC */
+@sideTocBorderColor: @themeColor;
+@sideTocBgr: @themeLightColor;
+@sideTocActiveColor: @linkColor;
+@sideTocColor: @headerColor;
+
+/* Tooltip */
+@tooltipBgr: @themeOppositeColor;
+@tooltipColor: #fff;
+
+/* Topic content */
+
+@titleColor: @contentColor;
+@subtitleColor: lighten(@titleColor, 30%);
+@subTitleBorderColor: @themeLightColor;
+@topicContentColor: @contentColor;
+@topicContentBgr: @mainPageContentBgr;
+
+/* Related links & child links*/
+@relLinksBgr: @themeLightColor;
+@relLinksBorderColor: @themeColor;
+@relLinksColor: @headerColor;
+@relLinksHeadingColor: @mainPageContentBgr;
+
+/* Search results */
+@searchExpressionColor: @themeColor;
+@searchResultLinkColor: @themeOppositeColor;
+@searchTermHighlightBgr: @themeColor;
+@searchTermHighlightColor: #ffffff;
+
+/* Index terms */
+@indexTermFirstLetterColor: @themeColor;
+@indexTermColor: @contentColor;
+@indexTermGroupBorderColor: @themeLightColor;
+@indexTermGroupBgr: @mainPageContentBgr;

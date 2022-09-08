@@ -1,0 +1,14 @@
+<plugin id="org.dita4publishers.json">
+    
+	<template file="build_transtype-json_template.xml"/>  
+	<template file="xsl/map2json_template.xsl"/>
+  
+  <feature extension="package.support.name" value="Eliot Kimber"/>
+  <feature extension="package.support.email" value="ekimber@contrext.com"/>  
+
+	<extension-point id="d4p.json.xslt.param" name="JSON xslt parameters" />
+
+	<feature extension="dita.conductor.transtype.check" value="json" type="txt"/>
+	<feature extension="dita.conductor.target.relative" value="build.xml" type="file"/>
+	
+</plugin>

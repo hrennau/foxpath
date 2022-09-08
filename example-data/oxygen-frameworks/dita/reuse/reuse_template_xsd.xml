@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+${internalSubsetXSD}
+<oXygen:ReusableComponent xmlns:oXygen="http://www.oxygenxml.com/ns/dita/reuse" 
+    id="${generatedTopicId}" ${xmlSchemaRef}>
+    <oXygen:ComponentDescription>${componentDescription}</oXygen:ComponentDescription>
+    <oXygen:ComponentDefinition>${componentContent}</oXygen:ComponentDefinition>
+</oXygen:ReusableComponent>

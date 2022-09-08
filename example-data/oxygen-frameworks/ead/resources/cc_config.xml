@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Allows contributing to the values presented on content completion for element and attribute values.
+    You can append to the values obtained from the schema or replace them all together.
+    These values can be given as literal values or they can be obtained by executing an XSLT script.
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.oxygenxml.com/ns/ccfilter/config http://www.oxygenxml.com/ns/ccfilter/config/ccConfigSchemaFilter.xsd"
+    xmlns="http://www.oxygenxml.com/ns/ccfilter/config">
+    <!-- Example of proposing values for attributes -->
+    <!--
+        <match attributeName="source">
+        <items action="addIfEmpty">
+            <item value="lcnaf" annotation="Library of Congress Name Authority"/>
+            <item value="lcsh" annotation="Library of Congress Subject Heading"/>
+            <item value="fast" annotation="Faceted Application of Subject Terminology"/>
+            <item value="local" annotation="Local"/>
+            <item value="aat" annotation="Art &amp; Architecture Thesaurus"/>
+        </items>
+    </match>-->
+</config>

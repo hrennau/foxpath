@@ -1,0 +1,288 @@
+@import "../xhtml/css/xhtml.css";
+@namespace nvdl url('http://purl.oclc.org/dsdl/nvdl/ns/structure/1.0');
+@namespace oxy url('http://www.oxygenxml.com/extensions/author');
+@namespace a url("http://relaxng.org/ns/compatibility/annotations/1.0");
+
+/* rules */
+nvdl|rules:before {
+  color : black;
+  padding-bottom:10px;
+  content : 'NVDL script';
+}
+nvdl|rules[schemaType]:before {
+  content : 'NVDL script (schemaType=' attr(schemaType) ')';
+}
+nvdl|rules {
+  display:block;
+  font-size : x-large;
+  font-weight :bold;
+  color : blue;
+  border-right : 2px solid gray;
+  border-bottom :2px solid gray;
+  border-left :1px dotted gray;
+  border-top :1px dotted gray;
+  padding-left:10px;
+  padding-bottom:3px;
+  padding-top:10px;
+  margin-right:10px;
+  margin-top:10px;
+  margin-left:10px;
+}
+
+nvdl|rules[startMode] {
+  content : ' → ' attr(startMode);
+}
+
+nvdl|rules > * {
+  font-size : medium;
+}
+
+nvdl|trigger:before {
+    content : 'trigger on ';
+    color : brown;
+}
+nvdl|trigger {
+    color : #5599FF;
+    display : block;
+    content : '{'attr(ns) '} ' ;
+    font-weight : normal;
+    margin-top : 4px;
+    padding-left : 8px;
+}
+nvdl|trigger:after {
+    color :orange;
+    content : attr(nameList);
+}
+
+/* modes */
+nvdl|mode:before {
+  content : 'Mode';
+  color:black;
+  font-weight : bold;
+}
+nvdl|mode[name]:before {
+  content : 'Mode: ';
+  font-weight : normal;
+}
+
+nvdl|context > nvdl|mode:before,
+nvdl|attach > nvdl|mode:before,
+nvdl|cancelNestedActions > nvdl|mode:before,
+nvdl|attachPlaceholder > nvdl|mode:before,
+nvdl|allow > nvdl|mode:before,
+nvdl|reject > nvdl|mode:before,
+nvdl|unwrap > nvdl|mode:before,
+nvdl|validate > nvdl|mode:before {
+  content : ' → nested mode';
+  color : blue;
+}
+
+nvdl|mode > nvdl|mode:before {
+  content : ' → included mode';
+  color : blue;
+}
+
+nvdl|mode {
+  display : block;
+  font-size : medium;
+  color:blue;
+  margin-top : 4px;
+  padding-left : 8px;
+  padding-bottom : 8px;
+  -oxy-foldable : true;
+}
+nvdl|mode[name] {
+  content : attr(name) ' ';
+}
+
+/* any namespace rules */
+
+nvdl|anyNamespace:before {
+  font-weight :normal;
+  color : green;
+  content : 'anyNamespace ';
+}
+
+nvdl|anyNamespace[match]:before {
+  content : 'anyNamespace for (' attr(match) ') ';
+}
+
+nvdl|anyNamespace {
+  display : block;
+  padding-left:8px;
+  margin-right:8px;
+  color : #5599FF;
+  font-weight :bold;
+  content : ' {';
+}
+nvdl|anyNamespace:after {
+  content : '}';
+}
+
+/* namespace rules */
+
+nvdl|namespace:before {
+  color : green;
+  font-weight :normal;
+  content : 'namespace ';
+}
+
+nvdl|namespace[match]:before {
+  content : 'namespace for (' attr(match) ') ';
+}
+
+nvdl|namespace {
+  display : block;
+  content : ' {';
+  font-weight :bold;
+  padding-left:8px;
+  margin-right:8px;
+  color : #5599FF;
+}
+
+nvdl|namespace[ns] {
+  font-weight :bold;
+  content : '"' attr(ns) '" {';
+}
+
+nvdl|namespace:after {
+  font-weight :bold;
+  content : '}';
+}
+
+/* actions */
+
+nvdl|attach:before,
+nvdl|cancelNestedActions:before,
+nvdl|attachPlaceholder:before,
+nvdl|allow:before,
+nvdl|reject:before,
+nvdl|unwrap:before,
+nvdl|validate:before {
+  font-weight :bold;
+  content: oxy_local-name();
+  color : red;
+  padding-left:8px;
+}
+
+nvdl|validate[schema]:before {
+  content: 'validate with ' attr(schema) ' ';
+}
+
+nvdl|attach,
+nvdl|cancelNestedActions,
+nvdl|attachPlaceholder,
+nvdl|allow,
+nvdl|reject,
+nvdl|unwrap,
+nvdl|validate {
+  display:block;
+  color : gray;
+  font-weight :normal;
+}
+
+nvdl|attach[message],
+nvdl|cancelNestedActions[message],
+nvdl|attachPlaceholder[message],
+nvdl|allow[message],
+nvdl|reject[message],
+nvdl|unwrap[message] {
+  content: ' /* ' attr(message) ' */ ';
+}
+
+nvdl|validate[schemaType] {
+  content: '(schemaType=' attr(schemaType) ')';
+}
+nvdl|validate[schemaType][message] {
+  content: ' (schemaType=' attr(schemaType) ')'  ' /* ' attr(message) ' */ ';
+}
+
+nvdl|validate[useMode]:after,
+nvdl|attachPlaceholder[useMode]:after,
+nvdl|attach[useMode]:after,
+nvdl|allow[useMode]:after,
+nvdl|unwrap[useMode]:after,
+nvdl|reject[useMode]:after {
+  font-weight :bold;
+  color : blue;
+  content: ' → ' attr(useMode);
+}
+
+/* context */
+nvdl|context:before {
+  font-weight :normal;
+  color : #FF6633;
+  content : 'in context of: ' attr(path);
+}
+nvdl|context {
+  display : block;
+  padding-left:8px;
+  color : blue;
+}
+nvdl|context[useMode] {
+  font-weight :bold;
+  content: ' → ' attr(useMode);
+}
+
+/* options */
+nvdl|option:before, nvdl|option:after {
+  content: '' ;
+}
+nvdl|option {
+ color : brown; 
+ content:attr(name) ' = ' attr(arg);
+}
+
+/* message */
+nvdl|message,
+a|documentation {
+  display:block;
+  color : gray;
+  font-size : medium;
+  font-weight :normal;
+  
+  border-right : 2px solid gray;
+  border-bottom :2px solid gray;
+  border-left :1px dotted gray;
+  border-top :1px dotted gray;
+  padding-left:10px;
+  padding-bottom:3px;
+  padding-top:3px;
+  margin-right:10px;
+  margin-top:3px; 
+}
+
+/* inline schemas */
+
+nvdl|schema {
+  display : block;
+  -oxy-foldable : true;
+  content : ' with inline schema '
+}
+
+nvdl|schema > *,
+nvdl|schema > * > * {
+  -oxy-foldable : true;
+  padding-left : 0px;
+  display : block;
+
+}
+
+nvdl|schema  >* >* * {
+    display : block;
+    padding-left:8px;
+}
+
+
+nvdl|schema  *:before {
+    content : '<' oxy_name() oxy_attributes()'>';
+    color : blue;
+}
+
+nvdl|schema  *:after {
+    content : '</' oxy_name() '>';
+    color : blue;
+}
+
+
+

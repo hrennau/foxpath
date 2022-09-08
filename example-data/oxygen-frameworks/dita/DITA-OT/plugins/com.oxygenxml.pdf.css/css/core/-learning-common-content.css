@@ -1,0 +1,1192 @@
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * Common learning content elements
+ * 
+ * http://docs.oasis-open.org/dita/v1.2/os/spec/common/learning_training_elements_topics_other.html
+ * 
+ * The learning and training content elements provide 
+ * specialized content for learning topics.
+ * 
+ * ==================================================
+ * ==================================================
+ */
+
+/* ====================================
+ *
+ * A generic rule, for all the 
+ * learningPlan elements.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     +  topic/p learningPlan/p 
+ */
+*[class *= " learningPlan/lc"],
+*[class *= " learningBase/lc"]{
+  margin-left: 1em;
+}
+*[class *= " learningPlan/lc"]:before,
+*[class *= " learningBase/lc"]:before{
+  /* TODO - all the befores - from other files should have the content as constants, not using the local name, so they can be translated.*/
+
+  content:oxy_substring(oxy_local-name(), 2) ": ";
+  width:7em;
+  /* TODO - make all befores look the same*/
+  font-weight:bold;
+  font-style:normal;
+}
+
+/*
+ * This is synthetic, there is no element with this 
+ * class only, appears in the hierarcy of the 
+ * inherited classes.
+ * 
+ *  TODO - dan - some of the elements deriving the topic/section 
+ *      are also derving from learningBase/section
+ *  TODO - dan - should report to DITA-OT this incosistency. Or is it??
+ 
+ */
+*[class ~= "learningBase/section"]{
+  border: 10px solid #EFEFEF;
+}
+/*
+ * This is synthetic, there is no element with this 
+ * class only, appears in the hierarcy of the 
+ * inherited classes. 
+ */
+*[class ~= "learningBase/fig"]{
+/**/
+}
+
+
+
+
+/* ====================================
+ *
+ * <lcAge>
+ * 
+ * The <lcAge> provides the age range of the intended 
+ * learner audience, for use by curriculum developers 
+ * and course planners. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/p learningBase/p
+ */
+*[class ~= "learningPlan/lcAge"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcAssessment>
+ * 
+ * The <lcAssessment> describes assessment plans.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/p learningBase/p
+ */
+*[class ~= "learningPlan/lcAssessment"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcAttitude>
+ * 
+ * The <lcAttitude> describes mental state 
+ * that influences the choices of personal actions.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/p learningBase/p
+ */
+*[class ~= "learningPlan/lcAssessment"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcAudience>
+ * 
+ * The <lcAudience> describes characteristics 
+ * of the learners who take the instruction. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/section
+ */
+*[class ~= "learningBase/lcAudience"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcBackground>
+ * 
+ * The <lcBackground> provides the learners' 
+ * professional background and the relevancy 
+ * to the learning plan.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/p learningBase/p
+ */
+*[class ~= "learningPlan/lcBackground"]:before{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcChallenge>
+ * 
+ * The <lcChallenge> refers to what it 
+ * is that you want the student to practice. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/section
+ */
+*[class ~= "learningBase/lcChallenge"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcCIN>
+ * 
+ * The <lcCIN> provides a course identification 
+ * number or other alternate identifier for 
+ * the project title. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcCIN"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcClassroom>
+ * 
+ * The <lcClassroom> describes the classroom 
+ * environment.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcClassroom"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcClient>
+ * 
+ * The <lcClient> provides the person or 
+ * organization sponsoring or requiring the 
+ * learning event development.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcClient"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcConstraints>
+ * 
+ * The <lcClient> provides the person or 
+ * organization sponsoring or requiring the 
+ * learning event development.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcConstraints"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcDelivDate>
+ * 
+ * The <lcDelivDate> provides the project 
+ * delivery date.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcDelivDate"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcDelivery>
+ * 
+ * The <lcDelivDate> provides the project 
+ * delivery date.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/p learningBase/p
+ */
+*[class ~= "learningPlan/lcDelivery"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcDuration>
+ * 
+ * The <lcDuration> provides an estimated 
+ * duration for the learning activity.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/section
+ */
+*[class ~= "learningBase/lcDuration"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcEdLevel>
+ * 
+ * The <lcEdLevel> provides the range of 
+ * learners' education level and the 
+ * relevancy to the learning plan.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     +  topic/p learningBase/p
+ */
+*[class ~= "learningPlan/lcEdLevel"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcFileSizeLimitations>
+ * 
+ * The <lcFileSizeLimitations> describes any 
+ * file size limitation in the download 
+ * environment.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     +  topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcFileSizeLimitations"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcGapAnalysis>
+ * 
+ * The <lcGapAnalysis> compares existing learning 
+ * objectives to current job task analysis.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     +  topic/section learningBase/section
+ */
+*[class ~= "learningPlan/lcGapAnalysis"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcGapItem>
+ * 
+ * The <lcGapItem> describes gaps between 
+ * existing training objectives and related 
+ * job-task-analysis content.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     +  topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcGapItem"]{
+  display:list-item;
+  margin-left: 1em;
+}
+
+/* ====================================
+ *
+ * <lcGapItemDelta>
+ * 
+ * The <lcGapItemDelta> describes the gap 
+ * between the learning objective and 
+ * the task analysis.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     +  topic/p learningBase/p 
+ */
+*[class ~= "learningPlan/lcGapItemDelta"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcGeneralDescription>
+ * 
+ * The <lcGeneralDescription> provides a space 
+ * to develop a general description about the 
+ * organization's training needs. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     +  topic/p learningBase/p 
+ */
+*[class ~= "learningPlan/lcGeneralDescription"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcGoals>
+ * 
+ * The <lcGoals> provides the outcomes desired 
+ * by the organization to be addressed by the 
+ * training effort. These goals may require concurrent 
+ * efforts outside of training such as technology 
+ * acquisition, reorganization, and so forth. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     +  topic/p learningBase/p 
+ */
+*[class ~= "learningPlan/lcGoals"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcGraphics>
+ * 
+ * The <lcGraphics> describes standards and 
+ * system requirements for displaying graphics 
+ * and other related content types.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     +  topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcGraphics"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcHandouts>
+ * 
+ * The <lcHandouts> provides aspects of the 
+ * course that are provided by the instructor 
+ * in support of the course learning objectives.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     +  topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcHandouts"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcInstruction>
+ * 
+ * The <lcInstruction> describes the specifics 
+ * of a learning activity.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     +  topic/section learningBase/lcInteraction 
+ */
+*[class ~= "learningBase/lcInstruction"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcInteraction>
+ * 
+ * The <lcInteraction> is a wrapper element for 
+ * all the interactions of the assessment. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     +  topic/section learningBase/lcInteraction 
+ */
+*[class ~= "learningBase/lcInteraction"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcIntervention>
+ * 
+ * The <lcIntervention> describes the approach 
+ * and strategies to building the learning materials, 
+ * based on the needs analysis.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     +  topic/section learningBase/lcInteraction 
+ */
+*[class ~= "learningBase/lcIntervention"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcInterventionItem>
+ * 
+ * The <lcInterventionItem> describes how learning 
+ * content is built, based on a systems approach to 
+ * analyzing, designing, developing, implementing, 
+ * and evaluating any instructional experience.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     +  topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcInterventionItem"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcIntro>
+ * 
+ * The <lcIntro> provides a detailed introduction and 
+ * description of the content to be delivered, in cases 
+ * where the <shortdesc> is not adequate to fully 
+ * describe the content. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     +  topic/section
+ */
+*[class ~= "learningBase/lcIntro"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcJtaItem>
+ * 
+ * The <lcJtaItem> provides description of job task 
+ * analysis (JTA) as related to a particular learning 
+ * objective.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/p learningBase/p 
+ */
+*[class ~= "learningPlan/lcJtaItem"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcKnowledge>
+ * 
+ * <lcKnowledge> describes the learners' 
+ * current knowledge and the relevancy to 
+ * the broader plan audience or a specific 
+ * task in the plan. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/p learningBase/p 
+ */
+*[class ~= "learningPlan/lcKnowledge"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcLearnStrat>
+ * 
+ * The <lcLearnStrat> describes the manner 
+ * in which the learning content will be instructed.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/p learningBase/p 
+ */
+*[class ~= "learningPlan/lcLearnStrat"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcLMS>
+ * 
+ * The <lcLMS> provides the LMS name and 
+ * version number used in the learning event.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/p learningBase/p 
+ */
+*[class ~= "learningPlan/lcLMS"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcModDate>
+ * 
+ * The <lcModDate> provides the project 
+ * modification date. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/fig learningBase/fig 
+ */
+*[class ~= "learningPlan/lcModDate"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcMotivation>
+ * 
+ * The <lcMotivation> provides the reasons 
+ * why the learners want and/or need to 
+ * take the instruction.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/p learningBase/p
+ */
+*[class ~= "learningPlan/lcMotivation"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcNeeds>
+ * 
+ * The <lcNeeds> provides the needs behind 
+ * the outcomes described by the <lcGoals>. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/p learningBase/p
+ */
+*[class ~= "learningPlan/lcNeeds"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcNeedsAnalysis>
+ * 
+ * The <lcNeedsAnalysis> describes the training 
+ * requirement and identifies the need to develop 
+ * or revise content. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/p learningBase/p
+ */
+*[class ~= "learningPlan/lcNeedsAnalysis"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcNextSteps>
+ * 
+ * The <lcNextSteps> suggests next steps to 
+ * reinforce the knowledge learned.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/section
+ */
+*[class ~= "learningPlan/lcNextSteps"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcNoLMS>
+ * 
+ * Use <lcNoLMS> when you plan to deliver 
+ * the content as a standalone package, 
+ * without a learning management system (LMS). 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/fig learningBase/section
+ */
+*[class ~= "learningPlan/lcNoLMS"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcObjective>
+ * 
+ * The <lcObjective> describes a single 
+ * learning objective. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/li
+ */
+*[class ~= "learningBase/lcObjective"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcObjectives>
+ * 
+ * The <lcObjectives> lists or describes 
+ * the learning goals.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/section
+ */
+*[class ~= "learningBase/lcObjectives"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcObjectivesGroup>
+ * 
+ * The <lcObjectivesGroup> contains a list 
+ * of one or more learning objectives. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/ul
+ */
+*[class ~= "learningBase/lcObjectivesGroup"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcObjectivesStem>
+ * 
+ * The <lcObjectivesStem> provides a leading 
+ * sentence to introduce a list of learning 
+ * objectives. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/ul
+ */
+*[class ~= "learningBase/lcObjectivesStem"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcOJT>
+ * 
+ * The <lcOJT> is "the on-the-job training" 
+ * and describes aspects of the course taking 
+ * place in the work environment.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcOJT"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcOrganizational>
+ * 
+ * The <lcOrganizational> describes an 
+ * organization's learning requirements. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcOrganizational"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcOrgConstraints>
+ * 
+ * The <lcOrgConstraints> provides organizational 
+ * aspects that may limit the organization's ability 
+ * to effectively use the instruction to meet its goals.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcOrgConstraints"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcPlanAudience>
+ * 
+ * The <lcPlanAudience> describes characteristics 
+ * of the learners who take the instruction.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcPlanAudience"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcPlanDescrip>
+ * 
+ * The <lcPlanDescrip> provides a plan description.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/fig learningBase/fig 
+ */
+*[class ~= "learningPlan/lcPlanDescrip"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcPlanObjective>
+ * 
+ * The <lcPlanObjective> describes the objective 
+ * to be addressed by a gap analysis or intervention.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/p learningBase/p
+ */
+*[class ~= "learningPlan/lcPlanObjective"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcPlanPrereqs>
+ * 
+ * <lcPlanPrereqs> provides the knowledge, skills, 
+ * abilities, courses and other activities learners 
+ * must have satisfied to take the instruction.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/fig learningBase/fig 
+ */
+*[class ~= "learningPlan/lcPlanPrereqs"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcPlanResources>
+ * 
+ * The <lcPlanResources> describes resource needs.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/p learningBase/p
+ */
+*[class ~= "learningPlan/lcPlanResources"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcPlanSubject>
+ * 
+ * The <lcPlanSubject> provides a complete 
+ * description of the subject of the planned learning.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcPlanSubject"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcPlanTitle>
+ * 
+ * The <lcPlanTitle> provides a title for 
+ * a specific module, lesson, or section 
+ * of the course that this plan describes.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcPlanTitle"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcPlayers>
+ * 
+ * The <lcPlayers> describes tools and 
+ * plugins used for time-sequenced display 
+ * at runtime.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcPlayers"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcPrereqs>
+ * 
+ * The <lcPrereqs> describes the knowledge, 
+ * experience, or other prerequisites needed 
+ * to complete the content.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/section
+ */
+*[class ~= "learningPlan/lcPrereqs"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcProcesses>
+ * 
+ * The <lcProcesses> describes processes 
+ * learners routinely follow.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/section
+ */
+*[class ~= "learningPlan/lcProcesses"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcProject>
+ * 
+ * The <lcProject> provides learning content 
+ * project plan description information. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/section learningBase/section
+ */
+*[class ~= "learningPlan/lcProject"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcResolution>
+ * 
+ * The <lcResolution> describes the required 
+ * computer screen resolution for the online 
+ * instruction.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/fig learningBase/fig 
+ */
+*[class ~= "learningPlan/lcResolution"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcResources>
+ * 
+ * The <lcResources> provides a list of 
+ * related resources and information about 
+ * them, such as related articles or samples 
+ * on the web.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/section
+ */
+*[class ~= "learningPlan/lcResources"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcReview>
+ * 
+ * The <lcReview> provides a review of the 
+ * main points.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/section
+ */
+*[class ~= "learningPlan/lcReview"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcSecurity>
+ * 
+ * The <lcSecurity> describes the security 
+ * requirements in the delivered instruction.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcSecurity"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcSkills>
+ * 
+ * The <lcSkills> describes the learners' 
+ * current skill set and the relevancy to 
+ * the broader plan audience or a specific 
+ * task in the plan. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/p learningBase/p
+ */
+*[class ~= "learningPlan/lcSkills"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <lcSummary>
+ * 
+ * The <lcSummary> provides a textual summary 
+ * that describes the main learning goals 
+ * and lessons learned.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/section
+ */
+*[class ~= "learningPlan/lcSummary"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcTask>
+ * 
+ * The <lcTask> captures a work item to be 
+ * performed, as part of the learning plan.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/section
+ */
+*[class ~= "learningPlan/lcTask"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcTaskItem>
+ * 
+ * The <lcTaskItem> describes a discreet 
+ * task to be taught.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/p learningBase/p
+ */
+*[class ~= "learningPlan/lcTaskItem"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcTechnical>
+ * 
+ * The <lcTechnical> describes the technical 
+ * requirements to the learning content and 
+ * how those requirements are supported by 
+ * the instructional design.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/section learningBase/section
+ */
+*[class ~= "learningPlan/lcTechnical"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcTime>
+ * 
+ * The <lcTime> specifies the time expected to 
+ * complete an activity. You can specify the 
+ * time both as text to display to the user and 
+ * as an attribute value that follows a 
+ * specific time format.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/data
+ */
+*[class ~= "learningBase/lcTime"][name]:before{
+  content: oxy_substring(oxy_local-name(), 2)  " " 
+           oxy_textfield(edit , "@value" , columns , 8) " ";
+}
+
+/* ====================================
+ *
+ * <lcValues>
+ * 
+ * The <lcValues> describes affective components 
+ * of desired instructional outcomes. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/p learningBase/p
+ */
+*[class ~= "learningPlan/lcValues"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcViewers>
+ * 
+ * The <lcViewers> describes viewers used 
+ * for time-sequenced display at runtime.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcViewers"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcW3C>
+ * 
+ * The <lcW3C> provides requirements 
+ * for use of world wide web consortium 
+ * standards. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcW3C"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcWorkEnv>
+ * 
+ * The <lcWorkEnv> describes the working 
+ * conditions and contexts in which the 
+ * training will be applied.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcWorkEnv"]{
+/**/
+}
+
+/* ====================================
+ *
+ * <lcWorkEnvDescription>
+ * 
+ * The <lcWorkEnvDescription> provides the 
+ * general working environment in which 
+ * the training will be applied.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + topic/fig learningBase/fig
+ */
+*[class ~= "learningPlan/lcWorkEnvDescription"]{
+/**/
+}
+

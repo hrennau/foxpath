@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- 
+--><project name="dita.exportmap.build" basedir=".">
+  
+  <target name="dita2exportmap.init">
+    <property name="preprocess.copy-image.skip" value="true"/>
+    <condition property="args.rellinks" value="nofamily">
+      <not><isset property="args.rellinks"/></not>
+    </condition>
+  </target>
+  
+  <target name="dita2exportmap" depends="dita2exportmap.init, build-init, preprocess, map2exportmap"/>
+  
+  <target name="map2exportmap">
+    <dirname property="dita.temp.dir.fullpath" file="${dita.temp.dir}${file.separator}dummy.file"/>
+    <xslt in="${dita.temp.dir.fullpath}${file.separator}.job.xml"
+      out="${dita.temp.dir.fullpath}${file.separator}allResources.out"
+      style="${dita.plugin.com.oxygenxml.export.map.dir}/generateAllResources.xsl" 
+      force="true"/>
+    <mkdir dir="${dita.map.output.dir}/temp"/>
+    <copy todir="${dita.map.output.dir}/temp">
+      <fileset dir="${user.input.dir}/" includesfile="${dita.temp.dir.fullpath}${file.separator}allResources.out">
+        <exclude name="**/*.mml"/>
+        <exclude name="**/*.svg"/>
+      </fileset>
+    </copy>
+    <zip destfile="${dita.map.output.dir}/${dita.map.filename.root}.zip">
+      <fileset dir="${dita.map.output.dir}/temp"/>
+    </zip>
+    <delete dir="${dita.map.output.dir}/temp"/>
+  </target>
+</project>

@@ -1,0 +1,158 @@
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * Software elements
+ * 
+ * http://docs.oasis-open.org/dita/v1.2/os/spec/common/sw-d.html#softwd
+ * 
+ * The software domain elements are used to describe 
+ * the operation of a software program.
+ * ==================================================
+ * ==================================================
+ * 
+ */
+/* ====================================
+ *
+ * <msgph>
+ * 
+ * The message phrase (<msgph>) element 
+ * contains the text content of a message 
+ * produced by an application or program.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph  
+ */
+*[class~="sw-d/msgph"] {
+  /* -monospace- >>> */
+  font-family: monospace;
+  font-size: 0.9em;
+  /* <<< */
+}
+/* ====================================
+ *
+ * <msgblock>
+ * 
+ * The message block (<msgblock>) element 
+ * contains a multi-line message or set 
+ * of messages. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/pre   
+ */
+*[class~="sw-d/msgblock"] {
+  /* -monospace- >>> */
+  font-family: monospace;
+  font-size: 0.9em;
+  /* <<< */
+}
+/* ====================================
+ *
+ * <msgnum>
+ * 
+ * The message number (<msgnum>) element 
+ * contains the number of a message produced 
+ * by an application or program. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/keyword    
+ */
+*[class~="sw-d/msgnum"] {
+  font-weight: bold;
+}
+/* ====================================
+ *
+ * <cmdname>
+ * 
+ * The command name (<cmdname>) element 
+ * specifies the name of a command when it 
+ * is part of a software discussion. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/keyword    
+ */
+*[class~="sw-d/cmdname"] {
+  /* -monospace- >>> */
+  font-family: monospace;
+  font-size: 0.9em;
+  /* <<< */
+}
+/* ====================================
+ *
+ * <varname>
+ * 
+ * The command name (<cmdname>) element 
+ * specifies the name of a command when it 
+ * is part of a software discussion. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/keyword    
+ */
+*[class~="sw-d/varname"] {
+  /* -monospace- >>> */
+  font-family: monospace;
+  font-size: 0.9em;
+  /* <<< */
+  font-style: italic;
+}
+/* ====================================
+ *
+ * <filepath>
+ * 
+ * The <filepath> element indicates the name 
+ * and optionally the location of a referenced 
+ * file by specifying the directory containing 
+ * the file, and other directories that may 
+ * precede it in the system hierarchy. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph
+ */
+*[class~="sw-d/filepath"] {
+  /* -monospace- >>> */
+  font-family: monospace;
+  font-size: 0.9em;
+  /* <<< */
+}
+/* ====================================
+ *
+ * <userinput>
+ * 
+ * The user input (<userinput>) element represents
+ * the text a user should input in response to a 
+ * program or system prompt. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph
+ */
+*[class~="sw-d/userinput"] {
+  /* -monospace- >>> */
+  font-family: monospace;
+  font-size: 0.9em;
+  /* <<< */
+}
+/* ====================================
+ *
+ * <systemoutput>
+ * 
+ * The system output (<systemoutput>) element 
+ * represents computer output or responses 
+ * to a command or situation. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph
+ */
+*[class~="sw-d/systemoutput"] {
+  /* -monospace- >>> */
+  font-family: monospace;
+  font-size: 0.9em;
+  /* <<< */
+}

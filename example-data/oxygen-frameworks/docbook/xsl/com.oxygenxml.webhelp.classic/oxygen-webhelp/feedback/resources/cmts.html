@@ -1,0 +1,405 @@
+<!--
+    
+Oxygen WebHelp Plugin
+Copyright (c) 1998-2017 Syncro Soft SRL, Romania.  All rights reserved.
+
+-->
+
+<style type="text/css">@import "@relPath@/resources/css/jquery.cleditor.css"; </style>
+<style type="text/css">@import "@relPath@/resources/css/jquery.realperson.css"; </style>
+
+<script src="@relPath@/resources/localization/strings.js" charset="utf-8"></script>
+<script src="@relPath@/resources/js/jquery.cleditor.min.js"></script>
+<script src="@relPath@/resources/js/jquery.plugin.min.js" charset="utf-8"></script>
+<script src="@relPath@/resources/js/jquery.realperson.min.js" charset="utf-8"></script>
+
+<div id="loginData" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <ul class="nav nav-tabs nav-justified">
+                        <li class="active">
+        <input type="hidden" id="reloadComments" value="yes"><!----></input>
+                            <a data-toggle="tab" href="#content_login" id="l_login2"></a>
+                        </li>
+                        <li>
+                            <a data-toggle="tab" href="#content_signup" id="l_signUp2">Sign Up</a>
+                        </li>
+                    </ul>
+                    <script>
+                        $('#l_login2').html(getLocalization('label.login'));
+                        $('#l_signUp2').html(getLocalization('label.signUp'));
+                    </script>
+                </div>
+
+                <div class="modal-body tab-content">
+                    <div id="content_login" class="tab-pane fade in active">
+                        <form action="" method="post" name="form_login" id="loginFormData" onsubmit="return loggInUser();" autocomplete="on" enctype="application/x-www-form-urlencoded"> <!--target="passwordIframe"-->
+                    <div id="loginResponse"><!----></div>
+                            <div class="form-group">
+                                <label for="myUserName"><span id="l_userName"><script>$('#l_userName').html(getLocalization('label.userName'));</script></span>
+                                </label>
+                                <input name="usernameW" type="text" class="form-control" id="myUserName" autocomplete="on" required="required" autofocus="autofocus"><!----></input>
+        </div>
+                            <div class="form-group">
+                                <label for="myPassword" id="l_pswd"><script>$('#l_pswd').html(getLocalization('label.pswd'));</script></label>
+                                <input name="passwordW" class="form-control" type="password" id="myPassword" autocomplete="on" required="required"><!----></input>
+                            </div>
+
+                            <div class="checkbox">
+                                <label><input name="myLoginRemember" type="checkbox" class="ck" id="myRemember" value="no"><!----></input>
+                                    <span id="ll_remember"></span>
+                                </label>
+                                <script xml:space="preserve">$('#ll_remember').html(getLocalization('label.rememberme'));</script>
+                            </div>
+
+                            <div class="text-center">
+                                <button id="l_bt_submit_log" type="submit" class="btn btn-default">Log in</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal"  id="l_cancelLog">Cancel</button>
+
+                                <script>
+                                    $('#l_bt_submit_log').html( getLocalization('label.login') );
+                                    $('#l_cancelLog').html( getLocalization('label.cancel') );
+                                </script>
+                            </div>
+    </form>
+                    </div>
+
+                    <div id="content_signup" class="tab-pane fade">
+                        <div id="signUpzzz" > <!--id="signUp"-->
+                            <form action="" enctype="application/x-www-form-urlencoded" onsubmit="return signUp();" method="post">
+                                <div id="signUpResponse"></div>
+
+                                <div class="share">
+                                    <div id="shareWithTitle"></div>
+                                    <script>$('#shareWithTitle').html(getLocalization('label.shareFrom'));</script>
+                                    <div id="shareWith"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="myNewUserName">
+                                        <span id="l_signUp_userName"><script>$('#l_signUp_userName').html(getLocalization('label.signUp_userName'));</script></span> <span class="red">*</span>
+                                    </label>
+                                    <input name="myNewUserName" type="text" class="form-control" id="myNewUserName" autocomplete="on" required="required" autofocus="autofocus"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="myEmail">
+                                        <span id="l_signUp_email"><script>$('#l_signUp_email').html(getLocalization('label.signUp_email'));</script></span> <span class="red">*</span>
+                                    </label>
+                                    <input name="myEmail" type="text" class="form-control" id="myEmail" autocomplete="on" required="required" autofocus="autofocus"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="myName">
+                                        <span id="l_signUp_name"><script>$('#l_signUp_name').html(getLocalization('label.signUp_name'));</script></span>
+                                    </label>
+                                    <input name="myName" type="text" class="form-control" id="myName" autocomplete="on" autofocus="autofocus"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="myNewPassword">
+                                        <span id="l_signUp_password"><script>$('#l_signUp_password').html(getLocalization('label.signUp_password'));</script></span> <span class="red">*</span>
+                                    </label>
+                                    <input name="myNewPassword" type="password" class="form-control" id="myNewPassword" autocomplete="on" required="required" autofocus="autofocus"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="myNewPassword">
+                                        <span id="l_signUp_rPassword"><script>$('#l_signUp_rPassword').html(getLocalization('label.signUp_rPassword'));</script></span> <span class="red">*</span>
+                                    </label>
+                                    <input name="myNewPassword1" type="password" class="form-control" id="myNewPassword1" autocomplete="on" required="required" autofocus="autofocus"/>
+                                </div>
+
+                                <div class="text-center">
+                                        <button type="submit" class="btn btn-default" id="bt_submit" >Log in</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal"  id="l_cancelSign">Cancel</button>
+
+                                        <script>
+                                            $('#bt_submit').html( getLocalization('label.submit') );
+                                            $('#l_cancelSign').html( getLocalization('label.cancel') );
+                                        </script>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="loginAlternative">
+                        <div id="link_lostPwd" onclick="showLostPwd()" data-dismiss="modal"></div>
+                        <script>$('#link_lostPwd').html(getLocalization('label.lostPswd'));</script>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <iframe id="passwordIframe" name="passwordIframe" style="display:none"><!----></iframe>
+</div>
+
+<div id="commentsContainer">
+
+    <div class="modal fade" id="u_Profile" role="dialog">
+        <form action="" enctype="application/x-www-form-urlencoded" method="post">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title" id="l_profile"></h4>
+                        <script>$('#l_profile').html(getLocalization('label.userProfile'));</script>
+                    </div>
+                    <div class="modal-body">
+                        <div id="u_response" class="u_response text-center"></div>
+
+                        <div class="form-group">
+                            <label for="l_CPwd">
+                                <span id="l_CPwd"></span> <span class="red">*</span>
+                                <script>$('#l_CPwd').html(getLocalization('label.currentPwd'));</script>
+                            </label>
+                            <input name="u_Cpass" type="password" class="form-control" id="u_Cpass" autocomplete="on" required="required" autofocus="autofocus" />
+                        </div>
+                        <div class="form-group">
+                            <label for="l_name">
+                                <span id="l_name"></span>
+                                <script>$('#l_name').html(getLocalization('label.yourName'));</script>
+                            </label>
+                            <input name="u_name" type="text" class="form-control" id="u_name" autocomplete="on"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="l_email">
+                                <span id="l_email"></span> <span class="red">*</span>
+                                <script>$('#l_email').html(getLocalization('label.yourEmail'));</script>
+                            </label>
+                            <input name="u_email" type="text" class="form-control" id="u_email" autocomplete="on" required="required"/>
+                        </div>
+                        <div id="l_wantEmail"></div>
+
+                        <div class="l_wantEmail_group">
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="yes" name="u_notify_page" id="u_notify_page" /> <span id="l_cmtPage"></span></label>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="yes" name="u_notify_all" id="u_notify_all" /> <span id="l_cmtTopic"></span></label>
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="yes" name="u_notify_reply" id="u_notify_reply" /> <span id="l_cmtMy"></span></label>
+                            </div>
+                        </div>
+
+                        <script>
+                            $('#l_wantEmail').html(getLocalization('label.IwantEmail'));
+                            $('#l_cmtPage').html(getLocalization('label.commentPage'));
+                            $('#l_cmtTopic').html(getLocalization('label.commentTopic'));
+                            $('#l_cmtMy').html(getLocalization('label.commentMy'));
+                        </script>
+
+                        <div class="form-group">
+                            <label for="l_newPwd">
+                                <span id="l_newPwd"></span>
+                                <script>$('#l_newPwd').html(getLocalization('label.newPwd'));</script>
+                            </label>
+                            <input name="u_pass" type="password" class="form-control" id="u_pass" autocomplete="on"/>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="l_reNew">
+                                <span id="l_reNew"></span>
+                                <script>$('#l_reNew').html(getLocalization('label.reNewPwd'));</script>
+                            </label>
+                            <input name="u_pass1" type="password" class="form-control" id="u_pass1" autocomplete="on"/>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-default" id="bt_profile" data-dismiss="modal">Apply Changes</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal" id="l_cancelp">Cancel</button>
+
+                            <script>
+                                $('#bt_profile').html(getLocalization('label.apply'));
+                                $('#l_cancelp').html(getLocalization('label.cancel'));
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="comments">
+        <div class="cmTitle">
+            <span id="cm_count"></span>
+		    <span id="cm_title">
+			    <script>$('#cm_title').html(getLocalization('label.comments'));</script>
+		    </span>
+            <span id="preload">
+                <img src="@relPath@/resources/img/ajax-loader.gif" alt="Loading"/>
+                <span id="l_plsWait"></span>
+            </span>
+            <span id="cmt_info"></span>
+        </div>
+        <div id="userAccount">
+            <!--<span id="accountInfo"></span>-->
+            <button id="bt_logIn" type="button" class="btn btn-sm btn-link">Log In</button>
+            <button id="bt_signUp" type="button" class="btn btn-sm btn-link">Sign Up</button> <!--onclick="showSignUp()"-->
+            <span class="dropdown" id="show_profile" style="display: none;">
+                <button class="dropdown-toggle" type="button" data-toggle="dropdown"><span id="accountInfo"></span>
+                    <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    <li class="avatar_userName"></li>
+                    <li class="divider" id="divider-admin"></li>
+                    <li><a href="#" id="bt_editProfile">Edit</a></li>
+                    <li><a href="#" id="bt_logOff">Logout</a></li>
+                </ul>
+			</span>
+
+            <script>
+                $('#bt_logIn').html(getLocalization('label.login'));
+                $('#bt_signUp').html(getLocalization('label.signUp'));
+                $('#bt_editProfile').html(getLocalization('label.editAccount'));
+                $('#bt_logOff').html(getLocalization('label.logOff'));
+            </script>
+        </div>
+    </div>
+
+    <div id="approveAll" style="display:none">
+        <button type="button" class="btn btn-default" id="bt_approveAll">Approve All</button>
+        <script>$('#bt_approveAll').html(getLocalization('label.approveAll'));</script>
+    </div>
+
+
+    <div class="modal fade" id="showConfirmApproveAll" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">
+            <div id="approveInfo"></div>
+                    </h4>
+            </div>
+                <div class="modal-footer">
+                    <div class="text-center">
+                        <button type="button" class="btn btn-default" id="bt_yesApprove">Yes</button>
+                        <button type="button" class="btn btn-default" id="bt_noApprove" data-dismiss="modal">No</button>
+                        <script>
+                            $('#bt_yesApprove').html(getLocalization('label.yes'));
+                            $('#bt_noApprove').html(getLocalization('label.no'));
+                        </script>
+    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="showConfirmApproveAll" style="display:none">
+        <div id="approveInfo"></div>
+
+    </div>
+
+
+    <div id='bt_new' style="display:none;">
+        <button type="button" id="l_addNewCmt" class="btn btn-default">Add New Comment</button>
+        <script>$('#l_addNewCmt').html(getLocalization('label.addNewCmt'));</script>
+    </div>
+
+    <div id="preload1" style="display: none">
+        <img src="@relPath@/resources/img/loading.gif" alt="Loading"/>
+    </div>
+
+    <div id="oldComments"></div>
+
+    <div id="new_comment"></div>
+
+    <div id="newComment" style="display: none;">
+		<span id="commentTitle"></span>
+        <span class="bt_close" title="Close"></span>
+        <form action="" onsubmit="return postNewComment(pagePath);" enctype="application/x-www-form-urlencoded" method="post" name="form_newCmt">
+            <textarea rows="7" cols="70" name="commentText" id="commentText"></textarea>
+
+            <div class="captcha" id="o_captcha">
+                <span id="l_captcha">Enter the captcha code seen below:</span> <span class='red'>*</span>
+                <input type="hidden" class="realperson-hash" name="defaultRealHash" value="193489297"/>
+                <input type="text" id="defaultReal" name="defaultReal" class="hasRealPerson"/>
+                <div id="captchaCode"></div>
+            </div>
+
+            <script type='text/javascript'>
+                $("#captchaCode").realperson({length: 5, regenerate: ""});
+                $("#l_captcha").html(getLocalization('label.captcha'));
+            </script>
+
+            <div>
+                <input type="hidden" name="editedId" id="editedId" value=""/>
+                <input type="hidden" name="referedCmtId" id="referedCmtId" value=""/>
+                <button id="l_bt_submit_nc" type="submit" class="btn btn-default">Submit</button>
+                <button type="button" class="btn btn-default bt_cancel" id="l_cancelLogBtn">Cancel</button>
+                <script>
+                    $('#l_bt_submit_nc').html(getLocalization('label.submit'));
+                    $('#l_cancelLogBtn').html(getLocalization('label.cancel'));
+                </script>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal fade" id="confirmDelete" role="dialog">
+        <form action="" enctype="application/x-www-form-urlencoded" method="post">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title" id="question"></h4>
+                        <script>$('#question').html(getLocalization('label.question'));</script>
+                    </div>
+                    <div class="modal-body">
+                            <div id="commentToDelete"></div>
+                            <input type="hidden" id="idToDelete"/>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="text-center">
+                            <button type="button" class="btn btn-default" id="bt_yesDelete" data-dismiss="modal">Yes</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal" id="bt_noDelete">No</button>
+
+                            <script>$('#bt_yesDelete').html(getLocalization('label.yes'));</script>
+                            <script>$('#bt_noDelete').html(getLocalization('label.no'));</script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal fade" id="recoverPwd" role="dialog">
+        <form action="" enctype="application/x-www-form-urlencoded" method="post">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title" id="l_recoverPwd"></h4>
+                        <script>$('#l_recoverPwd').html(getLocalization('label.recoverPwd'));</script>
+            </div>
+                    <div class="modal-body">
+                        <div id="recoverPwdResponse"></div>
+
+                        <div class="form-group">
+                            <label for="recoverEmail"><span id="l_recoverEmail"></span><span class="red">*</span></label>
+                            <input name="recoverEmail" type="text" class="form-control" id="recoverEmail" autocomplete="on" required="required" autofocus="autofocus" />
+                            <script>$('#l_recoverEmail').html(getLocalization('label.recoverEmail'));</script>
+            </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="text-center">
+                            <button type="button" class="btn btn-default" id="bt_recover" data-dismiss="modal">Submit</button>
+                            <button type="button" class="btn btn-default" id="l_cancelRec" data-dismiss="modal">Cancel</button>
+
+                            <script>$('#bt_recover').attr('value', getLocalization('label.bt_recover'));</script>
+                            <script>$('#l_cancelRec').attr("value", getLocalization('label.cancel'));</script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <link rel="stylesheet" type="text/css" href="@relPath@/resources/php/css.php"/>
+    <script src="@relPath@/resources/js/base64.js" charset="utf-8"></script>
+    <script src="@relPath@/resources/js/comments-functions.js" charset="utf-8"></script>
+    <script src="@relPath@/resources/js/comments.js"></script>
+
+
+</div>

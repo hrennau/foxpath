@@ -1,0 +1,274 @@
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * Basic topic elements.
+ * 
+ * langRef/containers/basic-topic-elements.html
+ * 
+ * The generic topic structure is used for untyped topics. 
+ * While much of the DITA architecture is built on generic 
+ * topics, it is generally better to use more specific information 
+ * types (such as concept, task, or reference) when they 
+ * are available.
+ * 
+ * ==================================================
+ * ==================================================
+ */
+
+
+
+/*
+ * ==================================================
+ * 
+ * <topic>
+ * 
+ * The <topic> element is the top-level DITA element for
+ * a single-subject topic or article. Other top-level
+ * DITA elements that are more content-specific are
+ * <concept>, <task>, <reference>, and <glossary>.
+ */
+*[class~="topic/topic"] {
+    display: block;
+    margin:0.5em;
+}
+@media print {
+  *[class~="topic/topic"] {
+    margin-left:0;
+  }
+}
+*[class~="topic/topic"] *[class~="topic/topic"] {
+    -oxy-foldable:true;
+    -oxy-not-foldable-child:title;
+}
+
+
+
+/*
+ * ==================================================
+ * 
+ * <title>
+ * 
+ * The title element generic properties
+ */
+*[class~="topic/title"] {
+    display:block;
+    font-weight:bold;
+    margin-top:0.6em;
+    margin-bottom:0.2em;
+}
+
+/*
+  Reduce the font size as the title is placed deeper in the content.
+ */
+*[class~="topic/topic"] > *[class~="topic/title"] {
+    font-size: 2em;
+}
+*[class~="topic/topic"] *[class~="topic/topic"] > *[class~="topic/title"] {
+    font-size: 1.75em;
+}
+*[class~="topic/topic"] *[class~="topic/topic"] *[class~="topic/topic"] > *[class~="topic/title"] {
+    font-size: 1.5em;
+}
+*[class~="topic/topic"] *[class~="topic/topic"] *[class~="topic/topic"] *[class~="topic/topic"] > *[class~="topic/title"] {
+    font-size: 1.2em;
+}
+/*
+  Some underlining for the titles, when printing.
+ */
+@media print {
+  *[class~="topic/topic"] > *[class~="topic/title"] {
+      padding-bottom:2pt;
+      border-bottom:2.5pt solid;
+  }
+  *[class~="topic/topic"]  *[class~="topic/topic"] > *[class~="topic/title"] {
+      padding-bottom:1pt;
+      border-bottom:1.5pt solid;
+  }  
+  *[class~="topic/topic"]  *[class~="topic/topic"]  *[class~="topic/topic"] > *[class~="topic/title"] {
+      border-bottom:none;
+  }  
+}
+
+
+
+/*
+ * ==================================================
+ * 
+ * <titlealts>
+ * 
+ * The titlealts element allows the insertion of alternate 
+ * titles, such as titles that should be used in creating a 
+ * table of contents for navigation or a title specific to search results. 
+ */
+*[class~="topic/titlealts"] {
+    display:block;
+}
+
+@media print {
+  *[class~="topic/titlealts"] {
+    display:none;
+  }  
+}
+
+
+/*
+ * ==================================================
+ * 
+ * <searchtitle>
+ * 
+ * When your DITA topic is transformed to XHTML, the
+ * <searchtitle> element is used to create a title
+ * element at the top of the resulting HTML file.
+ * 
+ * <navtitle>
+ * 
+ * In HTML output, the <navtitle> may be used to create 
+ * navigation panels when your DITA topics are part of 
+ * an HTML-based help or information system.
+ * 
+ */
+
+*[class~="topic/searchtitle"],
+*[class~="topic/navtitle"] {
+    margin: 0.5em 0;
+    font-weight: bold;
+    display: block;
+    -oxy-foldable:false !important;
+}
+*[class~="topic/searchtitle"]:before,
+*[class~="topic/navtitle"]:before {
+  display:inline;
+  /* -before_bold- >>> */
+  font-weight: bold;
+  /* <<< */
+}
+*[class~="topic/searchtitle"]:before {
+    content: "Search Title: ";
+}
+*[class~="topic/navtitle"]:before {
+    content: "Navigation Title: ";
+}
+
+
+/* ==================================================
+ * 
+ * <shortdesc>
+ * 
+ * For authoring, call attention to shortdesc.
+ * For output, its just a paragraph.
+ * The shortdesc in an abstract is inline.
+ */
+*[class~="topic/shortdesc"] {
+    display: block;
+    margin: 0.5em 0;
+}
+*[class~="topic/shortdesc"]:before {
+  display: inline;
+  content: "Short Description: ";
+  /* -before_bold- >>> */
+  font-weight: bold;
+  /* <<< */
+}
+
+@media print {
+  *[class~="topic/shortdesc"]:before {
+    display:none;
+  }
+}
+
+
+
+/* ==================================================
+ * 
+ * <abstract>
+ * 
+ * The abstract element occurs between the topic title and 
+ * the topic body, as the initial content of a topic. It can 
+ * contain paragraph-level content as well as one or more shortdesc 
+ * elements which can be used for providing link previews or summaries.
+ */
+
+*[class~="topic/abstract"] {
+    display: block;
+    margin: 0.5em 0;
+}
+*[class~="topic/abstract"]:before {
+  display: inline;
+  content:"Abstract: ";
+  /* -before_bold- >>> */
+  font-weight: bold;
+  /* <<< */
+}
+@media print {
+  *[class~="topic/abstract"]:before {
+    display:none;
+  }
+}
+
+
+
+/* ==================================================
+ * 
+ * <body>
+ * 
+ * The body element is the container for the main 
+ * content of a topic
+ */
+*[class~="topic/body"] {
+    display: block;
+    /* Put an indent of the body when in page layout. The short 
+    description and related links are indented to the right.*/
+    margin-left:1em;
+
+    margin-bottom:2em;
+    margin-top:1em;
+    margin-right:1em;
+}
+
+
+
+
+/* ==================================================
+ * 
+ * <bodydiv>
+ * 
+ * The bodydiv element is used to contain informal blocks 
+ * of information within the body of a topic. 
+ */
+*[class~="topic/bodydiv"] {
+    display: block;
+}
+
+
+
+
+/* ==================================================
+ * 
+ * <related-links>
+ * 
+ * The related information links of a topic
+ * (<related-links> element) are stored in a
+ * special section following the body of the topic.
+ */
+*[class~="topic/related-links"] {
+    display: block;
+    margin:0.5em 0;
+}
+*[class~="topic/related-links"]:before {
+  display: block;
+  /* -before_bold- >>> */
+  font-weight: bold;
+  /* <<< */
+  content: "Related information: ";
+}
+/* 
+ * Do not show the label if there is a title in the related links list.
+ */
+@media oxygen and (platform:"standalone"), oxygen and (platform:"eclipse") {
+	*[class~="topic/related-links"]:has(*[class~="topic/linklist"] > *[class~="topic/title"]):before {
+    content: none;
+  }
+}
+
+

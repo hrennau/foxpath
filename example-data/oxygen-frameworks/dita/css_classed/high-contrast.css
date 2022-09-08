@@ -1,0 +1,364 @@
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+
+@media oxygen-high-contrast-black{
+    *:before,
+    *,
+    *:after {
+        color:inherit !important;
+        background-color: inherit !important;
+        border-color:inherit !important;
+    }
+
+    oxy|comment{
+        color:#3DB39B !important;
+        background-color:transparent !important;
+    }
+
+    oxy|reference,
+    oxy|entity{
+        background-color:rgb(72,72,72) !important;
+    }
+	
+    *[class ~= "topic/table"],
+    informaltable,
+    *[class ~= "topic/table"][border],
+    informaltable[border],
+    *[class ~= "topic/stentry"]{
+        border-color:#CCCCCC !important;
+    }
+
+    *[class ~= "topic/tgroup"]{
+        border-color:white !important;
+    }
+
+    *[class ~= "topic/tgroup"]:before! > *[class ~= "topic/colspec"]{
+        content:oxy_button(actionID, 'table.expand.colspec', transparent, true, color, #59ACFF, fontInherit, true, showText, true, enableInReadOnlyContext, true);
+        color:#59ACFF !important;
+    }
+
+    *[class ~= "topic/tgroup"]:-oxy-visible-colspecs:before{
+        content:oxy_button(actionID, 'table.collapse.colspec', transparent, true, color, #59ACFF, fontInherit, true, showText, true, enableInReadOnlyContext, true);
+    }
+
+    *[class ~= "topic/table"][frame = 'above'] > *[class ~= "topic/tgroup"],
+    *[class ~= "topic/table"][frame = 'top'] > *[class ~= "topic/tgroup"]{
+        border-top-color:white;
+    }
+
+    *[class ~= "topic/table"][frame = 'below'] > *[class ~= "topic/tgroup"],
+    *[class ~= "topic/table"][frame = 'bottom'] > *[class ~= "topic/tgroup"]{
+        border-bottom-color:white;
+    }
+
+    *[class ~= "topic/table"][frame = 'rhs'] > *[class ~= "topic/tgroup"],
+    informaltable[frame = 'rhs'] > *[class ~= "topic/tgroup"]{
+        border-right-color:white;
+    }
+
+    *[class ~= "topic/table"][frame = 'lhs'] > *[class ~= "topic/tgroup"],
+    informaltable[frame = 'lhs'] > *[class ~= "topic/tgroup"]{
+        border-left-color:white;
+    }
+
+    *[class ~= "topic/table"][frame = 'vsides'] > *[class ~= "topic/tgroup"],
+    *[class ~= "topic/table"][frame = 'sides'] > *[class ~= "topic/tgroup"]{
+        border-left-color:white;
+        border-right-color:white;
+    }
+
+    *[class ~= "topic/table"][frame = 'hsides'] > *[class ~= "topic/tgroup"],
+    *[class ~= "topic/table"][frame = 'topbot'] > *[class ~= "topic/tgroup"]{
+        border-top-color:white;
+        border-bottom-color:white;
+    }
+
+    *[class ~= "topic/table"][frame = 'box'] > *[class ~= "topic/tgroup"],
+    *[class ~= "topic/table"][frame = 'border'] > *[class ~= "topic/tgroup"],
+    *[class ~= "topic/table"][frame = 'all'] > *[class ~= "topic/tgroup"]{
+        border-color:white !important;
+    }
+
+    *[class ~= "concept/concept"] > *[class ~= "topic/title"]{
+        color:#009999  !important;
+    }
+
+    *[frame]{
+        border-color:white;
+    }
+
+    *[class ~= "topic/table"] > caption,
+    *[class ~= "topic/table"] > info > *[class ~= "topic/title"],
+    *[class ~= "topic/table"] > *[class ~= "topic/title"],
+    *[class ~= "task/choice"]:before{
+        color:#0050F0 !important;
+    }
+
+    *[class ~= "topic/table"],
+    informaltable,
+    *[class ~= "map/relcell"],
+    *[class ~= "map/relcolspec"]{
+        border-color:#383838 !important;
+    }
+
+    *[class ~= "topic/table"][frame],
+    informaltable[frame]{
+        border-color:white !important;
+    }
+
+    *[class ~= "topic/thead"],
+    *[class ~= "map/relheader"],
+    *[class ~= "topic/sthead"] > *[class ~= "topic/stentry"]{
+    	color: white !important;
+        background-color:#383838 !important;
+    }
+
+    *[class ~= "map/topicmeta"]{
+        color: #8A0087 !important;
+    }
+
+    *[class ~= "pr-d/syntaxdiagram"]:before,
+    *[class ~= "pr-d/synblk"]:before,
+    *[class ~= "pr-d/groupseq"]:before,
+    *[class ~= "pr-d/groupchoice"]:before,
+    *[class ~= "pr-d/groupcomp"]:before,
+    *[class ~= "pr-d/fragment"]:before,
+    *[class ~= "pr-d/synnote"]:before,
+    *[class ~= "pr-d/fragref"]:before,
+    *[class ~= "pr-d/synnoteref"]:before,
+    *[class ~= "task/prereq"]:before,
+    *[class ~= "task/postreq"]:before,
+    *[class ~= "task/context"]:before,
+    *[class ~= "task/result"]:before,
+    *[class ~= "task/info"]:before,
+    *[class ~= "task/tutorialinfo"]:before,
+    *[class ~= "task/stepxmp"]:before,
+    *[class ~= "task/stepresult"]:before,
+    *[class ~= "topic/searchtitle"]:before,
+    *[class ~= "topic/navtitle"]:before,
+    *[class ~= "topic/shortdesc"]:before,
+    *[class ~= "topic/example"]:before,
+    *[class ~= "topic/fn"]:before,
+    *[class ~= "topic/fn"][callout]:before,
+    *[class ~= "topic/related-links"]:before,
+    *[class ~= "topic/links"]:before,
+    *[class ~= "topic/linklist"]:before,
+    *[class ~= "topic/linkpool"]:before,
+    *[class ~= "topic/linkinfo"]:before,
+    *[class ~= "topic/keywords"] *[class ~= "topic/indexterm"],
+    *[class ~= "pr-d/codeblock"],
+    *[class ~= "topic/indexterm"] > *[class ~= "indexing-d/index-see"]:before,
+    *[class ~= "topic/indexterm"] > *[class ~= "indexing-d/index-see-also"]:before{
+        color:#808080 !important;
+    }
+
+    *[class ~= "pr-d/fragref"],
+    *[class ~= "pr-d/sep"],
+    *[class ~= "topic/link"]:before,
+    *[class ~= "topic/xref"]:before
+    {
+        color:#59ACFF !important;
+    }
+
+    *[class ~= "pr-d/kwd"]{
+        color:#B31552 !important;
+    }
+
+    *[class ~= "pr-d/oper"]{
+        color:#179C32 !important;
+    }
+
+    *[class ~= "pr-d/delim"],
+    *[class ~= "topic/dlhead"]{
+        color:#960000 !important;
+    }
+
+    *[class ~= "reference/refsyn"],
+    *[class ~= "sw-d/msgnum"],
+    *[class ~= "sw-d/msgph"],
+    *[class ~= "sw-d/msgblock"],
+    *[class ~= "sw-d/userinput"]{
+        color:#009999 !important;
+    }
+
+    *[class ~= "ut-d/shape"]:before,
+    *[class ~= "ut-d/coords"]:before{
+        color:#CCCCCC !important;
+    }
+
+
+    *[class ~= "xnal-d/authorinformation"]:before,
+    *[class ~= "xnal-d/personinfo"]:before,
+    *[class ~= "xnal-d/organizationinfo"]:before,
+    *[class ~= "xnal-d/namedetails"]:before,
+    *[class ~= "xnal-d/personname"]:before,
+    *[class ~= "xnal-d/organizationnamedetails"]:before,
+    *[class ~= "xnal-d/addressdetails"]:before,
+    *[class ~= "xnal-d/contactnumbers"]:before,
+    *[class ~= "xnal-d/emailaddresses"]:before,
+    *[class ~= "xnal-d/urls"]:before,
+    *[class ~= "topic/q"]:before,
+    *[class ~= "topic/q"]:after,
+    *[class ~= "topic/lq"]:before,
+    *[class ~= "topic/lq"]:after,
+    *[class ~= "topic/desc"]:before,
+    *[class ~= "topic/desc"]:after,
+    *[class ~= "topic/source"][href]:after,
+    *[class ~= "topic/tm"]:after{
+        color:#CCCCCC !important;
+    }
+
+    *[class ~= "topic/pre"]{
+        color:#179C32 !important;
+    }
+
+    *[class ~= "topic/draft-comment"]{
+    	color: #009999 !important;
+    	border: none !important;
+    }
+
+    *[class ~= "topic/boolean"]:before,
+    *[class ~= "topic/state"]:before{
+        color:#B31552 !important;
+    }
+
+    *[class ~= "topic/required-cleanup"]{
+    	color: #960000 !important;
+        border:none !important;
+    }
+
+    *[class ~= "topic/resourceid"]:before,
+    *[class ~= "topic/series"]:before,
+    *[class ~= "topic/source"]:before,
+    *[class ~= "topic/permissions"]:before,
+    *[class ~= "topic/prognum"]:before,
+    *[class ~= "topic/publisher"]:before,
+    *[class ~= "topic/othermeta"]:before,
+    *[class ~= "topic/platform"]:before,
+    *[class ~= "topic/featnum"]:before,
+    *[class ~= "topic/keywords"]:before,
+    *[class ~= "topic/critdates"]:before,
+    *[class ~= "topic/created"]:before,
+    *[class ~= "topic/revised"]:before,
+    *[class ~= "topic/copyryear"]:before,
+    *[class ~= "topic/copyrholder"]:before,
+    *[class ~= "topic/copyright"]:before,
+    *[class ~= "topic/component"]:before,
+    *[class ~= "topic/vrm"]:before,
+    *[class ~= "topic/prodname"]:before,
+    *[class ~= "topic/audience"]:before,
+    *[class ~= "topic/brand"]:before,
+    *[class ~= "topic/category"]:before,
+    *[class ~= "topic/prodinfo"]:before,
+    *[class ~= "topic/metadata"]:before,
+    *[class ~= "topic/author"]:before{
+        color:#CCCCCC !important;
+    }
+
+    *[class ~= "topic/keywords"] *[class ~= "topic/indexterm"] > *[class ~= "topic/indexterm"]{
+        color:#009999 !important;
+    }
+
+    *[class ~= "topic/link"][href][scope = "external"]:empty,
+    *[class ~= "topic/link"][href][format = "html"]:empty,
+    *[class ~= "topic/xref"][href][scope = "external"]:empty,
+    *[class ~= "topic/xref"][href][format = "html"]:empty{
+        content:oxy_label(text, oxy_getSomeText(attr(href), 150, true), color, rgb(89, 172, 255));
+    }
+
+    *[class ~= "topic/link"][href]:empty,
+    *[class ~= "topic/xref"][href]:empty,
+    *[class ~= "topic/link"][type][href]:empty,
+    *[class ~= "topic/xref"][type][href]:empty,
+    *[keyref]:empty{
+        content:oxy_label(text, oxy_getSomeText(oxy_link-text(), 150, true), color, rgb(89, 172, 255));
+    }
+
+    /*
+*[class~="map/topicref"][href]:before
+{
+    content: url("../img/topic.png") " " oxy_label(text, oxy_getSomeText(oxy_link-text(), 150, true), color, rgb(89, 172, 255)) " [" oxy_attributes() " ]";
+}
+
+*[class~="map/topicref"]:before,
+*[class~="map/topicref"][keyref]:before
+{
+    display:inline;
+    content: url("../img/topic.png") " " oxy_label(text, oxy_getSomeText(oxy_link-text(), 150, true), background-color, color, rgb(89, 172, 255)) " [" oxy_attributes() " ]";
+}
+*/
+
+    *[conaction = "pushbefore"],
+    *[conaction = "pushafter"],
+    *[conaction = "pushreplace"]
+    {
+        border-color:white;
+    }
+
+    *[class ~= "topic/table"][border][rules = cols] > tr > td,
+    *[class ~= "topic/table"][border][rules = cols] > tr > th,
+    *[class ~= "topic/table"][border][rules = cols] > *[class ~= "topic/tbody"] > tr > td,
+    *[class ~= "topic/table"][border][rules = cols] > *[class ~= "topic/tbody"] > tr > th,
+    *[class ~= "topic/table"][border][rules = cols] > *[class ~= "topic/thead"] > tr > td,
+    *[class ~= "topic/table"][border][rules = cols] > *[class ~= "topic/thead"] > tr > th,
+    *[class ~= "topic/table"][border][rules = cols] > *[class ~= "topic/tfoot"] > tr > td,
+    *[class ~= "topic/table"][border][rules = cols] > *[class ~= "topic/tfoot"] > tr > th{
+        border-left-color:white;
+        border-right-color:white;
+    }
+
+    *[class ~= "topic/table"][border][rules = rows] > tr > td,
+    *[class ~= "topic/table"][border][rules = rows] > tr > th,
+    *[class ~= "topic/table"][border][rules = rows] > *[class ~= "topic/tbody"] > tr > td,
+    *[class ~= "topic/table"][border][rules = rows] > *[class ~= "topic/tbody"] > tr > th,
+    *[class ~= "topic/table"][border][rules = rows] > *[class ~= "topic/thead"] > tr > td,
+    *[class ~= "topic/table"][border][rules = rows] > *[class ~= "topic/thead"] > tr > th,
+    *[class ~= "topic/table"][border][rules = rows] > *[class ~= "topic/tfoot"] > tr > td,
+    *[class ~= "topic/table"][border][rules = rows] > *[class ~= "topic/tfoot"] > tr > th{
+        border-top-color:white;
+        border-bottom-color:white;
+    }
+
+    *[class ~= "topic/table"][border][rules = all] > tr > td,
+    *[class ~= "topic/table"][border][rules = all] > tr > th,
+    *[class ~= "topic/table"][border][rules = all] > *[class ~= "topic/tbody"] > tr > td,
+    *[class ~= "topic/table"][border][rules = all] > *[class ~= "topic/tbody"] > tr > th,
+    *[class ~= "topic/table"][border][rules = all] > *[class ~= "topic/thead"] > tr > td,
+    *[class ~= "topic/table"][border][rules = all] > *[class ~= "topic/thead"] > tr > th,
+    *[class ~= "topic/table"][border][rules = all] > *[class ~= "topic/tfoot"] > tr > td,
+    *[class ~= "topic/table"][border][rules = all] > *[class ~= "topic/tfoot"] > tr > th{
+        border-color:white;
+    }
+
+    *[class ~= "topic/table"][border][rules = none] > tr > td,
+    *[class ~= "topic/table"][border][rules = none] > tr > th,
+    *[class ~= "topic/table"][border][rules = none] > *[class ~= "topic/tbody"] > tr > td,
+    *[class ~= "topic/table"][border][rules = none] > *[class ~= "topic/tbody"] > tr > th,
+    *[class ~= "topic/table"][border][rules = none] > *[class ~= "topic/thead"] > tr > td,
+    *[class ~= "topic/table"][border][rules = none] > *[class ~= "topic/thead"] > tr > th,
+    *[class ~= "topic/table"][border][rules = none] > *[class ~= "topic/tfoot"] > tr > td,
+    *[class ~= "topic/table"][border][rules = none] > *[class ~= "topic/tfoot"] > tr > th{
+        border-color:#383838;
+    }
+
+    *[class ~= "map/topicgroup"]{
+        border-color:#960000 !important;
+    }
+
+    *[class ~= "reference/reference"] > *[class ~= "topic/title"],
+    *[class ~= "reference/refbody"] > *[class ~= "topic/section"] > *[class ~= "topic/title"],
+    *[class ~= "topic/topic"] > *[class ~= "topic/title"],
+    * *[class ~= "topic/topic"] > *[class ~= "topic/title"]{
+        border-bottom-color:#59ACFF;
+    }
+    
+   *[class ~= "bookmap/bookmeta"]{
+        border-color:white !important;
+    }
+    
+    *[class ~= "reference/proptypehd"],
+    *[class ~= "reference/propvaluehd"],
+    *[class ~= "reference/propdeschd"],
+    *[class ~= "topic/prolog"]{
+        color:#B512B2 !important;
+    }
+}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ID Generation default options for Docbok 4 -->
+<idGeneration>
+    <autoGenerate>false</autoGenerate>
+    <idAttribute>id</idAttribute>
+    <idPattern>${localName}_${id}</idPattern>
+    <generateForElement>article</generateForElement>
+    <generateForElement>chapter</generateForElement>
+    <generateForElement>sect1</generateForElement>
+    <generateForElement>sect2</generateForElement>
+    <generateForElement>sect3</generateForElement>
+    <generateForElement>sect4</generateForElement>
+    <generateForElement>sect5</generateForElement>
+    <generateForElement>section</generateForElement>
+</idGeneration>

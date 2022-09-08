@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.oxygenxml.com/ns/dita/reuse"
+    xmlns:oXygen="http://www.oxygenxml.com/ns/dita/reuse"
+    xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/">
+    
+    <!--The XML Schema referenced in the source-->
+    ${importXMLSchema}
+    
+    <!-- DITA Arch version attribute -->
+    <xs:import namespace="http://dita.oasis-open.org/architecture/2005/" schemaLocation="urn:oasis:names:tc:dita:xsd:ditaarch.xsd"/>
+    
+    <!-- Root element -->
+    <xs:element name="ReusableComponent">
+        <xs:complexType>
+            <xs:sequence minOccurs="1" maxOccurs="1">
+                <xs:element ref="oXygen:ComponentDescription"/>
+                <xs:element ref="oXygen:ComponentDefinition"/>
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:string"/>
+            <xs:attribute name="class" type="xs:string"
+                default="- topic/topic oXygen:ReusableComponent/oXygen:ReusableComponent "/>
+            <xs:attribute name="domains" type="xs:string"
+                default="${domains} (topic oXygen-reuse-d) "/>
+            <xs:attribute ref="ditaarch:DITAArchVersion"/>
+        </xs:complexType>
+    </xs:element>
+    <!-- Component description -->
+    <xs:element name="ComponentDescription">
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base="xs:string">
+                    <xs:attribute name="class" type="xs:string"
+                        default="- topic/title oXygen:ReusableComponent/oXygen:ComponentDescription "
+                    />
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+    <!-- Component definition -->
+    <xs:element name="ComponentDefinition">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="xs:anyType">
+                    <xs:attribute name="class" type="xs:string"
+                        default="- topic/body oXygen:ReusableComponent/oXygen:ComponentDefinition "/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

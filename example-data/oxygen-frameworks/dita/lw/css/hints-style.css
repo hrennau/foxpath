@@ -1,0 +1,12 @@
+div{
+    color:#105B63;
+    font-family:verdana, arial, helvetica, sans-serif;
+    font-weight:normal;
+    white-space:normal;
+    font-size:0.8rem;
+}
+
+p, html, body {
+    padding:0;
+    margin:0;
+}

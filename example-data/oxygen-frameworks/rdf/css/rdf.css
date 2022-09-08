@@ -1,0 +1,25 @@
+@namespace dc "http://purl.org/dc/elements/1.1/";
+
+RDF{
+    display:block;
+    margin:1em;
+}
+
+Description, Description > * {
+    display:block;
+}
+
+Description:before{
+    content:"Description: ";
+    color:gray;
+}
+
+dc|*:before{
+    content:oxy_capitalize(oxy_local-name());
+    width:100px;
+}
+
+dc|* {
+    content: oxy_textfield(edit, "#text", columns, 30);
+    visibility:-oxy-collapse-text; 
+}

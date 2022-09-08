@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dummy>
+    <param 
+        name="com.oxygenxml.use.custom.note.images" 
+        expression="${com.oxygenxml.use.custom.note.images}" 
+        if="com.oxygenxml.use.custom.note.images"/>    
+</dummy>

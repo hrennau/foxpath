@@ -1,0 +1,118 @@
+@import "ditavalCommon.css";
+
+* {
+  padding : 5px;
+  margin : 10px;
+  margin-bottom:20px;
+}
+
+prop, revprop {
+  border : 1px solid gray;  
+}
+
+prop:before {
+  padding : 5px;
+  display:block;
+  content:
+    oxy_label(text, "Filter ", styles, "font-weight:bold;")
+    " ["
+    oxy_button(actionID, 'delete2', transparent, true)
+    "]"
+    "\A " 
+    oxy_combobox(edit, '@action')
+    oxy_label(text, '@', width, 2ex, text-align, center)
+    oxy_combobox(edit, '@att', 
+      values, 'audience, platform, product, props, otherprops'
+    )
+    oxy_label(text, '=', width, 2ex, text-align, center)
+    oxy_textfield(edit, '@val', columns, 20)
+    "\A "
+    oxy_label(text, ' style ', width, 19ex, color, gray)
+    oxy_label(text, ' color ', width, 19ex, color, gray)
+    oxy_label(text, ' background ', width, 19ex, color, gray)
+    "\A"
+    oxy_combobox(edit, '@style', columns, 20)
+    oxy_combobox(
+      edit, "@color",
+      columns, 20,
+      values, "black,   silver,  gray,    white,   maroon,  red,     purple,  fuchsia, green,   lime,    olive,   yellow,  navy,    blue,    teal,    aqua"    
+    )
+    oxy_combobox(edit, "@backcolor", 
+      columns, 20,
+      values, "black,   silver,  gray,    white,   maroon,  red,     purple,  fuchsia, green,   lime,    olive,   yellow,  navy,    blue,    teal,    aqua"
+    );
+}
+
+revprop:before {
+  padding : 5px;
+  display:block;
+  content:
+    oxy_label(text, "Flag revision ", styles, "font-weight:bold;")
+    " ["
+    oxy_button(actionID, 'delete2', transparent, true)
+    "]"
+    "\A " 
+    oxy_combobox(edit, '@action', columns, 20)
+    oxy_label(text, '@', width, 2ex, text-align, center)
+    oxy_label(text, 'rev',
+      styles, 'font-weight:bold;'
+    )
+    oxy_label(text, '=', width, 2ex, text-align, center)
+    oxy_textfield(edit, '@val', columns, 30)
+    "\A "
+    oxy_label(text, ' style ', width, 19ex, color, gray)
+    oxy_label(text, ' color ', width, 19ex, color, gray)
+    oxy_label(text, ' background ', width, 19ex, color, gray)
+    "\A"
+    oxy_combobox(edit, '@style', columns, 20)
+    oxy_combobox(
+      edit, "@color",
+      columns, 20,
+      values, "#000000, #C0C0C0, #808080, #FFFFFF, #800000, #FF0000, #800080, #FF00FF, #008000, #00FF00, #808000, #FFFF00, #000080, #0000FF, #008080, #00FFFF",
+      labels, "black,   silver,  gray,    white,   maroon,  red,     purple,  fuchsia, green,   lime,    olive,   yellow,  navy,    blue,    teal,    aqua"    
+    )
+    oxy_combobox(edit, "@backcolor", 
+      columns, 20,
+      labels, "black,   silver,  gray,    white,   maroon,  red,     purple,  fuchsia, green,   lime,    olive,   yellow,  navy,    blue,    teal,    aqua",
+      values, "#000000, #C0C0C0, #808080, #FFFFFF, #800000, #FF0000, #800080, #FF00FF, #008000, #00FF00, #808000, #FFFF00, #000080, #0000FF, #008080, #00FFFF"
+    )
+    "\A"
+    oxy_label(text, ' changebar ', width, 19ex, color, gray)
+    "\A"
+    oxy_combobox(edit, "@changebar",
+      columns, 20,
+      values, "underline, double-underline, italics, overline, bold, black,   silver,  gray,    white,   maroon,  red,     purple,  fuchsia, green,   lime,    olive,   yellow,  navy,    blue,    teal,    aqua"
+    )
+    
+    ;  
+}
+
+
+prop:after,
+revprop:after {
+  display:block;
+  border-top:1px dotted gray;
+  padding-top:5px;
+  content : 
+    oxy_button(actionID, 'add.startflag')
+    oxy_button(actionID, 'add.endflag')
+    oxy_button(actionID, 'add.filter')
+    oxy_button(actionID, 'add.flag-revision')
+    ;
+}
+
+
+startflag:before {
+  content :
+    "Start flag image reference: "
+    oxy_urlChooser(edit, imageref)
+    "\A";
+}
+
+startflag[imageref]:before {
+  content :
+    "Start flag image reference: "
+    oxy_urlChooser(edit, imageref)
+    "\A"
+    attr(imageref, url);
+}

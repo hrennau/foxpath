@@ -1,0 +1,150 @@
+/*
+ * ======================================================
+ * 
+ * Table of Contents.
+ * 
+ * ======================================================
+ */
+
+@media print {
+
+    @page table-of-contents {    
+        @top-left {      content: none; font-size:8pt;}
+        @top-center {    content: none }
+        @top-right {     content: none; font-size:8pt;}        
+        @bottom-left {   content: none }
+        @bottom-center { content: none }
+        @bottom-right {  content: none }
+    }
+    @page table-of-contents:left {
+        @top-left {
+            content: "Contents | " counter(page, lower-roman);
+        }
+     }
+    @page table-of-contents:right {
+        @top-right {
+            content: "Contents | " counter(page, lower-roman);
+        }
+    }
+
+
+    *[class ~= "map/map"] > map {
+        display: block;
+        page: table-of-contents;
+    }
+
+    /*      
+         One can use the oxy:toc-title title element to give a title to the TOC.
+         If is marked as empty, use the static text: "Contents"         
+     */
+    toc-title {
+        display:block;
+        font-size:3em;
+        margin-bottom:1em;
+    }
+    toc-title[empty]:before{
+        content: "Contents";
+    }
+    
+    
+    /* 
+        The bookmap title migrates into the opentopic:map element. Since it is already on the 
+        front page, it should be hidden. 
+    */
+    *[class ~= "map/map"] > map > *[class ~= "topic/title"] {
+        display:none;
+    }
+
+    *[class ~= "map/topicref"] {
+        display:block;
+    }
+
+    *[class ~= "map/topicref"] *[class ~= "map/topicref"] {
+        margin-left:2em;
+    }
+
+    /* The chapters from the opentopic:map are bolded and larger */
+    *[class ~= "map/topicref"][is-chapter] {
+        font-weight: bold;
+    }
+    *[class ~= "map/topicref"][is-chapter]:not([is-part]) > *[class ~= "map/topicref"]:not(is-chapter)  {
+        font-weight: normal;
+    }
+
+    /* Hide sections below level 3. */
+    *[class ~= "map/topicref"][is-chapter] > 
+        *[class ~= "map/topicref"]:not([is-chapter]) > 
+        *[class ~= "map/topicref"] > 
+        *[class ~= "map/topicref"] {
+        
+        display:none;
+    }
+
+
+    /* A dotted line between the topic name and the page number. */
+    *[class ~= "map/topicref"] *[class ~= "topic/navtitle"] {
+        font-weight:inherit;
+        /*EXM-32190 Link on topic title*/
+        link:attr(href);
+        -ah-link: attr(href);
+        -oxy-link: attr(href);
+    }
+    *[class ~= "map/topicref"] *[class ~= "topic/navtitle"]:before {
+    	content:none;
+	}
+    
+    
+    /*EXM-32190 Ignore displaying keywords metadata, except the navtitle*/
+    *[class ~= "map/topicmeta"] > *:not([class ~= "topic/navtitle"]){
+        display:none;
+    }
+    *[class ~= "map/topicref"] *[class ~= "topic/navtitle"]:after,
+    /* For the Index page we do not have a navtitle, but a linktext */
+    *[class ~= "map/topicref"] *[class ~= "map/linktext"]:after {
+        display:inline;
+        content: leader('.') target-counter(attr(href), page);
+        link:attr(href);
+        -ah-link:attr(href);
+        -oxy-link: attr(href);
+    }
+
+	/*
+	 
+  	 The case of a plain map, not a bookmap.
+	 
+	 */
+	  *[class ~= "map/topicref"][is-chapter] {
+	      counter-increment:toc-chapter;
+	  }
+    *[class ~= "map/topicref"][is-chapter] > *[class ~= "map/topicmeta"] > *[class ~= "topic/navtitle"]:before,
+	  *[class ~= "map/topicref"][is-chapter] > *[class ~= "map/topicmeta"] > *[class ~= "map/linktext"]:before  {
+        content: "Chapter " counter(toc-chapter) ". " !important;      
+        color:inherit;
+    }
+    
+    
+    /* 
+      Bookmap.  
+      
+      All the parts get a part number.
+      Each chapter gets a chapter number.
+      All other topicrefs following a part do not have a number.
+      
+    */
+    *[class ~= "map/topicref"][is-part] {
+      counter-increment:toc-part;
+      counter-reset:toc-chapter 0 !important;
+    }
+    *[class ~= "map/topicref"][is-part] > *[class ~= "map/topicmeta"] > *[class ~= "topic/navtitle"]:before,
+	  *[class ~= "map/topicref"][is-part] > *[class ~= "map/topicmeta"] > *[class ~= "map/linktext"]:before  {
+      content: "Part " counter(toc-part, upper-roman) ". " !important;
+      color:inherit;
+    }    
+    /* All other topicrefs that follow a part should not have a number (i.e appendices)  */
+    *[class ~= "map/topicref"][is-part] ~ *[class ~= "map/topicref"]:not([is-part]) > *[class ~= "map/topicmeta"] > *[class ~= "topic/navtitle"]:before,
+	  *[class ~= "map/topicref"][is-part] ~ *[class ~= "map/topicref"]:not([is-part]) > *[class ~= "map/topicmeta"] > *[class ~= "map/linktext"]:before  {
+      content: none !important;
+      counter-increment:none;
+    }
+    
+}

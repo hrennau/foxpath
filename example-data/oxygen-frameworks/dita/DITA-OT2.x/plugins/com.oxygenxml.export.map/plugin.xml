@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="com.oxygenxml.export.map">
+  <feature extension="dita.conductor.transtype.check" value="exportmap" type="txt"/>
+  <transtype name="exportmap" desc="Export DITA Map contents to ZIP archive"/>
+  <feature extension="dita.conductor.target.relative" file="integrator.xml"/>
+</plugin>

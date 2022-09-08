@@ -1,0 +1,728 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domains>
+   <domain name="delayResolutionDomain">
+      <element name="exportanchors"/>
+      <element name="anchorid"/>
+      <element name="anchorkey"/>
+   </domain>
+   <domain name="hazardstatementDomain">
+      <element name="hazardstatement">
+         <documentation>The &lt;hazardstatement&gt; element contains hazard warning information. It is
+        based on the regulations of the ANSI Z535 and the ISO 3864 standards. It gives the author
+        the opportunity to select the hazard statement, to add one or more safety signs and to add
+        the required phrases.</documentation>
+      </element>
+      <element name="hazardsymbol">
+         <documentation>A graphic representation intended to convey a message without the use of
+        words. It may represent a hazard, a hazardous situation, a precaution to avoid a hazard, a
+        result of not avoiding a hazard, or any combination of these messages.</documentation>
+      </element>
+      <element name="messagepanel">
+         <documentation>The &lt;messagepanel&gt; element describes the area of a safety sign or label
+        that contains the word message which identifies a hazard, indicates how to avoid the hazard,
+        and advises of the probable consequences of not avoiding the hazard.</documentation>
+      </element>
+      <element name="typeofhazard">
+         <documentation>&lt;typeofhazard&gt; element is the container for the first text entry of a
+        safety label. It contains the description of the type of hazard, such as "Moving parts
+        can crush and cut".</documentation>
+      </element>
+      <element name="consequence">
+         <documentation>The &lt;consequence&gt; element is the container for the second text entry of a
+        safety label. It contains the description of the consequences of not avoiding the hazard,
+        such as "Keep guard in place".</documentation>
+      </element>
+      <element name="howtoavoid">
+         <documentation>The &lt;howtoavoid&gt; element is the container for the third text entry of a
+        safety label. It contains the description of how to avoid the hazard, such as "Lock out
+        power before servicing".</documentation>
+      </element>
+   </domain>
+   <domain name="highlightDomain">
+      <element name="b">
+         <documentation>The bold (&lt;b&gt;) element is used to apply bold highlighting to the content
+        of the element. Use this element only when there is not some other more proper element. For
+        example, for specific items such as GUI controls, use the &lt;uicontrol&gt; element. This
+        element is part of the DITA highlighting domain. 
+        Category: Typographic elements</documentation>
+      </element>
+      <element name="u">
+         <documentation>The underline (&lt;u&gt;) element is used to apply underline highlighting to the
+        content of the element. 
+        Category: Typographic elements</documentation>
+      </element>
+      <element name="i">
+         <documentation>The italic (&lt;i&gt;) element is used to apply italic highlighting to the
+        content of the element. 
+        Category: Typographic elements</documentation>
+      </element>
+      <element name="tt">
+         <documentation> The teletype (&lt;tt&gt;) element is used to apply monospaced highlighting to
+        the content of the element. 
+        Category: Typographic elements </documentation>
+      </element>
+      <element name="sup">
+         <documentation>The superscript (&lt;sup&gt;) element indicates that text should be
+        superscripted, or vertically raised in relationship to the surrounding text. Superscripts
+        are usually a smaller font than the surrounding text. Use this element only when there is
+        not some other more proper tag. This element is part of the DITA highlighting domain.
+        Category: Typographic elements</documentation>
+      </element>
+      <element name="sub">
+         <documentation>A subscript (&lt;sub&gt;) indicates that text should be subscripted, or placed
+        lower in relationship to the surrounding text. Subscripted text is often a smaller font than
+        the surrounding text. Formatting may vary depending on your output process. This element is
+        part of the DITA highlighting domain. Category: Typographic elements</documentation>
+      </element>
+   </domain>
+   <domain name="indexingDomain">
+      <element name="index-see">
+         <documentation>An &lt;index-see&gt; element within an &lt;indexterm&gt; redirects the reader to
+        another index entry that the reader should reference instead of the current one. 
+        Category: Indexing domain elements</documentation>
+      </element>
+      <element name="index-see-also">
+         <documentation>An &lt;index-see-also&gt; element within an &lt;indexterm&gt; redirects the reader
+        to another index entry that the reader should reference in addition to the current one.
+        Category: Indexing domain elements</documentation>
+      </element>
+      <element name="index-sort-as">
+         <documentation>The &lt;index-sort-as&gt; element specifies a sort phrase under which an index
+        entry would be sorted. 
+        Category: Indexing domain elements</documentation>
+      </element>
+   </domain>
+   <domain name="utilitiesDomain">
+      <element name="imagemap">
+         <documentation>The imagemap element supports the basic functionality of the HTML client-side
+        image map markup. Imagemap allows you to designate a linkable area or region over an image,
+        allowing a link in that region to display another topic. 
+        Category: Utilities elements</documentation>
+      </element>
+      <element name="area">
+         <documentation>The area element supports the basic functionality of the HTML image map
+        markup. 
+        Category: Utilities elements</documentation>
+      </element>
+      <element name="shape">
+         <documentation>The shape element defines the shape of a linkable area in an imagemap.
+        Category: Utilities elements</documentation>
+      </element>
+      <element name="coords">
+         <documentation>The coords element specifies the coordinates of the linkable region in an
+        imagemap area. 
+        Category: Utilities elements</documentation>
+      </element>
+   </domain>
+   <domain name="learningDomain">
+      <element name="lcInstructornote">
+         <documentation>Use the &lt;lcInstructornote&gt; element to provide information or notes you want to provide to the course instructor. These notes can be condionalized out of content you intend to deliver to the learner. </documentation>
+      </element>
+      <element name="lcTrueFalse">
+         <documentation>A lcTrueFalse interaction presents the learner with two choices, one correct, the other incorrect, often presented as true/false or yes/no responses. </documentation>
+      </element>
+      <element name="lcSingleSelect">
+         <documentation>An lcSingleSelect interaction presents three or more choices, only one of which is correct. </documentation>
+      </element>
+      <element name="lcMultipleSelect">
+         <documentation>In an lcMultipleSelect interaction, the learner must indicate two or more correct answers from a list of choices. </documentation>
+      </element>
+      <element name="lcSequencing">
+         <documentation>An lcSequencing interaction asks the learner to arrange a list of choices into a predefined order, such as small to large. </documentation>
+      </element>
+      <element name="lcMatching">
+         <documentation>In an lcMatching interaction, the learner identifies the correct choice that matches another choice. </documentation>
+      </element>
+      <element name="lcHotspot">
+         <documentation>In a lcHotspot interaction, the learner clicks on a region of the screen to indicate a choice. </documentation>
+      </element>
+      <element name="lcOpenQuestion">
+         <documentation>Use &lt;lcOpenQuestion&gt; to pose an open-ended question in an assessment interaction. </documentation>
+      </element>
+      <element name="lcQuestion">
+         <documentation>Use the &lt;lcQuestion&gt; element in an interaction to ask the question. </documentation>
+      </element>
+      <element name="lcOpenAnswer">
+         <documentation>Use &gt;lcOpenAnswer&lt; to provide a suggested answer for an &gt;lcOpenQuestion&lt; interaction. </documentation>
+      </element>
+      <element name="lcAnswerOptionGroup">
+         <documentation>The &lt;lcAnswerOptionGroup&gt; element provides a container for the options for a true-false, single-select, or multiple-select assessment interaction. </documentation>
+      </element>
+      <element name="lcSequenceOptionGroup">
+         <documentation>The &lt;lcSequenceOptionGroup&gt; element provides the options for an assessment sequence interaction. </documentation>
+      </element>
+      <element name="lcAsset">
+         <documentation>The &lt;lcAsset&gt; element in an assessment interaction provides the images or other graphic assets to support the interaction. </documentation>
+      </element>
+      <element name="lcSequenceOption">
+         <documentation>The &lt;lcSequenceOption&gt; element in an assessment interaction provides the contents of an item in a sequence interaction. </documentation>
+      </element>
+      <element name="lcFeedback">
+         <documentation>The &lt;lcFeedback&gt; element in an assessment interaction provides information to the learner about a correct or incorrect response. </documentation>
+      </element>
+      <element name="lcFeedbackCorrect">
+         <documentation>The &lt;lcFeedbackCorrect&gt; element in an assessment interaction provides feedback to the learner about a correct response. </documentation>
+      </element>
+      <element name="lcFeedbackIncorrect">
+         <documentation>The &lt;lcFeedbackIncorrect&gt; element in an assessment interaction provides feedback about incorrect response. </documentation>
+      </element>
+      <element name="lcAnswerOption">
+         <documentation>The &lt;lcAnswerOption&gt; element in an assessment interaction provides the content and feedback for a question option, and can indicate the correct option. </documentation>
+      </element>
+      <element name="lcAnswerContent">
+         <documentation>The &lt;lcAnswerContent&gt; element in a learning assessment interaction provides the content for an answer option, which the learner can select as correct or incorrect. </documentation>
+      </element>
+      <element name="lcMatchTable">
+         <documentation>The &lt;lcMatchTable&gt; element in an assessment interaction provides a format for matching items. </documentation>
+      </element>
+      <element name="lcMatchingHeader">
+         <documentation>The &lt;lcMatchingHeader&gt; element in an assessment interaction provides column headings for items to present in a matching table. </documentation>
+      </element>
+      <element name="lcMatchingPair">
+         <documentation>The &lt;lcMatchingPair&gt; element in an assessment interaction provides a table row with the pair of items that comprise a correct match in a matching interaction. </documentation>
+      </element>
+      <element name="lcItem">
+         <documentation>The &lt;lcItem&gt; element in an assessment interaction provides the content for an item that matches the match item in a match table. </documentation>
+      </element>
+      <element name="lcMatchingItem">
+         <documentation>The &lt;lcMatchingItem&gt; element in an assessment interaction provides the content for the matching side of a matching pair of items in a match table interaction. </documentation>
+      </element>
+      <element name="lcMatchingItemFeedback"/>
+      <element name="lcHotspotMap">
+         <documentation>A lcHotspotMap interaction lets you designate an action area or region over an image, allowing a click in that region to get scored as correct or incorrect in respoinse to an interaction question. </documentation>
+      </element>
+      <element name="lcArea">
+         <documentation>A lcArea defines an area of a hotspot image that contains a correct or incorrect choice in a hotspot assessment interaction. </documentation>
+      </element>
+      <element name="lcAreaShape"/>
+      <element name="lcAreaCoords"/>
+      <element name="lcCorrectResponse">
+         <documentation>The &lt;lcCorrectResponse&gt; element in an assessment interaction indicates a correct response. </documentation>
+      </element>
+      <element name="lcSequence">
+         <documentation>The &lt;lcSequence&gt; element in an assessment interaction provides the position of a sequence option in a sequence. </documentation>
+      </element>
+   </domain>
+   <domain name="learningInteractionBaseDomain">
+      <element name="lcInteractionBase"/>
+      <element name="lcQuestionBase"/>
+   </domain>
+   <domain name="learningMetadataDomain">
+      <element name="lcLom">
+         <documentation>The &lt;lcLom&gt; provides a set of specialized data elements to use to specify metadata in the learning topics and learning map domain. </documentation>
+      </element>
+      <element name="lomStructure">
+         <documentation>The &lt;lomStructure&gt; provides learning metadata about the underlying organizational structure of the resource. </documentation>
+      </element>
+      <element name="lomCoverage">
+         <documentation>The &lt;lomCoverage&gt; provides learning metadata about the temporal or spatial characteristics of the content, such as historical context. </documentation>
+      </element>
+      <element name="lomAggregationLevel">
+         <documentation>The &lt;lomAggregationLevel&gt; describes the functional size of the learning resource. </documentation>
+      </element>
+      <element name="lomTechRequirement">
+         <documentation>The &lt;lomTechRequirement&gt; provides learning metadata about the operating system(s) under which the learning resource can run. </documentation>
+      </element>
+      <element name="lomInstallationRemarks">
+         <documentation>The &lt;lomInstallationRemarks&gt; provides learning metadata about how to install and needed resources. </documentation>
+      </element>
+      <element name="lomOtherPlatformRequirements">
+         <documentation>The &lt;lomOtherPlatformRequirements&gt; provides learning metadata information about other software and hardware requirements. </documentation>
+      </element>
+      <element name="lomInteractivityType">
+         <documentation>The &lt;lomInteractivityType&gt; provides learning metadata about the the type of interactivity supported by the resource. </documentation>
+      </element>
+      <element name="lomLearningResourceType">
+         <documentation>The &lt;lomLearningResourceType&gt; provides learning metadata about the specific kind of resource used, most dominant kind first. </documentation>
+      </element>
+      <element name="lomInteractivityLevel">
+         <documentation>The &lt;lomInteractivityLevel&gt; provides learning metadata about the level of interactivity between an end user and the learning object. </documentation>
+      </element>
+      <element name="lomSemanticDensity">
+         <documentation>The &lt;lomSemanticDensity&gt; provides learning metadata about a subjective measure of the learning object's usefulness as compared to its size or duration. </documentation>
+      </element>
+      <element name="lomIntendedUserRole">
+         <documentation>The &lt;lomIntendedUserRole&gt; provides learning metadata about the normal user of the resource, most dominant first. </documentation>
+      </element>
+      <element name="lomContext">
+         <documentation>The &lt;lomContext&gt; provides learning metadata about the typical learning environment where use of learning object is intended to take place. </documentation>
+      </element>
+      <element name="lomTypicalAgeRange">
+         <documentation>The &lt;lomTypicalAgeRange&gt; provides learning metadata about the age of the typical intended user. </documentation>
+      </element>
+      <element name="lomDifficulty">
+         <documentation>The &lt;lomDifficulty&gt; provides learning metadata about how hard it is to work through the resource for the typical target audience. </documentation>
+      </element>
+      <element name="lomTypicalLearningTime">
+         <documentation>The &lt;lomTypicalLearningTime&gt; provides learning metadata about the approximate or typical time it takes to work with the resource. </documentation>
+      </element>
+   </domain>
+   <domain name="classifyDomain">
+      <element name="topicsubject">
+         <documentation>The &lt;topicsubject&gt; element identifies the subjects for which the topic or collection of topics provides the authoritative treatment. The subjects can be identified by keys (if defined in the scheme) or, if the subject definition topic exists, by href (as with ordinary topic references). Additional secondary subjects can be specified by nested &lt;subjectref&gt; elements. </documentation>
+      </element>
+      <element name="topicapply">
+         <documentation>The &lt;topicapply&gt; element identifies subjects that qualify the content for filtering or flagging but not retrieval. The &lt;topicapply&gt; element can identify a single subject. Additional subjects can be specified by nested &lt;subjectref&gt; elements. </documentation>
+      </element>
+      <element name="subjectref">
+         <documentation>The &lt;subjectref&gt; element identifies a subject to classify content. The &lt;subjectref&gt; can identify the subject with a keyref attribute (if the scheme has a &lt;subjectdef&gt; with a keys attribute that assigns a key to the subject) or an href attribute (if a topic captures the consensus definition for the subject). </documentation>
+      </element>
+      <element name="topicSubjectTable">
+         <documentation>The &lt;topicSubjectTable&gt; element is a specialized relationship table which allows a map to use relationship tables to associate topics with subjects. In a &lt;topicSubjectTable&gt;, the first column is reserved for references to content. Subsequent columns are reserved for subjects that classify the content, each column supplying the subjects for a different category as identified in the header. The table resembles a traditional relationship table in which the first column identifies the source and the other columns identify the targets, but the relationship reflects the subjects covered by the content rather than linking between documents. </documentation>
+      </element>
+      <element name="topicSubjectHeader">
+         <documentation>The &lt;topicSubjectHeader&gt; element specifies constraints on the subjects used in classifications. </documentation>
+      </element>
+      <element name="topicSubjectRow">
+         <documentation>The &lt;topicSubjectRow&gt; is a grouping element that contains one row of a subject table. It contains topic references in the first column, and relates those references to the subjects in each following column. </documentation>
+      </element>
+      <element name="topicCell">
+         <documentation>The &lt;topicCell&gt; element contains topics that will be associated with subjects in each following column of the current row in the &lt;topicSubjectTable&gt;. </documentation>
+      </element>
+      <element name="subjectCell">
+         <documentation>The &lt;subjectCell&gt; element contains subjects that are associated with topics in the first column of the current row in the &lt;topicSubjectTable&gt;. The subjects themselves have no defined relationship across columns, other than the fact that they apply to the same content. </documentation>
+      </element>
+   </domain>
+   <domain name="abbreviateDomain">
+      <element name="abbreviated-form">
+         <documentation>The &lt;abbreviated-form&gt; element represents a reference to a term that may
+        appear in an abbreviated form (often an acronym). The long and short forms of the term are
+        generally defined in a &lt;glossentry&gt; topic. Processors should display the referenced term
+        when rendering an &lt;abbreviated-form&gt; element.</documentation>
+      </element>
+   </domain>
+   <domain name="glossrefDomain">
+      <element name="glossref">
+         <documentation>The &lt;glossref&gt; element is a convenience element for creating a reference
+        to a glossary topic. It has a required keys attribute, which forces the author to create a
+        key by which inline terms may reference their definition. For example, when glossentry
+        topics are used to define acronyms, this will remind authors to create a key which
+        &lt;abbreviated-form&gt; elements may use to reference the short and expanded versions of that
+        acronym.</documentation>
+      </element>
+   </domain>
+   <domain name="programmingDomain">
+      <element name="codeph">
+         <documentation>The code phrase (&lt;codeph&gt;) element represents a snippet of code within the main flow of text. The code phrase is displayed in a monospaced font for emphasis. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="codeblock">
+         <documentation>The &lt;codeblock&gt; element represents lines of program code. Like the &lt;pre&gt; element, content of this element has preserved line endings and is output in a monospaced font. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="coderef">
+         <documentation>The codref element allows a reference to an external file that contains literal code. When evaluated the coderef element should cause the target code to be displayed inline. If the target contains non-XML characters such as &lt; and &amp;amp;, those will need to be handled in a way that they may be displayed correctly by the final rendering engine. </documentation>
+      </element>
+      <element name="option">
+         <documentation>The &lt;option&gt; element describes an option that can be used to modify a command (or something else, like a configuration). This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="var">
+         <documentation>Within a syntax diagram, the &lt;var&gt; element defines a variable for which the user must supply content, such as their user name or password. It is represented in output in an italic font. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="parmname">
+         <documentation>When referencing the name of an application programming interface parameter within the text flow of your topic, use the parameter name (&lt;parmname&gt;) element to markup the parameter. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="synph">
+         <documentation>The syntax phrase (&lt;synph&gt;) element is a container for syntax definition elements. It is used when a complete syntax diagram is not needed, but some of the syntax elements, such as kwd, oper, delim, are used within the text flow of the topic content. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="oper">
+         <documentation>The operator (&lt;oper&gt;) element defines an operator within a syntax definition. Typical operators are equals (=), plus (+) or multiply (*). This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="delim">
+         <documentation>Within a syntax diagram, the delimiter (&lt;delim&gt;) element defines a character marking the beginning or end of a section or part of the complete syntax. Typical delimiter characters are the parenthesis, comma, tab, vertical bar or other special characters. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="sep">
+         <documentation>The separator (&lt;sep&gt;) element defines a separator character that is inline with the content of a syntax diagram. The separator occurs between keywords, operators or groups in a syntax definition. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="apiname">
+         <documentation>The &lt;apiname&gt; element provides the name of an application programming interface (API) such as a Java class name or method name. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="parml">
+         <documentation>The parameter list (&lt;parml&gt;) element contains a list of terms and definitions that describes the parameters in an application programming interface. This is a special kind of definition list that is designed for documenting programming parameters. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="plentry">
+         <documentation>The parameter list entry element (&lt;plentry&gt;) contains one or more parameter terms and definitions (pd and pt). This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="pt">
+         <documentation>A parameter term, within a parameter list entry, is enclosed by the &lt;pt&gt; element. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="pd">
+         <documentation>A parameter definition, within a parameter list entry, is enclosed by the &lt;pd&gt; element. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="syntaxdiagram">
+         <documentation>The syntax diagram (&lt;syntaxdiagram&gt;) element is the main container for all the syntax elements that make up a syntax definition. The syntax diagram represents the syntax of a statement from a computer language, or a command, function call or programming language statement. Traditionally, the syntax diagram is formatted with railroad tracks that connect the units of the syntax together, but this presentation may differ depending on the output media. The syntax diagram element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="synblk">
+         <documentation>The syntax block (&lt;synblk&gt;) element organizes small pieces of a syntax definition into a larger piece. The syntax block element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="groupseq">
+         <documentation>The &lt;groupseq&gt; element is part of the subset of elements that define syntax diagrams in DITA. A group is a logical set of pieces of syntax that go together. Within the syntax definition, groups of keywords, delimiters and other syntax units act as a combined unit, and they occur in a specific sequence, as delimited by the &lt;groupseq&gt; element. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="groupchoice">
+         <documentation>The &lt;groupchoice&gt; element is part of the subset of elements that define syntax diagrams in DITA. A group is a logical set of pieces of syntax that go together. A group choice specifies that the user must make a choice about which part of the syntax to use. Groups are often nested. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="groupcomp">
+         <documentation>The &lt;groupcomp&gt; element is part of the subset of elements that define syntax diagrams in DITA. A group is a logical set of pieces of syntax that go together. The group composite means that the items that make up the syntax diagram will be formatted close together rather than being separated by a horizontal or vertical line, which is the usual formatting method. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="fragment">
+         <documentation>Within a syntax definition, a &lt;fragment&gt; is a labeled subpart of the syntax. The &lt;fragment&gt; element allows breaking out logical chunks of a large syntax diagram into named fragments. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="fragref">
+         <documentation>The fragment reference (&lt;fragref&gt;) element provides a logical reference to a syntax definition fragment so that you can reference a syntax fragment multiple times, or pull a large section of syntax out of line for easier reading. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="synnote">
+         <documentation>The syntax note (&lt;synnote&gt;) element contains a note (similar to a footnote) within a syntax definition group or fragment. The syntax note explains aspects of the syntax that cannot be expressed in the markup itself. The note will appear at the bottom of the syntax diagram instead of at the bottom of the page. The syntax block element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="synnoteref">
+         <documentation>The syntax note (&lt;synnoteref&gt;) reference element references a syntax note element (&lt;synnote&gt;) that has already been defined elsewhere in the syntax diagram. The same notation can be used in more than one syntax definition. The syntax note reference element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="repsep">
+         <documentation>The repeat separator (&lt;repsep&gt;) element in a syntax diagram defines a group of syntax elements that can (or should) be repeated. If the &lt;repsep&gt; element contains a separator character, such as a plus (+), this indicates that the character must be used between repetitions of the syntax elements. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+      <element name="kwd">
+         <documentation>The &lt;kwd&gt; element defines a keyword within a syntax diagram. A keyword must be typed or output, either by the user or application, exactly as specified in the syntax definition. This element is part of the DITA programming domain, a special set of DITA elements designed to document programming tasks, concepts and reference information.
+    Category: Programming elements
+  </documentation>
+      </element>
+   </domain>
+   <domain name="softwareDomain">
+      <element name="msgph">
+         <documentation>The message phrase (&lt;msgph&gt;) element contains the text content of a message produced by an application or program. It can also contain the variable name (varname) element to illustrate where variable text content can occur in the message. This element is part of the DITA software domain, a special set of DITA elements designed to document software tasks, concepts and reference information.
+    Category: Software elements
+  </documentation>
+      </element>
+      <element name="msgblock">
+         <documentation>The message block (&lt;msgblock&gt;) element contains a multi-line message or set of messages. The message block can contain multiple message numbers and message descriptions, each enclosed in a &lt;msgnum&gt; and &lt;msgph&gt; element. It can also contain the message content directly. This element is part of the DITA software domain, a special set of DITA elements designed to document software tasks, concepts and reference information.
+    Category: Software elements
+  </documentation>
+      </element>
+      <element name="msgnum">
+         <documentation>The message number (&lt;msgnum&gt;) element contains the number of a message produced by an application or program. This element is part of the DITA software domain, a special set of DITA elements designed to document software tasks, concepts and reference information.
+    Category: Software elements
+  </documentation>
+      </element>
+      <element name="cmdname">
+         <documentation>The command name (&lt;cmdname&gt;) element specifies the name of a command when it is part of a software discussion. This element is part of the DITA software domain, a special set of DITA elements designed to document software tasks, concepts and reference information.
+    Category: Software elements
+  </documentation>
+      </element>
+      <element name="varname">
+         <documentation>The variable name (&lt;varname&gt;) element defines a variable that must be supplied to a software application. The variable name element is very similar to the variable (var) element, but variable name is used outside of syntax diagrams. This element is part of the DITA software domain, a special set of DITA elements designed to document software tasks, concepts and reference information.
+    Category: Software elements
+  </documentation>
+      </element>
+      <element name="filepath">
+         <documentation>The &lt;filepath&gt; element indicates the name and optionally the location of a referenced file by specifying the directory containing the file, and other directories that may precede it in the system hierarchy. This element is part of the DITA software domain, a special set of DITA elements designed to document software tasks, concepts and reference information.
+    Category: Software elements
+  </documentation>
+      </element>
+      <element name="userinput">
+         <documentation>The user input (&lt;userinput&gt;) element represens the text a user should input in response to a program or system prompt. This element is part of the DITA software domain, a special set of DITA elements designed to document software tasks, concepts and reference information.
+    Category: Software elements
+  </documentation>
+      </element>
+      <element name="systemoutput">
+         <documentation>The system output (&lt;systemoutput&gt;) element represents computer output or responses to a command or situation. A generalized element, it represents any kind of output from the computer, so the author may wish to choose more specific markup, such as msgph, for messages from the application. The system output element is part of the DITA software domain, a special set of DITA elements designed to document software tasks, concepts and reference information.
+    Category: Software elements
+  </documentation>
+      </element>
+   </domain>
+   <domain name="taskreqDomain">
+      <element name="prelreqs">
+         <documentation>The preliminary-requirements (&lt;prelreqs&gt;) section of a task should document things the user needs to know or do before starting the current task. The &lt;prelreqs&gt; element is similar to &lt;prereq&gt; but contains a more descriptive content model then &lt;prereq&gt;. </documentation>
+      </element>
+      <element name="closereqs">
+         <documentation>The closing-requirements (&lt;closereqs&gt;) element describes steps or tasks that the user should do after the successful completion of the current task. closereqs is similar to postreq but contains a more descriptive content model then postreq and has been developed basically to meet the requirements in the machinery industry. </documentation>
+      </element>
+      <element name="reqconds">
+         <documentation>The required-conditions (&lt;reqconds&gt;) element contains the description of all required conditions that have to be fulfilled before performing a task. </documentation>
+      </element>
+      <element name="noconds">
+         <documentation>The No-Required-Condition (&lt;noconds&gt;) element has to be used when there is no required condition. The information that no condition is required is as important as the information which conditions are required. </documentation>
+      </element>
+      <element name="reqcond">
+         <documentation>The Required-Condition (&lt;reqcond&gt;) element has to be used to describe the required condition. </documentation>
+      </element>
+      <element name="reqcontp">
+         <documentation>The Required-Condition-Technical-Publication (&lt;reqcontp&gt;) element has to be used to list or describe further applicable documents. </documentation>
+      </element>
+      <element name="reqpers">
+         <documentation>The Required-Personnel (&lt;reqpers&gt;) element contains information on the personnel required for the task. </documentation>
+      </element>
+      <element name="personnel">
+         <documentation>The &lt;personnel&gt; element indicates the number of personnel required for the task. </documentation>
+      </element>
+      <element name="perscat">
+         <documentation>The Personnel-Category (&lt;perscat&gt;) element contains the required category level of the person. </documentation>
+      </element>
+      <element name="perskill">
+         <documentation>The Personnel-Skill-Level (&lt;perskill&gt;) element describes the required skill level of the person. </documentation>
+      </element>
+      <element name="esttime">
+         <documentation>The Estimated-Time-Spent (&lt;esttime&gt;) element contains information on the estimated time required for a task. </documentation>
+      </element>
+      <element name="supequip">
+         <documentation>The Support-Equipment (&lt;supequip&gt;) element lists any required support equipment for the task, along with optional descriptions. </documentation>
+      </element>
+      <element name="nosupeq">
+         <documentation>The No-Support-Equipment (&lt;nosupeq&gt;) element has to be used when there is no support equipment required. The information that no support equipment is required is as important as the information which support equipment is required. </documentation>
+      </element>
+      <element name="supeqli">
+         <documentation>The Support-Equipment-List (&lt;supeqli&gt;) element has to be used to list any support equipment required for the task. </documentation>
+      </element>
+      <element name="supequi">
+         <documentation>The Support-Equipment-Item (&lt;supequi&gt;) element describes the support equipment. </documentation>
+      </element>
+      <element name="supplies">
+         <documentation>The &lt;supplies&gt; element has to be used to list and maybe to describe any supplies required for the task. </documentation>
+      </element>
+      <element name="nosupply">
+         <documentation>The No-Supplies (&lt;nosupply&gt;) element has to be used when there are no supplies required. The information that no supplies are required is as important as the information which supplies are is required. </documentation>
+      </element>
+      <element name="supplyli">
+         <documentation>The Supply-List (&lt;supplyli&gt;) element has to be used to list any supplies required for the task. </documentation>
+      </element>
+      <element name="supply">
+         <documentation>The &lt;supply&gt; element describes the supply. </documentation>
+      </element>
+      <element name="spares">
+         <documentation>The &lt;spares&gt; element lists spare parts required for a task, and may include descriptions of those parts. </documentation>
+      </element>
+      <element name="nospares">
+         <documentation>The No-Spares (&lt;nospares&gt;) element has to be used when there are no spares required for the task. As the information that no spares are required is as important as the information which spare is required. </documentation>
+      </element>
+      <element name="sparesli">
+         <documentation>The Spares-List (&lt;sparesli&gt;) element has to be used to list any spares required for the task. </documentation>
+      </element>
+      <element name="spare">
+         <documentation>The spare element describes a spare part required for the task, and may include a description of the part. </documentation>
+      </element>
+      <element name="safety">
+         <documentation>The Safety-Condition (&lt;safety&gt;) element has to be used to list and maybe to describe any safety condition that has to be taken in account for the task. </documentation>
+      </element>
+      <element name="nosafety">
+         <documentation>The No-Safety-Conditions (&lt;nosafety&gt;) element has to be used to indicate that there are no safety requirements for the task. The information that no safety requirements have to be taken in account is as important as the information which safety conditions has to be considered. </documentation>
+      </element>
+      <element name="safecond">
+         <documentation>The Safety-Conditions (&lt;safecond&gt;) element has to be used if there are safety requirements. </documentation>
+      </element>
+   </domain>
+   <domain name="uiDomain">
+      <element name="uicontrol">
+         <documentation>The user interface control (&lt;uicontrol&gt;) element is used to mark up names
+        of buttons, entry fields, menu items, or other objects that allow the user to control the
+        interface. Use the &lt;uicontrol&gt; element inside a &lt;menucascade&gt; element to identify a
+        sequence of menu choices in a nested menu, such as File New. This element is part of the
+        DITA user interface domain, a special set of DITA elements designed to document user
+        interface tasks, concepts and reference information. 
+        Category: User interface elements</documentation>
+      </element>
+      <element name="wintitle">
+         <documentation>The window title &lt;wintitle&gt; element can be used to mark up names of
+        windows or dialogs, or other user interface elements at the same level of grouping,
+        including wizard titles, wizard page titles, and window pane titles. This element is part of
+        the DITA user interface domain, a special set of DITA elements designed to document user
+        interface tasks, concepts and reference information. 
+        Category: User interface elements</documentation>
+      </element>
+      <element name="menucascade">
+         <documentation>The &lt;menucascade&gt; element is used to document a series of menu choices.
+        The &lt;menucascade&gt; element contains one or more user interface control (&lt;uicontrol&gt;)
+        elements, for example: Start &gt; Programs &gt; Accessories &gt; Notepad. If there is more than one
+        &lt;uicontrol&gt; element, the formatter shows connecting characters between the menu items to
+        represent the menu cascade. This element is part of the DITA user interface domain, a
+        special set of DITA elements designed to document user interface tasks, concepts and
+        reference information. 
+        Category: User interface elements</documentation>
+      </element>
+      <element name="shortcut">
+         <documentation>The &lt;shortcut&gt; element identifies a keyboard shortcut for a menu or window
+        action. This element is part of the DITA user interface domain, a special set of DITA
+        elements designed to document user interface tasks, concepts and reference information.
+        Category: User interface elements</documentation>
+      </element>
+      <element name="screen">
+         <documentation>The &lt;screen&gt; element contains or refers to a textual representation of a
+        computer screen or user interface panel (window). 
+        Category: User interface elements</documentation>
+      </element>
+   </domain>
+   <domain name="xnalDomain">
+      <element name="authorinformation">
+         <documentation>The &lt;authorinformation&gt; element contains detailed information about the author or authoring organization.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="namedetails">
+         <documentation>The &lt;namedetails&gt; element contains information about the name of the author or the authoring organization.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="organizationnamedetails">
+         <documentation>The &lt;organizationnamedetails&gt; element contains information about the name of an authoring organization.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="organizationname">
+         <documentation>The &lt;organizationname&gt; element contains name information about the authoring organization.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="personname">
+         <documentation>The &lt;personname&gt; element contains name information about the author.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="honorific">
+         <documentation>The &lt;honorific&gt; element contains the person's title, such as: Dr., Mr., Ms., HRH.. or Grand Exalted Wizard.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="firstname">
+         <documentation>The &lt;firstname&gt; element contains the person's first name.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="middlename">
+         <documentation>The &lt;middlename&gt; element contains the person's middle name or initial.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="lastname">
+         <documentation>The &lt;lastname&gt; element contains the person's last name.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="generationidentifier">
+         <documentation>The &lt;generationidentifier&gt; element contains information about the person's generation, such as: Jr, III, or VIII.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="otherinfo">
+         <documentation>The &lt;otherinfo&gt; element contains other name information about the author or authoring organization.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="addressdetails">
+         <documentation>The &lt;addressdetails&gt; element contains information about the address of the author or authoring group.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="locality">
+         <documentation>The &lt;locality&gt; element contains information about the city and postal or ZIP code. It can contain the information directly, or by acting as a wrapper for &lt;localityname&gt; and &lt;postalcode&gt;.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="localityname">
+         <documentation>The &lt;localityname&gt; element contains the name of the locality or city.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="administrativearea">
+         <documentation>The &lt;administrativearea&gt; element contains information about a county, state, or province.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="thoroughfare">
+         <documentation>The &lt;thoroughfare&gt; element contains information about the thoroughfare - for example, the street, avenue, or boulevard - on which an address is located.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="postalcode">
+         <documentation>The &lt;postalcode&gt; element contains information about the postal code or the ZIP code.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="country">
+         <documentation>The &lt;country&gt; element contains the name of a country.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="personinfo">
+         <documentation>The &lt;personinfo&gt; element is a wrapper containing all relevant data about a person, including name, address, and contact information.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="organizationinfo">
+         <documentation>The &lt;organizationinfo&gt; element contains detailed information about an authoring organization.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="contactnumbers">
+         <documentation>The &lt;contactnumbers&gt; element contains a list of telephone and fax numbers.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="contactnumber">
+         <documentation>A &lt;contactnumber&gt; element contains a telephone number.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="emailaddresses">
+         <documentation>The &lt;emailaddress&gt; element contains a list of e-mail addresses.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="emailaddress">
+         <documentation>The &lt;emailaddress&gt; element contains an e-mail address.
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="urls">
+         <documentation>The &lt;urls&gt; element contains a list of Uniform Resource Locators (URLs).
+    Category: xNAL elements
+  </documentation>
+      </element>
+      <element name="url">
+         <documentation>The &lt;url&gt; element contains a Uniform Resource Locator (URL).
+    Category: xNAL elements
+  </documentation>
+      </element>
+   </domain>
+</domains>

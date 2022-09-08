@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="com.github.dita-ot-plugins.normalize">
+  <feature extension="dita.conductor.transtype.check" value="normalize"/>
+  <feature extension="dita.conductor.target.relative" file="conductor.xml"/>
+</plugin>

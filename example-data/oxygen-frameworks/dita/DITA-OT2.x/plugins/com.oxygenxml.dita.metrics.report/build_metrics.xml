@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="Build Metrics">
+    <target name="dita2metrics-report" depends="build-init">
+        <dirname property="dita.temp.dir.fullpath" file="${dita.temp.dir}/dummy.file"/>
+        <xslt in="${args.input}" style="${dita.plugin.com.oxygenxml.dita.metrics.report.dir}/report.xsl" out="${dita.temp.dir.fullpath}/report.xml">
+            <xmlcatalog refid="dita.catalog"/>
+        </xslt>
+        <xslt in="${dita.temp.dir.fullpath}/report.xml" style="${dita.plugin.com.oxygenxml.dita.metrics.report.dir}/report2XHTML.xsl" out="${output.dir}/report.html">
+            <xmlcatalog refid="dita.catalog"/>
+        </xslt>
+    </target>
+</project>

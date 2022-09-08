@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="org.dita-ot.html">
+  <feature extension="package.version" value="2.0.0"/>
+  <transtype name="org.dita-ot.html"/>
+  <feature extension="dita.conductor.target.relative" file="integrator.xml"/>
+  <feature extension="dita.conductor.html.param" file="params.xml"/>
+</plugin>

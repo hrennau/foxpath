@@ -1,0 +1,14 @@
+
+*[class~="topic/link"][href]:before,
+*[class~="pr-d/fragref"][href]:before,
+*[class~="pr-d/synnoteref"][href]:before,
+*[class~="topic/xref"][href]:before, 
+*[class~="map/topicref"][href]:before,
+*[class~="topic/source"][href]:after {
+    link: attr(href);
+}
+*[class~="map/navref"][mapref]:before{
+    link: attr(mapref);
+}
+
+

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ID Generation default options for TEI P5 -->
+<idGeneration>
+    <autoGenerate>false</autoGenerate>
+    <idAttribute>xml:id</idAttribute>
+    <idPattern>${localName}_${id}</idPattern>
+    <generateForElement>div</generateForElement>
+</idGeneration>

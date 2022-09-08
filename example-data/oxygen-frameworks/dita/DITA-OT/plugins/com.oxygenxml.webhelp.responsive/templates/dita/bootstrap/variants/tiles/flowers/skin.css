@@ -1,0 +1,608 @@
+/*
+ * ==============================================
+ * Skin for oXygen generated WebHelp.
+ * ==============================================
+ */
+
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Fonts.
+ *  
+ */
+@import url(https://fonts.googleapis.com/css?family=Handlee:400);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600,900);
+body{
+    font-family: 'Open Sans', sans-serif;
+    font-weight:400;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Fight bootstrap
+ *  
+ */
+.navbar{
+    background: none;
+    border: none;
+    margin: 0;
+    box-shadow: none;
+}
+a,
+a:hover,
+a:visited{
+    color:#941e88;
+}
+a:hover{
+    text-decoration: none;
+}
+
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Webhelp header
+ *  
+ */
+.wh_header{
+    min-height:7.8em;
+}
+
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Publication title
+ *  
+ */
+
+.wh_publication_title > a{
+    color: #941e88;
+    font-size: 2.6em;
+    font-family:'Handlee', sans-serif;
+    margin: auto 0;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Publication logo
+ *  
+ */
+.wh_logo {
+    background-image: url("resources/flower_logo.png");
+    width:104px;
+    height:123px;
+    background-repeat: no-repeat;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *
+ * Menu
+ *
+ */
+.wh_top_menu{
+    vertical-align:middle;
+}
+/* Labels in main bar */
+.wh_top_menu > ul > li > span a {
+    text-transform:lowercase;
+    font-variant:small-caps;
+    font-size: 1.1em;
+    background-color:white;
+    color:#941e88;
+}
+.wh_top_menu a{
+    color:inherit;
+    background-color:inherit;
+    font-size:0.9em;
+}
+.wh_top_menu li{
+    color:white;
+    background-color:#941e88;
+}
+.wh_top_menu > ul > li:hover > span a {
+    background-color:#941e88;
+    color: white;
+}
+.wh_top_menu ul li:hover{
+    background-color:#5d1355;
+    color: white;
+}
+
+.wh_top_menu ul ul {
+    background-color: #941e88;
+}
+.wh_top_menu ul ul li {
+    padding: 0.5em;
+}
+
+.wh_top_menu ul ul li {
+    /*
+    margin:0.5em;
+    */
+    border-top-color: #941e88;
+}
+.wh_top_menu ul ul li.has-children:after{
+    color:#EEEEEE;
+}
+
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Link to the index.
+ * 
+ */
+
+.wh_indexterms_link a span{
+    display:none;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Breadcrumb
+ *  
+ */
+/*Hide the home icon and the separator */
+.wh_breadcrumb .home{
+    display:none;
+}
+.wh_breadcrumb li:first-of-type:after{
+    display:none;
+}
+.wh_breadcrumb li:not(:last-of-type):after{
+    content: "\e239";
+    font-family: "Glyphicons Halflings", serif;   
+    color:#941e88;
+}
+.wh_breadcrumb .active > span a {
+    font-weight: bold;
+    color:#941e88;
+}
+.wh_breadcrumb a{
+    color: #666;
+    font-weight:normal;
+}
+
+.wh_hide_highlight{color:#941e88}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Tools and navigation
+ * 
+ */
+.wh_tools{
+    border-bottom:1px solid silver;
+    margin-bottom:0.5em;
+}
+ 
+.wh_print_link,
+.wh_navigation_links,
+.wh_navigation_links .navnext,
+.wh_navigation_links .navprev{
+    
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Tiles
+ * 
+ */
+.wh_tile {
+    padding:0;
+}
+.wh_tile > div{
+    background-repeat: no-repeat;
+    background-position: center 0;
+    padding-top: 200px;
+    background-image:url('resources/flowers_by_season_tile.png');
+}
+/* An image specific to a certain topic */
+.wh_tile[data-id='care']> div {
+    background-image:url('resources/care_and_preparation_tile.png');
+}
+.wh_tile[data-id='glossary'] > div{
+    background-image:url('resources/glossary_tile.png');
+}
+
+.wh_tile_shortdesc{
+    text-align: center;
+    padding: 0 1.2em;
+    color:gray;
+    font-size:0.95em;
+    margin-top:0.5em;
+}
+.wh_tile_title{
+    text-align: center;
+    font-weight: 600;
+    font-size:1.2em;
+    text-decoration: none;
+    font-family:'Handlee', sans-serif;    
+
+}
+.wh_tiles{
+}
+.wh_tile_text:after{
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 50%);
+}
+@media only screen and (max-width: 767px) {
+    .wh_tile > div{
+        height: auto;
+    }
+}
+/* 
+You can style some of the tiles in a special way. 
+Example:
+.wh_tiles *[data-id='getting_started']{
+    background-color:gray;
+}
+*/
+
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Search area
+ * 
+ */
+
+#searchForm > div {
+    padding-top: 4em;
+}
+
+.wh_welcome:not(:empty){
+    font-size: 4em;
+    text-shadow: 0 0 9px #ffffff;
+    margin: 0 auto;
+    padding-bottom:0;
+    color: #5D183E;
+    font-family: 'Handlee', sans-serif;
+}
+
+/* Style differently the search from the main page (index.html), make it larger.*/
+.wh_search_input{
+    display: block;
+    padding: 5em;
+    margin: 0;
+    background: url('resources/flowers_bgr.jpg') no-repeat;
+    background-size: cover;
+    box-shadow: 0px 7px 21px -12px rgba(0, 0, 0, 0.3);
+}
+
+.wh_search_input{
+    margin:1.7em 0;
+}
+.wh_search_textfield{
+    border: solid 1px #941e88;
+    border-radius: 5px;
+    height: 36px;
+    line-height: 36px;
+    padding-left: 1em;
+}
+.wh_search_button{
+    color:white;
+    background-color:#941e88;
+    border: solid 1px #941e88;
+    border-radius: 0 5px 5px 0;
+    height: 2.5em;
+    padding: .5em;
+}
+
+/* Search relative path */
+.searchresult li .relativePath a {
+    color: #346ec5;
+}
+
+/* Search autocomplete icons */
+.search-autocomplete-proposal-type-history a,
+.search-autocomplete-proposal-type-history a:hover,
+.search-autocomplete-proposal-type-history a:visited,
+.search-autocomplete-proposal-type-history a:active{
+    text-decoration: none;
+    color:inherit;
+    font-size: 0.8em;
+}
+.ui-state-active .search-autocomplete-proposal-type-history a,
+.ui-state-active .search-autocomplete-proposal-type-history a:hover,
+.ui-state-active .search-autocomplete-proposal-type-history a:visited,
+.ui-state-active .search-autocomplete-proposal-type-history a:active{
+    color: #fff;
+}
+
+/* Active search page */
+#wh-search-pagination > ul > li.active > a {
+    background-color: #941e88;
+}
+
+.pagination>li>a,.pagination>li>span {
+    color: #941e88;
+}
+
+.pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
+    border-color: #941e88 !important;
+}
+
+
+@media only screen and (max-width: 980px) {
+  #searchForm > div {
+    padding-top:2em
+  }
+  .wh_welcome:not(:empty){
+    font-size: 3em;
+  }
+}
+
+/* Render search area for devices smaller than 767px */
+@media only screen and (max-width: 767px) {
+    .wh_search_input{
+        padding: 1em;
+    }
+    #searchForm > div {
+        width: 100%;
+        padding-top: 0em;
+    }
+    .wh_welcome:not(:empty) {
+        padding:0;
+    }
+    .wh_publication_title{margin-top: .5em}
+    .wh_header{min-height: auto}
+    .wh_top_menu{margin-top: 2em}
+    .wh_main_page .wh_search_input{padding: 10%}
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Side TOC
+ * 
+ */
+.wh_side_toc a {
+    color:#666;
+}
+.wh_side_toc{
+    margin: 2em;
+    padding: 1em;
+    font-size: 0.95em;
+}
+.wh_side_toc > ul{
+    list-style-type: none;
+    padding-left: 0.5em;
+}
+.wh_side_toc li{
+    margin-top: 0.5em;
+}
+.wh_side_toc .active > .topicref a {
+    font-weight: bold;
+    color: black;
+}
+
+/* A kind of progress, mark the active item with a symbol overlapping a bar */
+.wh_side_toc > ul {
+    border-left: 2px solid #941e88;
+    margin-left: 1em; 
+    padding-left:1.5em; /* leave space for the leaf symbol */
+    position:relative;
+}
+.wh_side_toc .active:before{
+    content: "\e103"; /* the leaf symbol */
+    font-weight: bold;
+    font-family:"Glyphicons Halflings";
+    color: #941e88;
+    display:block;
+    position:absolute;
+    left:-1px;
+}
+
+@media only screen and (max-width: 767px) {
+    .wh_side_toc {
+        border-top: 1px solid #941e88;
+        margin: 0;
+    }
+}
+
+/* Side TOC tooltip */
+.wh_breadcrumb .topicref .wh-tooltip,
+.wh_side_toc .topicref .wh-tooltip {
+    background-color: #941e88;
+    color: #fff;
+}
+
+.wh_breadcrumb .topicref .wh-tooltip a,
+.wh_side_toc .topicref .wh-tooltip a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+/* Tooltip arrow. */
+
+[data-tooltip-position="left"] .topicref .wh-tooltip::before {
+    border-left-color: #941e88;
+}
+
+[data-tooltip-position="right"] .topicref .wh-tooltip::before {
+    border-right-color: #941e88;
+}
+
+[data-tooltip-position="bottom"] .topicref .wh-tooltip::before {
+    border-bottom-color: #941e88;
+}
+
+[data-tooltip-position="top"] .topicref .wh-tooltip::before {
+    border-top-color: #941e88;
+}
+
+/**
+* ------------------------------------------------------------------
+ *
+ * Main page content
+ *
+*/
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Footer
+ * 
+ */
+.wh_footer{
+    font-size:smaller;
+    text-align: center;
+    padding: 2em;
+    border-top: solid 1px silver;
+    border-radius:0;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Topic content
+ * 
+ */
+.wh_topic_content{
+    padding-top: 1em;
+    padding-bottom: 1em;
+    line-height: 1.8em;
+}
+
+.wh_topic_content li{
+    margin: 0.5em;
+}
+.wh_topic_content .ullinks{
+    list-style-type: disc;
+}
+
+
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Search results.
+ * 
+ */
+.wh_search_expression{
+    font-weight: bold;
+}
+.wh_search_expression:before,
+.wh_search_expression:after{
+    content: '"';
+}
+.searchresult{
+    list-style-type: decimal;
+}
+.searchresult li{
+    margin-bottom: 1em;
+}
+.searchresult li a{
+    font-weight: bold;
+}
+
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Index terms.
+ * 
+ */
+.wh_index_terms {
+    margin-top:3em;
+}
+
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Tree TOC for the main page.
+ * 
+ */
+.wh_main_page_toc{
+    border-radius:0.6em;
+}
+
+/* Colors */
+.wh_main_page_toc{
+    margin-top: 2em;
+    border: none;
+}
+.wh_main_page_toc a{
+    color:#941e88;
+}
+
+
+/* Some borders around a group */
+
+/* borders around simple topic refs on the first level */
+.wh_main_page_toc > .wh_main_page_toc_entry{
+    margin-top:1.5em;
+    margin-bottom:0.5em;
+    border:1px solid #ccc;
+}
+.wh_main_page_toc>.wh_main_page_toc_entry:last-child {
+    border:1px solid #ccc;
+}
+
+/* borders around epandable topcirefs on the first level */
+.wh_main_page_toc > .wh_main_page_toc_accordion_header{
+    margin-top:1.5em;
+    border:1px solid #ccc;
+}
+.wh_main_page_toc > .wh_main_page_toc_accordion_header.expanded{
+    margin-top:1.5em;
+    border:1px solid #ccc;
+    border-bottom:none;
+}
+.wh_main_page_toc >  .wh_main_page_toc_accordion_entries {
+    margin-bottom:0.5em;
+    border:1px solid #ccc;
+    border-top:none;
+
+}
+
+
+
+/* move the expand/collapse symbols outside the chapter boxes, so we can draw borders around the box leaving the symbol outside. */
+.wh_main_page_toc .wh_main_page_toc_accordion_header:before,
+.wh_main_page_toc .wh_main_page_toc_accordion_header.expanded:before{
+    left:-0.5em;
+}
+.wh_main_page_toc > .wh_main_page_toc_accordion_header,
+.wh_main_page_toc > .wh_main_page_toc_entry{
+    padding-left:1em;
+}
+.wh_main_page_toc .expanded,
+.wh_main_page_toc_accordion_entries,
+.wh_main_page_toc .wh_main_page_toc_accordion_header:hover, .wh_main_page_toc>.wh_main_page_toc_entry:hover{
+    background-color: #F7FDFD;
+}
+
+
+/* A vertical line at the left of the menu. 
+  On this line there are placed the expand/collapse symbols */
+.wh_main_page_toc  {
+    border-left:1px solid silver;
+    border-radius:0;
+    padding:1em 2em;
+}
+.wh_main_page_toc .wh_main_page_toc_accordion_header:before{
+    content: "\e081"; /* expand symbol */
+    color:#ab5ca3;
+    background-color:white;
+    font-size:1.3em;
+}
+.wh_main_page_toc .wh_main_page_toc_accordion_header.expanded:before{
+    content: "\e082"; /* collapse symbol */
+}
+.wh_main_page_toc .wh_main_page_toc_accordion_header:before{
+    content: "\e081"; /* expand symbol */
+}
+.wh_main_page_toc .wh_main_page_toc_accordion_header:before,
+.wh_main_page_toc .wh_main_page_toc_accordion_header.expanded:before{
+    color:#ab5ca3;
+    background-color:white;
+    font-size:1.3em;
+}

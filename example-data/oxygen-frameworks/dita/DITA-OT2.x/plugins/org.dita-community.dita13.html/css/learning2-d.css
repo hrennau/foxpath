@@ -1,0 +1,79 @@
+/**
+ * CSS for Learning and Training interactions (assessment questions and answers) 
+ */ 
+ 
+ .lcQuestionNumber {
+   font-weight: bold;
+ }
+ 
+ .lcAnswerOptionGroup {
+   list-style: upper-alpha;
+ }
+
+.lcAnswerOption {
+  display: list-item;  
+}
+
+td > .lc-answer-option-label {
+   display: block;
+ }
+
+.lc-answer-option-label {
+   display: none;
+ }
+ 
+ 
+ .lc-answer-option-content {
+   display: inline;
+ }
+ 
+.lc-correct-response {
+  color: blue;
+}
+ 
+ 
+.lcMatchTable {
+  margin-top: 6pt;
+  table-layout: auto;
+  width: 50%;
+  border: 1px solid black;
+  background-color: yellow;
+}
+
+.lc-matchTable-col-answerItemLabel,
+.lc-matchTable-col-item,
+.lc-matchTable-col-matchItem
+{
+  border: 1px solid black;
+  
+}
+
+.lc-answer-item-label {
+  font-weight: bold;
+  color: blue;
+}
+
+.lc-matchTable-col-answerItemLabel {
+  width: 3em;
+}
+
+
+.lcMatchingPair {
+  display: table-row;
+  border: 1px solid black;
+}
+
+.lc-answer-option-label-cell {
+  display: table-cell;
+  
+}
+
+.lcItem {
+  display: table-cell;
+  
+}
+.lcMatchItem {
+  display: table-cell;
+  
+}
+ 

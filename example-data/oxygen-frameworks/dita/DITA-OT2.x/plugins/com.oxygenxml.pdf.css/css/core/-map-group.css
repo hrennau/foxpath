@@ -1,0 +1,146 @@
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * Map group elements.
+ * 
+ * langRef/containers/mapgroup-d.html
+ * 
+ * The map group domain elements define, group, or reference 
+ * content. Many of the map group elements are convenience 
+ * elements, which means that they simply make it easier 
+ * for an author to make use of existing functions.
+ * 
+ * ==================================================
+ * ==================================================
+ * 
+ */
+/* ==================================================
+ *
+ *  <anchorref>
+ * 
+ * The anchorref element is used to reference an anchor element 
+ * in a map. The contents of an anchorref element are rendered 
+ * both in the original authored location and at the location 
+ * of the referenced anchor element. The referenced anchor element 
+ * may be defined in the current map or another map.
+ * 
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref 
+ */
+*[class~="mapgroup-d/anchorref"]:before(1100) {
+  content: url("../../img/anchor.png");
+}
+/* ==================================================
+ *
+ *  <keydef>
+ * 
+ * The keydef element is a convenience element that is used to 
+ * define keys without any of the other effects that occur when 
+ * using a topicref element: no content is included in output, 
+ * no title is included in the table of contents, and no linking 
+ * or other relationships are defined.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref 
+ */
+*[class~="mapgroup-d/keydef"][keys]:before(1100) {
+  content: url("../../img/keydef.png");
+}
+/* ==================================================
+ *
+ *  <mapref>
+ * 
+ * The mapref element is a convenience element that is 
+ * equivalent to a topicref element with the format attribute 
+ * set to "ditamap". 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref 
+ */
+*[class~="mapgroup-d/mapref"]:before(1100) {
+  content: url("../../img/DitamapRef16.gif");
+}
+/* ====================================
+ *
+ * <topicgroup>
+ * 
+ * The topicgroup element groups topicref elements for common 
+ * treatment without affecting the structural hierarchy of the map, 
+ * as opposed to nesting topicref elements, which does imply a 
+ * structural hierarchy. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref 
+ */
+*[class~="mapgroup-d/topicgroup"] {
+  border-left: 2pt solid;
+  /* TODO - Dan - check printing */
+}
+*[class~="mapgroup-d/topicgroup"]:before(1100) {
+  content: url("../../img/topicgroup.png");
+}
+/* ====================================
+ *
+ * <topichead>
+ * 
+ * The topichead element provides a title-only entry 
+ * in a navigation map, which should appear as a heading 
+ * when the map is rendered as a table of contents. In 
+ * print contexts it should also appear as a heading in 
+ * the rendered content.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref 
+ */
+@media oxygen {
+  *[class~="mapgroup-d/topichead"]:before(1100) {
+    content: url("../../img/topichead.png");
+  }
+}
+/* ====================================
+ *
+ * <topicset>
+ * 
+ * The topicset element defines a complete unit of content that can 
+ * be reused in other DITA maps or other topicset elements. The topicset 
+ * element can be especially useful for task composition in which larger 
+ * tasks are composed of smaller tasks. The id attribute on a topicset 
+ * is required, which ensures that the complete unit is available for reuse 
+ * in other contexts. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref 
+ */
+*[class~="mapgroup-d/topicset"] {
+  /* TODO - Dan - check printing */
+}
+*[class~="mapgroup-d/topicset"]:before(1100) {
+  /* TODO - Dan - make an image for the set 'topicset.png'.*/
+  content: url("../../img/topicgroup.png");
+}
+/* ====================================
+ *
+ * <topicsetref>
+ * 
+ * The topicsetref element references a topicset element. 
+ * The referenced topicset element can be defined in the 
+ * current map or in another map.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref 
+ */
+*[class~="mapgroup-d/topicsetref"] {
+  /* TODO - Dan - check printing */
+}
+*[class~="mapgroup-d/topicsetref"]:before(1100) {
+  /* TODO - Dan - make an image for the set 'topicsetref.png'.
+  content: url("../../img/topicsetref.png");*/
+}

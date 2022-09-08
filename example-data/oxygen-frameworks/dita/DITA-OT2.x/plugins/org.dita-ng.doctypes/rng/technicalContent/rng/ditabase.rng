@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="../../../checkShell.sch" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<!-- ============================================================= 
+  MODULE:    DITA BASE RNG
+  VERSION:   1.2
+  DATE:      October 2010
+  ============================================================= -->
+<!--
+  Refer to the latest version of this file by the following URI:
+  urn:dita-ng:dita:rng:ditabase.rng
+  To refer to this specific version, you may use this value:
+  urn:dita-ng:dita:rng:ditabase.rng:1.2
+-->
+<!-- ============================================================= 
+  SYSTEM:     Darwin Information Typing Architecture (DITA)
+  PURPOSE:    Base Relax NG schema that holds all the information 
+              types
+  ORIGINAL CREATION DATE:
+  September 2010
+  (C) Copyright Syncro Soft 2010-2011
+  All Rights Reserved.
+  ============================================================= -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+  xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">
+  <!-- Define the root elements -->
+  <start>
+    <ref name="dita.element"/>
+  </start>
+  
+  <!-- The DITA domains attribute -->
+  <define name="domains-atts" combine="interleave">
+    <optional>
+      <attribute name="domains" 
+        a:defaultValue="(topic task strictTaskbody-c) (topic task) 
+        (topic concept) (topic reference) (topic concept glossentry) 
+        (topic concept glossgroup) (topic hi-d) (topic ut-d)
+        (topic indexing-d) (topic hazard-d) (topic abbrev-d) 
+        (topic ui-d) (topic pr-d) (topic sw-d)"/>
+    </optional>    
+  </define>
+  
+  <!--
+    Redefine the infotype entity to exclude 
+    other topic types and disallow nesting
+  -->
+  <define name="glossentry-info-types">
+    <ref name="no-topic-nesting.element"/>
+  </define>
+    
+  <include href="strictTaskbodyConstraint.mod.rng">
+    <define name="info-types">
+      <choice>
+        <ref name="topic.element"/>
+        <ref name="concept.element"/>
+        <ref name="task.element"/>
+        <ref name="reference.element"/>
+        <ref name="glossentry.element"/>
+        <ref name="glossgroup.element"/>
+      </choice>
+    </define>
+  </include>
+
+  <!-- Include modules -->
+  <include href="concept.mod.rng"/>
+  <include href="reference.mod.rng"/>
+  <include href="glossentry.mod.rng"/>
+  <include href="glossgroup.mod.rng"/>
+  <include href="../../base/rng/highlightDomain.mod.rng"/>
+  <include href="../../base/rng/utilitiesDomain.mod.rng"/>
+  <include href="../../base/rng/indexingDomain.mod.rng"/>
+  <include href="../../base/rng/hazardstatementDomain.mod.rng"/>
+  <include href="abbreviateDomain.mod.rng"/>
+  <include href="uiDomain.mod.rng"/>
+  <include href="programmingDomain.mod.rng"/>
+  <include href="softwareDomain.mod.rng"/>
+  
+  
+  <!-- Define a containment for topics for editor support -->
+  <define name="dita.element">
+    <element name="dita">
+      <a:documentation>The &lt;dita> element provides a top-level container for multiple topics when
+        you create documents using the ditabase document type. The &lt;dita> element lets you create
+        any sequence of concept, task, and reference topics, and the ditabase document type lets you
+        further nest these topic types inside each other. The &lt;dita> element has no particular
+        output implications; it simply allows you to create multiple topics of different types at
+        the same level in a single document. 
+        Category: Ditabase document type</a:documentation>
+      <ref name="dita.attlist"/>
+      <oneOrMore>
+        <ref name="info-types"/>
+      </oneOrMore>
+    </element>
+  </define>
+  
+  <define name="dita.attlist" combine="interleave">
+    <ref name="arch-atts"/>
+    <optional>
+      <attribute name="xml:lang"/>
+    </optional>
+    <ref name="global-atts"/>
+  </define>
+  
+  <!-- Define the any pattern to exclude elements with ID attributes
+    from the wildcard and refer them expliceitely  -->
+  <define name="any">
+    <zeroOrMore>
+      <choice>
+        <ref name="topic.element"/>
+        <ref name="concept.element"/>
+        <ref name="glossgroup.element"/>
+        <ref name="task.element"/>
+        <ref name="glossentry.element"/>
+        <ref name="reference.element"/>
+        <element>
+          <anyName>
+            <except>
+              <name>topic</name>
+              <name>concept</name>
+              <name>glossgroup</name>
+              <name>task</name>
+              <name>glossentry</name>
+              <name>reference</name>
+            </except>
+          </anyName>
+          <zeroOrMore>
+            <attribute>
+              <anyName/>
+            </attribute>
+          </zeroOrMore>
+          <ref name="any"/>
+        </element>
+        <text/>
+      </choice>
+    </zeroOrMore>
+  </define>
+</grammar>

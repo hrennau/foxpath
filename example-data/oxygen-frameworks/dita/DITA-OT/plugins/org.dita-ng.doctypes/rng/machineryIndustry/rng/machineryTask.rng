@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="../../../checkShell.sch" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<!-- ============================================================= 
+  MODULE:    DITA Machinery Task RNG
+  VERSION:   1.2
+  DATE:      October 2010
+  ============================================================= -->
+<!--
+  Refer to the latest version of this file by the following URI:
+  urn:dita-ng:dita:rng:machineryTask.rng
+  To refer to this specific version, you may use this value:
+  urn:dita-ng:dita:rng:machineryTask.rng:1.2
+-->
+<!-- ============================================================= 
+  SYSTEM:     Darwin Information Typing Architecture (DITA)
+  PURPOSE:    Relax NG schema to describe DITA Machinery Tasks
+  ORIGINAL CREATION DATE:
+  September 2010
+  (C) Copyright Syncro Soft 2010-2011
+  All Rights Reserved.
+  ============================================================= -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+  xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">
+  
+  <start>
+    <ref name="task.element"/>
+  </start>
+  
+  <!-- The DITA domains attribute -->
+  <define name="domains-atts" combine="interleave">
+    <optional>
+      <attribute name="domains" 
+        a:defaultValue="(topic task) (topic task taskreq-d) 
+        (topic hi-d) (topic ut-d) (topic indexing-d) 
+        (topic hazard-d) (topic ui-d)"/>
+    </optional>    
+  </define>
+  
+  <!-- CONTENT CONSTRAINT INTEGRATION -->
+  
+  <include href="machineryTaskbodyConstraint.mod.rng">
+    <!--
+      Redefine the infotype entity to exclude 
+      other topic types and disallow nesting
+    -->
+    <define name="task-info-types">
+      <ref name="task.element"/>
+    </define>
+  </include>
+  
+  <!-- DOMAIN ELEMENT INTEGRATION -->
+  
+  <include href="../../technicalContent/rng/taskreqDomain.mod.rng"/>
+  <include href="../../base/rng/hazardstatementDomain.mod.rng"/>
+  <include href="../../base/rng/highlightDomain.mod.rng"/>
+  <include href="../../base/rng/utilitiesDomain.mod.rng"/>
+  <include href="../../base/rng/indexingDomain.mod.rng"/>
+  <include href="../../technicalContent/rng/uiDomain.mod.rng"/>
+
+  <define name="any">
+    <zeroOrMore>
+      <choice>
+        <ref name="task.element"/>
+        <element>
+          <anyName>
+            <except>
+              <name>task</name>
+            </except>
+          </anyName>
+          <zeroOrMore>
+            <attribute>
+              <anyName/>
+            </attribute>
+          </zeroOrMore>
+          <ref name="any"/>
+        </element>
+        <text/>
+      </choice>
+    </zeroOrMore>
+  </define>
+</grammar>

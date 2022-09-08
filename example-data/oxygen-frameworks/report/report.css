@@ -1,0 +1,99 @@
+*{
+    display:block;
+}
+
+report {
+    padding-top:10px;
+    padding-left:10px;
+}
+
+*:before{
+    width:200px;
+}
+
+report:before {
+    display:block;
+    color:gray;
+    content:"Report: ";
+}
+
+line, column{
+    display:inline;
+}
+
+incident {
+    margin-top:5px;
+    border:1px dotted gray;
+}
+
+incident:before {
+    display:block;
+    color:gray;
+    content:"Incident: ";
+}
+
+incident > * {
+    margin-left: 10px;
+}
+
+location > *,
+schemas > *,
+operationDescription > * {
+    margin-left: 5px;
+}
+
+description:before {
+    color:gray;
+    content:"Description: ";
+}
+
+operationDescription:before {
+    color:gray;
+    content:"Operation Description: ";
+}
+
+mainValidationFile:before {
+    color:gray;
+    content:"Main Validation File: ";
+}
+
+scenario:before {
+    color:gray;
+    content:"Scenario Name: ";
+}
+
+schema:before {
+    color:gray;
+    content:"Schema: ";
+}
+
+systemID:before {
+    color:gray;
+    content:"Location: ";
+}
+
+start:before {
+    color:gray;
+    content:"Start";
+    width:50px;
+}
+
+end:before {
+    color:gray;
+    content:"End";
+    width:50px;
+}
+
+line:before {
+    color:gray;
+    content:"Line: ";
+}
+
+column:before {
+    color:gray;
+    content:"Column: ";
+}
+
+line, column {
+    -oxy-display-tags:none;
+}

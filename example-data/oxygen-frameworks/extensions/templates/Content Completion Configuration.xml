@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Allows contributing to the values presented on content completion for element and attribute values.
+    You can append to the values obtained from the schema or replace them all together.
+    These values can be given as literal values or they can be obtained by executing an XSLT script.
+    
+    IMPORTANT: This file must be saved as cc_config.xml in a folder that is present in the Classpath
+    of the Document Type (or framework).
+-->
+<?xml-model href="http://www.oxygenxml.com/ns/ccfilter/config/ccConfigSchemaFilter.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.oxygenxml.com/ns/ccfilter/config http://www.oxygenxml.com/ns/ccfilter/config/ccConfigSchemaFilter.xsd"
+    xmlns="http://www.oxygenxml.com/ns/ccfilter/config">
+
+    <!-- Adds two values for an element wiht the local name "p", from any namespace -->
+    <match elementName="p">
+        <items action="append">
+            <item value="stanza">
+                <annotation>
+                    <html xmlns="http://www.w3.org/1999/xhtml">
+                        <head>
+                            <title>Documentation</title>
+                        </head>
+                        <body>
+                            <p>Just a <b>sample</b> html annotation.</p>
+                        </body>
+                    </html>
+                </annotation>
+            </item>
+            <item value="refrain" annotation="A simple text annotation"/>
+            <item value="poem">
+                <annotation xml:space="preserve">
+Use this value when:
+- first case
+- second case</annotation>
+            </item>
+        </items>
+    </match>
+
+    <!-- Replaces the values for an element with the local name "lg", from the given namespace -->
+    <match elementName="lg" elementNS="http://www.oxygenxml.com/ns/samples">
+        <items action="replace">
+            <item value="stanza"/>
+            <item value="refrain"/>
+        </items>
+    </match>
+
+    <!-- Adds two values for an attribute with the local name "type", from any namespace -->
+    <match attributeName="type">
+        <items>
+            <item value="stanza"/>
+            <item value="refrain"/>
+        </items>
+    </match>
+
+    <!-- Adds two values to the "lang" attribute from the given namespace -->
+    <match attributeName="lang" attributeNS="http://www.w3.org/XML/1998/namespace">
+        <items>
+            <item value="en"/>
+            <item value="zh-Hant-HK"/>
+        </items>
+    </match>
+
+    <!-- Contributes values to the given attribute from the given element -->
+    <match elementName="lg" elementNS="http://www.tei-c.org/ns/1.0" attributeName="type">
+        <items>
+            <item value="stanza"/>
+            <item value="refrain"/>
+        </items>
+    </match>
+
+    <!-- The contributed values are obtained by executing the given XSLT -->
+    <match elementName="writing" elementNS="http://www.tei-c.org/ns/1.0" attributeName="who">
+        <xslt href="../xsl/get_values_from_db.xsl" useCache="false" action="replace"/>
+        <!-- Here is a sample XSLT that extracts the values from the current document: -->
+
+        <!--
+        <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
+    exclude-result-prefixes="xs xd"
+    version="2.0">
+    <xsl:param name="documentSystemID"></xsl:param>
+    
+    <xsl:template name="start">
+        <xsl:variable name="persons" select="doc($documentSystemID)//*:castItem"/>
+        <items action="replace">
+            <xsl:apply-templates select="$persons">
+                <xsl:sort select="./name/text()"/>
+            </xsl:apply-templates>
+        </items>
+    </xsl:template>
+    
+    <xsl:template match="*:castItem">
+        <item 
+            value="#{./*:role/@xml:id}" 
+            annotation="{concat(./*:role/text(), ' -> ', ./*:roleDesc/text())}"/>
+    </xsl:template>
+    
+</xsl:stylesheet>
+        -->
+    </match>
+
+
+    <!--
+        
+        
+        Customize/filter the proposals for an element (children elements and attributes).
+        
+        
+    -->
+    <!-- Each time the 'listitem' is inserted, insert also the a 'para' element. 
+        Keep in the content completion proposals just the 'para' and 'note' elements. -->
+    <elementProposals path="listitem" insertElements="para" possibleElements="para note"/>    
+    <!-- Each time the 'section' is inserted, insert also a sequence of a 'title' and 'para' elements. -->
+    <elementProposals path="section" insertElements="title para"/>
+    <!-- Remove the 'bold' and 'italic' from the child list of the para element. -->
+    <elementProposals path="para" rejectElements="bold italic"/>
+
+    <!-- Always insert the @href attribute when inserting the 'link' element. 
+        This will be the only possible attribute for the 'link' element. -->
+    <elementProposals path="link" insertAttributes="href" possibleAttributes="_INSERTED_"/>
+
+	<!-- Removes the @audience attribute across entire document  -->
+    <elementProposals rejectAttributes="audience"/>
+    
+    <!-- 
+    
+    
+    	Change the aspect of an element across all the application. 
+    
+    	
+  	-->
+    <elementRenderings>
+        <render element="para" as="Paragraph" iconPath="some/image.png">
+            <annotation>The paragraph usually communicates a single idea.</annotation>
+        </render>
+        <render element="section" as="Section"/>        
+    </elementRenderings>
+    
+</config>

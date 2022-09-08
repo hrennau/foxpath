@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+    targetNamespace="http://www.oxygenxml.com/ns/doc/wsdl-internal"
+    xmlns="http://www.oxygenxml.com/ns/doc/wsdl-internal"
+    xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" vc:minVersion="1.1"
+    xmlns:sDoc="http://www.oxygenxml.com/ns/doc/schema-internal">
+    <!-- http://www.w3.org/2001/xml.xsd -->
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace"
+        schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+    <xs:import namespace="http://www.oxygenxml.com/ns/doc/schema-internal"
+        schemaLocation="customXSDDocSchema.xsd">
+        <xs:annotation>
+            <xs:documentation>
+        Defines the documentation for the XML Schema components.</xs:documentation>
+        </xs:annotation>
+    </xs:import>
+
+    <xs:element name="wsdlDoc">
+        <xs:annotation>
+            <xs:documentation>The root element for the WSDL documentation.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence maxOccurs="1">
+                <xs:element maxOccurs="1" minOccurs="1" ref="sDoc:splitInfo"/>
+                <xs:choice maxOccurs="unbounded">
+                    <!-- References to the XML Schema components -->
+                    <xs:element minOccurs="0" ref="sDoc:schema"/>
+                    <xs:element minOccurs="0" ref="sDoc:element"/>
+                    <xs:element minOccurs="0" ref="sDoc:complexType"/>
+                    <xs:element minOccurs="0" ref="sDoc:simpleType"/>
+                    <xs:element minOccurs="0" ref="sDoc:attribute"/>
+                    <xs:element minOccurs="0" ref="sDoc:elementGroup"/>
+                    <xs:element minOccurs="0" ref="sDoc:attributeGroup"/>
+                    <xs:element ref="sDoc:notation"/>
+
+                    <!-- References to the WSDL components. -->
+                    <xs:element ref="definition"/>
+                    <xs:element ref="message" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Information about an WSDL message.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element ref="portType" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Information about an WSDL port type.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" ref="binding"/>
+                    <xs:element minOccurs="0" ref="service"/>
+                </xs:choice>
+
+                <xs:element ref="sDoc:index" minOccurs="0"/>
+                <xs:element ref="resourceHierarchy" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="definition">
+        <xs:annotation>
+            <xs:documentation>Informations about a WSDL definition. </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="wsdlComponentType">
+                    <xs:sequence>
+                        <xs:element name="name" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>The name of the definition.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                    <xs:attribute name="type" use="required">
+                        <xs:annotation>
+                            <xs:documentation> Specifies if the WSDL is imported or is the main one.</xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration value="main"/>
+                                <xs:enumeration value="wsdlImport"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:attribute>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="wsdlComponentType">
+        <xs:annotation>
+            <xs:documentation>Base type for a WSDL component.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="qname" type="xs:string"/>
+            <xs:element name="namespace" type="xs:anyURI" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation> The component namespace.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="resourceLocation" type="xs:anyURI" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation> The location of the WSDL where the component is declared.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element ref="sDoc:usedBy" minOccurs="0"/>
+            <xs:element ref="documentation" minOccurs="0"/>
+
+            <xs:element ref="sDoc:source" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" use="required" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:element name="documentation">
+        <xs:annotation>
+            <xs:documentation> A WSDL component documentation.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType mixed="true">
+            <xs:choice maxOccurs="1" minOccurs="0">
+                <xs:choice maxOccurs="unbounded">
+                    <xs:any maxOccurs="unbounded" namespace="##local" processContents="lax"/>
+                    <xs:any namespace="##other" processContents="lax"/>
+                </xs:choice>
+                <xs:group ref="sDoc:tokenListGroup"/>
+            </xs:choice>
+            <xs:attribute name="source" type="xs:anyURI"/>
+            <xs:attribute ref="xml:lang"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="service">
+        <xs:annotation>
+            <xs:documentation>Information about the WSDL service.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType mixed="false">
+            <xs:complexContent>
+                <xs:extension base="wsdlComponentType">
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ports">
+                            <xs:annotation>
+                                <xs:documentation>The list with the service ports.</xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element maxOccurs="unbounded" name="port">
+                                        <xs:annotation>
+                                            <xs:documentation>Holds the service port information.</xs:documentation>
+                                        </xs:annotation>
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="name" type="xs:string">
+                                                  <xs:annotation>
+                                                  <xs:documentation>The name of the service port.</xs:documentation>
+                                                  </xs:annotation>
+                                                </xs:element>
+                                                <xs:element minOccurs="0" ref="documentation"/>
+                                                <xs:element ref="sDoc:ref"/>
+                                                <xs:element ref="extensibilityElements"/>
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="binding">
+        <xs:annotation>
+            <xs:documentation>Information about an WSDL binding.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="wsdlComponentType">
+                    <xs:sequence>
+                        <xs:element name="bindingType" type="sDoc:refListType">
+                            <xs:annotation>
+                                <xs:documentation>The refrerence to the portType implemented by the binding.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element minOccurs="0" ref="extensibilityElements"/>
+                        <xs:element minOccurs="0" name="operations">
+                            <xs:annotation>
+                                <xs:documentation>The list with binding operations.</xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="operation" maxOccurs="unbounded"
+                                        type="bindingOperationType">
+                                        <xs:annotation>
+                                            <xs:documentation>The binding operation.</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="portType">
+        <xs:annotation>
+            <xs:documentation>Information about a WSDL portType.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="wsdlComponentType">
+                    <xs:sequence minOccurs="0">
+                        <xs:element name="operations">
+                            <xs:annotation>
+                                <xs:documentation>The list with the operations from the port type.</xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="operation" maxOccurs="unbounded"
+                                        type="portTypeOperationType">
+                                        <xs:annotation>
+                                            <xs:documentation>The port type operation.</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="message">
+        <xs:annotation>
+            <xs:documentation>Information about a WSDL message.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="wsdlComponentType">
+                    <xs:sequence minOccurs="0">
+                        <xs:element name="parts">
+                            <xs:annotation>
+                                <xs:documentation>Specifies the parts defines by a message.</xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element ref="part" maxOccurs="unbounded"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="part">
+        <xs:annotation>
+            <xs:documentation>Defines information for a message part.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation>The name of the message part.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element minOccurs="0" ref="documentation"/>
+                <xs:element ref="sDoc:ref" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- TODO refactor -->
+    <xs:element name="resourceHierarchy">
+        <xs:annotation>
+            <xs:documentation>The directives tree. Imports, includes and redefines are presented in
+                a tree manner. If present, it must contain at least one
+                directive.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence minOccurs="1">
+                <xs:element ref="sDoc:directive" maxOccurs="unbounded" minOccurs="0"/>
+            </xs:sequence>
+            <xs:attributeGroup ref="sDoc:refTypeGroup"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="portTypeOperationType">
+        <xs:annotation>
+            <xs:documentation>The type for the portType operations.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element minOccurs="0" ref="documentation"/>
+            <xs:element name="input" type="portTypeOperationIOType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The port type operation input.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="output" type="portTypeOperationIOType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>The port type operation output.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="fault" type="portTypeOperationIOType">
+                    <xs:annotation>
+                        <xs:documentation>The port type operation fault.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:sequence>
+        <xs:attribute name="id" use="required" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>The port type operation ID.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="bindingOperationType">
+        <xs:annotation>
+            <xs:documentation>The type for the binding operations.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element minOccurs="0" ref="documentation"/>
+            <xs:element minOccurs="0" name="extensibilityElements">
+                <xs:annotation>
+                    <xs:documentation>The binding extensibility elements.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="sDoc:source" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element minOccurs="0" name="input" type="bindingOperationIOType"/>
+            <xs:element minOccurs="0" name="output" type="bindingOperationIOType"> </xs:element>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="fault" maxOccurs="unbounded"
+                    type="bindingOperationIOType"> </xs:element>
+            </xs:sequence>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="portTypeOperationIOType">
+        <xs:annotation>
+            <xs:documentation>The port type operation input/output/fault type.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="xs:string" minOccurs="0"/>
+            <xs:element minOccurs="0" ref="sDoc:ref"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="bindingOperationIOType">
+        <xs:annotation>
+            <xs:documentation>The binding operation input/output/fault type.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element minOccurs="0" name="name" type="xs:string"/>
+            <xs:element minOccurs="0" ref="extensibilityElements"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="extensibilityElements">
+        <xs:annotation>
+            <xs:documentation>The extensibility elements.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="sDoc:source" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

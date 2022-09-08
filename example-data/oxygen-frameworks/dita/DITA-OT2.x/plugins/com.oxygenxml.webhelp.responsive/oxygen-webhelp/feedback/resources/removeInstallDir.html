@@ -1,0 +1,48 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<!--
+    
+Oxygen WebHelp Plugin
+Copyright (c) 1998-2017 Syncro Soft SRL, Romania.  All rights reserved.
+
+-->
+
+<html dir="@WEBHELP_PAGE_DIRECTION@">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+    <link href="./css/admin.css" type="text/css" rel="stylesheet"/>
+
+    <script src="./js/jquery-3.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+    <!-- include Bootstrap -->
+    <link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="screen"><!--  --></link>
+    <link href="./bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css" media="screen"><!--  --></link>
+    <script src="./bootstrap/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+    
+    <script type="text/javascript" src="../config/config.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="./php/cnf.php"></script>
+    <script type="text/javascript" src="./localization/strings.js" charset="utf-8"></script>
+    <script type="text/javascript">
+        function getLocalization(localizationKey) {
+            var toReturn = localizationKey;
+            if (localizationKey in localization) {
+                toReturn = localization[localizationKey];
+            }
+            return toReturn;
+        }
+    </script>
+    <title>Remove install directory</title>
+</head>
+<body>
+<div id="logo">
+    <img src="../../resources/img/LogoOxygen100x22.png" align="middle" alt="OxygenXml Logo"/>
+	<span>
+	WebHelp
+	</span>
+</div>
+<br/>
+<div class="removeInfo"><h3>Please contact system administrator to finalize the webhelp installation by removing the installation folder!</h3></div>
+<script type="text/javascript">
+    getLocalization('label.plsRemoveInstall');
+    $('.removeInfo').html("<h3>" + getLocalization('label.plsRemoveInstall') + "</h3>");
+</script>
+</body>
+</html>

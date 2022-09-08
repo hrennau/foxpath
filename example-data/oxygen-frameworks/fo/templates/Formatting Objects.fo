@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+    <fo:layout-master-set>
+        <fo:simple-page-master master-name="sample">
+            <fo:region-body/>
+        </fo:simple-page-master>
+    </fo:layout-master-set>
+    <fo:page-sequence master-reference="sample">
+        <fo:flow flow-name="xsl-region-body">
+            <fo:block>Sample FO document</fo:block>
+        </fo:flow>
+    </fo:page-sequence>
+</fo:root>

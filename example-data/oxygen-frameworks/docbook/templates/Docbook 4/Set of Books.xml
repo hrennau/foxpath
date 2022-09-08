@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE set PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+                      "http://docbook.org/xml/4.5/docbookx.dtd"
+[ <!ENTITY % xinclude SYSTEM "internal/xinclude.mod">
+%xinclude;
+]>
+<set xmlns:xi="http://www.w3.org/2001/XInclude">
+    <setinfo>
+        <title/>
+    </setinfo>
+    <book>
+        <bookinfo>
+            <title/>
+        </bookinfo>
+    </book>
+</set>

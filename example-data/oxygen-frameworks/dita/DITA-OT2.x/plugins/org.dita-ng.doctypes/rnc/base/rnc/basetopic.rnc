@@ -1,0 +1,46 @@
+# ============================================================= 
+# MODULE:    DITA Topic Base RNC (only base domains)             
+# VERSION:   1.2                                                
+# DATE:      October 2010                                       
+# =============================================================
+
+# Refer to the latest version of this file by the following URI:
+# urn:dita-ng:dita:rnc:basetopic.rnc
+# To refer to this specific version, you may use this value:
+# urn:dita-ng:dita:rnc:basetopic.rnc:1.2
+
+# ============================================================= 
+# SYSTEM:     Darwin Information Typing Architecture (DITA)     
+# PURPOSE:    Relax NG schema to describe Base DITA Topics             
+# ORIGINAL CREATION DATE:                                       
+# September 2010                                                
+# (C) Copyright Syncro Soft 2010-2011                                
+# All Rights Reserved.                                          
+# =============================================================
+
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+# Define the root elements
+start |= topic.element
+# The DITA domains attribute
+domains-atts &=
+  [
+    a:defaultValue =
+      "(topic hi-d) (topic ut-d) (topic indexing-d) (topic hazard-d)"
+  ]
+  attribute domains { text }?
+# Include modules
+include "topic.mod.rnc"
+include "highlightDomain.mod.rnc"
+include "utilitiesDomain.mod.rnc"
+include "indexingDomain.mod.rnc"
+include "hazardstatementDomain.mod.rnc"
+# Define the any pattern to exclude elements with ID attributes
+# from the wildcard and refer them expliceitely
+any =
+  (topic.element
+   | element * - topic {
+       attribute * { text }*,
+       any
+     }
+   | text)*

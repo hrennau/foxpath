@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension>
+    <param name="use.alpha.for.highlights" expression="'no'"/>
+    <param name="show.changes.and.comments" expression="${show.changes.and.comments}" if="show.changes.and.comments"/>  
+</extension>
+

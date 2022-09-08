@@ -1,0 +1,13 @@
+@import "style-basic.css";
+@import "alternate-table-hide-colspec.css";
+@import "preview-base.css";
+
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+
+oxy|processing-instruction {
+  display:none !important;
+}
+
+body:empty {
+  display:none !important;
+}

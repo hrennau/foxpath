@@ -1,0 +1,722 @@
+/*
+ * ==============================================
+ * Skin for oXygen generated WebHelp.
+ * ==============================================
+ */
+@import (reference) "skin-props.less";
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Fonts.
+ *  
+ */
+@import (css) url(@fontUrl);
+
+body {
+  font-family: @fontFamily, sans-serif;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Fight with bootstrap
+ *  
+ */
+.navbar-brand {
+  height: auto;
+}
+
+.navbar {
+  background-color: @headerBgr;
+  background-image: none;
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  box-shadow: none;
+}
+
+a,
+a:hover,
+a:visited {
+  color: @linkColor;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Publication titles
+ *  
+ */
+.wh_publication_title > a {
+  color: @publicationTitleColor;
+  font-size: 1.2em;
+  line-height: 1em;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Menu
+ *  
+ */
+
+.wh_top_menu {
+  font-size: 1em;
+  margin: .4em 0;
+}
+
+.wh_top_menu ul {
+  background-color: @menuBgr;
+}
+
+.wh_top_menu ul a {
+  color: @menuColor;
+  text-transform: uppercase;
+}
+
+/* The submenus */
+.wh_top_menu ul ul {
+  background-color: @submenuBgr;
+}
+
+@media only screen and (min-width: 768px) {
+  .wh_top_menu ul li a {
+    padding: 0.8em;
+  }
+
+  /* Menu bar */
+  .wh_top_menu ul li:hover a {
+    background-color: @hoveredMenuBgr;
+    color: @hoveredMenuColor;
+  }
+
+  /* Sub menus */
+  .wh_top_menu ul ul li {
+    background-color: @submenuBgr;
+    border-color: @subMenuBorderColor;
+    border: none;
+  }
+
+  .wh_top_menu ul li:hover ul a {
+    color: @submenuColor;
+    transition: background-color .25s ease-out 0s,
+    color .3s ease-out 0s;
+  }
+
+  .wh_top_menu ul ul li a:hover {
+    color: @hoveredSubmenuColor;
+    background-color: rgba(0, 0, 0, 0.08);
+    transition: background-color .25s ease-in 0s,
+    color .3s ease-in 0s;
+  }
+
+  .wh_top_menu ul ul li.has-children:after {
+    color: @submenuColor;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .wh_top_menu li.active a {
+    color: @hoveredMenuColor;
+  }
+
+  .wh_top_menu li.active {
+    background-color: @hoveredMenuBgr;
+  }
+
+  .wh_top_menu li.active > span a {
+    background-color: rgba(0, 0, 0, .07);
+  }
+
+  .wh_toggle_button.navbar-toggle,
+  .wh_toggle_button.navbar-toggle:focus {
+    border: none;
+    border-color: @mobileMenuToggleColor;
+    background-color: @mobileMenuToggleBgr;
+  }
+
+  .wh_toggle_button.navbar-toggle .icon-bar {
+    background-color: @mobileMenuToggleColor;
+  }
+
+  .wh_top_menu ul ul li {
+    border: none;
+  }
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Link to the index.
+ * 
+ */
+.wh_indexterms_link a:before {
+  color: @indextermsLinkCol;
+  font-size: 1.5em;
+}
+
+.wh_indexterms_link a span {
+  display: none;
+}
+
+@media only screen and (max-width: 767px) {
+  .wh_indexterms_link a:before {
+    bottom: 0;
+  }
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Breadcrumb
+ *  
+ */
+
+.wh_breadcrumb ol,
+.wh_breadcrumb ol a {
+  color: @breadcrumbColor;
+  font-size: 1em;
+}
+
+.wh_breadcrumb ol .active a {
+  color: @breadcrumbActiveLinkColor;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Tools and navigation
+ * 
+ */
+.wh_tools {
+  border: solid 1px @breadcrumbBorderColor;
+  background-color: @breadcrumbBgr;
+  margin: 2em 1em;
+  font-size: 1em;
+}
+
+.wh_hide_highlight,
+.wh_print_link a,
+.wh_navigation_links a,
+.wh_navigation_links a:hover,
+.wh_navigation_links a:active,
+.wh_navigation_links a:visited,
+.wh_print_link a:before,
+.wh_navigation_links a:before,
+.wh_navigation_links a:hover:before,
+.wh_navigation_links a:active:before,
+.wh_navigation_links a:visited:before {
+  color: @breadcrumbColor;
+  text-decoration: none;
+}
+
+.wh_right_tools {
+  padding: 8px 15px;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Tiles
+ * 
+ */
+
+.wh_tile {
+  border: 1px solid @tileBorderColor;
+  background-color: @tileBgr;
+}
+
+.wh_tile_shortdesc {
+  color: @tileShortDescColor;
+  font-weight: 400;
+  font-size: 1em;
+  margin-top: 0.5em;
+  text-align: justify;
+}
+
+.wh_tile_title {
+  font-size: 1em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.wh_tile_title a {
+  text-align: left;
+  color: @tileTitleColor !important;
+  font-size: 1.4em;
+  font-weight: 400;
+}
+
+@media only screen and (max-width: 767px) {
+  .wh_tile > div {
+    height: auto;
+  }
+}
+
+/*
+ * ------------------------------------------------------------------
+ *
+ * Tree TOC for the main page.
+ *
+ */
+.wh_main_page_toc {
+  border: none;
+  background-color: @tocEntryBgr;
+}
+
+.wh_main_page_toc .topicref a {
+  color: @tocEntryColor;
+}
+
+.wh_main_page_toc .wh_main_page_toc_accordion_header:hover,
+.wh_main_page_toc > .wh_main_page_toc_entry:hover {
+  background-color: @tocEntryHoverBgr;
+  color: @tocEntryHoverColor;
+}
+
+.wh_main_page_toc_accordion_header:hover > .wh_toc_shortdesc,
+.wh_main_page_toc_entry:hover > .wh_toc_shortdesc {
+  background-color: @tocEntryHoverBgr;
+  color: @tocEntryHoverColor;
+}
+
+.wh_main_page_toc .wh_main_page_toc_accordion_header:hover a,
+.wh_main_page_toc > .wh_main_page_toc_entry:hover a {
+  color: @tocEntryHoverColor;
+}
+
+.wh_main_page_toc_accordion_header:hover:before {
+  color: @tocEntryHoverColor;
+}
+
+.wh_main_page_toc .wh_main_page_toc_accordion_header,
+.wh_main_page_toc > .wh_main_page_toc_entry,
+.wh_main_page_toc_accordion_entries {
+  border-bottom: 1px solid @tocBorderColor;
+  background-color: transparent;
+  text-align: left;
+}
+
+.wh_main_page_toc .wh_toc_shortdesc {
+  color: @tocShortDescColor;
+}
+
+.wh_main_page_toc_accordion_header:before {
+  color: @tocEntryColor;
+}
+
+.wh_main_page_toc .expanded {
+  border: none;
+}
+
+/* ---------------------------------   */
+
+.mainPageBgr() {
+  background-position: top center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+.mainPageContentAreaBgr() {
+  background-image: linear-gradient(@contentBgrImageColor, @contentBgrImageColor),
+  url(@bgrImage);
+  .mainPageBgr;
+}
+
+.wh_main_page .wh_content_area {
+  .mainPageContentAreaBgr;
+
+  padding: 4em 0 2em 0;
+  color: @mainPageContentColor;
+  text-align: center;
+  align-items: center;
+}
+
+/*
+You can style some of the tiles in a special way. 
+Example:
+.wh_tiles *[data-id='getting_started']{
+    background-color:gray;
+}
+*/
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Search area
+ * 
+ */
+
+.searchBgr() {
+  background-image: url(@bgrImage);
+  .mainPageBgr;
+}
+
+.wh_search_input {
+  .searchBgr;
+
+  padding: 4em 0 4em 0;
+  margin: 0;
+  align-items: center;
+  color: @mainPageContentColor;
+  text-align: center;
+}
+
+.wh_main_page_search {
+  height: ~"calc(50vh - 50px)";
+  min-height: 20em;
+  padding-top: ~"calc((50vh - 50px)/2 - 1em)";
+}
+
+.wh_main_page .wh_search_textfield,
+.wh_main_page .wh_search_button {
+  height: 2em;
+  font-size: 2em;
+}
+
+.wh_search_textfield,
+.wh_search_button {
+  border: solid 1px @searchFieldBorderColor;
+  color: @searchFieldColor;
+  background-color: @searchFieldBgr;
+  padding: 0 .4em;
+  height: 1.5em;
+  font-size: 1.5em;
+  /* Override the RTL rule. */
+  border-radius: @searchFieldBorderRadius !important;
+}
+
+/* Search autocomplete */
+.ui-menu-item {
+    font-size: 1.5em;
+    background-color: @searchPageBgr;
+    color: @mainPageContentColor;
+}
+
+/* Search autocomplete icons */
+.search-autocomplete-proposal-type-history a,
+.search-autocomplete-proposal-type-history a:hover,
+.search-autocomplete-proposal-type-history a:visited,
+.search-autocomplete-proposal-type-history a:active{
+    text-decoration: none;
+    color:@mainPageContentColor;
+    font-size: 0.8em;
+}
+.ui-state-active .search-autocomplete-proposal-type-history a,
+.ui-state-active .search-autocomplete-proposal-type-history a:hover,
+.ui-state-active .search-autocomplete-proposal-type-history a:visited,
+.ui-state-active .search-autocomplete-proposal-type-history a:active{
+    color: @searchPageBgr;
+}
+
+
+/* Selected autocomplete item */
+.ui-menu-item .ui-state-active {
+    background-color: @mainPageContentColor;
+    color: @searchPageBgr;
+}
+
+/* Search relative path */
+.searchresult li .relativePath a {
+    color: @submenuColor;
+}
+
+/* Active search page */
+#wh-search-pagination > ul > li.active > a {
+    background-color: @searchResultLinkColor;
+}
+/* Color for the page number */
+.pagination>li>a,
+.pagination>li>span {
+    color: @searchResultLinkColor;
+}
+
+/* Border for the hovered page */
+.pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
+    border-color: @searchResultLinkColor !important;
+}
+
+/* Do not allow the text to go beneath the search button  */
+@media only screen and (min-width: 768px) {
+  .wh_search_textfield {
+    padding-right: 3em;
+  }
+}
+
+.wh_search_button:after {
+  color: @searchFieldColor;
+}
+
+.wh_search_button:hover {
+  background-color: @searchButtonHoverBgr /*rgba(255, 255, 255, 0.1)*/;
+}
+
+/* Search field placeholder */
+
+::-webkit-input-placeholder {
+  color: @searchFieldColor;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+  color: @searchFieldColor;
+}
+
+::-moz-placeholder { /* Firefox 19+ */
+  color: @searchFieldColor;
+}
+
+:-ms-input-placeholder {
+  color: @searchFieldColor;
+}
+
+/* Change Autocomplete styles in Chrome */
+:-webkit-autofill,
+:-webkit-autofill:hover,
+:-webkit-autofill:focus {
+  border: 1px solid @searchFieldBorderColor;
+  -webkit-text-fill-color: @contentBgr;
+  -webkit-box-shadow: none;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Side TOC
+ * 
+ */
+#wh_side_toc {
+  background-color: @sideTocBgr;
+}
+
+.wh_side_toc {
+  border: 1px solid @sideTocBorderColor;
+  background-color: @sideTocBgr;
+  padding: 1em;
+  line-height: 2em;
+  margin-left: 2em;
+}
+
+.wh_side_toc > ul {
+  padding-left: 0;
+}
+
+.wh_side_toc .active > .topicref a {
+  color: @sideTocActiveColor;
+  text-decoration: underline;
+}
+
+.wh_side_toc span, .wh_side_toc a, .wh_side_toc a:visited, .wh_side_toc a:hover {
+  color: @sideTocColor;
+}
+
+.wh_side_toc a:hover {
+  text-decoration: underline;
+}
+
+@media only screen and (max-width: 767px) {
+  .wh_side_toc {
+    padding: 1em;
+    margin-left: 0;
+    margin-bottom: 1em;
+  }
+}
+
+/* Side TOC tooltip */
+.wh_breadcrumb .topicref .wh-tooltip,
+.wh_side_toc .topicref .wh-tooltip {
+  background-color: @tooltipBgr;
+  color: @tooltipColor;
+}
+
+.wh_breadcrumb .topicref .wh-tooltip a,
+.wh_side_toc .topicref .wh-tooltip a {
+  color: @tooltipColor;
+  text-decoration: underline;
+}
+
+/* Tooltip arrow. */
+
+[data-tooltip-position="left"] .topicref .wh-tooltip::before {
+  border-left-color: @tooltipBgr;
+}
+
+[data-tooltip-position="right"] .topicref .wh-tooltip::before {
+  border-right-color: @tooltipBgr;
+}
+
+[data-tooltip-position="bottom"] .topicref .wh-tooltip::before {
+  border-bottom-color: @tooltipBgr;
+}
+
+[data-tooltip-position="top"] .topicref .wh-tooltip::before {
+  border-top-color: @tooltipBgr;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Footer
+ * 
+ */
+.wh_footer {
+  background-color: @footerBgr;
+  background-size: cover;
+  padding: 4em 0em;
+  color: @footerColor;
+  text-align: center;
+  align-items: center;
+}
+
+.wh_footer a {
+  color: @footerLinkColor;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Topic content
+ * 
+ */
+
+/*
+ * Title & subtitles
+ */
+
+.topictitle1 {
+  font-weight: normal;
+}
+
+/*
+ * Other content
+ */
+
+.wh_topic_page, .modal-content {
+  background-color: @topicPageBgr;
+}
+
+.modal-content .close{
+   color:#fff;
+   text-shadow:0 1px 0 #000;
+}
+#show_profile .caret{
+    border-top: 5px solid @contentColor !important;
+}
+
+.wh_topic_content .shortdesc {
+  font-style: italic;
+}
+
+.wh_topic_content, 
+.wh_content_area {
+  color: @topicContentColor;
+  font-size: 1em;
+  line-height: 1.6em
+}
+
+/* Related links */
+.wh_related_links .related-links,
+.wh_topic_content .related-links,
+.wh_child_links {
+  margin: 1em 0;
+  background-color: @relLinksBgr;
+  border: @relLinksBorderColor solid 1px;
+  padding: 0 1em;
+}
+
+.wh_child_links {
+  padding: 1em;
+}
+
+.wh_topic_content .related-links {
+  font-size: .91em;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Search results.
+ * 
+ */
+.wh_search_page {
+  background-color: @searchPageBgr;
+}
+
+.searchresult {
+  list-style: none;
+}
+
+.searchresult li {
+  padding: .5em;
+}
+
+.searchresult li a {
+  color: @searchResultLinkColor;
+}
+
+.wh_search_expression {
+  color: @searchExpressionColor;
+}
+.searchresult .shortdesclink {
+  margin: .3em .5em 0 0;
+}
+
+.wh_search_expression {
+  font-weight: bold;
+}
+/* Highlights */
+.highlight {
+  background-color: @searchTermHighlightBgr;
+  color: @searchTermHighlightColor;
+}
+
+/* Index terms */
+
+.wh_terms_page {
+  background-color: @termsPageBgr;
+}
+
+.wh_term_group {
+  border: 1px solid @indexTermGroupBorderColor;
+  margin: 1em 0;
+  padding: 1em;
+}
+
+.wh_term > span {
+  color: @indexTermColor;
+  font-style: italic;
+}
+
+.wh_index_terms span.wh_first_letter {
+  color: @indexTermFirstLetterColor;
+  border: none;
+  font-size: 1.5em;
+  margin: 0;
+}
+.wh_index_terms #indexList {
+  padding: 0;
+}
+#admin-page .wh_topic_page,
+#admin-page .modal-content{
+  background-color: #ffffff;
+}
+.float_comments .btn-link{
+  color:#fff;
+}
+.float_comments .btn-link:hover{
+  color:#ccc;
+}
+
+.float_comments{
+  background-color: #22566e !important;
+}
+
+.dt[id]::after, .section[id] .sectiontitle::after, .title.topictitle2[id]::after, table[id] .tablecap::after{
+  background-image: url('../../../resources/images/link-icon-light.png');
+}

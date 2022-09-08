@@ -1,0 +1,54 @@
+/**
+ * Useful when opening a map with resolved topics and then printing it to PDF with change tracking, 
+ * removes extra indents and static texts 
+ */
+ 
+@import "alternate-full-width-layout.css";
+
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+ 
+/* All reference nodes become transparent */
+oxy|reference:before {
+  content: "" !important;  
+}
+oxy|reference{
+    background-color: transparent !important;
+    margin:0px !important;
+    padding: 0px !important;
+    border:none !important;
+}
+*[class~="map/topicref"]{
+    margin-left:0em !important;
+    margin-top:0em !important;
+    margin-bottom:0em !important;
+}
+*[class~="map/topicref"]:before{
+    display:inline;
+    content: "" !important;
+    background-color:inherit;
+}
+
+/* Hides fold marks and tags */
+*{
+    -oxy-foldable:false !important;
+    -oxy-display-tags:none !important;
+    /* EXM-32036 We don't have such a value yet.*/
+    /*-oxy-show-placeholder:no;*/
+}
+
+/* Hides the table metainformation */
+*[class~="topic/colspec"] {
+    display: none !important;    
+}
+*[class~="topic/tgroup"]:before {
+    display: none !important;    
+}
+
+/*Do not display metadata*/
+*[class~="topic/prolog"]{
+ display:none;
+}
+/*Overwrite setting in default CSSs*/
+*[class~="map/topicref"]:empty {
+  padding-left: 0px;
+}

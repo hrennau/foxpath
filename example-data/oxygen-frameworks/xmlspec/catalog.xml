@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalog PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN"
+                         "http://www.oasis-open.org/committees/entity/release/1.1/catalog.dtd">
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <!-- XML Spec schemas -->
+    <systemSuffix systemIdSuffix="xmlspec.dtd" uri="schema/xmlspec.dtd"/>
+    <systemSuffix systemIdSuffix="xmlspec.xsd" uri="schema/xmlspec.xsd"/>
+    <systemSuffix systemIdSuffix="xmlspec.rng" uri="schema/xmlspec.rng"/>
+    <systemSuffix systemIdSuffix="xmlspec.rnc" uri="schema/xmlspec.rnc"/>
+    
+    <!-- XSL-FO stylesheets -->
+    <uriSuffix uriSuffix="fo/1.10/xmlspec.xsl" uri="fo/xmlspec.xsl"/>
+    <uriSuffix uriSuffix="fo/1.10/pagesetup.xsl" uri="fo/pagesetup.xsl"/>
+    
+    <uriSuffix uriSuffix="fo/1.9/xmlspec.xsl" uri="fo/xmlspec.xsl"/>
+    <uriSuffix uriSuffix="fo/1.9/pagesetup.xsl" uri="fo/pagesetup.xsl"/>
+
+    <!-- XHTML stylesheets -->
+    <uriSuffix uriSuffix="xhtml/1.13/xmlspec.xsl" uri="xhtml/xmlspec.xsl"/>
+    <uriSuffix uriSuffix="xhtml/1.13/diffspec.xsl" uri="xhtml/diffspec.xsl"/>
+    <uriSuffix uriSuffix="xhtml/1.13/slices.xsl" uri="xhtml/slices.xsl"/>
+    <uriSuffix uriSuffix="xhtml/1.13/slices-common.xsl" uri="xhtml/slices-common.xsl"/>
+
+    <uriSuffix uriSuffix="xhtml/1.12/xmlspec.xsl" uri="xhtml/xmlspec.xsl"/>
+    <uriSuffix uriSuffix="xhtml/1.12/diffspec.xsl" uri="xhtml/diffspec.xsl"/>
+    <uriSuffix uriSuffix="xhtml/1.12/slices.xsl" uri="xhtml/slices.xsl"/>
+    <uriSuffix uriSuffix="xhtml/1.12/slices-common.xsl" uri="xhtml/slices-common.xsl"/>
+                         
+    <!-- HTML stylesheets -->
+    <uriSuffix uriSuffix="html/1.13/xmlspec.xsl" uri="html/xmlspec.xsl"/>
+    <uriSuffix uriSuffix="html/1.13/diffspec.xsl" uri="html/diffspec.xsl"/>
+    <uriSuffix uriSuffix="html/1.13/slices.xsl" uri="html/slices.xsl"/>
+    <uriSuffix uriSuffix="html/1.13/slices-common.xsl" uri="html/slices-common.xsl"/>
+    
+    <uriSuffix uriSuffix="html/1.12/xmlspec.xsl" uri="html/xmlspec.xsl"/>
+    <uriSuffix uriSuffix="html/1.12/diffspec.xsl" uri="html/diffspec.xsl"/>
+    <uriSuffix uriSuffix="html/1.12/slices.xsl" uri="html/slices.xsl"/>
+    <uriSuffix uriSuffix="html/1.12/slices-common.xsl" uri="html/slices-common.xsl"/>
+</catalog>

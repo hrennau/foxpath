@@ -1,0 +1,9 @@
+person:after{
+    content: 
+        oxy_editor(type, button, actionID, "add.person", transparent, true, fontInherit, true)
+        oxy_editor(type, button, actionID, "delete.person", transparent, true, fontInherit, true);
+}
+
+person:before {
+    content: oxy_button(actionID, 'toggle.edit.mode', transparent, true)
+}

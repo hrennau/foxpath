@@ -1,0 +1,18 @@
+<plugin id="org.dita-community.preprocess-extensions">
+  <!-- 
+    
+    Extensions to the base Open Toolkit preprocessing pipeline.
+
+    See the preprocess-extensions.xml Ant script for details
+    of the extensions.
+    -->
+  <feature extension="package.support.name" value="Eliot Kimber"/>
+  <feature extension="package.support.email" value="ekimber@contrext.com"/>    
+  
+  <require plugin="org.dita-community.adjust-copy-to"/>
+  
+  <feature extension="dita.conductor.target.relative" file="build.xml"/>
+  
+  <template file="preprocess-extensions_template.xml"/>
+  
+</plugin>

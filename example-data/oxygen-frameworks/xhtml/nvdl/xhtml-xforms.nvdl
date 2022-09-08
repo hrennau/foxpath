@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://purl.oclc.org/dsdl/nvdl/ns/structure/1.0"
+  xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" startMode="html">
+  
+  <trigger ns="http://www.w3.org/1999/xhtml" nameList="head body"/>
+  
+  <!-- Triggers validations of XHTML and XForms -->
+  <mode name="html">
+    <namespace ns="http://www.w3.org/1999/xhtml">
+      <validate schema="http://www.w3.org/1999/xhtml/xhtml.rng" useMode="allXHTML"/>
+      <validate schema="XFormsHTMLWrapper.xsd" useMode="allXForms"/>      
+    </namespace>
+  </mode>
+  <!-- Attaches all XHTML sections, ignores everything else -->
+  <mode name="allXHTML">
+    <namespace ns="http://www.w3.org/1999/xhtml">
+      <attach/>
+    </namespace>
+    <anyNamespace>
+      <unwrap/>
+    </anyNamespace>
+  </mode>
+  <!-- Attaches all XForm sections, ignores everything else -->
+  <mode name="allXForms">
+    <namespace ns="http://www.w3.org/2002/xforms">
+      <attach/>
+    </namespace>
+    <anyNamespace>
+      <unwrap/>
+    </anyNamespace>
+  </mode>
+</rules>

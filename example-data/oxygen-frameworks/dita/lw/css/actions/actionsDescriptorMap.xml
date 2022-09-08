@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <contentModel parent="map">
+        <!-- (topicmeta?,topicref*) -->
+        <element name="topicmeta" occurs="?"/>
+        <element name="topicref" occurs="*"/>
+    </contentModel>
+    
+    <contentModel parent="topicmeta">
+        <!-- (navtitle?,data*) -->
+        <element name="navtitle" longName="Navigation Title" occurs="?"/>
+        <element name="data" occurs="*"/>
+    </contentModel>
+    
+    <contentModel parent="topicref">
+        <!-- (topicmeta?,topicref*) -->
+        <element name="topicmeta" occurs="?"/>
+        <element name="topicref" occurs="*"/>
+    </contentModel>
+</actions>

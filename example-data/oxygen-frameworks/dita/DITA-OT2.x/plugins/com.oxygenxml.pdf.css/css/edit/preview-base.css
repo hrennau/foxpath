@@ -1,0 +1,72 @@
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+
+/*
+===========================================
+    DITA CSS for author preview area. 
+   (The Insert Content Reference dialog and the Markdown Editor)
+===========================================
+*/
+
+oxy|reference:before,
+oxy|entity:before {
+  display: none !important;
+  background-color: inherit !important;
+}
+
+oxy|reference,
+oxy|entity {
+    background-color: inherit !important;
+}
+
+/* 
+  The root is always a <dita> element.
+  
+  Remove the padding and margins from the top level element.
+  
+*/
+:root,
+:root > *:first-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* 
+  
+  Remove the top padding of the main title element. 
+  
+*/
+:root > *:first-child > *[class ~= "topic/title"] {
+  margin-top: 0;
+}
+
+/* 
+  Remove the list style from list items.
+*/
+dita > *[class~="topic/li"] {
+    display: block;
+}
+
+/*EXM-35935 Hide buttons after imagemap area and show areas.*/
+*[class~='ut-d/imagemap'] > *[class~='topic/image']:after,
+*[class~='ut-d/imagemap'] > *[class~='topic/image']:after(2){
+    display : none;
+}
+*[class~="ut-d/imagemap"]  > *[class~="ut-d/area"][class~="ut-d/area"]{
+     display:table-row;
+}
+
+*[class~="topic/image"][keyref][keyref]:before(10),
+*[class~="topic/image"][keyref][keyref][href]:before(10) {
+    content: oxy_url("../../img/Image24.png") ;
+    vertical-align:bottom;
+}
+
+*[class~="topic/image"][keyref][keyref],
+*[class~="topic/image"][keyref][keyref][href] {
+  content: "[" attr(keyref) "]";
+}
+
+*[status=deleted]{
+    text-decoration: line-through;
+}
+

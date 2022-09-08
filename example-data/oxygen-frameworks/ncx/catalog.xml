@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+  
+  <public publicId="-//NISO//DTD ncx 2005-1//EN"
+    uri="schemas/dtd/ncx-2005-1.dtd"/>
+    
+  <public publicId="+//ISBN 0-9673008-1-9//DTD OEB 1.2 Package//EN"
+    uri="schemas/dtd/oebpkg12.dtd"/>
+  
+  <public publicId="-//NISO//DTD bookmark 2005-1//EN"
+    uri="schemas/dtd/bookmark-2005-1.dtd"/>
+  
+  <public publicId="-//NISO//DTD distInfo 2005-1//EN" 
+    uri="schemas/dtd/distInfo-2005-1.dtd"/>
+  
+  <public publicId="-//NISO//DTD dtbook 2005-1//EN" 
+    uri="schemas/dtd/dtbook-2005-1.dtd"/>
+  
+  <public publicId="-//NISO//DTD dtbook 2005-2//EN" 
+    uri="schemas/dtd/dtbook-2005-2.dtd"/>
+  
+  <public publicId="-//NISO//DTD dtbook 2005-3//EN" 
+    uri="schemas/dtd/dtbook-2005-3.dtd"/>
+  
+  <public publicId="-//NISO//DTD dtbsmil 2005-1//EN" 
+    uri="schemas/dtd/dtbsmil-2005-1.dtd"/>
+  
+  <public publicId="-//NISO//DTD dtbsmil 2005-2//EN" 
+    uri="schemas/dtd/dtbsmil-2005-2.dtd"/>
+  
+  <public publicId="-//NISO//DTD resource 2005-1//EN" 
+    uri="schemas/dtd/resource-2005-1.dtd"/>
+  
+  
+  <rewriteSystem systemIdStartString="http://www.daisy.org/z3986/2005/" rewritePrefix="schemas/dtd/"/>
+  
+  <rewriteSystem systemIdStartString="http://openebook.org/dtds/oeb-1.2/" rewritePrefix="schemas/dtd/"/>
+</catalog>

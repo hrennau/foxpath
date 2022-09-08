@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dita xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:oasis:names:tc:dita:xsd:ditabase.xsd">
+    <topic id="topic_${id}">
+        <title>${caret}</title>
+        <body>
+            <p></p>
+        </body>
+    </topic>
+</dita>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="com.oxygenxml.html.embed">
+  <feature extension="package.support.name" value="Oxygen XML Editor Support"/>
+  <feature extension="package.support.email" value="support@oxygenxml.com"/>
+  <feature extension="package.version" value="18.1"/>
+  <feature extension="dita.xsl.xhtml" value="xhtmlEmbed.xsl" type="file"/>
+</plugin>

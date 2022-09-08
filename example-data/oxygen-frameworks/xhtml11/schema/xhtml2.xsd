@@ -1,0 +1,19 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.w3.org/2002/06/xhtml2/">
+
+  <xs:annotation>
+    <xs:documentation>
+      A minimal XML Schema for XHTML 2.0
+      $Id: xhtml2.xsd 28982 2006-05-04 09:40:07 +0000 (Thu, 04 May 2006) radu_coravu $
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:element name="html"><xs:annotation><xs:documentation>This element identifies the document to be XHTML. The remainder of the XHTML document is contained by this element.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:any namespace="##any" processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:anyAttribute namespace="##any" processContents="skip"/>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

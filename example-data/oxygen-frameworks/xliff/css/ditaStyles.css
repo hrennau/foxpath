@@ -1,0 +1,15 @@
+segment pc[id^='ol-'] {
+  display: block;
+  margin-left: 2em;
+  list-style: decimal;
+}
+segment pc[id^='ul-'] {
+  display: block;
+  margin-left: 1em;
+}
+segment pc[id^='li-'] {
+  display: list-item;
+}
+segment pc[id^='i-'] {
+  font-style: italic;
+}

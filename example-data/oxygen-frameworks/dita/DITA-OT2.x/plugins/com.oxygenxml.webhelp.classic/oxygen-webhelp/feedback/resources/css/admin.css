@@ -1,0 +1,422 @@
+/*
+
+Oxygen WebHelp Plugin
+Copyright (c) 1998-2017 Syncro Soft SRL, Romania.  All rights reserved.
+
+*/
+
+/*Start RTL*/
+html[dir="rtl"] #adminMenu,html[dir="rtl"] #adminMenu .span_bt{
+    float: left;
+}
+
+html[dir="rtl"] #adminMenu .span_bt{
+    margin-left: 20px;
+    margin-right: 0;
+}
+
+html, body {
+	width: 100vw;
+	margin: 0;
+	padding:0;
+}
+/*End RTL*/
+#comments {
+	font-size: 12px;
+	width: 100%;
+	margin-bottom: 1.5em;
+	vertical-align: middle;
+	background-image: url('../img/icon_comment24x24.png');
+	background-repeat:no-repeat;
+	background-position:10px 50%;
+}
+
+#cover{
+	display: block;
+	z-index: 999;
+	width: 100vw;
+	height: 100vh;
+	background-color: #fff;
+	position: absolute;
+	top:0;
+	left:0;
+}
+
+#comments #userAccount {
+	padding: 5px 0;
+	margin: 0;
+	right: 15px;
+	float: right;
+	display: inline-block;
+}
+
+#loginResponse {
+	font-style: italic;
+}
+
+.bt_toolbar,#accountInfo a,#userAccount #bt_logIn,#userAccount #bt_logOff,#userAccount #bt_editProfile,#userAccount #bt_signUp
+	{
+	cursor: pointer;
+	font-size: 0.8em;
+	text-decoration: none;
+	padding: 5px 10px;
+	min-width: 60px;
+	margin: 0 0 0 10px;
+}
+
+#adminLink {
+    cursor: pointer;
+    font-size: 0.8em;
+    text-decoration: none;
+    padding: 5px 10px;
+    min-width: 60px;
+	margin: 0 !important;
+}
+
+.btnHGlue {
+	display: inline-block;
+	width: 30px;
+	height: 10px;
+}
+
+#userAccount #bt_signUp:hover {
+}
+
+#cm_count,#preload {
+	margin-left: 35px;
+}
+
+#cm_count,#cm_title {
+	font-weight: bold;
+	font-size: 1.2em;
+	padding-left: 5px;
+	line-height: 3em;
+}
+
+#loginData,#recoverPwd,#signUp {
+	clear: both;
+	padding: 10px;
+	z-index: 1000;
+	left:50%;
+	top:50%;
+	transform: translate(-50%,-50%);
+}
+
+.login {
+	font-size: 1em;
+	width: 96%;
+	padding: 2%;
+}
+
+.login thead td {
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
+.login td:first-child {
+	width: 50%;
+}
+
+.bt_close {
+	clear: both;
+	background-image: url("../img/close.png");
+	background-repeat: no-repeat;
+	position: relative;
+	cursor: pointer;
+	width: 20px;
+	height: 20px;
+	padding: 0 4px 0 4px;
+	text-align: center;
+	float: right;
+	margin-top: 10px;
+}
+
+.bt_close:HOVER {
+	background-image: url("../img/close_hover.png");
+}
+
+#cleanDbBtn{
+	margin-right: 20px
+}
+
+#preload img {
+	padding: 0 5px;
+	margin-bottom: 0;
+}
+
+#preload img#preload_circle {
+	margin-top: 5px;
+	width: 20px;
+}
+
+#adminMenu {
+	text-align: right;
+	padding-right: 1em;
+}
+
+#adminMenu .modal {
+	text-align: left;
+}
+#adminMenu .modal-content .close{
+	color: inherit !important;
+}
+#adminMenu .modal-body {
+	overflow-y: auto;
+	max-height: 450px;
+}
+
+#myPassword, #myUserName{
+  width:100%;  
+}
+
+#v_preload {
+	height: 30px;
+	font-weight: bold;
+	font-size: 1.2em;
+	margin: auto;
+	padding: 10px;
+}
+
+#setVersionInfo {
+	clear: both;
+	padding: 10px;
+}
+
+
+.bt_inactiv {
+	min-width: 60px;
+	cursor: pointer;
+	padding: 6px 10px;
+	margin-top: 15px;
+	display: inline-block;
+	font-size: 0.9em;
+	text-align: center;
+}
+
+.bt_inactiv:hover {
+    cursor: auto;
+}
+
+#ll_viewAll_tit_info{
+	font-size: .9em;
+}
+
+table#usersList {
+	width: 100%
+}
+
+table#usersList td {
+	padding:1em 1.5em;
+	text-align: center;
+	line-height: 1.5em;
+}
+
+table#usersList tbody tr:hover td {
+	background-color: #f4f2e8;
+}
+
+table#usersList td {
+	border-right: 1px solid #ddd;
+	text-align: center;
+
+}
+table#usersList thead td{
+	background-color: #e6eff4;
+	border-bottom: 1px solid #cccccc;
+}
+.tbHRow {
+	width: 98%;
+	height:100%;
+	padding: 5px 0 5px 0;
+	text-align: center;
+}
+.tbRow {
+	width: 99%;
+	padding-bottom: 5px;
+	vertical-align: middle;
+    text-align: center;
+}
+.tbCell {
+	vertical-align: middle;
+    line-height: 1.7em;
+    padding: 0.7em 4px;
+}
+.tbRow > .tbCell:first-child {
+    text-align: left;
+}
+table#usersList tbody tr:HOVER {
+	cursor: pointer;
+}
+
+table#usersList thead {
+	font-weight:bold;	
+	text-align: left;
+	text-indent: 5px;
+}
+.listTitle,.listTitleV{
+	/*width: 44%;
+	float: left;*/
+	padding-bottom: 5px;
+	margin-bottom:5px;
+	margin-left:5px;
+	font-weight: bold;
+}
+
+table#usersList tbody td{
+	font-size: 0.8em;
+}
+	
+.products{
+	padding: 5px;
+}
+
+.v_true{
+	background-color: #ddefff !important;
+}
+.v_true,.v_false {
+	padding: 5px;
+	width: 30px;
+	height: 30px;
+	text-align: center;
+	cursor: pointer;
+	float: left;
+	margin-top: 10px;
+	margin-left: 10px;
+}
+
+.versionTimeLine {
+	position:relative;
+	display: inline-block;
+	width: 56px;
+	margin-bottom: 10px;
+}
+.versionTimeLine:last-child:after, .versionTimeLine:last-child:before {
+	position: absolute;
+	display: block;
+	content: " ";
+	width: 0;
+	height: 0;
+	border-color:#000;
+	border-right: 6px solid white;
+}
+.versionTimeLine:last-child:after {
+	top: 7px;
+	right: -1px;
+	border-top: 6px solid;
+}
+.versionTimeLine:last-child:before {
+	top: 1px;
+	right: -1px;
+	border-bottom: 6px solid;
+}
+#versions{
+	text-align: center;
+}
+.v_true:hover,.v_false:hover {
+	margin-left: 10px;
+}
+
+.graph{
+	width:100%;
+	height:2px;
+	background-color: #000;
+	margin-top: 6px;
+}
+.middle{
+	display: block;
+	position: absolute;
+	width: 0;
+	height:0;
+	left: calc(50% - 5px);
+	top: 2px;
+	border-radius: 5px;
+	border: 5px solid #000;
+}
+
+.versions{	
+	padding: 5px;
+}
+#empty_versions{	
+	width: 44%;
+	float: left;
+	padding: 5px;
+	margin-left: 20px;
+}
+#ex_inline {
+	max-height: 82%;
+	overflow: auto;
+	width: 100%;
+}
+#ex_inline .table {
+    width: 100%;
+    margin: auto;
+    border-collapse: collapse;
+}
+
+#ex_inline .table>tbody>tr>td{
+	border-top: 0;
+}
+
+#adminUsers {
+	clear: both;
+	width: 100%
+}
+
+#adminUsers form{
+	padding: 1em .5em;
+	border:0;
+}
+
+.toolbar {
+	height: 55px;
+}
+#setVersionDiv > .toolbar{
+	display: block;
+	left:0;
+	top:0;
+	clear: both;
+	text-align: center;
+}
+.band {
+	clear: both;
+	float: left;
+	width: 100%;
+}
+
+.selectable,
+.p_selectable {
+	cursor: pointer;
+	line-height: 1.9em;
+	padding-left: .5em;
+}
+
+.selectable:hover,
+.p_selectable:hover {
+	cursor: pointer;
+}
+
+.cb-element{	
+	margin:1px 5px 1px 5px;	
+	vertical-align: top;		
+}
+input.ck{	
+	margin-bottom: 18px;	
+}
+
+.selectedItem
+{
+	background-color: #369;
+	color: #fff;
+}
+.selectable:hover,
+.p_selectable:hover
+{
+	background-color: #58b;
+	color: #fff;
+}
+.products, .versions
+{
+	border-style: solid;
+	border-width: 1px;
+	border-color: #ccc;
+}

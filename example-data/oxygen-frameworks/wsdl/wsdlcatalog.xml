@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <system systemId="http://www.w3.org/2001/06/soap-envelope" uri="xsd/envelope.xsd"/>
+    <uri name="http://www.w3.org/2001/06/soap-envelope" uri="xsd/envelope.xsd"/>    
+    <uri name="http://schemas.xmlsoap.org/soap/envelope/" uri="xsd/envelope.xsd"/>
+</catalog>

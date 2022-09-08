@@ -1,0 +1,293 @@
+@namespace sch url('http://www.ascc.net/xml/schematron');
+@namespace xsl url('http://www.w3.org/1999/XSL/Transform');
+@namespace oxy url('http://www.oxygenxml.com/extensions/author');
+oxy|comment {
+    display:block !important;
+    color: green !important;
+    background-color: #F5F5FF !important;
+    margin-left : 8px !important;
+    margin-top : 10px !important;
+    margin-bottom : 10px !important;
+    padding: 0px !important;
+    border-right :2px solid gray !important;
+    border-bottom :2px solid gray !important;
+    border-left :1px dotted gray !important;
+    border-top :1px dotted gray !important;
+    margin-right:10px !important;
+}
+/* schema */
+sch|schema:before {
+    content : 'Schematron schema';
+    font-size : large;
+    font-weight : bold;
+}
+sch|schema[schemaVersion]:before {
+    content : 'Schematron schema - schema version: ' attr('schemaVersion');
+}
+sch|schema[defaultPhase]:before {
+    link : '#' attr('defaultPhase');
+    content : 'Schematron schema - default phase: ' attr(defaultPhase);
+}
+sch|schema[defaultPhase][schemaVersion]:before {
+    content : 'Schematron schema - schema version: ' attr('schemaVersion') ', default phase: ' attr(defaultPhase);
+}
+sch|schema[icon]:before {
+    display : block;
+}
+sch|schema {
+    display : block;
+}
+sch|schema[icon] {
+    content : attr('icon', url);
+}
+sch|schema[icon] {
+    content : attr('icon', url);
+}
+/* namespace declaration */
+sch|ns:before {
+    content : 'Namespace declaration ';
+}
+sch|ns {
+    display : block;
+    content : attr('prefix') ' → ' attr('uri');
+    margin-left : 8px;
+}
+/* Phases */
+sch|phase:before {
+    content : 'Phase ';
+}
+sch|phase {
+    -oxy-foldable : true;
+    display : block;
+    content : attr('id');
+    border : 1px solid gray;
+    margin : 8px;
+    background-color : #FCFCFF;
+}
+sch|phase[icon] {
+    content : attr('id') ' ' attr('icon', url);
+}
+/* active patterns inside a phase */
+sch|active:before {
+    content : 'Active pattern ';
+}
+sch|active {
+    display : block;
+}
+sch|active:after {
+    content : attr('pattern');
+    display:inline;
+    text-decoration:underline;
+    color:navy;
+    background-color:inherit;
+}
+/* patterns */
+sch|pattern:before {
+    content : 'Pattern ';
+    font-weight : normal;
+}
+sch|pattern {
+    -oxy-foldable : true;
+    border : 1px solid gray;
+    margin : 8px;
+    display : block;
+    background-color : #FFFFF7;
+    content : attr('name');
+    font-weight : bold;
+}
+
+sch|pattern[icon] {
+    content : attr('name') ' ' attr('icon', url);
+}
+sch|pattern[id]:before {
+    content : attr('name') ' [id=' attr(id) ']';
+}
+sch|pattern[icon][id]:before {
+    content : attr('name') ' [id=' attr(id) ']' ' ' attr('icon', url);
+}
+
+sch|pattern[see]:after {
+    content : url(img/link.png) ' See also ' attr('see');
+    link: attr(see);
+    display:inline;
+    text-decoration:underline;
+    color:navy;
+    background-color:inherit;
+}
+/* Rules */
+sch|rule:before {
+    font-weight:normal;
+    content : 'Rule ' attr(id) ' context ';
+}
+sch|rule[role]:before {
+    content : 'Rule ' attr(id) ' with the role "' attr(role) '" context ';
+}
+sch|rule[abstract='true']:before {
+    font-weight:normal;
+    content : 'Abstract rule ' attr(id) ' context ';
+}
+sch|rule[role]:before {
+    content : 'Rule ' attr(id) ' with the role "' attr(role) '" context ';
+}
+sch|rule[abstract='true'][role]:before {
+    content : 'Abstract rule ' attr(id) ' with the role "' attr(role) '" context ';
+}
+sch|rule {
+    display : block;
+    font-weight:bold;
+    content : attr('context') ' {';
+    padding-left : 8px;
+    margin-bottom : 8px;
+    -oxy-foldable :true;
+    margin-right : 8px;
+    background-color : #FFFFFC;
+}
+sch|rule:after {
+    content : '}';
+}
+sch|rule > * {
+    font-weight:normal;
+}
+/* extensions */
+sch|extends {
+    display : block;
+    content : 'extends ';
+    margin-left : 8px;
+    color:brown;
+}
+sch|extends[rule]:after {
+    content: attr('rule');
+    display:inline;
+    text-decoration:underline;
+    color:navy;
+    background-color:inherit;
+}
+/* assertions */
+sch|assert:before {
+    display : block;
+    content : 'assert ' attr('test');
+    padding-left : 8px;
+    color : blue;
+}
+sch|assert[diagnostics]:before {
+    content : 'assert ' attr('test') '  ' url(img/info.gif) ' ' attr(diagnostics);
+}
+sch|assert[icon]:before {
+    content : attr(icon, url) ' assert ' attr('test');
+}
+sch|assert[diagnostics][icon]:before {
+    content : attr(icon, url) ' assert ' attr('test') '  ' url(img/info.gif) ' ' attr(diagnostics);
+}
+sch|assert {
+    display : block;
+    content : '└ ';
+    padding-left : 20px;
+    margin-right : 20px;
+    margin-left : 8px;
+    margin-bottom : 4px;
+    background-color : #F5FAFF
+}
+sch|assert[see]:after {
+    content : ' ' url(img/link.png) ' See also ' attr('see');
+    link: attr(see);
+    display:inline;
+    background-color:inherit;
+    font-weight:normal;
+}
+/* reports */
+sch|report:before {
+    display : block;
+    content : 'report when ' attr('test');
+    padding-left : 8px;
+    color : green;
+}
+sch|report[diagnostics]:before {
+    content : 'report ' attr('test') '  ' url(img/info.gif) ' ' attr(diagnostics);
+}
+sch|report[icon]:before {
+    content : attr(icon, url) ' report ' attr('test');
+}
+sch|report[diagnostics][icon]:before {
+    content : attr(icon, url) ' report ' attr('test') '  ' url(img/info.gif) ' ' attr(diagnostics);
+}
+sch|report {
+    display : block;
+    content : '└ ';
+    padding-left : 20px;
+    margin-right : 20px;
+    margin-left : 8px;
+    background-color : #F9FFF3
+}
+/* Diagnostics */
+sch|diagnostics:before {
+    content : 'Diagnostics';
+    font-weight : bold;
+}
+sch|diagnostics {
+    -oxy-foldable : true;
+    display : block;
+    margin : 8px;
+    background-color : #FFFCFC;
+}
+sch|diagnostic:before {
+    content : url(img/info.gif) ' ' attr('id');
+    color : navy;
+    font-weight : bold;
+}
+sch|diagnostic[icon]:before {
+    content : attr(icon, url) ' ' attr('id');
+}
+sch|diagnostic {
+    display : block;
+    content : ' - ';
+}
+/* key, name and value-of */
+xsl|key:before {
+    content : 'Key ' attr('name') ' ';
+}
+xsl|key {
+    display : block;
+    content : attr('match') ' → ' attr('use');
+    margin-left : 8px;
+}
+sch|name {
+    color : blue;
+    content:'<' oxy_name() '/>';
+}
+sch|value-of {
+    color : blue;
+    content:'<' oxy_name() oxy_attributes() '/>';
+}
+/* documentation and formatting */
+/* title */
+sch|title {
+    display : block;
+    font-size : large;
+    font-weight : bold;
+    margin-bottom : 10px;
+}
+/* paragraphs */
+sch|p[icon]:before {
+    content : attr('icon', url);
+}
+sch|p {
+    border-right :2px solid gray;
+    border-bottom :2px solid gray;
+    border-left :1px dotted gray;
+    border-top :1px dotted gray;
+    display : block;
+    padding-left:10px;
+    padding-bottom:4px;
+    padding-top:4px;
+    margin-bottom:10px;
+    margin-top:10px;
+    margin-right:10px;
+    margin-left:8px;
+    font-weight :normal;
+}
+/* others */
+sch|emph {
+    font-style : italic;
+}
+sch|dir {
+}

@@ -1,0 +1,138 @@
+/**
+ * Enhanced for StratML Part 2.
+ * 
+ * Copyright (C) 2012	Syncro Soft SRL (oXygen XML Editor).
+ * 
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *  
+ * - Redistributions of source code must retain the above copyright notices, 
+ *   this list of conditions and the following disclaimer. 
+ * - Redistributions in binary form must reproduce the above copyright notice, 
+ *   this list of conditions and the following disclaimer in the documentation 
+ *   and/or other materials provided with the distribution. 
+ * - The name of the author may not be used to endorse or promote products 
+ *   derived from this software without specific prior written permission. 
+ *  
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR 
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES 
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN 
+ * NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED 
+ * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ *
+ * Revision history:
+ * October 13, 2013 - George Bina: 
+ *   - Initial version of the CSS stylesheet
+ * 
+ */
+
+@import "stratml.css";
+
+/************************************/
+/* Helpers */
+/************************************/
+/* Empty Name helper */
+Name:empty {
+  -oxy-placeholder-content : "Type the name here";
+  background-color:#FFEEEE;
+}
+
+Description:empty {
+  -oxy-placeholder-content : "Enter the description here";
+  -oxy-show-placeholder:always;
+  background-color:#FFEEEE;
+}
+Identifier:empty {
+  -oxy-placeholder-content : "Enter identifier here";
+  background-color:#FFEEEE;
+}
+
+OtherInformation:empty {
+  -oxy-placeholder-content : "Enter information here";
+  background-color:#FFEEEE;
+}
+
+Acronym:empty {
+  -oxy-placeholder-content : "Enter acronym here";
+  background-color:#FFEEEE;
+}
+
+SequenceIndicator:empty {
+  -oxy-placeholder-content : "Enter sequence indicator here";
+  background-color:#FFEEEE;
+}
+
+MeasurementDimension:empty {
+  -oxy-placeholder-content : "Enter measurement dimension here";
+  background-color:#FFEEEE;
+}
+
+UnitOfMeasurement:empty {
+  -oxy-placeholder-content : "Enter the unit of measurement here";
+  background-color:#FFEEEE;
+}
+
+NumberOfUnits:empty {
+  -oxy-placeholder-content : "Enter the number of units here";
+  background-color:#FFEEEE;
+}
+
+
+StartDate:empty {
+  -oxy-placeholder-content : "Enter the start date in the format YYYY-MM-DD here";
+  background-color:#FFEEEE;
+}
+EndDate:empty {
+  -oxy-placeholder-content : "Enter the end date in the format YYYY-MM-DD here";
+  background-color:#FFEEEE;
+}
+PublicationDate:empty {
+  -oxy-placeholder-content : "Enter the publication date in the format YYYY-MM-DD here";
+  background-color:#FFEEEE;
+}
+Source:empty {
+  -oxy-placeholder-content : "Enter the source URL here";
+  background-color:#FFEEEE;
+}
+
+
+FirstName:empty {
+  -oxy-placeholder-content : "Enter the first name here";
+  background-color:#FFEEEE;
+}
+LastName:empty {
+  -oxy-placeholder-content : "Enter the last name here";
+  background-color:#FFEEEE;
+}
+PhoneNumber:empty {
+  -oxy-placeholder-content : "Enter the phone number here";
+  background-color:#FFEEEE;
+}
+EmailAddress:empty {
+  -oxy-placeholder-content : "Enter the email address here";
+  background-color:#FFEEEE;
+}
+
+/* ISO version */
+GivenName:empty {
+  -oxy-placeholder-content : "Enter the given name here";
+  background-color:#FFEEEE;
+}
+Surname:empty {
+  -oxy-placeholder-content : "Enter the surname here";
+  background-color:#FFEEEE;
+}
+
+
+/************************************/
+/* Folds */
+/************************************/
+Goal, Objective, Organization, Stakeholder {
+  -oxy-foldable:true;
+  -oxy-not-foldable-child:Name;
+}

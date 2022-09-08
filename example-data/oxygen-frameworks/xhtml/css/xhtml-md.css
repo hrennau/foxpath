@@ -1,0 +1,12 @@
+@import "xhtml.css";
+@import "hide_colspec.css";
+
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+
+oxy|processing-instruction {
+  display:none !important;
+}
+
+head:empty {
+  display:none;
+}

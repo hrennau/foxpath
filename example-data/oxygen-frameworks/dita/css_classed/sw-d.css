@@ -1,0 +1,58 @@
+/*
+==============================
+    Software elements. [sw-d]
+==============================
+*/
+
+/*
+    Application Messages.
+*/
+*[class~="sw-d/msgnum"], 
+*[class~="sw-d/msgph"],
+*[class~="sw-d/msgblock"]{
+    font-family:monospace;
+    font-size:0.9em;
+    background-color: #FFFFEE;
+    color:inherit;
+}
+
+*[class~="sw-d/msgnum"]{
+    font-weight:bold;
+}
+
+*[class~="sw-d/msgblock"]{
+}
+
+
+/*
+    User interraction.
+*/
+*[class~="sw-d/userinput"]{
+    display:inline;
+    font-family:monospace;
+    font-size:0.9em;
+    padding:2px;
+    background-color: #FFEEFF;
+    color:inherit;
+    border:1px solid #DD99DD;
+}
+
+
+/*
+    Other.
+*/
+*[class~="sw-d/systemoutput"],
+*[class~="sw-d/varname"],
+*[class~="sw-d/cmdname"]{
+    display:inline;
+    font-family:monospace;
+    font-size:0.9em;    
+}
+
+*[class~="sw-d/varname"] {
+    font-style:italic;
+}
+
+*[class~="sw-d/cmdname"]{
+    font-weight:bold;
+}

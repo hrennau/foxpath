@@ -1,0 +1,957 @@
+# ============================================================= 
+# MODULE:    DITA - HTML content - Extensible HTML version 1.0 
+#            Transitional RNC converted from DTD
+# VERSION:   1.2
+# DATE:      November 2010
+# =============================================================
+
+# Refer to the latest version of this file by the following URI:
+# urn:dita-ng:dita:rnc:xhtml1-transitional.rnc
+# To refer to this specific version, you may use this value:
+# urn:dita-ng:dita:rnc:xhtml1-transitional.rnc:1.2
+
+# ============================================================= 
+# SYSTEM:     Darwin Information Typing Architecture (DITA)
+# PURPOSE:    Relax NG schema to describe HTML content
+# ORIGINAL CREATION DATE:
+# September 2010
+# (C) Copyright Syncro Soft 2010-2011
+# All Rights Reserved.
+# =============================================================
+
+default namespace = "http://www.w3.org/1999/xhtml"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+start = html
+ContentType = string
+# media type, as per [RFC2045]
+ContentTypes = string
+# comma-separated list of media types, as per [RFC2045]
+Charset = string
+# a character encoding, as per [RFC2045]
+Charsets = string
+# a space separated list of character encodings, as per [RFC2045]
+LanguageCode = xsd:NMTOKEN
+# a language code, as per [RFC3066]
+Character = string
+# a single character, as per section 2.2 of [XML]
+Number = string
+# one or more digits
+LinkTypes = string
+# space-separated list of link types
+MediaDesc = string
+# single or comma-separated list of media descriptors
+URI = string
+# a Uniform Resource Identifier, see [RFC2396]
+UriList = string
+# a space separated list of Uniform Resource Identifiers
+Datetime = string
+# date and time information. ISO date format
+Script = string
+# script expression
+StyleSheet = string
+# style sheet data
+Text = string
+# used for titles etc.
+FrameTarget = xsd:NMTOKEN
+# render in this frame
+Length = string
+# nn for pixels or nn% for percentage length
+MultiLength = string
+# pixel, percentage, or relative
+Pixels = string
+# integer representing length in pixels
+
+# these are used for image maps
+Shape = "rect" | "circle" | "poly" | "default"
+Coords = string
+# comma separated list of lengths
+
+# used for object, applet, img, input and iframe
+ImgAlign = "top" | "middle" | "bottom" | "left" | "right"
+# a color using sRGB: #RRGGBB as Hex values
+Color = string
+# There are also 16 widely known color names with their sRGB values:
+# 
+# Black  = #000000    Green  = #008000
+# Silver = #C0C0C0    Lime   = #00FF00
+# Gray   = #808080    Olive  = #808000
+# White  = #FFFFFF    Yellow = #FFFF00
+# Maroon = #800000    Navy   = #000080
+# Red    = #FF0000    Blue   = #0000FF
+# Purple = #800080    Teal   = #008080
+# Fuchsia= #FF00FF    Aqua   = #00FFFF
+
+# =================== Generic Attributes ===============================
+
+# core attributes common to most elements
+# id       document-wide unique id
+# class    space separated list of classes
+# style    associated style info
+# title    advisory title/amplification
+coreattrs =
+  attribute id { xsd:ID }?,
+  attribute class { text }?,
+  attribute style { StyleSheet }?,
+  attribute title { Text }?
+# internationalization attributes
+# lang        language code (backwards compatible)
+# xml:lang    language code (as per XML 1.0 spec)
+# dir         direction for weak/neutral text
+i18n =
+  attribute lang { LanguageCode }?,
+  attribute xml:lang { LanguageCode }?,
+  attribute dir { "ltr" | "rtl" }?
+# attributes for common UI events
+# onclick     a pointer button was clicked
+# ondblclick  a pointer button was double clicked
+# onmousedown a pointer button was pressed down
+# onmouseup   a pointer button was released
+# onmousemove a pointer was moved onto the element
+# onmouseout  a pointer was moved away from the element
+# onkeypress  a key was pressed and released
+# onkeydown   a key was pressed down
+# onkeyup     a key was released
+events =
+  attribute onclick { Script }?,
+  attribute ondblclick { Script }?,
+  attribute onmousedown { Script }?,
+  attribute onmouseup { Script }?,
+  attribute onmouseover { Script }?,
+  attribute onmousemove { Script }?,
+  attribute onmouseout { Script }?,
+  attribute onkeypress { Script }?,
+  attribute onkeydown { Script }?,
+  attribute onkeyup { Script }?
+# attributes for elements that can get the focus
+# accesskey   accessibility key character
+# tabindex    position in tabbing order
+# onfocus     the element got the focus
+# onblur      the element lost the focus
+focus =
+  attribute accesskey { Character }?,
+  attribute tabindex { Number }?,
+  attribute onfocus { Script }?,
+  attribute onblur { Script }?
+attrs = coreattrs, i18n, events
+# text alignment for p, div, h1-h6. The default is
+# align="left" for ltr headings, "right" for rtl
+TextAlign = attribute align { "left" | "center" | "right" | "justify" }?
+# =================== Text Elements ====================================
+special.extra = object | applet | img | map | iframe
+special.basic = br | span | bdo
+special = special.basic | special.extra
+fontstyle.extra = big | small | font | basefont
+fontstyle.basic = tt | i | b | u | s | strike
+fontstyle = fontstyle.basic | fontstyle.extra
+phrase.extra = sub | sup
+phrase.basic =
+  em
+  | strong
+  | dfn
+  | code
+  | q
+  | samp
+  | kbd
+  | var
+  | cite
+  | abbr
+  | acronym
+phrase = phrase.basic | phrase.extra
+inline.forms = input | select | textarea | label | button
+# these can occur at block or inline level
+misc.inline = ins | del | script
+# these can only occur at block level
+misc = noscript | misc.inline
+inline = a | special | fontstyle | phrase | inline.forms
+# %Inline; covers inline or "text-level" elements
+Inline = (text | inline | misc.inline)*
+# ================== Block level elements ==============================
+heading = h1 | h2 | h3 | h4 | h5 | h6
+lists = ul | ol | dl | menu | dir
+blocktext = pre | hr | blockquote | address | center | noframes
+block =
+  p | heading | \div | lists | blocktext | isindex | fieldset | table
+# %Flow; mixes block and inline and is used for list items etc.
+Flow = (text | block | form | inline | misc)*
+# ================== Content models for exclusions =====================
+
+# a elements use %Inline; excluding a
+a.content =
+  (text | special | fontstyle | phrase | inline.forms | misc.inline)*
+# pre uses %Inline excluding img, object, applet, big, small,
+# font, or basefont
+pre.content =
+  (text
+   | a
+   | special.basic
+   | fontstyle.basic
+   | phrase.basic
+   | inline.forms
+   | misc.inline)*
+# form uses %Flow; excluding form
+form.content = (text | block | inline | misc)*
+# button uses %Flow; but excludes a, form, form controls, iframe
+button.content =
+  (text
+   | p
+   | heading
+   | \div
+   | lists
+   | blocktext
+   | table
+   | br
+   | span
+   | bdo
+   | object
+   | applet
+   | img
+   | map
+   | fontstyle
+   | phrase
+   | misc)*
+# ================ Document Structure ==================================
+
+# doc:This element identifies the document to be XHTML. The remainder of the XHTML document is contained by this element.
+html = element html { html.attlist, head, body }
+html.attlist &=
+  i18n,
+  attribute id { xsd:ID }?
+# ================ Document Head =======================================
+head.misc = (script | style | meta | link | object | isindex)*
+# doc:The HEAD element contains information about the current document,for example the title and the list of keywords that may be used by the search engines.
+head =
+  element head {
+    head.attlist,
+    head.misc,
+    ((title, head.misc, (base, head.misc)?)
+     | (base, head.misc, (title, head.misc)))
+  }
+head.attlist &=
+  i18n,
+  attribute id { xsd:ID }?,
+  attribute profile { URI }?
+# doc:The TITLE element is not considered part of the flow of text. It is displayed as the page header or window title.
+title = element title { title.attlist, text }
+title.attlist &=
+  i18n,
+  attribute id { xsd:ID }?
+# doc:The BASE element allows authors to specify a document's base URI explicitly. The path information specified by the BASE element only affects relative URIs from the same document.
+base = element base { base.attlist, empty }
+base.attlist &=
+  attribute id { xsd:ID }?,
+  attribute href { URI }?,
+  attribute target { FrameTarget }?
+# doc:The META element can be used to identify properties of a document (e.g., author, expiration date, a list of key words, etc.). The specification does not define a normative set of properties.
+meta = element meta { meta.attlist, empty }
+meta.attlist &=
+  i18n,
+  attribute id { xsd:ID }?,
+  attribute http-equiv { text }?,
+  attribute name { text }?,
+  attribute content { text },
+  attribute scheme { text }?
+# doc:This element defines a link. Unlike A, it may only appear in the HEAD section of a document, although it may appear any number of times. Although LINK has no content, it conveys relationship information that may be rendered by user agents in a variety of ways (e.g., a tool-bar with a drop-down menu of links).
+link = element link { link.attlist, empty }
+link.attlist &=
+  attrs,
+  attribute charset { Charset }?,
+  attribute href { URI }?,
+  attribute hreflang { LanguageCode }?,
+  attribute type { ContentType }?,
+  attribute rel { LinkTypes }?,
+  attribute rev { LinkTypes }?,
+  attribute media { MediaDesc }?,
+  attribute target { FrameTarget }?
+# doc:The STYLE element allows authors to put style sheet rules in the head of the document. XHTML permits any number of STYLE elements in the HEAD section of a document. Some style sheet implementations may allow a wider variety of rules in the STYLE element than in the style attribute. For example, with CSS, rules may be declared within a STYLE element.
+style = element style { style.attlist, text }
+style.attlist &=
+  i18n,
+  attribute id { xsd:ID }?,
+  attribute type { ContentType },
+  attribute media { MediaDesc }?,
+  attribute title { Text }?,
+  [ a:defaultValue = "preserve" ] attribute xml:space { "preserve" }?
+# doc:The SCRIPT element places a script within a document. This element may appear any number of times in the HEAD or BODY of an XHTML document.
+script = element script { script.attlist, text }
+script.attlist &=
+  attribute id { xsd:ID }?,
+  attribute charset { Charset }?,
+  attribute type { ContentType },
+  attribute language { text }?,
+  attribute src { URI }?,
+  attribute defer { "defer" }?,
+  [ a:defaultValue = "preserve" ] attribute xml:space { "preserve" }?
+# doc:The NOSCRIPT element allows authors to provide alternate content when a script is not executed. The content of a NOSCRIPT element should only be rendered by a script-aware user agent in the following cases: 1. The user agent is configured not to evaluate scripts; 2The user agent doesn't support a scripting language invoked by a SCRIPT element earlier in the document.
+noscript = element noscript { noscript.attlist, Flow }
+noscript.attlist &= attrs
+# ======================= Frames =======================================
+
+# doc:The IFRAME element allows authors to insert a frame within a block of text. Inserting an inline frame within a section of text is much like inserting an object via the OBJECT element: they both allow you to insert an XHTML document in the middle of another, they may both be aligned with surrounding text, etc.
+iframe = element iframe { iframe.attlist, Flow }
+iframe.attlist &=
+  coreattrs,
+  attribute longdesc { URI }?,
+  attribute name { xsd:NMTOKEN }?,
+  attribute src { URI }?,
+  [ a:defaultValue = "1" ] attribute frameborder { "1" | "0" }?,
+  attribute marginwidth { Pixels }?,
+  attribute marginheight { Pixels }?,
+  [ a:defaultValue = "auto" ]
+  attribute scrolling { "yes" | "no" | "auto" }?,
+  attribute align { ImgAlign }?,
+  attribute height { Length }?,
+  attribute width { Length }?
+# doc:The NOFRAMES element specifies content that should be displayed only by user agents that do not support frames or are configured not to display frames. User agents that support frames must only display the contents of a NOFRAMES declaration when configured not to display frames. User agents that do not support frames must display the contents of NOFRAMES in any case.
+noframes = element noframes { noframes.attlist, Flow }
+noframes.attlist &= attrs
+# =================== Document Body ====================================
+
+# doc:The body of a document contains the document's content. The content may be presented by a user agent in a variety of ways. For example, for visual browsers, you can think of the body as a canvas where the content appears: text, images, colors, graphics, etc.
+body = element body { body.attlist, Flow }
+body.attlist &=
+  attrs,
+  attribute onload { Script }?,
+  attribute onunload { Script }?,
+  attribute background { URI }?,
+  attribute bgcolor { Color }?,
+  attribute text { Color }?,
+  attribute link { Color }?,
+  attribute vlink { Color }?,
+  attribute alink { Color }?
+# doc:The DIV element defines a division/section in a document. It offer a generic mechanism for adding structure to documents. This element define content to be block-level but impose no other presentational idioms on the content.
+\div = element div { div.attlist, Flow }
+div.attlist &= attrs, TextAlign
+# =================== Paragraphs =======================================
+
+# doc:The P element represents a paragraph. It cannot contain block-level elements (including P itself).
+p = element p { p.attlist, Inline }
+p.attlist &= attrs, TextAlign
+# =================== Headings =========================================
+
+# doc:There are six levels of headings in XHTML with H1 as the most important and H6 as the least. Visual browsers usually render more important headings in larger fonts than less important ones.
+h1 = element h1 { h1.attlist, Inline }
+h1.attlist &= attrs, TextAlign
+# doc:There are six levels of headings in XHTML with H1 as the most important and H6 as the least. Visual browsers usually render more important headings in larger fonts than less important ones.
+h2 = element h2 { h2.attlist, Inline }
+h2.attlist &= attrs, TextAlign
+# doc:There are six levels of headings in XHTML with H1 as the most important and H6 as the least. Visual browsers usually render more important headings in larger fonts than less important ones.
+h3 = element h3 { h3.attlist, Inline }
+h3.attlist &= attrs, TextAlign
+# doc:There are six levels of headings in XHTML with H1 as the most important and H6 as the least. Visual browsers usually render more important headings in larger fonts than less important ones.
+h4 = element h4 { h4.attlist, Inline }
+h4.attlist &= attrs, TextAlign
+# doc:There are six levels of headings in XHTML with H1 as the most important and H6 as the least. Visual browsers usually render more important headings in larger fonts than less important ones.
+h5 = element h5 { h5.attlist, Inline }
+h5.attlist &= attrs, TextAlign
+# doc:There are six levels of headings in XHTML with H1 as the most important and H6 as the least. Visual browsers usually render more important headings in larger fonts than less important ones.
+h6 = element h6 { h6.attlist, Inline }
+h6.attlist &= attrs, TextAlign
+# =================== Lists ============================================
+
+# Unordered list bullet styles
+ULStyle = "disc" | "square" | "circle"
+# doc:The UL element defines an unordered list. Unordered list items are not numbered.
+ul = element ul { ul.attlist, li+ }
+ul.attlist &=
+  attrs,
+  attribute type { ULStyle }?,
+  attribute compact { "compact" }?
+# Ordered list numbering style
+# 
+# 1   arabic numbers      1, 2, 3, ...
+# a   lower alpha         a, b, c, ...
+# A   upper alpha         A, B, C, ...
+# i   lower roman         i, ii, iii, ...
+# I   upper roman         I, II, III, ...
+# 
+# The style is applied to the sequence number which by default
+# is reset to 1 for the first list item in an ordered list.
+OLStyle = string
+# doc:The OL element defines an ordered list. Ordered list items are numbered.
+ol = element ol { ol.attlist, li+ }
+ol.attlist &=
+  attrs,
+  attribute type { OLStyle }?,
+  attribute compact { "compact" }?,
+  attribute start { Number }?
+# doc:The MENU element was designed to be used for single column menu lists. (DEPRECATED)
+menu = element menu { menu.attlist, li+ }
+menu.attlist &=
+  attrs,
+  attribute compact { "compact" }?
+# doc:The DIR element was designed to be used for creating multicolumn directory lists. (DEPRECATED)
+dir = element dir { dir.attlist, li+ }
+dir.attlist &=
+  attrs,
+  attribute compact { "compact" }?
+LIStyle = string
+# doc:The LI element is used to define a list item. The LI element is used in ordered (OL) and unordered lists (UL).
+li = element li { li.attlist, Flow }
+li.attlist &=
+  attrs,
+  attribute type { LIStyle }?,
+  attribute value { Number }?
+# doc:The DL element is used to define a definition list. They consist consist of two parts for each item: a term (DT) and a description (DD).
+dl = element dl { dl.attlist, (dt | dd)+ }
+dl.attlist &=
+  attrs,
+  attribute compact { "compact" }?
+# doc:The DT element defines a term in a definition list.
+dt = element dt { dt.attlist, Inline }
+dt.attlist &= attrs
+# doc:The DD element defines the description of a term in a definition list.
+dd = element dd { dd.attlist, Flow }
+dd.attlist &= attrs
+# =================== Address ==========================================
+
+# doc:The ADDRESS element may be used by authors to supply contact information for a document or a major part of a document such as a form. This element often appears at the beginning or end of a document.
+address =
+  element address {
+    address.attlist, (text | inline | misc.inline | p)*
+  }
+address.attlist &= attrs
+# =================== Horizontal Rule ==================================
+
+# doc:The HR element causes a horizontal rule to be rendered by visual user agents.
+hr = element hr { hr.attlist, empty }
+hr.attlist &=
+  attrs,
+  attribute align { "left" | "center" | "right" }?,
+  attribute noshade { "noshade" }?,
+  attribute size { Pixels }?,
+  attribute width { Length }?
+# =================== Preformatted Text ================================
+
+# doc:The PRE element defines blocks of preformatted text. The text enclosed in the pre element preserves spaces and line breaks and is rendered in a fixed-pitch font.
+pre = element pre { pre.attlist, pre.content }
+pre.attlist &=
+  attrs,
+  attribute width { Number }?,
+  [ a:defaultValue = "preserve" ] attribute xml:space { "preserve" }?
+# =================== Block-like Quotes ================================
+
+# doc:The BLOCKQUOTE element defines the start of a long quotation (block-level content) . It creates white space on both sides of the text.
+blockquote = element blockquote { blockquote.attlist, Flow }
+blockquote.attlist &=
+  attrs,
+  attribute cite { URI }?
+# =================== Text alignment ===================================
+
+# doc:The CENTER element is exactly equivalent to specifying the DIV element with the align attribute set to "center". The CENTER element is deprecated.
+center = element center { center.attlist, Flow }
+center.attlist &= attrs
+# =================== Inserted/Deleted Text ============================
+
+# doc:INS is used to markup sections of the document that have been inserted with respect to a different version of a document (e.g., in draft legislation where lawmakers need to view the changes).
+ins = element ins { ins.attlist, Flow }
+ins.attlist &=
+  attrs,
+  attribute cite { URI }?,
+  attribute datetime { Datetime }?
+# doc:DEL is used to markup sections of the document that have been deleted with respect to a different version of a document (e.g., in draft legislation where lawmakers need to view the changes).
+del = element del { del.attlist, Flow }
+del.attlist &=
+  attrs,
+  attribute cite { URI }?,
+  attribute datetime { Datetime }?
+# ================== The Anchor Element ================================
+
+# doc:The A element defines an anchor element. An anchor can be used: 1.To create a link to another document by using the href attribute; 2.To create a bookmark inside a document by using the name or id attribute.
+a = element a { a.attlist, a.content }
+a.attlist &=
+  attrs,
+  focus,
+  attribute charset { Charset }?,
+  attribute type { ContentType }?,
+  attribute name { xsd:NMTOKEN }?,
+  attribute href { URI }?,
+  attribute hreflang { LanguageCode }?,
+  attribute rel { LinkTypes }?,
+  attribute rev { LinkTypes }?,
+  [ a:defaultValue = "rect" ] attribute shape { Shape }?,
+  attribute coords { Coords }?,
+  attribute target { FrameTarget }?
+# ===================== Inline Elements ================================
+
+# doc:The SPAN element is used to group inline-elements in a document. Use the SPAN element to group inline-elements to format them with styles.
+span = element span { span.attlist, Inline }
+span.attlist &= attrs
+# doc:The BDO element overrides the default text direction. It should be used in scenarios where absolute control over sequence order is required (e.g., multi-language part numbers).
+bdo = element bdo { bdo.attlist, Inline }
+bdo.attlist &=
+  coreattrs,
+  events,
+  attribute lang { LanguageCode }?,
+  attribute xml:lang { LanguageCode }?,
+  attribute dir { "ltr" | "rtl" }
+# doc:The BR element forcibly breaks (ends) the current line of text. Use the BR element to enter blank lines, not to separate paragraphs.
+br = element br { br.attlist, empty }
+br.attlist &=
+  coreattrs,
+  [ a:defaultValue = "none" ]
+  attribute clear { "left" | "all" | "right" | "none" }?
+# doc:Renders as emphasized text. Generally, visual user agents present EM text in italics.
+em = element em { em.attlist, Inline }
+em.attlist &= attrs
+# doc:Renders as strong emphasized text. Generally, visual user agents present STRONG text in bold font.
+strong = element strong { strong.attlist, Inline }
+strong.attlist &= attrs
+# doc:Indicates that this is the defining instance of the enclosed term.
+dfn = element dfn { dfn.attlist, Inline }
+dfn.attlist &= attrs
+# doc:Designates a fragment of computer code.
+code = element code { code.attlist, Inline }
+code.attlist &= attrs
+# doc:Designates sample output from programs, scripts, etc.
+samp = element samp { samp.attlist, Inline }
+samp.attlist &= attrs
+# doc:Indicates text to be entered by the user.
+kbd = element kbd { kbd.attlist, Inline }
+kbd.attlist &= attrs
+# doc:Indicates an instance of a variable or program argument.
+var = element var { var.attlist, Inline }
+var.attlist &= attrs
+# doc:Contains a citation or a reference to other sources.
+cite = element cite { cite.attlist, Inline }
+cite.attlist &= attrs
+# doc:The ABBR element is used to indicates an abbreviated form, like "ie.", "Ltd.", "etc.".
+abbr = element abbr { abbr.attlist, Inline }
+abbr.attlist &= attrs
+# doc:The ACRONYM element defines an acronym, like "USA" or "F.B.I".
+acronym = element acronym { acronym.attlist, Inline }
+acronym.attlist &= attrs
+# doc:The Q element defines the start of a short quotation. It does not render as anything special, you have to use styles to format the text.
+q = element q { q.attlist, Inline }
+q.attlist &=
+  attrs,
+  attribute cite { URI }?
+# doc:The SUB element defines subscript text.
+sub = element sub { sub.attlist, Inline }
+sub.attlist &= attrs
+# doc:The SUP element defines superscript text.
+sup = element sup { sup.attlist, Inline }
+sup.attlist &= attrs
+# doc:Renders as teletype or mono spaced text.
+tt = element tt { tt.attlist, Inline }
+tt.attlist &= attrs
+# doc:Renders as italic text style.
+i = element i { i.attlist, Inline }
+i.attlist &= attrs
+# doc:Renders as bold text style.
+b = element b { b.attlist, Inline }
+b.attlist &= attrs
+# doc:Renders text in a "large" font.
+big = element big { big.attlist, Inline }
+big.attlist &= attrs
+# doc:Renders text in a "small" font.
+small = element small { small.attlist, Inline }
+small.attlist &= attrs
+# doc:Renders underlined style text. (DEPRECATED)
+u = element u { u.attlist, Inline }
+u.attlist &= attrs
+# doc:Render strike-through style text.
+s = element s { s.attlist, Inline }
+s.attlist &= attrs
+# doc:Render strike-through style text.
+strike = element strike { strike.attlist, Inline }
+strike.attlist &= attrs
+# doc:The BASEFONT element sets the base font size (using the size attribute). Font size changes achieved with FONT are relative to the base font size set by BASEFONT. If BASEFONT is not used, the default base font size is 3.
+basefont = element basefont { basefont.attlist, empty }
+basefont.attlist &=
+  attribute id { xsd:ID }?,
+  attribute size { text },
+  attribute color { Color }?,
+  attribute face { text }?
+# doc:The FONT element changes the font size and color for text in its contents.
+font = element font { font.attlist, Inline }
+font.attlist &=
+  coreattrs,
+  i18n,
+  attribute size { text }?,
+  attribute color { Color }?,
+  attribute face { text }?
+# ==================== Object ======================================
+
+# doc:Defines an embedded object. This element allows to specify the data and parameters for objects inserted into documents.
+object =
+  element object {
+    object.attlist, (text | param | block | form | inline | misc)*
+  }
+object.attlist &=
+  attrs,
+  attribute declare { "declare" }?,
+  attribute classid { URI }?,
+  attribute codebase { URI }?,
+  attribute data { URI }?,
+  attribute type { ContentType }?,
+  attribute codetype { ContentType }?,
+  attribute archive { UriList }?,
+  attribute standby { Text }?,
+  attribute height { Length }?,
+  attribute width { Length }?,
+  attribute usemap { URI }?,
+  attribute name { xsd:NMTOKEN }?,
+  attribute tabindex { Number }?,
+  attribute align { ImgAlign }?,
+  attribute border { Pixels }?,
+  attribute hspace { Pixels }?,
+  attribute vspace { Pixels }?
+# doc:PARAM elements specify a set of values that may be required by an object at run-time. Any number of PARAM elements may appear in the content of an OBJECT or APPLET element, in any order, but must be placed at the start of the content of the enclosing OBJECT or APPLET element.
+param = element param { param.attlist, empty }
+param.attlist &=
+  attribute id { xsd:ID }?,
+  attribute name { text },
+  attribute value { text }?,
+  [ a:defaultValue = "data" ]
+  attribute valuetype { "data" | "ref" | "object" }?,
+  attribute type { ContentType }?
+# =================== Java applet ==================================
+
+# doc:This element, supported by all Java-enabled browsers, allows designers to embed a Java applet in an XHTML document. It has been deprecated in favor of the OBJECT element.
+applet =
+  element applet {
+    applet.attlist, (text | param | block | form | inline | misc)*
+  }
+applet.attlist &=
+  coreattrs,
+  attribute codebase { URI }?,
+  attribute archive { text }?,
+  attribute code { text }?,
+  attribute object { text }?,
+  attribute alt { Text }?,
+  attribute name { xsd:NMTOKEN }?,
+  attribute width { Length },
+  attribute height { Length },
+  attribute align { ImgAlign }?,
+  attribute hspace { Pixels }?,
+  attribute vspace { Pixels }?
+# =================== Images ===========================================
+
+# doc:The IMG element embeds an image in the current document at the location of the element's definition. The IMG element has no content; it is usually replaced inline by the image designated by the src attribute, the exception being for left or right-aligned images that are "floated" out of line. Note that in this DTD there is no name attribute. That is only available in the transitional and frameset DTD.
+img = element img { img.attlist, empty }
+img.attlist &=
+  attrs,
+  attribute src { URI },
+  attribute alt { Text },
+  attribute name { xsd:NMTOKEN }?,
+  attribute longdesc { URI }?,
+  attribute height { Length }?,
+  attribute width { Length }?,
+  attribute usemap { URI }?,
+  attribute ismap { "ismap" }?,
+  attribute align { ImgAlign }?,
+  attribute border { Length }?,
+  attribute hspace { Pixels }?,
+  attribute vspace { Pixels }?
+# usemap points to a map element which may be in this document or an external document, although the latter is not widely supported
+
+# ================== Client-side image maps ============================
+
+# doc:The MAP element specifies a client-side image map (or other navigation mechanism) that may be associated with another elements (IMG, OBJECT, or INPUT). An image map is associated with an element via the element's usemap attribute. The MAP element may be used without an associated image for general navigation mechanisms.
+map =
+  element map {
+    map.attlist,
+    ((block | form | misc)+ | area+)
+  }
+map.attlist &=
+  i18n,
+  events,
+  attribute id { xsd:ID },
+  attribute class { text }?,
+  attribute style { StyleSheet }?,
+  attribute title { Text }?,
+  attribute name { text }?
+# doc: Defines a region in an image map. This element is always nested inside a MAP tag. This element has no content but specify the geometric region of the image map and the link associated with the region. Note that user agents do not generally render AREA elements. Therefore, authors must provide alternate text for each AREA with the alt attribute.
+
+# doc:Defines a region in an image map. This element is always nested inside a MAP element. This element has no content but specify the geometric region of the image map and the link associated with the region. Note that user agents do not generally render AREA elements. Therefore, authors must provide alternate text for each AREA with the alt attribute.
+area = element area { area.attlist, empty }
+area.attlist &=
+  attrs,
+  focus,
+  [ a:defaultValue = "rect" ] attribute shape { Shape }?,
+  attribute coords { Coords }?,
+  attribute href { URI }?,
+  attribute nohref { "nohref" }?,
+  attribute alt { Text },
+  attribute target { FrameTarget }?
+# ================ Forms ===============================================
+
+# doc:The FORM element creates a form. A form can contain textfields, checkboxes, radio-buttons etc. Forms are used to pass user-data to a specified URL, usually a CGI.
+form = element form { form.attlist, form.content }
+form.attlist &=
+  attrs,
+  attribute action { URI },
+  [ a:defaultValue = "get" ] attribute method { "get" | "post" }?,
+  attribute name { xsd:NMTOKEN }?,
+  [ a:defaultValue = "application/x-www-form-urlencoded" ]
+  attribute enctype { ContentType }?,
+  attribute onsubmit { Script }?,
+  attribute onreset { Script }?,
+  attribute accept { ContentTypes }?,
+  attribute accept-charset { Charsets }?,
+  attribute target { FrameTarget }?
+# doc:The LABEL element may be used to attach information to controls. Each LABEL element is associated with exactly one form control. The "for" attribute binds a label to another element. Set the value of the "for" attribute equal to the value of the "id" attribute of the related element.
+label = element label { label.attlist, Inline }
+label.attlist &=
+  attrs,
+  attribute for { xsd:IDREF }?,
+  attribute accesskey { Character }?,
+  attribute onfocus { Script }?,
+  attribute onblur { Script }?
+InputType =
+  "text"
+  | "password"
+  | "checkbox"
+  | "radio"
+  | "submit"
+  | "reset"
+  | "file"
+  | "hidden"
+  | "image"
+  | "button"
+# the name attribute is required for all but submit & reset
+
+# doc:The INPUT element defines the start of an input field where the user can enter data. The INPUT element is empty, it contains attributes only.
+input = element input { input.attlist, empty }
+input.attlist &=
+  attrs,
+  focus,
+  [ a:defaultValue = "text" ] attribute type { InputType }?,
+  attribute name { text }?,
+  attribute value { text }?,
+  attribute checked { "checked" }?,
+  attribute disabled { "disabled" }?,
+  attribute readonly { "readonly" }?,
+  attribute size { text }?,
+  attribute maxlength { Number }?,
+  attribute src { URI }?,
+  attribute alt { text }?,
+  attribute usemap { URI }?,
+  attribute onselect { Script }?,
+  attribute onchange { Script }?,
+  attribute accept { ContentTypes }?,
+  attribute align { ImgAlign }?
+# doc:The select element creates a drop-down list. Use this element in the FORM element to accept user input.
+select = element select { select.attlist, (optgroup | option)+ }
+select.attlist &=
+  attrs,
+  attribute name { text }?,
+  attribute size { Number }?,
+  attribute multiple { "multiple" }?,
+  attribute disabled { "disabled" }?,
+  attribute tabindex { Number }?,
+  attribute onfocus { Script }?,
+  attribute onblur { Script }?,
+  attribute onchange { Script }?
+# doc:The OPTGROUP element allows authors to group choices logically. This is particularly helpful when the user must choose from a long list of options; groups of related choices are easier to grasp and remember than a single long list of options.
+optgroup = element optgroup { optgroup.attlist, option+ }
+optgroup.attlist &=
+  attrs,
+  attribute disabled { "disabled" }?,
+  attribute label { Text }
+# doc:The option element defines an option in the drop-down list. Use this element in conjunction with the SELECT element, elsewhere it is meaningless.
+option = element option { option.attlist, text }
+option.attlist &=
+  attrs,
+  attribute selected { "selected" }?,
+  attribute disabled { "disabled" }?,
+  attribute label { Text }?,
+  attribute value { text }?
+# doc:The TEXTAREA element creates a multi-line text input control. User agents should use the contents of this element as the initial value of the control and should render this text initially.
+textarea = element textarea { textarea.attlist, text }
+textarea.attlist &=
+  attrs,
+  focus,
+  attribute name { text }?,
+  attribute rows { Number },
+  attribute cols { Number },
+  attribute disabled { "disabled" }?,
+  attribute readonly { "readonly" }?,
+  attribute onselect { Script }?,
+  attribute onchange { Script }?
+# doc:The FIELDSET element allows authors to group thematically related controls and labels. Grouping controls makes it easier for users to understand their purpose while simultaneously facilitating tabbing navigation for visual user agents and speech navigation for speech-oriented user agents. The proper use of this element makes documents more accessible.
+fieldset =
+  element fieldset {
+    fieldset.attlist, (text | legend | block | form | inline | misc)*
+  }
+fieldset.attlist &= attrs
+LAlign = "top" | "bottom" | "left" | "right"
+# doc:The LEGEND element allows authors to assign a caption to a FIELDSET. The legend improves accessibility when the FIELDSET is rendered non-visually.
+legend = element legend { legend.attlist, Inline }
+legend.attlist &=
+  attrs,
+  attribute accesskey { Character }?,
+  attribute align { LAlign }?
+# Content is %Flow; excluding a, form, form controls, iframe
+
+# doc:The BUTTON element defines a push button. Inside a button element you can put content for example images, text.
+button = element button { button.attlist, button.content }
+button.attlist &=
+  attrs,
+  focus,
+  attribute name { text }?,
+  attribute value { text }?,
+  [ a:defaultValue = "submit" ]
+  attribute type { "button" | "submit" | "reset" }?,
+  attribute disabled { "disabled" }?
+# doc:This element creates a single-line text input control. Authors should use the INPUT element to create text input controls. (DEPRECATED)
+isindex = element isindex { isindex.attlist, empty }
+isindex.attlist &=
+  coreattrs,
+  i18n,
+  attribute prompt { Text }?
+# ======================= Tables =======================================
+
+# Derived from IETF HTML table standard, see [RFC1942]
+
+# The border attribute sets the thickness of the frame around the
+# table. The default units are screen pixels.
+# 
+# The frame attribute specifies which parts of the frame around
+# the table should be rendered. The values are not the same as
+# CALS to avoid a name clash with the valign attribute.
+TFrame =
+  "void"
+  | "above"
+  | "below"
+  | "hsides"
+  | "lhs"
+  | "rhs"
+  | "vsides"
+  | "box"
+  | "border"
+# The rules attribute defines which rules to draw between cells:
+# 
+# If rules is absent then assume:
+#     "none" if border is absent or border="0" otherwise "all"
+TRules = "none" | "groups" | "rows" | "cols" | "all"
+# horizontal placement of table relative to document
+TAlign = "left" | "center" | "right"
+# horizontal alignment attributes for cell contents
+# 
+# char        alignment char, e.g. char=':'
+# charoff     offset for alignment char
+cellhalign =
+  attribute align { "left" | "center" | "right" | "justify" | "char" }?,
+  attribute char { Character }?,
+  attribute charoff { Length }?
+# vertical alignment attributes for cell contents
+cellvalign =
+  attribute valign { "top" | "middle" | "bottom" | "baseline" }?
+# doc:The TABLE element defines a table. Inside a TABLE element there can be table headers, table rows, table cells.
+table =
+  element table {
+    table.attlist,
+    caption?,
+    (col* | colgroup*),
+    thead?,
+    tfoot?,
+    (tbody+ | tr+)
+  }
+# doc:The CAPTION element defines a table caption.
+caption = element caption { caption.attlist, Inline }
+# doc:Defines a table header. Table rows may be grouped into a table head, table foot, and one or more table body sections, using the THEAD, TFOOT and TBODY elements, respectively. This division enables user agents to support scrolling of table bodies independently of the table head and foot. When long tables are printed, the table head and foot information may be repeated on each page that contains table data.
+thead = element thead { thead.attlist, tr+ }
+# doc:Defines a table footer. Table rows may be grouped into a table head, table foot, and one or more table body sections, using the THEAD, TFOOT and TBODY elements, respectively. This division enables user agents to support scrolling of table bodies independently of the table head and foot. When long tables are printed, the table head and foot information may be repeated on each page that contains table data.
+tfoot = element tfoot { tfoot.attlist, tr+ }
+# doc:Defines a table body. Table rows may be grouped into a table head, table foot, and one or more table body sections, using the THEAD, TFOOT and TBODY elements, respectively. This division enables user agents to support scrolling of table bodies independently of the table head and foot. When long tables are printed, the table head and foot information may be repeated on each page that contains table data.
+tbody = element tbody { tbody.attlist, tr+ }
+# doc:Defines different formatting groups of table columns. The colgroup element is an empty element that contains attributes only. To create columns, you must specify td elements within a tr element.
+colgroup = element colgroup { colgroup.attlist, col* }
+# doc:The COL element allows authors to group together attribute specifications for table columns. The COL does not group columns together structurally that is the role of the COLGROUP element. COL elements are empty and serve only as a support for attributes. They may appear inside or outside an explicit column group (i.e., COLGROUP element).
+col = element col { col.attlist, empty }
+# doc:The TR elements acts as a container for a row of table cells.
+tr = element tr { tr.attlist, (th | td)+ }
+# doc:The TH element defines a cell in a table that contains header information. User agents have two pieces of header information available: the contents of the TH element and the value of the abbr attribute.
+th = element th { th.attlist, Flow }
+# doc:The TD element defines a cell in a table that contains data.
+td = element td { td.attlist, Flow }
+table.attlist &=
+  attrs,
+  attribute summary { Text }?,
+  attribute width { Length }?,
+  attribute border { Pixels }?,
+  attribute frame { TFrame }?,
+  attribute rules { TRules }?,
+  attribute cellspacing { Length }?,
+  attribute cellpadding { Length }?,
+  attribute align { TAlign }?,
+  attribute bgcolor { Color }?
+CAlign = "top" | "bottom" | "left" | "right"
+caption.attlist &=
+  attrs,
+  attribute align { CAlign }?
+# colgroup groups a set of col elements. It allows you to group
+# several semantically related columns together.
+colgroup.attlist &=
+  attrs,
+  [ a:defaultValue = "1" ] attribute span { Number }?,
+  attribute width { MultiLength }?,
+  cellhalign,
+  cellvalign
+# col elements define the alignment properties for cells in
+# one or more columns.
+# 
+# The width attribute specifies the width of the columns, e.g.
+# 
+#     width=64        width in screen pixels
+#     width=0.5*      relative width of 0.5
+# 
+# The span attribute causes the attributes of one
+# col element to apply to more than one column.
+col.attlist &=
+  attrs,
+  [ a:defaultValue = "1" ] attribute span { Number }?,
+  attribute width { MultiLength }?,
+  cellhalign,
+  cellvalign
+# Use thead to duplicate headers when breaking table
+# across page boundaries, or for static headers when
+# tbody sections are rendered in scrolling panel.
+# 
+# Use tfoot to duplicate footers when breaking table
+# across page boundaries, or for static footers when
+# tbody sections are rendered in scrolling panel.
+# 
+# Use multiple tbody sections when rules are needed
+# between groups of table rows.
+thead.attlist &= attrs, cellhalign, cellvalign
+tfoot.attlist &= attrs, cellhalign, cellvalign
+tbody.attlist &= attrs, cellhalign, cellvalign
+tr.attlist &=
+  attrs,
+  cellhalign,
+  cellvalign,
+  attribute bgcolor { Color }?
+# Scope is simpler than headers attribute for common tables
+Scope = "row" | "col" | "rowgroup" | "colgroup"
+# th is for headers, td for data and for cells acting as both
+th.attlist &=
+  attrs,
+  attribute abbr { Text }?,
+  attribute axis { text }?,
+  attribute headers { xsd:IDREFS }?,
+  attribute scope { Scope }?,
+  [ a:defaultValue = "1" ] attribute rowspan { Number }?,
+  [ a:defaultValue = "1" ] attribute colspan { Number }?,
+  cellhalign,
+  cellvalign,
+  attribute nowrap { "nowrap" }?,
+  attribute bgcolor { Color }?,
+  attribute width { Length }?,
+  attribute height { Length }?
+td.attlist &=
+  attrs,
+  attribute abbr { Text }?,
+  attribute axis { text }?,
+  attribute headers { xsd:IDREFS }?,
+  attribute scope { Scope }?,
+  [ a:defaultValue = "1" ] attribute rowspan { Number }?,
+  [ a:defaultValue = "1" ] attribute colspan { Number }?,
+  cellhalign,
+  cellvalign,
+  attribute nowrap { "nowrap" }?,
+  attribute bgcolor { Color }?,
+  attribute width { Length }?,
+  attribute height { Length }?

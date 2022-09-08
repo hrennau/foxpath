@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalog PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN"
+                         "http://www.oasis-open.org/committees/entity/release/1.0/catalog.dtd">
+ <!--
+     Comment the DTD declaration to avoid looking for it on the web.
+     Alternatively we can place a copy of the DTD locally and refer to it.
+ -->
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+
+    <public publicId="-//W3C//DTD XHTML 1.1//EN" uri="xhtml11-flat.dtd"/>
+    <public publicId="-//W3C//ENTITIES XHTML 1.1 Document Model 1.0//EN" uri="xhtml11-model-1.mod"/>
+    <public publicId="-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" uri="xhtml-math-svg-flat.dtd"/>
+    
+    <system systemId="http://www.w3.org/MarkUp/DTD/xhtml11.dtd" uri="xhtml11-flat.dtd"/>
+    <system systemId="http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" uri="xhtml11-flat.dtd"/>
+    <system systemId="http://www.w3.org/MarkUp/DTD/xhtml11-model-1.mod" uri="xhtml11-model-1.mod"/>
+    <system systemId="http://www.w3.org/TR/xhtml11/DTD/xhtml11-model-1.mod" uri="xhtml11-model-1.mod"/>
+    <system systemId="http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd" uri="xhtml-math-svg-flat.dtd"/>
+    <system systemId="http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg-flat.dtd" uri="xhtml-math-svg-flat.dtd"/>
+    
+    <system systemId="http://www.w3.org/MarkUp/DTD/xhtml-lat1.ent" uri="xhtml-lat1.ent"/>
+    <system systemId="http://www.w3.org/MarkUp/DTD/xhtml-symbol.ent" uri="xhtml-symbol.ent"/>
+    <system systemId="http://www.w3.org/MarkUp/DTD/xhtml-special.ent" uri="xhtml-special.ent"/>
+</catalog>

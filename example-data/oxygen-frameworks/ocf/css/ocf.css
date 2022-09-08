@@ -1,0 +1,63 @@
+container:before {
+    content : "Container:";
+}
+
+container {
+    display : block;
+    margin:1em 1em;
+}
+
+rootfiles {
+    display : block;
+    margin:1em 1em;
+}
+
+rootfile:before {
+    link: oxy_concat('../', attr(full-path));
+    content: ' ' url(../img/link.png) ' ../' attr(full-path);
+    display:inline;
+    color:navy;
+    background-color:inherit;
+}
+
+encryption:before {
+    content : "Encryption:";
+}
+
+encryption {
+    display : block;
+    margin:1em 1em;
+}
+
+
+encryption > *:before {
+    display : block;
+    color : green;
+    content : oxy_name() ' ';
+}
+encryption > * > *:before {
+    display : block;
+    color : green;
+    content : oxy_name() ' ';
+}
+
+signatures:before {
+    content : "Signatures:";
+}
+
+Signature {
+    display : block;
+    margin:1em 1em;
+}
+
+Signature > *:before {
+    display : block;
+    color : green;
+    content : oxy_name() ' ';
+}
+
+Signature > * > *:before {
+    display : block;
+    color : green;
+    content : oxy_name() ' ';
+}

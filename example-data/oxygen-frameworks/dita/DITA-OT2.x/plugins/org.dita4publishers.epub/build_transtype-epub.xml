@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?><project xmlns:dita="http://dita-ot.sourceforge.net" name="dita2epub" default="dita2epub">
+
+  <!-- test to see where the plugin is located, plugins or demo -->
+  <dirname property="epub.dir" file="${ant.file.dita2epub}"/>
+
+	<!-- Global properties that affect the base Toolkit processing: -->
+
+  <condition property="preprocess.maplink.skip" value="true">
+    <isset property="epub.exclude.auto.rellinks"/>
+  </condition>
+  <condition property="preprocess.move-links.skip" value="true">
+    <isset property="epub.exclude.auto.rellinks"/>
+  </condition>
+
+  <!-- property that when set will prevent the DITA-OT OOTB CSS from being copied
+for inclusion in the epub file -->
+  <condition property="system.copycss.no">
+    <and>
+      <isset property="epub.copy.system.css"/>
+      <isfalse value="${epub.copy.system.css}"/>
+    </and>
+  </condition>
+  
+	<target name="dita2epub" unless="noMap" depends="d4p.map-driven-build-init,build-init,preprocess,xhtml.image-metadata,epub">
+  </target>
+
+  <target name="epub" unless="noMap" depends="dita.map.epub, zipepub"/>
+
+  <target name="checkAnt1.9">
+    <antversion property="ant.version"/>
+    <condition property="isAnt1.9">
+      <antversion atleast="1.9.1"/>
+    </condition>
+  </target>
+
+  <target name="zipepub" depends="checkAnt1.9, zipEpubOldAnt, zipEpubNewAnt"/>
+
+  <target name="zipEpubNewAnt" if="${isAnt1.9}">
+    <!-- Two steps because mimetype must go in first,
+      uncompressed. Looks like ant puts later zipped files in
+      first, so mimetype is in second zip task. -->
+    <zip destfile="${output.dir}${file.separator}${dita.map.filename.root}.epub" compress="true">
+      <!-- Default includes: stuff that we know should legitimately be 
+           in any EPUB and is unlikely to get in the epub-temp directory
+           by accident.
+        -->
+      <fileset dir="${epub.temp.dir}" includes="META-INF${file.separator}*.xml,toc.ncx,         content.opf,container.opf,**/*.html,**/*.xhtml,**/*.css,**/*.HTML,**/*.CSS,         **/*.jpg,**/*.jpeg,**/*.gif,**/*.png,**/*.svg,**/*.mp4,**/*.mp3,**/*.m4a,         **/*.JPG,**/*.JPEG,**/*.GIF,**/*.PNG,**/*.SVG,**/*.MP4,**/*.MP3,**/*.M4A,          **/*.ttf, **/*.ttc, **/*.otf, **/*.otc, *.woff,         **/*.TTF, **/*.TTC, **/*.OTF, **/*.OTC, *.WOFF,         **/*.js,**/*.JS         "/>
+      <!-- Extension point to add additional includes or excludes as 
+           needed.
+        -->
+      
+    </zip>
+    <zip destfile="${output.dir}${file.separator}${dita.map.filename.root}.epub" basedir="${epub.temp.dir}" includes="mimetype" update="true" keepcompression="true" compress="false" createunicodeextrafields="never" zip64Mode="never"/>
+    <!-- For Ant 1.9 or newer, need to specify zip64Mode="never" -->
+  </target>
+
+  <target name="zipEpubOldAnt" unless="${isAnt1.9}">
+
+    <echo>- [WARN] Using ${ant.version}. You must use 1.9.1 or newer to produce a correct EPUB Zip package.</echo>
+    <echo>- [WARN] EPUB will not pass epubcheck.</echo>
+    <!-- Two steps because mimetype must go in first,
+      uncompressed. Looks like ant puts later zipped files in
+      first, so mimetype is in second zip task. -->
+    <zip destfile="${output.dir}${file.separator}${dita.map.filename.root}.epub" basedir="${epub.temp.dir}" compress="true" includes="META-INF${file.separator}*.xml,toc.ncx,       content.opf,container.opf,**/*.html,**/*.xhtml,**/*.css,**/*.HTML,**/*.CSS,       **/*.jpg,**/*.jpeg,**/*.gif,**/*.png,**/*.svg,       **/*.JPG,**/*.JPEG,**/*.GIF,**/*.PNG,**/*.SVG,       **/*.MP4,**/*.MP3,**/*.M4A,        **/*.mp4,**/*.mp3,**/*.m4a,       **/*.ttf, **/*.ttc, **/*.otf, **/*.otc, *.woff,       **/*.TTF, **/*.TTC, **/*.OTF, **/*.OTC, *.WOFF,       **/*.js,**/*.JS       "/>
+    <zip destfile="${output.dir}${file.separator}${dita.map.filename.root}.epub" basedir="${epub.temp.dir}" includes="mimetype" update="true" keepcompression="true" compress="false" createunicodeextrafields="never"/>
+
+  </target>
+
+
+  <target name="dita.map.epub.init" description="Init properties for Epub">
+
+  	<property name="epub.temp.dir" value="${dita.temp.dir}${file.separator}epub_temp"/>
+
+    <property name="d4p.is.map.driven" value="true"/>
+
+    <condition property="topics.output.dir" value="topics">
+  		<not>
+  			<isset property="topics.output.dir"/>
+  	  </not>
+  	</condition>
+
+    <!-- The epubType value d4p.epubtype -->
+    
+    <condition property="d4p.epubtype" value="dual">
+      <not>
+        <isset property="d4p.epubtype"/>
+      </not>
+    </condition>
+    
+
+  	<!-- The name of the directory, within the ePub package, to contain all images: -->
+
+    <condition property="images.output.dir" value="images">
+  		<not>
+    	  <isset property="images.output.dir"/>
+  		</not>
+    </condition>
+
+    <condition property="out.ext" value=".xhtml">
+      <not>
+        <isset property="out.ext"/>
+      </not>
+    </condition>
+
+    <echo>user.csspath="${user.csspath}"</echo>
+    <echo>args.css.output.dir="${args.css.output.dir}"</echo>
+    
+  	<!-- It appears that user.csspath will always have a value,
+  	     even if it's an empty string.
+  	  -->
+    <condition property="css.output.dir" value="css">
+      <and>
+        <not>
+          <isset property="user.csspath"/>
+        </not>
+        <not>
+          <isset property="args.css.output.dir"/>          
+        </not>
+      </and>
+    </condition>
+    <condition property="css.output.dir" value="${args.css.output.dir}">
+      <isset property="args.css.output.dir"/>
+    </condition>
+    <condition property="css.output.dir" value="${user.csspath}">
+      <isset property="user.csspath"/>
+    </condition>
+    
+    <echo>css.output.dir="${css.output.dir}"</echo>
+    
+    <condition property="css.include.kindle" value="true">
+      <equals arg1="${d4p.include.kindle.css}" arg2="true"/>
+    </condition>
+    
+  	<condition property="epub.hide.parent.link" value="yes">
+  		<not>
+      	<isset property="args.hide.parent.link"/>
+  		</not>
+  	</condition>
+  	<condition property="epub.hide.parent.link" value="${args.hide.parent.link}">
+    	<isset property="args.hide.parent.link"/>
+  	</condition>
+
+  	<!-- Defines the @class value to use for topic elements generated for topicheads. -->
+  	<condition property="title.only.topic.class.spec" value="- topic/topic ">
+  		<not>
+    	  <isset property="title.only.topic.class.spec"/>
+  		</not>
+  	</condition>
+
+  	<!-- Defines the @class value to use for topic title elements generated for topicheads. -->
+  	<condition property="title.only.topic.title.class.spec" value="- topic/title ">
+  		<not>
+    	  <isset property="title.only.topic.title.class.spec"/>
+  		</not>
+  	</condition>
+
+  	<!-- Set this property to set the ePub URI stub to a useful value. -->
+  	<condition property="idURIStub" value="http://my-URI-stub/">
+  		<not>
+    	  <isset property="idURIStub"/>
+  		</not>
+    </condition>
+
+  	<!-- Leading portion of full EPUB publication ID to be appended to the publication ID -->
+  	<condition property="epub.pubid.uri.stub" value="http://my-URI-stub/">
+  		<not>
+    	  <isset property="epub.pubid.uri.stub"/>
+  		</not>
+  	</condition>
+
+    <condition property="noPlugin">
+      <equals arg1="${dita.epub.plugin}" arg2="no"/>
+    </condition>
+
+
+  	<echo message="+++ epub-specific properties:"/>
+  	<echoproperties format="text" regex="^(epub|css|out\.|preprocess)" taskname="echo"/>
+  </target>
+
+  <target name="epub.xhtml.init" if="isOT2">
+    <!-- NOTE: These conditions are copied from the OT 2.x
+         build_general's xhtml.init target. They are required
+         to enable proper CSS copying.
+         
+      -->
+    
+    <!-- begin to check and init css relevant properties -->
+    <condition property="user.csspath.url">
+      <or>
+        <contains string="${args.csspath}" substring="http://"/>
+        <contains string="${args.csspath}" substring="https://"/>
+      </or>
+    </condition>
+    <condition property="args.csspath.absolute">
+      <isabsolute path="${args.csspath}"/>
+    </condition>
+    <!-- Set the csspath as default empty directory when there is no user
+      input csspath or user input csspath is a local absolute path. -->
+    <condition property="user.csspath" value="">
+      <or>
+        <not>
+          <isset property="args.csspath"/>
+        </not>
+        <isset property="args.csspath.absolute"/>
+      </or>
+    </condition>
+    <condition property="user.csspath" value="${args.csspath}/">
+      <not>
+        <isset property="user.csspath"/>
+      </not>
+    </condition>
+    <condition property="args.css.real" value="${args.cssroot}${file.separator}${args.css}">
+      <isset property="args.cssroot"/>
+    </condition>
+    <condition property="args.css.real" value="${args.css}">
+      <not>
+        <isset property="args.cssroot"/>
+      </not>
+    </condition>
+    <available file="${args.css.real}" property="args.css.present" type="file"/>
+    <basename property="args.css.file.temp" file="${args.css}"/>
+    <condition property="args.css.file" value="${args.css.file.temp}">
+      <or>
+        <isset property="args.css.present"/>
+        <isset property="user.csspath.url"/>
+      </or>
+    </condition>
+    
+  </target>
+
+  <target name="dita.map.epub" depends="epub.xhtml.init, dita.map.epub.init, epub-copy-css" description="Generate all ePub components from input map and topics">
+
+  	<mkdir dir="${epub.temp.dir}"/>
+  	<makeurl file="${epub.temp.dir}" property="epub.xslt.outdir"/>
+  	<makeurl file="${dita.temp.dir}" property="epub.xslt.tempdir"/>
+  	<makeurl file="${cover.graphic.file}" property="cover.graphic.uri" validate="false"/>
+
+  	<property name="args.xsl" location="${epub.dir}/xsl/map2epub.xsl"/>
+    <makeurl file="${dita.input.valfile}" property="dita.input.valfile.url" validate="no"/>
+    <makeurl file="${epub.font.manifest}" property="epub.font.manifest.url" validate="no"/>
+
+  	<echo message="[DEBUG] input file='${dita.temp.dir}${file.separator}${user.input.file}'"/>
+   <!--This property is no longer defined in DITA OT 2.x-->
+   <dirname property="dita.input.dirname" file="${args.input}"/>
+  	<!-- NOTE: since we're not using the direct output of the base XSLT transform we just
+  	     set the output directory to the temp dir where it will be ignored.
+  	  -->
+    <xslt processor="trax" basedir="${dita.temp.dir}" destdir="${dita.temp.dir}" includesfile="${dita.temp.dir}${file.separator}${user.input.file.listfile}" classpathref="dost.class.path" style="${args.xsl}">
+      <sysproperty key="OT_VERSION" value="${otversion}"/>
+     	<param name="cssOutputDir" expression="${css.output.dir}"/>
+      <param name="copySystemCssNo" expression="${system.copycss.no}" if="system.copycss.no"/>
+      <param name="debug" expression="${debug}"/>
+    	<param name="coverGraphicUri" expression="${cover.graphic.uri}" if="cover.graphic.file"/>
+    	<param name="idURIStub" expression="${epub.pubid.uri.stub}"/>
+     	<param name="imagesOutputDir" expression="${images.output.dir}"/>
+     	<param name="outdir" expression="${epub.xslt.outdir}"/>
+     	<param name="inputdir" expression="${dita.input.dirname}"/>
+      <param name="outext" expression=".xhtml"/><!-- EPUB3 uses xhtml for result files. -->
+     	<param name="tempdir" expression="${epub.xslt.tempdir}"/>
+      <param name="fileOrganizationStrategy" expression="${html2.file.organization.strategy}" if="html2.file.organization.strategy"/>
+
+    	<param name="rawPlatformString" expression="${os.name}"/>
+    	<param name="titleOnlyTopicClassSpec" expression="${title.only.topic.class.spec}"/>
+    	<param name="titleOnlyTopicTitleClassSpec" expression="${title.only.topic.title.class.spec}"/>
+     	<param name="topicsOutputDir" expression="${topics.output.dir}"/>
+      <param name="fontsOutputDir" expression="${epub.fonts.output.dir}" if="epub.fonts.output.dir"/>
+      <param name="generateGlossary" expression="${html2.generate.glossary}" if="html2.generate.glossary"/>
+    	<param name="generateHtmlToc" expression="${epub.generate.html.toc}" if="epub.generate.html.toc"/>
+    	<param name="generateIndex" expression="${html2.generate.index}" if="html2.generate.index"/>
+      <param name="html.toc.OUTPUTCLASS" expression="${args.xhtml.toc.class}" if="args.xhtml.toc.class"/>
+      <param name="maxTocDepth" expression="${d4p.max.toc.depth}" if="d4p.max.toc.depth"/>
+      <param name="maxNavDepth" expression="${d4p.max.nav.depth}" if="d4p.max.nav.depth"/>
+      <param name="epubType" expression="${d4p.epubtype}" if="d4p.epubtype"/>
+      <param name="epubFontManifestUri" expression="${epub.font.manifest.url}" if="epub.font.manifest"/>    
+      <param name="obfuscateFonts" expression="${epub.obfuscate.fonts}" if="epub.obfuscate.fonts"/>
+      <param name="epubGenerateCSSFontRules" expression="${epub.generate.css.font.rules}" if="epub.generate.css.font.rules"/>
+      <param name="javaScriptSourceFile" expression="${epub.javascript.file}" if="epub.javascript.file"/>
+      <param name="javaScriptOutputDir" expression="${epub.javascript.dir}" if="epub.javascript.dir"/>
+      
+    	<!-- Parameters from dita2xhtml and similar transtypes: -->
+      <param name="WORKDIR" expression="${workdir}" if="workdir"/>
+      <param name="BASEDIR" expression="${basedir}"/>
+      <param name="CSS" expression="${args.css.file}" if="args.css.file"/>
+      <param name="CSSPATH" expression="${user.csspath}" if="user.csspath"/>
+      <param name="DRAFT" expression="${args.draft}" if="args.draft"/>
+      <param name="ARTLBL" expression="${args.artlbl}" if="args.artlbl"/>
+      <param name="GENERATE-TASK-LABELS" expression="${args.gen.task.lbl}" if="args.gen.task.lbl"/>
+      <param name="PRESERVE-DITA-CLASS" expression="${args.xhtml.classattr}" if="args.xhtml.classattr"/>
+      <param name="NOPARENTLINK" expression="${epub.hide.parent.link}"/>
+      <param name="BREADCRUMBS" expression="${args.breadcrumbs}" if="args.breadcrumbs"/>
+      <param name="INDEXSHOW" expression="${args.indexshow}" if="args.indexshow"/>
+    	<param name="OUTPUTDIR" expression="${epub.temp.dir}"/>
+    	<param name="FILEDIR" expression="."/>
+      <param name="FILTERFILE" expression="${dita.input.valfile.url}" if="dita.input.valfile"/>
+      <param name="DBG" expression="${args.debug}" if="args.debug"/>
+      <param name="uplevels" expression="${uplevels}"/>
+
+      
+      
+    
+    <param name="editlink.remote.ditamap.url" expression="${editlink.remote.ditamap.url}" if="editlink.remote.ditamap.url"/>
+    
+
+    <param name="editlink.web.author.url" expression="${editlink.web.author.url}" if="editlink.web.author.url"/>
+
+    <param name="editlink.local.ditamap.path" expression="${args.input}"/>
+
+    <param name="com.oxygenxml.xhtml.linkToMediaResources" expression="${com.oxygenxml.xhtml.linkToMediaResources}" if="com.oxygenxml.xhtml.linkToMediaResources"/>
+
+  
+  <param name="DEFAULTLANG" expression="${args.default.language}" if="args.default.language"/>
+
+  <param name="lc-number-questions" expression="${arg.lc.html.numberQuestions}" if="arg.lc.html.numberQuestions"/>  
+  <param name="lc-show-feedback" expression="${arg.lc.html.showFeedback}" if="arg.lc.html.showFeedback"/>  
+  <param name="lc-style-correct-responses" expression="${arg.lc.html.styleCorrectResponses}" if="arg.lc.html.styleCorrectResponses"/>  
+  <param name="lc-question-number-format" expression="${arg.lc.html.questionNumberFormat}" if="arg.lc.html.questionNumberFormat"/>  
+  <param name="lc-question-number-prefix" expression="${arg.lc.html.questionNumberPrefix}" if="arg.lc.html.questionNumberPrefix"/>  
+  <param name="lc-question-number-suffix" expression="${arg.lc.html.questionNumberSuffix}" if="arg.lc.html.questionNumberSuffix"/>  
+  <param name="lc-answer-option-number-format" expression="${arg.lc.html.answerOptionNumberFormat}" if="arg.lc.html.answerOptionNumberFormat"/>
+  <param name="lc-show-only-correct-answer" expression="${arg.lc.html.showOnlyCorrectAnswer}" if="arg.lc.html.showOnlyCorrectAnswer"/>
+  <param name="lc-show-only-feedback" expression="${arg.lc.html.showOnlyFeedback}" if="arg.lc.html.showOnlyFeedback"/>
+  <param name="lc-hide-question-labels" expression="${arg.lc.html.hideQuestionLabels}" if="arg.lc.html.hideQuestionLabels"/>
+
+  <param name="tempdirLocalComm" expression="${dita.temp.dir}"/>  
+  <param name="mappath" expression="${args.input}"/>  
+
+      
+  
+  <param name="d4p.numberFigures" expression="${d4p.number.figures}" if="d4p.number.figures"/>
+  <param name="d4p.numberTables" expression="${d4p.number.tables}" if="d4p.number.tables"/>
+
+
+
+      <xmlcatalog refid="dita.catalog"/>
+    </xslt>
+
+  	<antcall target="epub.copy.graphics"/>
+
+  </target>
+
+  <target name="epub.copy.graphics" description="Copies graphics from input to the ePub output directory based on the graphic map generated during epub generation">
+  	<ant antfile="${epub.temp.dir}/copy-graphics.xml">
+  	</ant>
+	</target>
+
+  <target name="epub-copy-css" description="Copy CSS files">
+    
+    <condition property="user.copycss.yes">
+      <isset property="args.css.present"/>
+    </condition>
+        
+    <echo>css.output.dir="${css.output.dir}"</echo>    
+    <property name="user.csspath.real" value="${epub.temp.dir}/${css.output.dir}"/>
+  	<echo message="Copying css files to '${user.csspath.real}"/>
+    <mkdir dir="${user.csspath.real}"/>
+    <!-- Copy system default css files unless system.copycss.no is set -->
+    <antcall target="epub-copy-css-system"/>
+    <!-- Copy user specified css file when required -->
+    <antcall target="epub-copy-css-user"/>
+    
+    <!-- Copy kindle css if being triggered by the kindle plugin -->
+    <antcall target="epub-copy-css-kindle"/>
+  </target>
+
+  <target name="epub-copy-css-system" unless="${system.copycss.no}">
+    <echo message="copying system CSS files [system.copycss.no='${system.copycss.no}']"/>
+    <copy todir="${user.csspath.real}">
+      <fileset dir="${dita.plugin.org.dita.xhtml.dir}/resource" includes="*.css"/>
+    </copy>
+  </target>
+
+  <target name="epub-copy-css-user" if="user.copycss.yes">
+    <echo>Copying user CSS "${args.css.real}" to directory "${user.csspath.real}"...</echo>
+    
+    <copy file="${args.css.real}" todir="${user.csspath.real}"/>
+  </target>
+  
+  <target name="epub-copy-css-kindle" if="css.include.kindle">
+    <copy file="${dita.plugin.org.dita4publishers.kindle.dir}/css/kindleExtensions.css" todir="${user.csspath.real}"/>
+  </target>
+  
+  <target name="epub-obfuscate-font">
+    <java jar="${dita.plugin.org.dita4publishers.epub.dir}/lib/epub-font-obfuscator.jar" fork="true">
+      <arg value="${font.obfuscate.obfuscationkey}"/>
+      <arg value="${font.obfuscate.inputfont}"/>
+      <arg value="${font.obfuscate.resultfont}"/>
+    </java>
+  </target>
+  
+</project>

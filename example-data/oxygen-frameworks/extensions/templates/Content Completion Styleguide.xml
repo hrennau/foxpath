@@ -1,0 +1,20 @@
+<!--
+    Maps an element or attribute name to an HTML resource in order to enrich the 
+    documentation (annotation) which is shown for it in the Content Completion window or in the Elements and Attributes views.
+    A document type configuration has a classpath list in which the folder which contains this file needs to be added.
+    This file needs to have a fixed name "contentCompletionElementsMap.xml". 
+    As a working example you can look at the DITA and Docbook frameworks which have such a filter XML file already configured:
+    OXYGEN_INSTALL_DIR/frameworks/dita/styleguide/contentCompletionElementsMap.xml    
+-->
+<contentCompletionElementsMap
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.oxygenxml.com/ns/ccfilter/annotations http://www.oxygenxml.com/ns/ccfilter/annotations/ccAnnotationsSchemaFilter.xsd"
+     xmlns="http://www.oxygenxml.com/ns/ccfilter/annotations">
+      <!-- Establish the HTTP server which is the base for all relative links -->
+     <mappingGroup xml:base="http://www.w3.org/TR/xhtml1/">
+        <!-- Add for example for each "div" element as annotation a link to the specification-->
+        <mapping elementName="div" path="div.html" type="link" linkText="XHTML Specs"/>
+        <!-- Explain for example the XHTML ID attribute as a link which will appear as an annotation -->
+       <mapping attributeName="id" path="index.html#id.attribute" type="link" linkText="XHTML Specs"/>
+    </mappingGroup>
+</contentCompletionElementsMap>

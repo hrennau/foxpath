@@ -1,0 +1,40 @@
+/*This is a simple CSS used to faster read see the content of an OOXML document.xml.*/
+document, body, p {
+    display:block;
+}
+
+p {
+    padding: 3px;
+}
+
+*{
+    -oxy-display-tags:none;
+}
+
+* {
+    -oxy-placeholder-content: "";
+}
+
+pPr, rPr, bookmarkStart, proofErr, br, 
+bookmarkEnd, sectPr, lastRenderedPageBreak,
+drawing{
+    display:none;
+}
+
+tblPr, tblGrid, trPr, tcPr {
+    display:none;
+}
+
+tbl {
+    display:table;
+}
+
+tr {
+    display: table-row;
+}
+
+tc {
+    display:table-cell;
+    border: 1px solid black;
+    padding: 5px;
+}

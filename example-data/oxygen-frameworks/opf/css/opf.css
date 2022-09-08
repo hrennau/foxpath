@@ -1,0 +1,203 @@
+/*
+ * Oxygen Author stylesheet for OPF content files
+ * 
+ * @author:		George Bina Syncrosoft
+ * 				Tobias Fischer, pagina GmbH
+ * @date:		2014-04-15
+ * 
+ */
+
+package {
+    display : block;
+}
+
+
+metadata {
+    display : block;
+    color   : green;
+    margin-top: 2em;
+}
+
+metadata *[id] {
+    display : block;
+    content : oxy_label(text, attr(id), styles, "width:7em; text-align:right;") " "
+    	oxy_editor(
+	        type, text,
+	        edit, "#text",
+	        columns, 60
+	    );
+    color   : green;
+    visibility: -oxy-collapse-text;
+}
+
+metadata *[name] {
+    display : block;
+    content : oxy_label(text, attr(name), styles, "width:7em; text-align:right;") " "
+    	oxy_editor(
+	        type, text,
+	        edit, "@content",
+	        columns, 60
+	    );
+    color   : green;
+    visibility: -oxy-collapse-text;
+}
+
+metadata *[property] {
+    display : block;
+    content : oxy_label(text, attr(property), styles, "width:7em; text-align:right;") " "
+    	oxy_editor(
+	        type, text,
+	        edit, "#text",
+	        columns, 60
+	    );
+    color   : green;
+    visibility: -oxy-collapse-text;
+}
+
+metadata * {
+    display : block;
+    content : oxy_label(text, oxy_name(), styles, "width:7em; text-align:right;") " "
+    	oxy_editor(
+	        type, text,
+	        edit, "#text",
+	        columns, 60
+	    );
+    color   : green;
+    visibility: -oxy-collapse-text;
+}
+
+dc-metadata {
+   visibility: -oxy-collapse-text;
+}
+
+title {
+    content : '';
+    display : block;
+    font-weight:bold;
+    color:#002244;
+    background-color:inherit;
+    font-size: 2.2em;
+    margin: 1em 1em;
+    border-bottom: 2px solid #004477; 
+    visibility: visible;
+}
+
+
+manifest:before {
+    content: "Manifest:";
+    font-size: 1.5em;
+    font-weight: bold;
+}
+manifest {
+    display : block;
+    margin: 2em 1em;
+}
+
+item:before {
+    link: attr(href);
+    content: ' ' url(../img/link.png) ' ' attr(href);
+    color:navy;
+    background-color:inherit;
+}
+
+item[media-type="application/x-dtbncx+xml"]:before{
+    color : orange;
+}
+
+item {
+    display:block;
+    margin: 0.3em 0em;
+}
+
+item:after {
+    color : #AAAAAA;
+    content : ' [' attr(id) '] [' attr(media-type) ']';
+}
+
+item:focus:after {
+	display: block;
+	margin-left: 2em;
+	content: oxy_label(text, "ID:", styles, "width:5em; text-align:right;") " "
+    	oxy_editor(
+	        type, text,
+	        edit, "@id",
+	        columns, 30
+	    ) "\A"
+	    oxy_label(text, "Media-Type:", styles, "width:5em; text-align:right;") " "
+    	oxy_editor(
+	        type, text,
+	        edit, "@media-type",
+	        columns, 30
+	    ) "\A"
+	 ;
+}
+
+spine:before {
+    link: oxy_concat('#', attr(toc));
+    content: "Spine → " url(../img/link.png) ' #'  attr(toc);
+    font-size: 1.5em;
+    font-weight: bold;
+}
+spine {
+    display : block;
+    margin : 2em 1em;
+}
+
+itemref:before {
+    link: oxy_concat('#', attr(idref));
+    content: url(../img/link.png) ' #'  attr(idref);
+    color:navy;
+    background-color:inherit;
+}
+itemref {
+    display : block;
+    margin: 0.3em 0em;
+}
+
+guide {
+    margin:1em 1em;
+}
+
+guide:before {
+	content: "Guide:";
+	display: block;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+reference {
+    display:block;
+    margin: 0.3em 0em;
+}
+
+reference:before {
+    link: attr(href);
+    content: url(../img/link.png) ' ' attr(href);
+    color:navy;
+    background-color:inherit;
+}
+
+reference:after {
+    color : #AAAAAA;
+    content : ' ["' attr(title) '"] [type: ' attr(type) ']';
+}
+
+reference:hover:after,
+reference:focus:after {
+	display: block;
+	margin-left: 2em;
+	content: oxy_label(text, "Title:", styles, "width:2.5em;") " "
+    	oxy_editor(
+	        type, text,
+	        edit, "@title",
+	        columns, 30
+	    ) "\A"
+	    oxy_label(text, "Type:", styles, "width:2.5em;") " "
+    	oxy_editor(
+	        type, combo,
+	        edit, "@type",
+	        values, "acknowledgements, bibliography, colophon, copyright-page, cover, dedication, epigraph, foreword, glossary, index, loi, lot, notes, preface, text, title-page, toc, other.",
+	        columns, 30
+	    ) "\A"
+	 ;
+}

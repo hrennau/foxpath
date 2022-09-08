@@ -1,0 +1,144 @@
+<plugin id="org.dita4publishers.epub">
+  
+  <feature extension="package.support.name" value="Eliot Kimber"/>
+  <feature extension="package.support.email" value="ekimber@contrext.com"/>  
+  
+  <extension-point id="xsl.transtype-epub" name="EPUB XSLT import"/>
+  <extension-point id="d4p.epub.xslt.param" name="EPUB XSLT parameters"/>
+  <extension-point id="dita.conductor.xhtml.param" name="XHTML XSLT parameters"/>  
+  <extension-point id="d4p.epub.zip.fileset" name="EPUB Zip fileset extensions"/>
+
+  <require plugin="org.dita.xhtml"/>
+
+  <require plugin="org.dita-community.common.mapdriven"/> 
+  <require plugin="org.dita-community.common.xslt"/> 
+<!--  <require plugin="org.dita-community.preprocess-extensions"/> -->
+  <require plugin="org.dita4publishers.common.html"/> 
+  <require plugin="org.dita4publishers.common.mapdriven"/> 
+
+  <template file="build_transtype-epub_template.xml"/>
+  
+  <template file="xsl/map2epub_template.xsl"/>
+
+  <feature extension="dita.conductor.transtype.check" value="epub" type="txt"/>
+  <feature extension="dita.conductor.target.relative" file="build.xml"/>
+  <feature extension="dita.xsl.strings" value="strings/strings.xml" type="file"/>
+  
+   <!-- New way of specifying metadata with parameters contributed by the EPUB transtype:
+        https://github.com/dita-ot/dita-ot/issues/1757
+   -->
+  <transtype name="epub" extends="d4pCommons" desc="EPUB (DITA 4 Publishers)">
+    <param name="args.csspath"
+      desc="Specifies the directory within the EPUB to hold CSS files. Value should be a relative
+      path, e.g. 'css'."
+      type="dir"/>
+    <param name="cover.graphic.file"
+      desc="Specifies the absolute or relative path of the graphic to use as the cover graphic for the EPUB. 
+      An absolute, platform-specific filename or a path relative to the root map to a JPG, PNG, or GIF to use as the cover graphic."
+      type="file"/>
+    <param name="d4p.max.nav.depth"
+      desc="Specifies the maximum depth of the navigation table of contents.
+      The default is the value of the d4p.max.toc.depth parameter, which itself defaults to &quot;5&quot;."
+      type="string"/>
+    <param name="d4p.max.toc.depth"
+      desc="Specifies the maximum depth of the generated HTML table of contents." type="string">
+      <val default="true">5</val>
+    </param>
+    <param name="topics.output.dir"
+      desc="Specifies the name of the directory within the EPUB to hold all the topics."
+      type="string">
+      <val default="true">topics</val>
+    </param>
+    <param name="epub.exclude.auto.rellinks"
+      desc="Turns on exclusion of auto-generated related links (as for normal HTML output) 
+      Controls base Toolkit processing by turning off the maplink-check and maplink targets, which has the effect of 
+      eliminating auto-generated related links. Note that explicitly-authored related links are not affected. This property 
+      cannot be set to true by default because it is a global property that affects all transformation types. 
+      You must set this property explicitly in order to suppress related links in the output."
+      type="enum">
+      <val>true</val>
+      <val default="true" desc="related links are generated">false</val>
+    </param>
+    <param name="epub.pubid.uri.stub"
+      desc="Specifies the URI prefix stub to use in constructing the full EPUB ID value in the EPUB metadata. 
+      Any valid URI string. If this is a relative URI it should end with a &quot;/&quot; character. 
+      This parameter should normally reflect the organization that owns or publishes the EPUB, e.g., 
+      &quot;http://mydomain.com/EPUB&quot; or something similar."
+      type="string">
+      <val default="true">http://my-URI-stub/</val>
+    </param>
+    <param name="epub.temp.dir"
+      desc="Specifies the directory to use for EPUB-specific processing separate from the main Toolkit&quot;s temp directory. 
+      An absolute platform-specific filename. 
+      This directory holds all the files that are then Zipped up to create the final EPUB file.
+      By default temporary EPUB files are stored in a directory called &quot;epub_temp&quot; within the defined Toolkit temp directory."
+      type="dir"/>
+    <param name="images.output.dir"
+      desc="Specifies the name of the directory within the EPUB to hold all images. 
+      Any valid directory name. The EPUB process automatically renames graphics to ensure that there are no name conflicts when the graphics are copied to into this directory from their source locations."
+      type="string">
+      <val default="true">images</val>      
+    </param>
+    <param name="d4p.epubtype" type="enum"
+      desc="Specifies the type of EPUB to produce: EPUB 2 only, EPUB3 only, or Dual EPUB 2/3. Default is dual 2/3."
+      >
+      <val default="true">dual</val>
+      <val>epub2</val>      
+      <val>epub3</val>      
+    </param>
+    <param name="epub.font.manifest" type="file"
+      desc="The URI of the EPUB font manifest file. The font manifest specifies the fonts to embed in the EPUB."
+      >
+    </param>
+    <param name="epub.obfuscate.fonts" type="enum"
+      desc="Indicates whether or not to apply font obfuscation to fonts flagged as obfuscated in the font manifest."
+      >
+      <val default="yes">false</val>
+      <val>true</val>
+    </param>
+    <param name="epub.fonts.output.dir" type="dir"
+      desc="The path, within the generated EPUB, to store embedded fonts. Default is 'fonts'."
+      >
+      <val default="yes">fonts</val>
+    </param>
+    <param name="epub.generate.css.font.rules" type="enum"
+      desc="Indicates whether or not to generate CSS @font-face rules for embedded fonts as configurated in the font manifest. 
+      Default 'false' (don't generate CSS rules)"
+      >
+      <val default="yes">false</val>
+      <val>true</val>
+    </param>
+    <param name="title.only.topic.class.spec"
+      desc="The @class value to use for generated title-only topics, e.g., '- topic/topic concept/concept '"
+       type="string"/>
+    <param name="title.only.topic.title.class.spec"
+      desc="The @class value to use for generated title-only topic titles, e.g., '- topic/title '"
+      type="string"/>
+    <param name="epub.generate.html.toc" type="enum"
+      desc="Indicates whether or not to generate an HTML table of contents in addition to the 
+      required navigation ToC (EPUB 2 .ncx file or EPUB 3 nav element)"
+      >
+      <val default="yes">false</val>
+      <val>true</val>
+    </param>
+    <param name="epub.copy.system.css" type="enum"
+      desc="Set to 'false' to prevent copying of the built-in CSS files. By default the normal 
+      OT-provided CSS files are copied into the EPUB."
+      >
+      <val default="yes">true</val>
+      <val>false</val>
+    </param>
+    <param name="epub.javascript.file"
+      desc="Specifies JavaScript file to include in all generated HTML Files" type="string">
+    </param>
+    <param name="epub.javascript.dir"
+      desc="Specifies directory withih EPUB to put included JavaScript" type="string">
+      <val default="true">js</val>
+    </param>
+    <param name="html2.generate.index"
+      desc="Specifies whether or not to generate a back-of-the-book index" type="enum">
+      <val>true</val>
+      <val default="true">false</val>
+    </param>
+  </transtype>
+</plugin>

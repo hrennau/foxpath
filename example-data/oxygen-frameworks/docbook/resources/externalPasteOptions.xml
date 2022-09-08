@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Options which control external paste 
+(automatic conversions when pasting HTML and URL flavors from the clipboard). -->
+<pasteOptions>
+	<!--True to check if the entire sequence of words which get pasted are converted to the target vocabulary.
+	If the check fails, the content will be inserted as a simple sequence of words without any formatting.-->
+    <checkEntireContentIsFullyPreserved>true</checkEntireContentIsFullyPreserved>
+</pasteOptions>

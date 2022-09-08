@@ -1,0 +1,86 @@
+/*
+====================================
+    Map elements. [map] with extension methods.
+====================================
+*/
+
+
+*[class~="map/anchor"]:before{
+    display:inline;
+    content: url("../img/anchor.png") oxy_capitalize(oxy_local-name()) " [" oxy_unescapeURLValue(oxy_attributes()) " ]";
+    color:#222222;
+    background-color:inherit;    
+}
+
+*[class~="map/navref"]:before{
+    display:inline;
+    content: url("../img/link.png") oxy_capitalize(oxy_local-name()) " [" oxy_unescapeURLValue(oxy_attributes()) " ]";
+    color:#222222;
+    background-color:inherit;    
+}
+
+
+*[class~="map/map"]:before{
+    display:inline;
+    content: oxy_capitalize(oxy_local-name());
+    color:#222222;
+    background-color:inherit;
+}
+
+*[class~="map/map"][title]:before{
+    content: oxy_capitalize(oxy_local-name()) " [" attr(title, string, 'No title attribute specified') "]";
+}
+
+*[class~="map/topicref"]:before,
+*[class~="map/topicref"][keyref]:before
+{
+    display:inline;
+    content: url("../img/topic.png") " " oxy_capitalize(oxy_local-name()) " [" oxy_unescapeURLValue(oxy_attributes()) " ]";
+    color:#222222;
+    background-color:inherit;
+}
+
+*[class~="map/topicref"][keyref]:empty {
+    /* Override the rule from topic.css   */
+    content:"";
+}
+
+*[class~="map/topicref"][href]:before
+{
+    display:inline;
+    content: url("../img/topic.png") " " oxy_capitalize(oxy_local-name()) " [" oxy_unescapeURLValue(oxy_attributes()) " ]";
+    color:#222222;
+    background-color:inherit;
+}
+
+*[class~="map/topicref"][keyref]{
+  text-decoration:none;
+}
+
+*[class~="mapgroup-d/keydef"]:before{
+    display:inline;
+    content: url("../img/keydef.png") " " oxy_capitalize(oxy_local-name()) " [" oxy_unescapeURLValue(oxy_attributes()) " ]";
+    color:#222222;
+    background-color:inherit;    
+}
+
+/*Edit the @keys on a keydef, it is required*/
+*[class~="mapgroup-d/keydef"]{
+                                                 /*EXM-26388 If no values are given, the map opening takes a lot of time if there are many keydefs.*/
+ content: " Keys: " oxy_editor(type, text, edit, "@keys", values, '', columns, 15);
+}
+
+*[class~="mapgroup-d/topicgroup"]:before{
+    display:inline;
+    content: url("../img/topicgroup.png") " " oxy_capitalize(oxy_local-name()) " [" oxy_unescapeURLValue(oxy_attributes()) " ]";
+    color:#222222;
+    background-color:inherit;    
+}
+
+*[class~="mapgroup-d/topichead"]:before{
+    content: url("../img/topichead.png") " " oxy_capitalize(oxy_local-name()) " [" oxy_unescapeURLValue(oxy_attributes()) " ]";
+}
+ 
+*[class~="map/navref"]:before{
+    content: url("../img/navref.png") " " oxy_capitalize(oxy_local-name()) " [" oxy_unescapeURLValue(oxy_attributes()) " ]";
+}

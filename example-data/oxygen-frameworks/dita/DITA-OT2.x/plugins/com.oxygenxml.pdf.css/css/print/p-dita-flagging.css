@@ -1,0 +1,70 @@
+/*
+ * =====================================================
+ * 
+ * Styling properties for DITAVAL flagging
+ * 
+ * https://www.oxygenxml.com/dita/1.3/specs/archSpec/base/flagging.html
+ * https://www.oxygenxml.com/dita/1.3/specs/langRef/ditaval/ditaval-val.html
+ * 
+ * =====================================================
+ */
+
+/* 
+ * Handle different styling properties available on DITAVAL prop element.
+ * 
+ * DITAVAL prop element:
+ * https://www.oxygenxml.com/dita/1.3/specs/langRef/ditaval/ditaval-prop.html  
+ * 
+ */
+*[data-ditaval-action='flag'][data-ditaval-backcolor] {
+    background-color: attr(data-ditaval-backcolor);
+}
+
+*[data-ditaval-action='flag'][data-ditaval-color] {    
+    color: attr(data-ditaval-color);
+}
+
+*[data-ditaval-action='flag'][data-ditaval-style="italics"] {
+   font-style:italic;
+}
+
+*[data-ditaval-action='flag'][data-ditaval-style='overline'] {
+   text-decoration:overline;
+}
+
+*[data-ditaval-action='flag'][data-ditaval-style='underline'] {
+   text-decoration:underline;
+}
+
+*[data-ditaval-action='flag'][data-ditaval-style='bold'] {
+   font-weight:bold;
+}
+
+*[data-ditaval-action='flag'][data-ditaval-style='double-underline'] {    
+    text-decoration:underline;
+}
+
+/* 
+ * DITAVAL markup for flagging revisions
+ * 
+ * https://www.oxygenxml.com/dita/1.3/specs/langRef/ditaval/ditaval-revprop.html
+ */
+*[data-ditaval-action='flag'][data-ditaval-change-bar-color] {
+  -ah-revision-bar-color : attr(data-ditaval-change-bar-color);
+}
+
+*[data-ditaval-action='flag'][data-ditaval-change-bar-offset] {
+  -ah-revision-bar-offset : attr(data-ditaval-change-bar-offset);
+}
+
+*[data-ditaval-action='flag'][data-ditaval-change-bar-style] {
+  -ah-revision-bar-style : attr(data-ditaval-change-bar-style);
+}
+                
+*[data-ditaval-action='flag'][data-ditaval-change-bar-width] {
+  -ah-revision-bar-width : attr(data-ditaval-change-bar-width);
+}
+
+*[data-ditaval-action='flag'][data-ditaval-change-bar-placement] {
+  -ah-revision-bar-position : attr(data-ditaval-change-bar-placement);
+}

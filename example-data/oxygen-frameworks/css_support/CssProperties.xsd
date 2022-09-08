@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+  targetNamespace="http://www.oxygenxml.com/ns/css" xmlns="http://www.oxygenxml.com/ns/css">
+  <xs:annotation>
+    <xs:documentation>Format that allows Oxygen to validate and offer Content Completion suport with custom CSS properties.</xs:documentation>
+  </xs:annotation>
+  <xs:element name="css_keywords">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="include"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
+        <xs:element minOccurs="0" ref="pseudos"/>
+        <xs:element minOccurs="0" ref="at-rules"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="include">
+    <xs:annotation>
+      <xs:documentation>It inludes another css properties file.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="href" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="property">
+    <xs:annotation>
+      <xs:documentation>A CSS property.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="summary"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="value"/>
+      </xs:sequence>
+      <xs:attribute name="alias_for" type="xs:NCName">
+        <xs:annotation>
+          <xs:documentation>It marks this property as an alias for a another property. If a value is specified, the information from the alias will be used (like the possible values).</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="name" use="required" type="xs:NMTOKEN"/>
+      <xs:attribute name="oxygen_property" type="xs:boolean" default="false">
+        <xs:annotation>
+          <xs:documentation>It marks this property as a built-in oxygen property.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="values_types">
+        <xs:annotation>
+          <xs:documentation>A hint about the accepted types of the value. Not yet taken into account.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="summary" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>A description of the property.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="value">
+    <xs:complexType>
+      <xs:attribute name="name" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="pseudos">
+    <xs:annotation>
+      <xs:documentation>It groups the pseudo-elements and pseudo-classes.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="pseudo"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="pseudo">
+    <xs:annotation>
+      <xs:documentation>A pseudo-element or a pseudo-class.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="summary"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required"/>
+      <xs:attribute name="type" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="class"/>
+            <xs:enumeration value="element"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="at-rules">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="at-rule"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="at-rule">
+    <xs:complexType>
+      <xs:attribute name="name" use="required" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

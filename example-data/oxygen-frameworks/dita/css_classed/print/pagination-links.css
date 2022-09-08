@@ -1,0 +1,75 @@
+@media print {
+    
+    
+    /* 
+     *
+     * Remove link decorations. 
+     * 
+     */     
+    *[class ~= "topic/links"]:before,
+    *[class ~= "topic/linklist"]:before,
+    *[class ~= "topic/linkpool"]:before,
+    *[class ~= "topic/xref"][href]:before,   
+    *[class ~= "topic/link"][href]:before, 
+    *[class ~= "pr-d/fragref"][href]:before,
+    *[class ~= "pr-d/synnoteref"][href]:before,
+    *[class ~= "map/topicref"][href]:before,
+    *[class ~= "topic/source"][href]:after,
+    *[class~="map/navref"][mapref]:before{
+    border:1px solid red;
+        content:none !important;
+    }
+    *[class ~= "topic/link"]{
+        list-style-type:none !important;
+    }
+        
+    
+    /* Put the link property on the entire elment, so it can be clicked. */
+    *[class~="topic/xref"][href],
+    *[class~="topic/link"][href],
+    *[class~="pr-d/fragref"][href],
+    *[class~="pr-d/synnoteref"][href],
+    *[class~="map/topicref"][href],
+    *[class~="topic/source"][href]{
+        link: attr(href);
+    }
+    *[class~="map/navref"][mapref]{
+        link: attr(mapref);
+    }
+
+    
+    /*
+     * TODO - in editor also?
+     * Remove the link indent.
+     * 
+     */    
+    *[class~="topic/links"],
+    *[class~="topic/linklist"],
+    *[class~="topic/linkpool"]{
+        margin-left:0;
+    }
+    
+    /* 
+     *
+     * Add (on page NNN) annotation 
+     * 
+     */
+    *[class ~= "topic/xref"][href]:after,
+    *[class ~= "topic/link"][href]:after {
+        content: " [page " target-counter(attr(href), page) "]";
+        link: attr(href);
+    } 
+
+
+    /*
+     * 
+     * The next, prev and parent links should be hidden.
+     * 
+     */
+     *[class ~= "topic/related-links"] *[class ~= "topic/link"][role = "parent"],
+     *[class ~= "topic/related-links"] *[class ~= "topic/link"][role = "previous"],
+     *[class ~= "topic/related-links"] *[class ~= "topic/link"][role = "next"] {
+         display: none;
+     }
+     
+}

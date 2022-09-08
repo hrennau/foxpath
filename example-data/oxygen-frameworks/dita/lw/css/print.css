@@ -1,0 +1,22 @@
+*:before(100001),
+*:before(5000),
+*:before(202),
+*:before(201),
+*:before(111),
+*:after(5),
+*:after(10),
+*:after(80),
+*:before(109),
+*:after(1090),
+*:after(1109),
+*:after(1110),
+*:after(1111) {
+  display: none!important;
+}
+*:hover,
+*:focus-within {
+  outline: none!important;
+}
+* {
+  -oxy-placeholder-content: "" !important;
+}

@@ -1,0 +1,69 @@
+/*
+ * ====================================================
+ * 
+ * The delayed conref resolution domain provides several 
+ * elements for use when using DITA in situations that 
+ * enable delayed or run time resolution of conref. The 
+ * elements allow users to resolve some conref values 
+ * statically, while delaying others for later resolution.
+ * 
+ * ====================================================  
+ */
+ 
+
+
+/* ==================================================
+ * 
+ * <exportanchors>
+ * 
+ * The exportanchors element is used to delay conref 
+ * resolution within DITA documents. This allows you to 
+ * process or display DITA content in a way that will 
+ * resolve only some of the conref values in that content, 
+ * while remaining values are left for later resolution. 
+ */ 
+*[class~="delay-d/exportanchors"]:before {
+  /* Inherit: + topic/keywords delay-d/exportanchors */
+  content: "Export anchors: ";
+}
+
+
+
+/* ==================================================
+ * 
+ * <anchorid>
+ * 
+ * The anchorid element allows an author to define a 
+ * conref target that will be resolved dynamically when 
+ * rendered for an end user of the content.
+ */
+*[class~="delay-d/anchorid"] {
+  display:block;
+}
+*[class~="delay-d/anchorid"]:before {
+  /* Inherit: + topic/keyword delay-d/anchorid */
+  content:"Anchor id: "  oxy_textfield(edit, "@id", columns, 10);
+}
+
+
+/* ==================================================
+ * 
+ * <anchorkey>
+ * 
+ * The anchorkey element allows an author to define a 
+ * conref target that will be resolved dynamically when 
+ * rendered for an end user of the content.
+ */
+*[class~="delay-d/anchorkey"]{
+  display:block;
+}
+*[class~="delay-d/anchorkey"]:before {
+  /* Inherit: + topic/keyword delay-d/anchorkey */
+    
+  /* The prolog element styles are setting a width on the before. 
+  Not interested in this case, it makes the navigation button look odd.*/
+  width:auto !important;
+  
+  /* There are styles matching the *[keyref] that add a navigation button. Just add some text before. */
+  -oxy-prepend-content:"Anchor key: "  oxy_textfield(edit, "@keyref", columns, 10) !important;
+}

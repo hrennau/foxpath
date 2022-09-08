@@ -1,0 +1,36 @@
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * Markup domain
+ * 
+ * DITA1.3/langRef/containers/markup-domain.html#markup-domain
+ * 
+ * The markup domain elements are used for the mention 
+ * of named constructs in markup languages, such as XML.
+ * ==================================================
+ * ==================================================
+ * 
+ */
+ 
+ 
+/* ====================================
+ *
+ * <markupname>
+ * 
+ * Use the <markupname> element to identify mentions 
+ * of named markup tokens, such as elements or attributes 
+ * in XML or SGML, named groups in XSD schemas, or 
+ * named patterns in RELAX NG schemas. This element also 
+ * serves as the specialization basis for the elements 
+ * in the XML mention domain; when that domain is present, 
+ * its more specific elements should be used instead 
+ * of <markupname> when appropriate.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/keyword 
+ */
+*[class~='markup-d/markupname'] {
+  font-weight:bold;
+}

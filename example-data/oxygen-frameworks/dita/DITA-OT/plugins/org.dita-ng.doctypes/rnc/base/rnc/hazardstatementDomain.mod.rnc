@@ -1,0 +1,171 @@
+# ============================================================= 
+# MODULE:    DITA Hazard Statement Domain - RNC              
+# VERSION:   1.2                                                
+# DATE:      October 2010                                       
+# =============================================================
+
+# Refer to the latest version of this file by the following URI:
+# urn:dita-ng:dita:rnc:hazardstatementDomain.mod.rnc
+# To refer to this specific version, you may use this value:
+# urn:dita-ng:dita:rnc:hazardstatementDomain.mod.rnc:1.2
+
+# ============================================================= 
+# SYSTEM:     Darwin Information Typing Architecture (DITA)     
+# PURPOSE:    Define elements and specialization attributes
+#             for Hazard Statement Domain             
+# ORIGINAL CREATION DATE:  
+# September 2010                                                
+# (C) Copyright Syncro Soft 2010-2011                                
+# All Rights Reserved.                                          
+# =============================================================
+
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+# Define the domain values of this module
+domains-atts-value |= "(topic hazard-d)"
+# Define domain extension patterns
+hazard-d-note = hazardstatement.element
+# Extend the patterns with the domain contribution
+note |= hazard-d-note
+# Define patterns
+hazardstatement = hazardstatement.element
+messagepanel = messagepanel.element
+hazardsymbol = hazardsymbol.element
+typeofhazard = typeofhazard.element
+consequence = consequence.element
+howtoavoid = howtoavoid.element
+# Define elements content and attributes
+
+# LONG NAME: Hazard Statement
+hazardstatement.content = messagepanel+, hazardsymbol*
+hazardstatement.attributes =
+  attribute type {
+    "attention"
+    | "caution"
+    | "danger"
+    | "fastpath"
+    | "important"
+    | "note"
+    | "notice"
+    | "other"
+    | "remember"
+    | "restriction"
+    | "tip"
+    | "warning"
+    | "-dita-use-conref-target"
+  }?,
+  attribute spectitle { text }?,
+  attribute othertype { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+hazardstatement.element =
+  
+  ## The <hazardstatement> element contains hazard warning information. It is
+  ##         based on the regulations of the ANSI Z535 and the ISO 3864 standards. It gives the author
+  ##         the opportunity to select the hazard statement, to add one or more safety signs and to add
+  ##         the required phrases.
+  element hazardstatement {
+    hazardstatement.attlist, hazardstatement.content
+  }
+hazardstatement.attlist &= hazardstatement.attributes
+# LONG NAME: Hazard Symbol
+hazardsymbol.content = alt?, longdescref?
+hazardsymbol.attributes =
+  attribute href { text },
+  attribute scope {
+    "external" | "local" | "peer" | "-dita-use-conref-target"
+  }?,
+  attribute keyref { text }?,
+  attribute longdescref { text }?,
+  attribute height { xsd:NMTOKEN }?,
+  attribute width { xsd:NMTOKEN }?,
+  attribute align { text }?,
+  attribute scale { xsd:NMTOKEN }?,
+  attribute scalefit { "yes" | "no" | "-dita-use-conref-target" }?,
+  [ a:defaultValue = "inline" ]
+  attribute placement {
+    "break" | "inline" | "-dita-use-conref-target"
+  }?,
+  univ-atts,
+  attribute outputclass { text }?
+hazardsymbol.element =
+  
+  ## A graphic representation intended to convey a message without the use of
+  ##         words. It may represent a hazard, a hazardous situation, a precaution to avoid a hazard, a
+  ##         result of not avoiding a hazard, or any combination of these messages.
+  element hazardsymbol { hazardsymbol.attlist, hazardsymbol.content }
+hazardsymbol.attlist &= hazardsymbol.attributes
+# LONG NAME: Hazard Message panel
+messagepanel.content = typeofhazard, consequence*, howtoavoid+
+messagepanel.attributes =
+  attribute spectitle { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+messagepanel.element =
+  
+  ## The <messagepanel> element describes the area of a safety sign or label
+  ##         that contains the word message which identifies a hazard, indicates how to avoid the hazard,
+  ##         and advises of the probable consequences of not avoiding the hazard.
+  element messagepanel { messagepanel.attlist, messagepanel.content }
+messagepanel.attlist &= messagepanel.attributes
+# LONG NAME: The Type of Hazard
+typeofhazard.content = (words.cnt | ph | tm)*
+typeofhazard.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+typeofhazard.element =
+  
+  ## <typeofhazard> element is the container for the first text entry of a
+  ##         safety label. It contains the description of the type of hazard, such as "Moving parts
+  ##         can crush and cut".
+  element typeofhazard { typeofhazard.attlist, typeofhazard.content }
+typeofhazard.attlist &= typeofhazard.attributes
+# LONG NAME: Consequences of not Avoiding the Hazard
+consequence.content = (words.cnt | ph | tm)*
+consequence.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+consequence.element =
+  
+  ## The <consequence> element is the container for the second text entry of a
+  ##         safety label. It contains the description of the consequences of not avoiding the hazard,
+  ##         such as "Keep guard in place".
+  element consequence { consequence.attlist, consequence.content }
+consequence.attlist &= consequence.attributes
+# LONG NAME: How to Avoid the Hazard
+howtoavoid.content = (text | basic.ph | sl | simpletable)*
+howtoavoid.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+howtoavoid.element =
+  
+  ## The <howtoavoid> element is the container for the third text entry of a
+  ##         safety label. It contains the description of how to avoid the hazard, such as "Lock out
+  ##         power before servicing".
+  element howtoavoid { howtoavoid.attlist, howtoavoid.content }
+howtoavoid.attlist &= howtoavoid.attributes
+# Specialization attributes. Global attributes and class defaults
+hazardstatement.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/note hazard-d/hazardstatement " ]
+  attribute class { text }?
+messagepanel.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/ul hazard-d/messagepanel " ]
+  attribute class { text }?
+hazardsymbol.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/image hazard-d/hazardsymbol " ]
+  attribute class { text }?
+typeofhazard.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/li hazard-d/typeofhazard " ]
+  attribute class { text }?
+consequence.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/li hazard-d/consequence " ]
+  attribute class { text }?
+howtoavoid.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/li hazard-d/howtoavoid " ]
+  attribute class { text }?

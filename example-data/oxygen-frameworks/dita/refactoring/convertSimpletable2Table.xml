@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Descriptor for the 'Insert element' operation.     
+-->
+<refactoringOperationDescriptor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.oxygenxml.com/ns/xmlRefactoring" id="convertSimpletable2Table"
+    name="${i18n(xr_convert_simple_tables_to_tables)}">
+    <description>${i18n(xr_convert_dita_simple_tables_to_cals_tables)}</description>
+    <script type="XSLT" href="convertSimpletable2table.xsl"/>
+    <category>DITA</category>
+</refactoringOperationDescriptor>

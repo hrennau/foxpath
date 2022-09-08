@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+<!--
+    This configuration file was written by the eclipse-cs plugin configuration editor
+-->
+<!--
+    Checkstyle-Configuration: ICS-SE2
+    Description: none
+-->
+<module name="Checker">
+  <property name="severity" value="warning"/>
+  <module name="TreeWalker">
+    <module name="JavadocMethod"/>
+    <module name="JavadocType"/>
+    <module name="JavadocVariable">
+      <property name="scope" value="public"/>
+    </module>
+    <!-- <module name="JavadocStyle"/> -->
+    <module name="ConstantName">
+      <property name="format" 
+        value="^([A-Z][A-Z0-9]*(_[A-Z0-9]+)*|logger)$"/> 
+    </module>
+    <module name="LocalFinalVariableName"/>
+    <module name="LocalVariableName"/>
+    <module name="MemberName"/>
+    <module name="MethodName"/>
+    <module name="PackageName"/>
+    <module name="ParameterName"/>
+    <module name="StaticVariableName"/>
+    <module name="TypeName"/>
+    <module name="AvoidStarImport"/>
+    <module name="IllegalImport"/>
+    <module name="RedundantImport"/>
+    <module name="UnusedImports"/>
+    <module name="LineLength">
+      <property name="max" value="160"/>
+      <!-- In Javadoc comments, we allow long lines for @see tags. -->
+      <property name="ignorePattern" value="^ *\* *@see.*$"/>
+    </module>
+    <module name="MethodLength"/>
+    <module name="EmptyForIteratorPad"/>
+    <!-- <module name="GenericWhitespace"/>  -->
+    <module name="MethodParamPad"/>
+    <!--  <module name="NoWhitespaceAfter"/> -->
+    <!--  <module name="NoWhitespaceBefore"/> -->
+    <!-- <module name="OperatorWrap"/> -->
+    <!-- 
+    <module name="ParenPad"/>
+     -->
+    <module name="TypecastParenPad"/>
+    <!-- <module name="WhitespaceAfter"/>  -->
+    <!-- <module name="WhitespaceAround"/> -->
+    <module name="ModifierOrder"/>
+    <module name="RedundantModifier"/>
+    <module name="AvoidNestedBlocks">
+      <property name="allowInSwitchCase" value="true"/>
+    </module>
+    <module name="EmptyBlock">
+      <property name="option" value="text"/>
+    </module>
+    <module name="LeftCurly"/>
+    <module name="NeedBraces"/>
+    <module name="RightCurly">
+      <property name="option" value="same"/>
+    </module>
+    <module name="EmptyStatement"/>
+    <module name="EqualsHashCode"/>
+    <module name="IllegalInstantiation"/>
+    <module name="InnerAssignment"/>
+    <!-- 
+    <module name="MagicNumber"/>
+     -->
+    <module name="MissingSwitchDefault"/>
+    <module name="SimplifyBooleanExpression"/>
+    <module name="SimplifyBooleanReturn"/>
+    <module name="ArrayTypeStyle"/>
+    <module name="TodoComment"/>
+    <module name="UpperEll"/>
+  </module>
+  <!--
+  <module name="JavadocPackage">
+    <property name="allowLegacy" value="true"/>
+  </module>
+  -->
+  <module name="FileLength"/>
+  <module name="FileTabCharacter"/>
+</module>

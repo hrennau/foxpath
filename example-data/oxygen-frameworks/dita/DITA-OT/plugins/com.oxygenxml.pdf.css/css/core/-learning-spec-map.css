@@ -1,0 +1,161 @@
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * Learning and training map domain elements
+ * 
+ * http://docs.oasis-open.org/dita/v1.2/os/spec/common/lc_spec_learning_map.html
+ * 
+ * Use the learning and training map domain to organize 
+ * groups of topics as learning objects. Defined as a 
+ * map domain, these elements are available for use within 
+ * any DITA map, not just a learning-specific DITA map.
+ *  
+ * For example, you could include learning objects in a 
+ * DITA generic map or in a DITA bookmap.
+ * 
+ * ==================================================
+ * ==================================================
+ * 
+ */
+
+
+/* ====================================
+ *
+ * <learningGroup>
+ * 
+ * Use a <learningGroup> to structure learning 
+ * objects into higher-level organizations, 
+ * such as course-level, module-level, or 
+ * lesson-level. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref
+ */
+*[class ~= "learningmap-d/learningGroup"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <learningObject>
+ * 
+ * Use a <learningGroup> to structure learning 
+ * objects into higher-level organizations, 
+ * such as course-level, module-level, or 
+ * lesson-level. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref
+ */
+*[class ~= "learningmap-d/learningObject"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <learningPlanRef>
+ * 
+ * Use a <learningPlanRef> element to include 
+ * a topic reference to a learning plan topic 
+ * as part of a learningObject.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref
+ */
+*[class ~= "learningmap-d/learningPlanRef"]{
+/**/
+}
+
+
+
+/* ====================================
+ *
+ * <learningOverviewRef>
+ * 
+ * Use a learningOverviewRef element to include 
+ * a topic reference to a learning overview 
+ * topic as part of a learningObject.
+ * By default, a learningOverviewRef is expected 
+ * to link to a learningOverview topic. However, 
+ * the href in a learningOverviewRef can link 
+ * to content of any type that you want to use 
+ * as a learning overview in a learning object. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref
+ */
+*[class ~= "learningmap-d/learningOverviewRef"]{
+/**/
+}
+
+
+
+/* ====================================
+ *
+ * <learningContentComponentRef>
+ * 
+ * Use a learningContentComponentRef element to 
+ * include a topic reference to a topic that acts 
+ * as a subtopic of a learningContent topic.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + map/topicref 
+ */
+*[class ~= "learningmap-d/learningContentComponentRef"]{
+/**/
+}
+
+
+
+/* ====================================
+ *
+ * <learningSummaryRef>
+ * 
+ * Use a <learningSummaryRef> to include topic 
+ * reference to a learning summary topic in a 
+ * DITA learning object.
+ * By default, a learningSummaryRef is expected 
+ * to link to a learningSummary topic. However, 
+ * the href in a learningSummaryRef can link to 
+ * content of any type that you want to use as 
+ * a learning summary in a learning object. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + map/topicref 
+ */
+*[class ~= "learningmap-d/learningSummaryRef"]{
+/**/
+}
+
+
+
+/* ====================================
+ *
+ * <learningPostAssessmentRef>
+ * 
+ * Use a <learningPostAssessmentRef> element to 
+ * include a topic reference to a learning assessment 
+ * topic as part of a DITA learningObject.
+ * 
+ * By default, a learningAssessmentPostRef is expected 
+ * to link to a learningAssessment topic. However, the 
+ * href in a learningAssessmentPostRef can link to content 
+ * of any type that you want to use as a learning 
+ * assessment in a learning object. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *    + map/topicref 
+ */
+*[class ~= "learningmap-d/learningPostAssessmentRef"]{
+/**/
+}

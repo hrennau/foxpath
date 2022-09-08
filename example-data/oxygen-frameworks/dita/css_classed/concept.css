@@ -1,0 +1,13 @@
+/*
+====================================
+    Concept elements. [concept]
+====================================
+*/
+*[class~="concept/conbody"]{
+    /* It inherits the styles from topic.css */
+}
+
+*[class~="concept/concept"] > *[class~="topic/title"]{
+    /* It inherits the styles from topic.css */
+    color:#005544;
+}

@@ -1,0 +1,549 @@
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * Subject scheme maps
+ * 
+ * DITA-1.3/langRef/containers/subjectScheme.html#subjectscheme
+ * 
+ * A subject scheme map is used to define sets of controlled 
+ * values for use in classifying content. Sets of controlled 
+ * values can be bound to DITA attributes. This allows DITA 
+ * users to share the controlled values for an information set 
+ * without having to modify a DTD or XML schema. 
+ * ==================================================
+ * ==================================================
+ * 
+ */
+ 
+
+/* Hide all what is inherited from the topicrefs. */
+*[class*=' subjectScheme/']:before(1100),
+*[class*=' subjectScheme/']:before(1050),
+*[class*=' subjectScheme/']:before(1040),
+*[class*=' subjectScheme/']:before(1030),
+*[class*=' subjectScheme/']:before(1020),
+*[class*=' subjectScheme/']:before(1010) {
+  display: none;
+}
+ 
+/* ====================================
+ *
+ * <subjectScheme>
+ * 
+ * The <subjectScheme> element is a specialization of <map>; 
+ * it defines a collection of controlled values rather than 
+ * a collection of topics.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/map
+ */
+*[class~='subjectScheme/subjectScheme']{
+  font-family:dialog, sans-serif;
+  font-size:0.8em;
+}
+
+*[class~='subjectScheme/subjectScheme']:before{
+  content: "Subject Scheme";
+}
+
+
+/* ====================================
+ *
+ * <schemeref>
+ * 
+ * The <schemeref> element provides a reference to 
+ * another scheme. Typically, the referenced scheme 
+ * defines a base set of controlled values that are 
+ * extended by the current scheme. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref
+ */
+*[class~='subjectScheme/schemeref']{
+  -oxy-foldable:false;
+}
+*[class~='subjectScheme/schemeref'][href]:before{
+  content: "Base scheme: " 
+            oxy_textfield(
+              edit, "@href",
+              columns, 30);
+}
+
+
+/* ====================================
+ *
+ * <subjectdef>
+ * 
+ * The <subjectdef> element defines a subject 
+ * (also known as a controlled value) within a 
+ * scheme. To make the subject easy to identify, 
+ * a <subjectdef> may use a @keys attribute to 
+ * assign a key to the subject.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref 
+ */
+*[class~='subjectScheme/subjectdef']{
+  position:relative;
+}
+
+/* -------------------------------
+  The textfields for the "keys" and optional "navtitle" attributes.
+*/
+*[class~='subjectScheme/subjectdef'][keys]:before{
+  content: oxy_textfield(
+            edit, "@keys",
+            columns, 10);  
+}
+*[class~='subjectScheme/subjectdef'][navtitle]:before{
+  -oxy-append-content: 
+            " "
+            oxy_textfield(
+            edit, "@navtitle",
+            columns, 10);
+}
+/* ------------------------------ 
+   The key + navtitle [+/-] layout
+*/
+*[class~='subjectScheme/subjectdef'][keys]:after{
+  content:
+            " "
+            oxy_button(
+              action, oxy_action(
+                      name, '+', 
+                      arg-fragment, '<subjectdef keys="" />',
+                      arg-insertLocation, '.',
+                      arg-insertPosition, 'After')
+            )
+            oxy_button(action, oxy_action(
+                      name, '-', 
+                      operation, 'ro.sync.ecss.extensions.commons.operations.DeleteElementOperation')
+            );
+}
+*[class~='subjectScheme/subjectdef'][keys][navtitle]:after{
+  content:
+            " "
+            oxy_button(
+              action, oxy_action(
+                      name, '+', 
+                      arg-fragment, '<subjectdef keys="" navtitle=""/>',
+                      arg-insertLocation, '.',
+                      arg-insertPosition, 'After')
+            )
+            oxy_button(action, oxy_action(
+                      name, '-', 
+                      operation, 'ro.sync.ecss.extensions.commons.operations.DeleteElementOperation')
+            );
+
+}
+
+
+
+
+
+
+/* ====================================
+ *
+ * <defaultSubject>
+ * 
+ * The <defaultSubject> element is used within 
+ * an attribute enumeration to set the default value 
+ * for that attribute in cases where no value is 
+ * specified on the attribute. The default subject must 
+ * be one of the controlled values within the 
+ * categories specified for the attribute.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref 
+ */
+*[class~='subjectScheme/defaultSubject']{
+}
+
+/* ====================================
+ *
+ * <enumerationdef>
+ * 
+ * The <enumerationdef> element identifies one 
+ * attribute and one or more categories that 
+ * contain the controlled values for the enumeration.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref 
+ */
+*[class~='subjectScheme/enumerationdef']{
+  position:relative;
+  -oxy-foldable: false;
+  border: 1pt solid;
+  padding: 2em;
+  margin: 1em;
+}
+*[class~='subjectScheme/enumerationdef']:before{
+  display:block;
+  content: "Binding";
+  padding-bottom:0.5em;
+  border-bottom: 1pt solid;
+  font-size:larger; 
+}
+/* Put all children on a single line. */
+*[class~='subjectScheme/enumerationdef'] *{
+	/*Is cleaner without the tags. */
+    -oxy-display-tags:none;
+    display:inline;
+    margin-left:0;
+    padding-left:0;
+}
+/* ----------------------------- 
+   [+/-] buttons for the enumerationdef.
+*/
+*[class~='subjectScheme/enumerationdef']:after{
+    content: 
+            oxy_button(
+              action, oxy_action(
+                  name, '+',
+                  arg-fragment, '<enumerationdef><attributedef name=""></attributedef><subjectdef></subjectdef></enumerationdef>',
+                  arg-insertPosition, 'After',
+                  arg-insertLocation, '.'))
+              
+            oxy_button(
+              action, oxy_action(
+                  name, '-',
+                  operation, 'ro.sync.ecss.extensions.commons.operations.DeleteElementOperation' ));
+}
+/* ----------------------------- 
+   No [+/-] for the subjectdef inside an enumerationdef.
+*/
+*[class~='subjectScheme/enumerationdef'] *[class~='subjectScheme/subjectdef']:after {
+   content:none;
+}
+/* ----------------------------- 
+   Some labels and "keyref" attributes editor.
+*/
+*[class~='subjectScheme/enumerationdef'] *[class~='subjectScheme/subjectdef']:before,
+*[class~='subjectScheme/enumerationdef'] *[class~='subjectScheme/defaultSubject']:before{
+   font-weight:bold;
+}
+*[class~='subjectScheme/enumerationdef'] *[class~='subjectScheme/subjectdef']:before {
+   content: "to" oxy_label(text, " ", styles, "text-decoration:none")
+            oxy_textfield(
+              edit, "@keyref",
+              columns, 15);
+}
+*[class~='subjectScheme/enumerationdef'] *[class~='subjectScheme/defaultSubject']:before{
+   content: "default"
+            oxy_textfield(
+              edit, "@keyref",
+              columns, 15);
+}
+
+
+/* ====================================
+ *
+ * <attributedef>
+ * 
+ * The <enumerationdef> element identifies one 
+ * attribute and one or more categories that 
+ * contain the controlled values for the enumeration.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data
+ */
+*[class~='subjectScheme/attributedef'] {
+}
+*[class~='subjectScheme/attributedef']:before{
+  content:none;
+}
+*[class~='subjectScheme/attributedef']:before{
+  -oxy-prepend-content: "bind attribute ";  
+}
+
+
+/* ====================================
+ *
+ * <elementdef>
+ * 
+ * The <elementdef> element identifies an element on 
+ * which an attribute is enumerated. When the <elementdef> 
+ * is left out of an <enumerationdef> element, the enumeration 
+ * is bound to the attribute in all elements.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data
+ */
+*[class~='subjectScheme/elementdef']{
+  display:inline;
+  -oxy-display-tags:none;  
+}
+*[class~='subjectScheme/elementdef']:before{
+  content:none;
+}
+*[class~='subjectScheme/elementdef']:before{
+  -oxy-prepend-content: "from element ";  
+}
+
+
+/* ====================================
+ *
+ * <hasInstance>
+ * 
+ * The <hasInstance> element specifies that the 
+ * contained subjects have an INSTANCE-OF relationship 
+ * with the container subject. In an INSTANCE-OF hierarchy, 
+ * the child subject is a specific entity or object and the 
+ * parent subject is a type, kind, or class of entity or object.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref
+ */
+
+/* ====================================
+ *
+ * <hasKind>
+ * 
+ * The <hasKind> element specifies that the 
+ * contained hierarchy expresses KIND-OF relationships 
+ * between subjects.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref
+ */
+
+
+/* ====================================
+ *
+ * <hasNarrower>
+ * 
+ * For subjects within the <hasNarrower> element, 
+ * the container subject is more general than each 
+ * of the contained subjects. That is, this element 
+ * makes the default hierarchical relationship 
+ * explicit, although the way in which a relationship 
+ * is narrower is not specified.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref
+ */
+
+
+/* ====================================
+ *
+ * <hasPart>
+ * 
+ * The <hasPart> element specifies that the contained 
+ * hierarchy expresses PART-OF relationships between subjects.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref
+ */
+
+
+/* ====================================
+ *
+ * <hasRelated>
+ * 
+ * The <hasRelated> element identifies an 
+ * associative relationship between the container 
+ * subject and each of the contained subjects.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref
+ */
+
+/* ====================================
+ *
+ * <relatedSubjects>
+ * 
+ * The <relatedSubjects> element establishes 
+ * associative relationships between each child 
+ * subject and every other child subject (unless 
+ * the association is restricted by the @linking 
+ * attribute of the subjects)
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref
+ */
+
+
+
+/* ====================================
+ *
+ * <subjectHead>
+ * 
+ * The <subjectHead> element provides a 
+ * heading for a group of subjects, for 
+ * use if the scheme is displayed. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref
+ */
+*[class~='subjectScheme/hasInstance'],
+*[class~='subjectScheme/hasKind'],
+*[class~='subjectScheme/hasNarrower'],
+*[class~='subjectScheme/hasPart'],
+*[class~='subjectScheme/hasRelated'],
+*[class~='subjectScheme/relatedSubjects'],
+*[class~='subjectScheme/subjectHead']{
+    margin-top:1em;
+    padding-top:1em;
+    border-top:1pt solid;
+}
+
+
+*[class~='subjectScheme/hasInstance']:before,
+*[class~='subjectScheme/hasKind']:before,
+*[class~='subjectScheme/hasNarrower']:before,
+*[class~='subjectScheme/hasPart']:before,
+*[class~='subjectScheme/hasRelated']:before,
+*[class~='subjectScheme/relatedSubjects']:before,
+*[class~='subjectScheme/subjectHead']:before{
+    font-weight:bold;
+}
+
+
+
+
+/* ====================================
+ *
+ * <subjectHeadMeta>
+ * 
+ * The <subjectHeadMeta> element allows a navigation 
+ * title and short description to be associated with 
+ * a subject heading. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicmeta
+ */
+*[class~='subjectScheme/subjectHeadMeta']{
+}
+
+
+/* ====================================
+ *
+ * <subjectRelTable>
+ * 
+ * The <subjectRelTable> element is a specialized relationship 
+ * table which establishes relationships between the 
+ * subjects in different columns of the same row. This 
+ * element provides an efficient way to author non-hierarchical 
+ * relationships between subjects. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/reltable
+ */
+*[class~='subjectScheme/subjectRelTable']{
+  margin-top:1em;
+  margin-bottom:1em;
+}
+
+/* ====================================
+ *
+ * <subjectRelHeader>
+ * 
+ * The <subjectRelHeader> element specifies the roles 
+ * played by subjects in associations.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/relrow
+ */
+*[class~='subjectScheme/subjectRelHeader']{
+  font-weight:bold;
+  background-color:#C9F;
+}
+
+/* ====================================
+ *
+ * <subjectRel>
+ * 
+ * he <subjectRel> element contains a set of 
+ * subjects that are related in some manner. Each group 
+ * of subjects is contained in a <subjectRole> element;
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/relrow
+ */
+*[class~='subjectScheme/subjectRel']{ 
+}
+
+
+/* ====================================
+ *
+ * <subjectRole>
+ * 
+ * he <subjectRel> element contains a set of 
+ * subjects that are related in some manner. Each group 
+ * of subjects is contained in a <subjectRole> element;
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/relcell
+ */
+*[class~='subjectScheme/subjectRole']{ 
+  padding:1em;
+}
+
+/* This is the reference to a subjectdef from the subjectRole. */
+/**[class~='subjectScheme/subjectRole']{
+  position:relative;
+}*/
+
+*[class~='subjectScheme/subjectRole'] *[class~='subjectScheme/hasInstance'],
+*[class~='subjectScheme/subjectRole'] *[class~='subjectScheme/hasKind'],
+*[class~='subjectScheme/subjectRole'] *[class~='subjectScheme/hasNarrower'],
+*[class~='subjectScheme/subjectRole'] *[class~='subjectScheme/hasPart'],
+*[class~='subjectScheme/subjectRole'] *[class~='subjectScheme/hasRelated'],
+*[class~='subjectScheme/subjectRole'] *[class~='subjectScheme/relatedSubjects'],
+*[class~='subjectScheme/subjectRole'] *[class~='subjectScheme/subjectHead']{
+    margin-top:0.5em;
+    padding-top:0;
+    border-top:none;
+    -oxy-foldable:false;
+}
+
+/*
+*[class~='subjectScheme/subjectRole'] *[class~='subjectScheme/subjectdef'][keyref]:before{
+  content: oxy_textfield(
+            edit, "@keyref",
+            columns, 30);  
+}*/
+/*
+*[class~='subjectScheme/subjectRole'] *[class~='subjectScheme/subjectdef'][keyref]:after{
+  display:block;
+  position:absolute;
+  top:0;
+  right:40px;
+  text-align:right;
+  content:
+          " "
+          oxy_button(
+            action, oxy_action(
+                    name, '+', 
+                    arg-fragment, '<subjectdef keyref=""/>',
+                    arg-insertLocation, '.',
+                    arg-insertPosition, 'After')
+          )
+          oxy_button(action, oxy_action(
+                    name, '-', 
+                    operation, 'ro.sync.ecss.extensions.commons.operations.DeleteElementOperation')
+          );
+
+}
+*/
+

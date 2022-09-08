@@ -1,0 +1,5 @@
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+  <!--EXM-23088 Catalogs for Oxygen MathML specialization, automatically added by integrator-->
+  <nextCatalog catalog="../../../../mathml/catalog.xml"/>
+  <public publicId="-//FIRELAB//DTD DITA Composite Plus MathML//EN" uri="dtd/ditabase.dtd"/>  
+</catalog>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalog PUBLIC "-//OASIS//DTD XML Catalogs V1.1//EN" "http://www.oasis-open.org/committees/entity/release/1.1/catalog.dtd">
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <!-- To allow use of absolute URLs to styleguide topics and resolve them to the local location -->
+    <!-- The style guide topics are not intended to be available at the remote location -->
+    <rewriteURI uriStartString="http://www.oxygenxml.com/tei/styleguide/" rewritePrefix="."/>
+</catalog>

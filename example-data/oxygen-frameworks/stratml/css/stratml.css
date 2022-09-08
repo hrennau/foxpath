@@ -1,0 +1,132 @@
+/**
+ * CSS file for StratML Part 2.
+ * It works ok also for Part 1.
+ * 
+ * Copyright (C) 2012	Syncro Soft SRL (oXygen XML Editor).
+ * 
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *  
+ * - Redistributions of source code must retain the above copyright notices, 
+ *   this list of conditions and the following disclaimer. 
+ * - Redistributions in binary form must reproduce the above copyright notice, 
+ *   this list of conditions and the following disclaimer in the documentation 
+ *   and/or other materials provided with the distribution. 
+ * - The name of the author may not be used to endorse or promote products 
+ *   derived from this software without specific prior written permission. 
+ *  
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR 
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES 
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN 
+ * NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED 
+ * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ *
+ * Revision history:
+ * February 19, 2012 - George Bina: 
+ *   - Initial version of the CSS stylesheet
+ * October 20, 2013 - George Bina
+ *   - Reorganized.
+ */
+
+/************************************/
+/* Blocks and inlines */
+/************************************/
+* {display : block;}
+
+/************************************/
+/* margins, padding and borders */
+/************************************/
+
+/* margins*/
+* {margin:5px 0px 5px 10px;}
+StrategicPlanCore > * {margin:25px 0px 25px 10px;}
+Goal > Objective {margin:25px 0px 25px 10px;}
+
+/* padding */
+*     {padding : 5px 0 5px 5px;}
+:root {padding-right:10px;}
+
+/* borders */
+* {
+  border-top : 1px solid #FFFFFF;
+  border-right : 1px solid #FFFFFF;
+  border-left : 1px solid #E0E0E0;
+  border-bottom : 1px solid #E0E0E0;
+}
+
+/************************************/
+/* colors and fonts */
+/************************************/
+*:before  {color : gray;}
+*:empty   {color : gray;}
+*:after   {color : gray;}
+
+*:before  {font-weight : bold;}
+Name      {font-weight : bold;}
+:root        {font-size: 1.2em;}
+:root:before {font-size: 1.6em;}
+:root > Name {font-size: 1.8em;}
+
+/************************************/
+/* Labels and counters */
+/************************************/
+
+/* counters */
+StrategicPlanCore {counter-reset:goal_count;}
+Goal:before       {counter-increment:goal_count;}
+Goal              {counter-reset:objective_count;}
+Objective:before  {counter-increment:objective_count;}
+
+PerformancePlanOrReport[Type="Performance_Report"]:before 
+                            {content : "Performance Report";}
+PerformancePlanOrReport[Type="Performance_Plan"]:before 
+                            {content : "Performance Plan";}
+PerformancePlanOrReport[Type="Strategic_Plan"]:before,
+StrategicPlan:before        {content : 'Strategic Plan';}
+Description:before          {content : 'Description: ';}
+OtherInformation:before     {content : "Other information: ";}
+Organization:before         {content : 'Organization';}
+Acronym:before              {content : 'Acronym: ';}
+Identifier:before           {content : 'Identifier: ';}
+Stakeholder:before          {content : 'Stakeholder ';}
+Role:before                 {content : 'Role';}
+Vision:before               {content : 'Vision';}
+Mission:before              {content : 'Mission';}
+Value:before                {content : 'Value';}
+RoleType:before             {content : "Role type: ";}
+MeasurementDimension:before {content : 'Measurement Dimension: ';}
+UnitOfMeasurement:before    {content : 'Unit Of Measurement: ';}
+Relationship:before         {content : "Relationship /" attr('RelationshipType');  }
+MeasurementInstance:before  {content : "Measurement Instance ";}
+TargetResult:before         {content : 'Target result';}
+ActualResult:before         {content : 'Actual result';}
+NumberOfUnits:before        {content : 'Number of units: ';}
+StartDate:before            {content : 'Start date: ';}
+EndDate:before              {content : 'End date: ';}
+PublicationDate:before      {content : 'Publication date: ';}
+FirstName:before            {content : 'First name: '}
+LastName:before             {content : 'Last name: '}
+PhoneNumber:before          {content : 'Phone: '}
+EmailAddress:before         {content : 'Email: '}
+Relationship > Name:before  {content : "Name: ";}
+Submitter:before            {content : "Submitter information ";}
+AdministrativeInformation:before 
+                            {content : "Administrative information";}
+Submitter:before            {content : "Submitter";}
+SequenceIndicator:before    {content : 'Sequence indicator: ';}
+Goal:before                 {content : 'Goal ' counter(goal_count, decimal);}
+Objective:before            {content : 'Objective ' counter(goal_count, decimal) 
+                                        '.' counter(objective_count, decimal);}
+PerformanceIndicator:before {content : "Performance indicator / " 
+                                        attr('ValueChainStage') " / " 
+                                        attr('PerformanceIndicatorType');}
+Source:before               {content : 'Source: ';}
+
+/* ISO version rename FirstName and LastName to GivenName and Surname, respectively */
+GivenName:before            {content : 'Given name: '}
+Surname:before              {content : 'Surname: '}

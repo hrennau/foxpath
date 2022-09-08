@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ | (C) Copyright IBM Corporation 2005 - 2006. All Rights Reserved.
+ *-->
+<plugin id="org.dita.13097troubleshooting">
+  <feature extension="dita.specialization.catalog.relative" value="catalog-dita.xml" type="file"/>
+</plugin>

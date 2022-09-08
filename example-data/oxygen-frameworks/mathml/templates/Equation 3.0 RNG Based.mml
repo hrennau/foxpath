@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.w3.org/Math/RelaxNG/mathml3/mathml3.rnc" type="application/relax-ng-compact-syntax"?>
+<math xmlns="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <mstyle displaystyle="false" scriptlevel="0">
+        <mrow>
+            <mfrac>
+                <mrow>
+                    <mi mathcolor="gray">sin</mi>
+                    <mo rspace="verythinmathspace">⁡</mo>                    
+                    <mi>θ</mi>
+                </mrow>
+                <mi>π</mi>
+            </mfrac>
+        </mrow>
+    </mstyle>
+</math>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-model href="urn:dita-ng:dita:rng:learningAssessment.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="urn:dita-ng:dita:rng:learningAssessment.rng" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<learningAssessment id="assessment_${id}">
+ <title>${caret}</title>
+ <shortdesc/>
+ <learningAssessmentbody>
+ </learningAssessmentbody>
+</learningAssessment>

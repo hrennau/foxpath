@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="com.oxygenxml.editlink">
+  <feature extension="package.support.name" value="Oxygen XML Editor Support"/>
+  <feature extension="package.support.email" value="support@oxygenxml.com"/>
+  <feature extension="package.version" value="19.0"/>
+
+  <!-- WebHelp Responsive -->
+  <feature extension="dita.xsl.xhtml" value="xhtml.xsl" type="file"/>
+  <feature extension="dita.conductor.xhtml.param" value="params.xml" type="file"/>
+  <transtype name="webhelp-responsive" desc="WebHelp Responsive">
+    <param name="editlink.remote.ditamap.url" desc="The custom URL of the DITA Map suitable for opening in oXygen XML Web Author" type="string"/>
+    <param name="editlink.web.author.url" desc="The URL of the Web Author installation" type="string">
+      <val desc="oXygen XML Web Author Demo" default="true">https://www.oxygenxml.com/webapp-demo-aws/</val>
+    </param>
+  </transtype>
+  
+  <!-- PDF -->
+  <feature extension="dita.xsl.xslfo" value="xslfo.xsl" type="file"/>
+  <feature extension="dita.conductor.pdf2.param" value="params.xml" type="file"/>
+  <transtype name="pdf" desc="PDF">
+    <param name="editlink.remote.ditamap.url" desc="The custom URL of the DITA Map suitable for opening in oXygen XML Web Author" type="string"/>
+    <param name="editlink.web.author.url" desc="The URL of the Web Author installation" type="string">
+      <val desc="oXygen XML Web Author Demo" default="true">https://www.oxygenxml.com/webapp-demo-aws/</val>
+    </param>
+  </transtype>
+</plugin>

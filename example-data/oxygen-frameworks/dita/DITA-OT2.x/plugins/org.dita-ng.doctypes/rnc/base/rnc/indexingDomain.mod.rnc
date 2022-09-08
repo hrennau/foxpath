@@ -1,0 +1,83 @@
+# ============================================================= 
+# MODULE:    DITA Indexing Domain - RNC              
+# VERSION:   1.2                                                
+# DATE:      October 2010                                       
+# =============================================================
+
+# Refer to the latest version of this file by the following URI:
+# urn:dita-ng:dita:rnc:indexingDomain.mod.rnc
+# To refer to this specific version, you may use this value:
+# urn:dita-ng:dita:rnc:indexingDomain.mod.rnc:1.2
+
+# ============================================================= 
+# SYSTEM:     Darwin Information Typing Architecture (DITA)     
+# PURPOSE:    Define elements and specialization attributes
+#             for Indexing Domain             
+# ORIGINAL CREATION DATE:  
+# September 2010                                                
+# (C) Copyright Syncro Soft 2010-2011                                
+# All Rights Reserved.                                          
+# =============================================================
+
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+# Define the domain values of this module
+domains-atts-value |= "(topic indexing-d)"
+# Define domain extension patterns
+indexing-d-index-base =
+  index-see.element | index-see-also.element | index-sort-as.element
+# Extend the patterns with the domain contribution
+index-base |= indexing-d-index-base
+# Define elements content and attributes
+
+# LONG NAME: Index See
+index-see.content = (words.cnt | indexterm)*
+index-see.attributes =
+  attribute keyref { text }?,
+  univ-atts
+index-see.element =
+  
+  ## An <index-see> element within an <indexterm> redirects the reader to
+  ##         another index entry that the reader should reference instead of the current one. 
+  ##         Category: Indexing domain elements
+  element index-see { index-see.attlist, index-see.content }
+index-see.attlist &= index-see.attributes
+# LONG NAME: Index See Also
+index-see-also.content = (words.cnt | indexterm)*
+index-see-also.attributes =
+  attribute keyref { text }?,
+  univ-atts
+index-see-also.element =
+  
+  ## An <index-see-also> element within an <indexterm> redirects the reader
+  ##         to another index entry that the reader should reference in addition to the current one.
+  ##         Category: Indexing domain elements
+  element index-see-also {
+    index-see-also.attlist, index-see-also.content
+  }
+index-see-also.attlist &= index-see-also.attributes
+# LONG NAME: Index Sort As
+index-sort-as.content = words.cnt*
+index-sort-as.attributes =
+  attribute keyref { text }?,
+  univ-atts
+index-sort-as.element =
+  
+  ## The <index-sort-as> element specifies a sort phrase under which an index
+  ##         entry would be sorted. 
+  ##         Category: Indexing domain elements
+  element index-sort-as { index-sort-as.attlist, index-sort-as.content }
+index-sort-as.attlist &= index-sort-as.attributes
+# Specialization attributes. Global attributes and class defaults
+index-see.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/index-base indexing-d/index-see " ]
+  attribute class { text }?
+index-see-also.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/index-base indexing-d/index-see-also " ]
+  attribute class { text }?
+index-sort-as.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/index-base indexing-d/index-sort-as " ]
+  attribute class { text }?

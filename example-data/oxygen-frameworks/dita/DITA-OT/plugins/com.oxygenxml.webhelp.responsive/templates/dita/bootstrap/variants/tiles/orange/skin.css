@@ -1,0 +1,450 @@
+/*
+ * ==============================================
+ * Skin for oXygen generated WebHelp.
+ * ==============================================
+ */
+
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Fonts.
+ *  
+ */
+@import 'https://fonts.googleapis.com/css?family=Open+Sans:400,300,700';
+body{
+    font-family: 'Open Sans', sans-serif;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Fight with bootstrap
+ *  
+ */
+.navbar{
+    background: none;
+    border: none;
+    margin: 0;
+    box-shadow: none;
+}
+a,
+a:hover,
+a:visited{
+    color: navy;
+}
+a:hover{
+    text-decoration: none;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Publication titles
+ *  
+ */
+.wh_publication_title > a{
+    color: #002d80;
+    font-size: 1.6em;
+    font-weight: 700;
+}
+
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Menu
+ *  
+ */
+.wh_top_menu a:hover{
+    color: white;
+}
+/* The submenus */
+.wh_top_menu ul ul{
+    background-color: white;
+    box-shadow: 0px 10px 45px -12px rgba(0, 0, 0, 0.3);
+    border-left: 1px solid #555;
+    border-bottom: 1px solid #555;
+    border-right: 1px solid #555;
+
+}
+/* Labels in main bar */
+.wh_top_menu ul li:hover{
+    background-color: orange;
+}
+.wh_top_menu ul ul li a:hover{
+    background: orange;
+}
+.wh_top_menu ul ul li{
+    border-top-color: #555;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Link to the index.
+ * 
+ */
+ .wh_indexterms_link a span{
+    display:none;
+}
+
+@media only screen and (max-width: 767px) {
+    .wh_indexterms_link a:before{
+        bottom: 0;
+    }
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Breadcrumb
+ *  
+ */
+.wh_breadcrumb > .breadcrumb{
+    background: none;
+}
+.wh_breadcrumb .active > span{
+    font-weight: bold;
+}
+
+/* Change the 'Home' text into an icon. */
+.wh_breadcrumb .home > a > span{
+    display: none; /* Hide the 'Home' text */
+}
+.wh_breadcrumb .home > a:before{
+    content: '\e021'; /* Put an icon */
+    font-family: 'Glyphicons Halflings' !important;
+    font-size: medium;
+    padding-right: 0.5em;
+}
+.wh_hide_highlight{color:navy}
+
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Tools and navigation
+ * 
+ */
+.wh_print_link,
+.wh_navigation_links,
+.wh_navigation_links .navnext,
+.wh_navigation_links .navprev{
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Tiles
+ * 
+ */
+.wh_tile {
+    border-radius: .5em;
+    box-shadow: 0px 10px 45px -12px rgba(0, 0, 0, 0.3);
+    background-color: orange;
+    color: white;
+}
+.wh_tile_title{
+    text-align: center;
+    font-weight: 700;
+    text-decoration: none;
+}
+.wh_tile_shortdesc{
+    text-align: center;
+}
+
+@media only screen and (max-width: 767px) {
+    .wh_tile > div{
+        height: auto;
+    }
+}
+
+/* Make the link from the tile the entire width 
+    TODO - dan - move to wh_default.css
+*/
+.wh_tile_title span{
+    display: block;
+    width: 100%;
+}
+.wh_tile_title a{
+    display: block;
+    width: 100%;
+}
+.wh_tiles {
+    margin-top: 20px;
+}
+/* 
+You can style some of the tiles in a special way. 
+Example:
+.wh_tiles *[data-id='getting_started']{
+    background-color:gray;
+}
+*/
+
+
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Search area
+ * 
+ */
+.wh_search_input{
+    display: block;
+    background: url('resources/orange_bgr.jpg') no-repeat;
+    background-size: cover;
+    padding: 2em;
+    text-align: center;
+}
+
+.wh_welcome:not(:empty){
+    font-size: 2.5em;
+    margin: 0 auto;
+    padding: 0 0 1em 0;
+    text-shadow: none;
+    color:#002D80;
+}
+
+/* Style differently the search from the main pahge (index.html), make it larger.*/
+.wh_main_page .wh_search_input{
+    padding: 4em;
+    margin: 0;
+    background: url('resources/orange_bgr.jpg') no-repeat;
+    background-size: cover;
+    box-shadow: 0 10px 45px -12px rgba(0, 0, 0, 0.3);
+}
+.wh_search_textfield{
+    border: 1px solid gray;
+    border-radius: 0.6em;
+    padding: 0.3em;
+}
+.wh_search_button{
+    border: 1px solid gray;
+    border-radius: 0 0.6em 0.6em 0;
+    background-color:orange;
+    color:#fff;
+}
+
+/* Search autocomplete */
+/*.ui-menu-item {
+    font-size: 1.5em;
+    color: #777;
+}*/
+
+/* Selected autocomplete item */
+.ui-menu-item .ui-state-active {
+    background-color: orange;
+    border: none;
+    margin: 0;
+}
+
+/* Search relative path */
+.searchresult li .relativePath a {
+    color: orange;
+}
+
+/* Search autocomplete icons */
+.search-autocomplete-proposal-type-history a,
+.search-autocomplete-proposal-type-history a:hover,
+.search-autocomplete-proposal-type-history a:visited,
+.search-autocomplete-proposal-type-history a:active{
+    text-decoration: none;
+    color:inherit;
+    font-size: 0.8em;
+}
+.ui-state-active .search-autocomplete-proposal-type-history a,
+.ui-state-active .search-autocomplete-proposal-type-history a:hover,
+.ui-state-active .search-autocomplete-proposal-type-history a:visited,
+.ui-state-active .search-autocomplete-proposal-type-history a:active{
+    color: #fff;
+}
+
+/* Active search page */
+#wh-search-pagination > ul > li.active > a {
+    background-color: orange;
+}
+
+/* Color for the page number */
+.pagination>li>a,.pagination>li>span {
+    color: orange;
+}
+
+/* Border for the hovered page */
+.pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
+    border-color: orange !important;
+}
+
+/* Render search area for devices smaller than 767px */
+@media only screen and (max-width: 767px) {
+    .wh_main_page .wh_search_input,
+    .wh_search_input{
+        padding: 2em;
+    }
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Side TOC
+ * 
+ */
+.wh_side_toc{
+    margin: 2em;
+    padding: 1em;
+    border-radius: .5em;
+    box-shadow: 0px 10px 45px -12px rgba(0, 0, 0, 0.3);
+    background-color: orange;
+    color: white;
+    font-size: 0.95em;
+}
+.wh_side_toc > ul{
+    list-style-type: none;
+    padding-left: 0.5em;
+}
+.wh_side_toc li{
+    margin-top: 0.5em;
+}
+.wh_side_toc .active > .topicref a {
+    font-weight: bold;
+    color: black;
+}
+
+/* Side TOC tooltip */
+.wh_breadcrumb .topicref .wh-tooltip,
+.wh_side_toc .topicref .wh-tooltip {
+    background-color: navy;
+    color: #fff;
+}
+
+.wh_breadcrumb .topicref .wh-tooltip a,
+.wh_side_toc .topicref .wh-tooltip a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+/* Tooltip arrow. */
+
+[data-tooltip-position="left"] .topicref .wh-tooltip::before {
+    border-left-color: navy;
+}
+
+[data-tooltip-position="right"] .topicref .wh-tooltip::before {
+    border-right-color: navy;
+}
+
+[data-tooltip-position="bottom"] .topicref .wh-tooltip::before {
+    border-bottom-color: navy;
+}
+
+[data-tooltip-position="top"] .topicref .wh-tooltip::before {
+    border-top-color: navy;
+}
+
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Footer
+ * 
+ */
+.wh_footer{
+    font-family: arial;
+    text-align: center;
+    padding: 2em;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Topic content
+ * 
+ */
+.wh_topic_content{
+    box-shadow: 0px 10px 45px -12px rgba(0, 0, 0, 0.3);
+    border: 1px solid #EDEDED;
+    padding: 1em;
+    line-height: 1.7em;
+}
+
+.wh_topic_content li{
+    margin: 0.5em;
+}
+
+.wh_child_links,
+.wh_related_links {
+    padding-left: 1em;
+}
+
+.wh_topic_content a,
+.wh_child_links a,
+.wh_related_links a {
+    font-weight:bold;
+}
+
+.topictitle3{
+    font-weight: 400
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Search results.
+ * 
+ */
+.wh_search_expression{
+    font-weight: bold;
+}
+.wh_search_expression:before,
+.wh_search_expression:after{
+    content: '"';
+}
+.searchresult{
+    list-style-type: decimal;
+}
+
+.searchresult li a{
+    font-weight: bold;
+    color: #4b7cb4;
+}
+
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Index terms.
+ * 
+ */
+.wh_index_terms {
+}
+
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Tree TOC for the main page.
+ * 
+ */
+.wh_main_page_toc{
+    border-radius:0.6em;
+    box-shadow: 0px 10px 45px -12px rgba(0, 0, 0, 0.3);
+}
+.wh_main_page_toc .wh_main_page_toc_entry a{
+    color:black;
+}
+
+/* Colors */
+.wh_main_page_toc{
+    border: none;
+}
+.wh_main_page_toc .wh_main_page_toc_accordion_header, .wh_main_page_toc>.wh_main_page_toc_entry {
+    border-bottom: none;
+}
+.wh_main_page_toc_accordion_entries{
+}
+.wh_main_page_toc .expanded {
+    background-color: orange;
+}
+.wh_main_page_toc .wh_main_page_toc_accordion_header:hover, .wh_main_page_toc>.wh_main_page_toc_entry:hover{
+    background-color: orange;
+}

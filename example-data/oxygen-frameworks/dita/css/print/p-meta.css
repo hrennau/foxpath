@@ -1,0 +1,21 @@
+/*
+ * ================================================
+ * 
+ * PDF metadata
+ * 
+ * ================================================
+ */
+    
+@media oxygen-chemistry {
+
+    /* Collect the title of the map. */
+    *[class ~= "map/map"][title] {
+        -oxy-pdf-meta-title: attr(title);
+    }
+    /* The bookmap title may migrate in the opentopic:map element*/
+    map > *[class ~= "topic/title"] {
+        -oxy-pdf-meta-title: content();
+    }
+    
+    
+}

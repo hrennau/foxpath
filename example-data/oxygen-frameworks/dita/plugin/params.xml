@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="dita-ot/plugin.rnc" type="application/relax-ng-compact-syntax"?>
+<plugin id="newPluginID">
+  <transtype name="base-oxygen" abstract="true">
+    <!-- Oxygen specific params, automatically contributed to the base transtype. -->
+    <param name="fix.external.refs.com.oxygenxml" type="enum"
+      desc="The DITA Open Toolkit usually has problems processing references that point to locations outside of the processed DITA Map directory.
+      This parameter is used to specify whether or not the application should try to fix such references in a temporary files folder before the DITA Open Toolkit is invoked on the fixed references.
+      The fix has no impact on your edited DITA content.">
+      <val>true</val>
+      <val default="true">false</val>
+    </param>
+    <param name="clean.output"
+      desc="The parameter to specify whether or not to clean the output directory before each build."
+      type="enum">
+      <val>yes</val>
+      <val default="true">no</val>
+    </param>
+  </transtype>
+  <transtype name="base" abstract="true">
+    <param name="args.debug"
+      desc="Specifies whether or not debugging information is included in the log."
+      type="enum">
+      <val>yes</val>
+      <val default="true">no</val>
+    </param>
+    <param name="args.draft"
+      desc="Specifies whether or not the content of &lt;draft-comment> and &lt;required-cleanup> elements is included in the output. 
+      Corresponds to the DRAFT parameter found in most XSLT modules.
+      Tip: For PDF output, setting the args.draft parameter to yes causes the contents of the &lt;titlealts> element to be rendered below the title."
+      type="enum">
+      <val>yes</val>
+      <val default="true">no</val>
+    </param>
+    <param name="args.figurelink.style"
+      desc="Specifies how cross references to figures are styled in output. 
+      Specifying NUMBER results in &quot;Figure 5&quot;; specifying TITLE results in the title of the figure. 
+      Corresponds to the FIGURELINK parameter in XSLT.
+      Note: Support for PDF was added in DITA-OT 2.0."
+      type="enum">
+      <val default="true">NUMBER</val>
+      <val>TITLE</val>
+      <val desc="Supported starting with DITA-OT 2.0 by the PDF output.">NUMTITLE</val>
+    </param>
+    <param name="args.filter" desc="Specifies a filter file to be used to include, exclude, or flag content." type="file"/>
+    <param name="args.grammar.cache"
+      desc="Specifies whether or not the grammar-caching feature of the XML parser is used. 
+        Note: This option dramatically speeds up processing time. 
+        However, there is a known problem with using this feature for documents that use XML entities. 
+        If your build fails with parser errors in regards to entity resolution, set this parameter to no."
+      type="enum">
+      <val default="true">yes</val>
+      <val>no</val>
+    </param>
+    <param name="args.input"
+      desc="Specifies the master file for your documentation project. 
+      Typically this is a DITA map. However, it can also be a DITA topic if you want to transform a single DITA file. 
+      The path can be absolute, relative to args.input.dir, or relative to the directory where your project&quot;s Ant build script resides 
+      if args.input.dir is not defined."
+      type="file"/>
+    <param name="args.input.dir" type="dir" desc="Specifies the base directory for your documentation project. 
+      The default value is the parent directory of the file specified by args.input."/>
+    <param name="args.logdir"
+      desc="Specifies the location where the DITA-OT places log files for your project."
+      type="dir"/>
+    <param name="args.rellinks" desc="Specifies which links to include in the output." type="enum">
+      <val desc="No links are included">none</val>
+      <val desc="All links are included" default="true">all</val>
+      <val desc="Parent, child, next, and previous links are not included.">nofamily</val>
+    </param>
+    <param name="args.tablelink.style"
+      desc="Specifies how cross references to tables are styled. 
+      Specifying NUMBER results in &quot;Table 5&quot;, while specifying TITLE results in the title of the table. 
+      Corresponds to the TABLELINK parameter in XSLT.
+      Note: Support for PDF was added in DITA-OT 2.0. By default, PDF uses the value NUMTITLE, 
+      which is not supported for other transform types (this results in &quot;Table 5. Title&quot;)."
+      type="enum">
+      <val default="true">NUMBER</val>
+      <val>TITLE</val>
+      <val desc="Supported starting with DITA-OT 2.0 by the PDF output.">NUMTITLE</val>
+    </param>
+    <param name="clean.temp"
+      desc="Specifies whether or not the DITA-OT deletes the files in the temporary directory after it finishes a build."
+      type="enum">
+      <val default="true">yes</val>
+      <val>no</val>
+    </param>
+    <param name="dita.dir" desc="Specifies where the DITA-OT is installed." type="dir"/>
+    <param name="dita.temp.dir" desc="Specifies the location of the temporary directory. 
+      The temporary directory is where the DITA-OT writes temporary files that are generated during the transformation process." type="dir"/>
+    <param name="dita.input.valfile" deprecated="true" type="file" desc="Specifies a filter file to be used to include, exclude, or flag content.
+Note: Deprecated in favor of the args.filter parameter."></param>
+    <param name="generate.copy.outer"
+      desc="Specifies how to deal with overflowing dita/topic files." type="enum">
+      <val default="true"
+        desc="Only generate/copy files that fit within the designated output directory.">1</val>
+      <val
+        desc="Generate/copy all files, even those that will end up outside of the output directory."
+        >2</val>
+      <val
+        desc="The old solution, to adjust the input.dir according to the referenced files 
+        (this option was kept only for backward compatibility purposes)."
+        >3</val>
+    </param>
+    <param name="onlytopic.in.map"
+      desc="Specifies whether or not files that are linked to, or referenced with a @conref attribute, should generate output."
+      type="enum">
+      <val desc="Only files that are referenced directly from the map will generate output"
+        >yes</val>
+      <val default="true">no</val>
+    </param>
+    <param name="outer.control"
+      desc="Specifies how the DITA-OT handles content files that are located in or below the directory containing the master DITA map. 
+        Warning: Microsoft HTML Help Compiler cannot produce HTMLHelp for documentation projects that use outer content. Your content files must reside in or below the 
+        directory containing the .ditamap file, and the map file cannot specify &quot;..&quot; at the start of href attributes for topicref elements."
+      type="enum">
+      <val desc="Fails quickly if files are going to be generated/copied outside of that directory"
+        >fail</val>
+      <val default="true"
+        desc="Completes if files will be generated/copied outside, but logs a warning">warn</val>
+      <val desc="Quietly finishes with only those files and does not generate warnings or errors.">quiet</val>
+    </param>
+        <param name="output.dir" type="dir" desc="Specifies the name and location of the output directory. 
+      By default, the output is written to DITA-dir\out."/>
+    <!--<param name="root-chunk-override" desc="Override for map chunk attribute value. [Since DITA-OT 2.0]" type="string"/>-->
+    <param name="transtype" desc="Specifies the output format. Each DITA-OT plugin can register a new output format." type="string">
+      <val>xhtml</val>
+      <val>html5</val>
+      <val>pdf2</val>
+      <val>htmlhelp</val>
+      <val>javahelp</val>
+      <val>eclipsehelp</val>
+      <val>eclipsecontent</val>
+      <val>odt</val>
+      <val>rtf</val>
+      <val>troff</val>
+      <val>docbook</val>
+    </param>
+    <param name="validate"
+      desc="Specifies whether or not the DITA-OT validates the content."
+      type="enum">
+      <val default="true">yes</val>
+      <val>no</val>
+    </param>
+    <param name="dita.ext"
+      desc="Specifies an extension to use for DITA topics. All DITA topics will use this single extension in the temp directory. 
+      Corresponds to the DITAEXT parameter in XSLT."
+      type="string">
+      <val default="true">.xml</val>
+      <val>.dita</val>
+    </param>
+    <param name="generate-debug-attributes" desc="Specifies whether or not the @xtrf and @xtrc debugging attributes are generated in the temporary files." type="enum">
+      <val desc="Enables generation of debugging attributes" default="true">true</val>
+      <val desc="Disables generation of debugging attributes">false</val>
+    </param>
+    <param name="processing-mode" desc="Specifies how the DITA-OT handles errors and error recovery." type="enum">
+      <val desc="When an error is encountered, the DITA-OT stops processing">strict</val>
+      <val desc="When an error is encountered, the DITA-OT attempts recovery" default="true">lax</val>
+      <val desc="When an error is encountered, the DITA continues processing but does not attempt error recovery">skip</val>
+    </param>
+  </transtype>
+  <transtype name="base-html" extends="base" abstract="true">
+    <param name="args.artlbl" desc="Specifies whether to generate a label for each image. The label will contain the name of the image file."
+      type="enum">
+      <val>yes</val>
+      <val default="true">no</val>
+    </param>
+    <param name="args.breadcrumbs" type="enum" desc="Specifies whether or not to generate breadcrumb links.">
+      <val>yes</val>
+      <val default="true">no</val>
+    </param>
+    <param name="args.copycss"
+      desc="Specifies whether or not to copy the custom CSS file to the output directory."
+      type="enum">
+      <val>yes</val>
+      <val default="true">no</val>
+    </param>
+    <param name="args.css"
+      desc="Specifies the file path of a custom CSS file."
+      type="file"/>
+    <param name="args.csspath"
+      desc="Specifies the location of a copied CSS file relative to the output directory. Corresponds to the CSSPATH parameter in XSLT."
+      type="string"/>
+    <param name="args.cssroot"
+      desc="Specifies the directory that contains the custom CSS file. 
+            DITA-OT will copy the file from this location."
+      type="dir"/>
+    <param name="args.dita.locale"
+      desc="Specifies the language locale file to use for sorting index entries.
+            Note: This parameter is not available for the XHTML transformation."
+      type="string"/>
+    <param name="args.ftr"
+      desc="Specifies an XML file that contains content for a running footer. 
+            Corresponds to the FTR parameter in XSLT.
+            Note: The XML file must contain valid XML content. A common practice is to place all content into a &lt;div> element."
+      type="file"/>
+    <param name="args.gen.default.meta"
+      desc="Specifies whether or not to generate extra metadata that targets parental control scanners, meta elements with name=&quot;security&quot; and name=&quot;Robots&quot;. 
+      Corresponds to the genDefMeta parameter in XSLT."
+      type="enum">
+      <val>yes</val>
+      <val default="true">no</val>
+    </param>
+    <param name="args.gen.task.lbl" type="enum"
+      desc="Specifies whether or not to generate headings for sections within task topics. 
+      Corresponds to the GENERATE-TASK-LABELS parameter in XSLT.">
+      <val>YES</val>
+      <val default="true">NO</val>
+    </param>
+    <param name="args.hdf"
+      desc="Specifies an XML file that contains content to be placed in the document head." type="file"/>
+    <param name="args.hdr"
+      desc="Specifies an XML file that contains content for a running header. 
+            Corresponds to the HDR parameter in XSLT.
+            Note: The XML file must contain valid XML. A common practice is to place all content into a &lt;div> element."
+      type="file"/>
+    <param name="args.hide.parent.link" deprecated="true" type="enum" desc="Specifies whether or not to hide links to parent topics in the HTML or XHTML output. Corresponds to the NOPARENTLINK parameter in XSLT.
+Note: This parameter is deprecated in favor of the args.rellinks parameter.">
+      <val>yes</val>
+      <val default="true">no</val>
+    </param>
+    <param name="args.indexshow"
+      desc="Specifies whether or not the content of &lt;indexterm> elements are rendered in the output." type="enum">
+      <val>yes</val>
+      <val default="true">no</val>
+    </param>
+    <param name="args.outext"
+      desc="Specifies the file extension for HTML or XHTML output. Corresponds to the OUTEXT parameter in XSLT."
+      type="string">
+      <val>.htm</val>
+      <val default="true">.html</val>
+    </param>
+    <param name="args.xhtml.classattr"
+      desc="Specifies whether or not to include the DITA class ancestry inside the XHTML elements.
+      For example, the &lt;prereq> element (which is a specialization of the section element) would generate class=&quot;section prereq&quot;. Corresponds to the PRESERVE-DITA-CLASS parameter in XSLT.
+Note: Beginning with DITA-OT release 1.5.2, the default value is yes. For release 1.5 and 1.5.1, the default value was no."
+      type="enum">
+      <val default="true">yes</val>
+      <val>no</val>
+    </param>
+    <param name="args.xsl" desc="Specifies a custom XSLT file to be used instead of the default XSLT transformation file (xsl\dita2xhtml.xsl). The parameter must specify a fully qualified file name." type="file"/>
+  </transtype>
+  <transtype name="pdf2" extends="base" desc="PDF">
+   <param name="args.rellinks" desc="Specifies which links to include in the output." type="enum">
+    <val desc="No links are included" default="true">none</val>
+    <val desc="All links are included">all</val>
+    <val desc="Parent, child, next, and previous links are not included.">nofamily</val>
+   </param>
+    <param name="args.bookmap-order"
+      desc="Specifies if the order of frontmatter and backmatter content is retained in bookmap." type="enum">
+      <val>retain</val>
+      <val default="true">discard</val>
+    </param>
+    <param name="args.bookmark.style" type="enum" desc="Specifies whether or not PDF bookmarks are by default expanded or collapsed.">
+      <val default="true">COLLAPSED</val>
+      <val>EXPANDED</val>
+    </param>
+    <param name="args.chapter.layout"
+      desc="Specifies whether or not chapter level TOCs are generated."
+      type="enum">
+      <val>BASIC</val>
+      <val default="true">MINITOC</val>
+    </param>
+    <param name="args.fo.userconfig"
+      desc="Specifies the user configuration file for the FO processor." type="file"/>
+    <param name="args.gen.task.lbl" type="enum"
+      desc="Specifies whether or not to generate headings for sections within task topics.
+      Corresponds to the GENERATE-TASK-LABELS parameter in XSLT.">
+      <val>YES</val>
+      <val default="true">NO</val>
+    </param>
+    <param name="args.xsl.pdf" type="file"
+      desc="Specifies an XSLT file that is used to override the default XSLT transformation file (plugins\org.dita.pdf2\xsl\fo\topic2fo_shell.xsl). 
+      You must specify the fully qualified file path."/>
+    <param name="custom.xep.config"
+      desc="Specifies the user configuration file for RenderX." type="file"/>
+    <param name="customization.dir" type="dir" desc="Specifies the customization directory."/>
+    <param name="pdf.formatter" desc="Specifies the XSLT processor." type="enum">
+      <val desc="Antenna House Formatter">ah</val>
+      <val desc="Apache FOP" default="true">fop</val>
+      <val desc="RenderX XEP Engine">xep</val>
+    </param>
+    <param name="publish.required.cleanup" desc="Specifies whether or not draft-comment and required-cleanup elements are included in the output.
+      The default value is the value of the args.draft parameter.
+      Corresponds to publishRequiredCleanup parameter in XSLT." type="enum">
+      <val>yes</val>
+      <val>no</val>
+    </param>
+    <param name="xep.failOnError" desc="Signals XEP that it should fail on an error." type="enum">
+      <val>true</val>
+    </param>
+    <param name="retain.topic.fo"
+      desc="Specifies whether or not to retain the generated FO file. If the configuration property org.dita.pdf2.use-out-temp is set to false, this parameter is ignored."
+      type="enum">
+      <val>yes</val>
+      <val default="true">no</val>
+    </param>
+    <param name="org.dita.pdf2.use-out-temp"
+      desc="Legacy temporary file mode for generating topic.fo and graphics into the output directory."
+      type="enum">
+      <val desc="Use output directory for XSL FO file processing">true</val>
+      <val desc="Use tempory folder for XSL FO processing" default="true">false</val>
+    </param>
+    <param name="show.changes.and.comments" desc="Show Oxygen track changes and comments" type="enum">
+      <val desc="No" default="true">no</val>
+      <val desc="Yes">yes</val>
+    </param>
+  </transtype>
+  <transtype name="xhtml" extends="base-html" desc="XHTML">
+    <param name="args.xhtml.contenttarget"
+      desc="Specifies the value of the @target attribute on the &lt;base> element in the TOC file." type="string">
+      <val default="true">contentwin</val>
+    </param>
+    <param name="args.xhtml.toc"
+      desc="Specifies the base name of the TOC file." type="string">
+      <val default="true">index</val>
+    </param>
+    <param name="args.xhtml.toc.class"
+      desc="Specifies the value of the @class attribute on the &lt;body> element in the TOC file. Found in map2htmltoc.xsl."
+      type="string"/>
+  </transtype>
+  <transtype name="htmlhelp" extends="base-html" desc="Compiled HTML Help (CHM)">
+    <param name="args.htmlhelp.includefile"
+      desc="Specifies a file that you want included in the HTML Help."
+      type="file"/>
+    <param name="htmlhelp.locale" type="string" desc="Global encoding for CHM output pages.">
+      <val default="true">en-US</val>
+    </param>
+    <!-- Oxygen provided parameter -->
+    <param name="args.htmlhelp.default.topic"
+      desc="The path of the default topic that will be opened the first time in the CHM output, relative to the base output directory (for example: topics\\intro.html)."
+      type="string"/>
+  </transtype>
+  <transtype name="epub" extends="d4pCommons" desc="EPUB (DITA 4 Publishers)">
+    <param name="args.css.output.dir"
+      desc="Specifies the directory for the CSS files in EPUB and Kindle transformations.
+        By default it is the configured topic output directory."
+      type="dir"/>
+    <param name="cover.graphic.file"
+      desc="Specifies the absolute or relative path of the image (JPEG, PNG, or GIF) to use as the cover graphic for the EPUB."
+      type="file"/>
+    <param name="d4p.max.nav.depth"
+      desc="Specifies the maximum navigation depth of the table of contents.
+        The default is the value of the d4p.max.toc.depth parameter (which has a default value of &quot;5&quot;)."
+      type="string"/>
+    <param name="d4p.max.toc.depth"
+      desc="Specifies the maximum depth of the generated HTML table of contents." type="string">
+      <val default="true">5</val>
+    </param>
+    <param name="topics.output.dir"
+      desc="Specifies the name of the output directory."
+      type="string">
+      <val default="true">topics</val>
+    </param>
+    <param name="epub.exclude.auto.rellinks"
+      desc="Excludes auto-generated related links. 
+      Set this value to true to suppress related links in the output. Note that explicitly-authored related links are not affected. You cannot change the default value to true because this is a global property that affects all transformation types."
+      type="enum">
+      <val>true</val>
+      <val default="true" desc="related links are generated">false</val>
+    </param>
+    <param name="epub.pubid.uri.stub"
+      desc="Specifies the URI prefix to use in constructing the full EPUB ID value in the EPUB metadata. 
+        If this is a relative URI it should end with a &quot;/&quot; character. 
+        This parameter normally identifies the organization that owns or publishes the EPUB (for example  
+        &quot;http://mydomain.com/EPUB&quot;)."
+      type="string">
+      <val default="true">http://my-URI-stub/</val>
+    </param>
+    <param name="epub.temp.dir"
+      desc="Specifies the directory to use for EPUB-specific processing. This is different from the main Toolkit temp directory. 
+        An absolute platform-specific filename. 
+        This directory holds all the files that are then zipped to create the final EPUB file.
+        By default temporary EPUB files are stored in a directory called &quot;epub_temp&quot; within the defined Toolkit temp directory."
+      type="dir"/>
+    <param name="images.output.dir"
+      desc="Specifies the name of the directory within the EPUB to hold all images. 
+        Any valid directory name. The EPUB process automatically renames graphics to ensure that there are no name conflicts when the graphics are copied to into this directory from their source locations."
+      type="string">
+      <val default="true">images</val>
+    </param>
+  </transtype>
+  <transtype name="odt" extends="base" desc="Open Document Format">
+    <param name="args.odt.img.embed"
+      desc="Determines whether images are embedded as binary objects within the ODT file."
+      type="enum">
+      <val default="true">no</val>
+      <val>yes</val>
+    </param>
+  </transtype>
+  <transtype name="wordrtf" extends="base" desc="Word RTF"/>
+  <transtype name="javahelp" extends="base-html" desc="JavaHelp">
+    <param name="args.javahelp.map"
+      desc="The root file name of the output javahelp map file in javahelp transformation. 
+      The default is the name of input ditamap file."
+      type="file"/>
+    <param name="args.javahelp.toc"
+      desc="Specifies the name of the file containing the TOC in your JavaHelp output. 
+      Default value is the name of the ditamap file for your project."
+      type="file"/>
+    <!-- Added by Oxygen -->
+    <param name="helpset.name" type="string"
+      desc="The name of the helpset file which will be generated. 
+        If not specified it will be composed from the DITA Map file name and optionally the specified DITAVAL filter file (if there is a DITAVAL file specified)."/>
+    <param name="args.dita.locale"
+      desc="The locale used for sorting indexterms. If no locale specified, the first occurrence of &quot;xml-lang&quot; will be used as default locale; 
+      If no &quot;xml-lang&quot; found, &quot;en-us&quot; will be used by default. The JavaHelp transformation type also uses this parameter."
+      type="string"/>
+  </transtype>
+  <transtype name="eclipsehelp" extends="base-html" desc="Eclipse Help">
+    <param name="args.eclipsehelp.toc" type="file"
+      desc="Specifies the name of the TOC file. 
+        The default is the name of input ditamap file."/>
+    <param name="args.eclipsehelp.country" type="string"
+      desc="Specifies the region for the language that is specified by the args.eclipsehelp.language parameter. 
+      For example, us, ca, and gb would clarify a value of en set for the args.eclipsehelp.language parameter. 
+      The content will be moved into the appropriate directory structure for an Eclipse fragment."/>
+    <param name="args.eclipse.language" type="file"
+      desc="Specifies the base language for translated content, such as en for English. 
+      This parameter is a prerequisite for the args.eclipsehelp.country parameter. 
+      The content will be moved into the appropriate directory structure for an Eclipse fragment."/>
+    <param name="args.eclipse.provider"
+      desc="Specifies the name of the person or organization that provides the Eclipse help. 
+Tip: The toolkit ignores the value of this parameter when it processes an Eclipse map."
+      type="string">
+      <val default="true">DITA</val>
+    </param>
+    <param name="args.eclipse.version"
+      desc="Specifies the version number to include in the output. 
+            Tip: The toolkit ignores the value of this parameter when it processes an Eclipse map."
+      type="string">
+      <val default="true">0.0.0</val>
+    </param>
+    <param name="args.eclipse.symbolic.name" type="string"
+      desc="Specifies the symbolic name (aka plugin ID) in the output for an Eclipse Help project. The @id value from the DITA map or the Eclipse map collection (Eclipse help specialization) is the symbolic name for the plugin in Eclipse. 
+Tip: The toolkit ignores the value of this parameter when it processes an Eclipse map.">
+      <val default="true">org.sample.help.doc</val>
+    </param>
+    <!-- Oxygen added param -->
+    <param name="helpset.name" type="string"
+      desc="The name of the helpset file which will be generated. 
+        If not specified it will be composed from the DITA Map file name and optionally the specified DITAVAL filter file (if there is a DITAVAL file specified)."
+    />
+  </transtype>
+  <transtype name="eclipsecontent" extends="base-html" desc="Eclipse Content">
+    <param name="args.eclipse.provider"
+      desc="The provider name of the eclipse help output. 
+      Tip: The toolkit ignores the value of this property when processing an Eclipse Collection Map, eclipse.dtd."
+      type="string">
+      <val default="true">DITA</val>
+    </param>
+    <param name="args.eclipse.version"
+      desc="The version number of the eclipse help output. 
+      Tip: The toolkit ignores the value of this property when processing an Eclipse Collection Map, eclipse.dtd."
+      type="string">
+      <val default="true">0.0.0</val>
+    </param>
+    <param name="args.eclipsecontent.toc" type="file"
+      desc="Specifies the name of the TOC file. The default is the name of input ditamap file."
+    />
+  </transtype>
+  <transtype name="kindle" extends="epub" desc="Kindle (DITA 4 Publishers)">
+    <param name="kindlegen.executable"
+      desc="File path to the kindlegen executable.
+        e.g. &quot;/Users/ekimber/apps/KindleGen_Mac_i386_v1.1/kindlegen&quot;."
+      type="file"/>
+  </transtype>
+  <transtype name="html2" extends="d4pCommons" desc="HTML2 (DITA 4 Publishers)">
+    <param name="html2.generate.dynamic.toc"
+      desc="Specifies whether or not to generate a dynamic TOC in the output." type="enum">
+      <val>true</val>
+      <val>false</val>
+    </param>
+    <param name="html2.generate.frameset"
+      desc="Specifies whether or not to generate an HTML frameset file for the map." type="enum">
+      <val>true</val>
+      <val default="true">false</val>
+    </param>
+    <param name="html2.generate.static.toc"
+      desc="Specifies whether or not to generate a static TOC in the output" type="enum">
+      <val>true</val>
+      <val default="true">false</val>
+    </param>
+  </transtype>
+  <transtype name="indesign" extends="d4pCommons" desc="InDesign (DITA 4 Publishers)"/>
+  <transtype name="graphviz" extends="d4pCommons" desc="Graphical Map Visualizer (DITA 4 Publishers) - experimental">
+    <param name="graphviz.dot.executable"
+      desc="File path to the Graphviz dot executable.
+        e.g. &quot;C:\\Program Files (x86)\\Graphviz2.32\\bin\\dot.exe&quot;."
+      type="file"/>
+  </transtype>
+  <transtype name="tocjs" extends="base" desc="TocJS">
+    <param name="output.file" desc="The parameter to specify the output JavaScript file for TOCJS."
+      type="file"/>
+    <param name="content.frame" desc="The parameter to specify the content frame for TOCJS."
+      type="string"/>
+  </transtype>
+  <transtype name="pdf" extends="base" desc="Legacy PDF">
+    <param name="args.fo.img.ext"
+      desc="The extension name of image file in pdf transformation.
+      Note: Only one extension supported in the same transformation, image files with other extensions will be renamed to the specified extension."
+      type="enum">
+      <val default="true">.jpg</val>
+      <val>.gif</val>
+    </param>
+    <param name="args.fo.output.rel.links"
+      desc="The parameter to specify whether output related links in pdf transformation.
+      If ${args.fo.include.rellinks} is specified, this parameter is ignored."
+      type="enum">
+      <val>yes</val>
+      <val default="true">no</val>
+    </param>
+    <param name="args.fo.userconfig"
+      desc="The parameter to specify the user configuration file for FOP." type="file"/>
+    <param name="args.artlbl" desc="Specifies whether to generate a label for each image; the label will contain the image file name."
+      type="enum">
+      <val>yes</val>
+      <val default="true">no</val>
+    </param>
+  </transtype>
+  <transtype name="legacypdf" extends="pdf" abstract="true"/>
+  <transtype name="d4pCommons" abstract="true" extends="base-html">
+    <param name="title.only.topic.class.spec"
+      desc="Specifies the @class attribute value to use for title-only topics generated from topicheads."
+      type="string">
+      <val default="true">- topic/topic </val>
+    </param>
+    <param name="title.only.topic.title.class.spec"
+      desc="Specifies the @class attribute value to use for title-only topics generated from topicheads."
+      type="string">
+      <val default="true">- topic/topic </val>
+    </param>
+    <param name="html2.file.organization.strategy"
+      desc="Names the output file organization strategy to use for generated files.
+        One of the pre-defined strategies or a user-implemented name. 
+        If the strategy name is not recognized (that is, not handled by the base code or an extension) then the default strategy is applied. 
+        The default is dependent on the specific transformation type. For HTML2 the default is &quot;as-authored&quot;. For EPUB it is &quot;single-dir&quot;."
+      type="string">
+      <val>as-authored</val>
+      <val>single-dir</val>
+    </param>
+  </transtype>
+  <transtype name="troff" extends="base" desc="troff"/>
+  <transtype name="docbook" extends="base" desc="DocBook"/>
+  <transtype name="d4pjournals" extends="d4pCommons" desc="Journals (DITA 4 Publishers)"/>
+  <transtype name="rss" extends="d4pCommons" desc="RSS (DITA 4 Publishers)"/>
+  <transtype name="word2dita" extends="d4pCommons" desc="Word to DITA (DITA 4 Publishers)"/>
+  <transtype name="subjectscheme2navmap" extends="d4pCommons" desc="Subject Scheme to NavMap (DITA 4 Publishers)"/>
+</plugin>

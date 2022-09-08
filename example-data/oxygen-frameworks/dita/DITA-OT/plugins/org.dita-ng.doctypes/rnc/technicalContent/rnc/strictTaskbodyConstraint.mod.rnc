@@ -1,0 +1,41 @@
+# ============================================================= 
+# MODULE:    DITA Strict Taskbody Constraint - RNC              
+# VERSION:   1.2                                                
+# DATE:      November 2010                                       
+# =============================================================
+
+# Refer to the latest version of this file by the following URI:
+# urn:dita-ng:dita:rnc:strictTaskbodyConstraint.mod.rnc
+# To refer to this specific version, you may use this value:
+# urn:dita-ng:dita:rnc:strictTaskbodyConstraint.mod.rnc:1.2
+
+# ============================================================= 
+# SYSTEM:     Darwin Information Typing Architecture (DITA)     
+# PURPOSE:    Declaring the domain restrictions for the strict task
+#             constraint module
+# ORIGINAL CREATION DATE:  
+# September 2010                                                
+# (C) Copyright Syncro Soft 2010-2011                                
+# All Rights Reserved.                                          
+# =============================================================
+
+# Define the domain values of this module
+domains-atts-value |= "(topic task strictTaskbody-c)", "(topic task)"
+include "../../base/rnc/topic.mod.rnc" {
+  example = example.element
+}
+include "task.mod.rnc" {
+  taskbody.content =
+    prereq?,
+    context?,
+    (steps | steps-unordered)?,
+    result?,
+    example?,
+    postreq?
+  context = context.element
+  postreq = postreq.element
+  result = result.element
+  prereq = prereq.element
+  steps-unordered = steps-unordered.element
+  steps = steps.element
+}

@@ -1,0 +1,47 @@
+<?xml version='1.0'?>
+<catalog 
+  xmlns='urn:oasis:names:tc:entity:xmlns:xml:catalog'> 
+	<group>
+  	<public
+			publicId='+//ISBN 1-931666-00-8//DTD ead.dtd (Encoded Archival Description (EAD) Version 2002)//EN'
+			uri='ead.dtd'/>
+	</group>
+	<group>
+	  <public 
+			publicId='ISO 8879:1986//ENTITIES Added Latin 1//EN//XML'
+			uri='charentities/iso-lat1.ent'/> 
+	  <public 
+			publicId='ISO 8879:1986//ENTITIES Added Latin 2//EN//XML'
+			uri='charentities/iso-lat2.ent'/> 
+	  <public 
+			publicId='ISO 8879:1986//ENTITIES Greek Symbols//EN//XML'
+			uri='charentities/iso-grk3.ent'/> 
+	  <public 
+			publicId='ISO 8879:1986//ENTITIES Alternative Greek Symbols//EN//XML'
+			uri='charentities/iso-grk4.ent'/> 
+ 	 <public 
+			publicId='ISO 8879:1986//ENTITIES Greek Letters//EN//XML'
+			uri='charentities/iso-grk1.ent'/> 
+	  <public 
+			publicId='ISO 8879:1986//ENTITIES Monotoniko Greek//EN//XML'
+			uri='charentities/iso-grk2.ent'/> 
+	  <public 
+			publicId='ISO 8879:1986//ENTITIES Diacritical Marks//EN//XML'
+			uri='charentities/iso-dia.ent'/> 
+	  <public 
+			publicId='ISO 8879:1986//ENTITIES Numeric and Special Graphic//EN//XML'
+			uri='charentities/iso-num.ent'/> 
+	  <public 
+			publicId='ISO 8879:1986//ENTITIES Publishing//EN//XML' 
+			uri='charentities/iso-pub.ent'/> 
+	  <public 
+			publicId='ISO 8879:1986//ENTITIES General Technical//EN//XML'
+			uri='charentities/iso-tech.ent'/> 
+	  <public 
+			publicId='ISO 8879:1986//ENTITIES Russian Cyrillic//EN//XML'
+			uri='charentities/iso-cyr1.ent'/> 
+	  <public 
+			publicId='ISO 8879:1986//ENTITIES Non-Russian Cyrillic//EN//XML'
+			uri='charentities/iso-cyr2.ent'/> 
+	</group>
+</catalog> 

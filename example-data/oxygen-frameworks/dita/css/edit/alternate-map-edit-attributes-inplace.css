@@ -1,0 +1,113 @@
+/**
+ * Makes visible the set of form controls allowing editing of various attributes directly in the map. 
+ */
+ 
+/* Show the edit button */
+*[class~="map/topicref"]:before(1007),
+*[class~="map/map"][title]:before(1007){
+    content:
+       oxy_button(transparent, true, action, oxy_action(
+          name, 'Edit', 
+          description, 'Edit', 
+          icon, url('../img/edit16.png'), 
+          operation, 'ro.sync.ecss.extensions.commons.operations.ChangePseudoClassesOperation', 
+          arg-setPseudoClassNames, '-oxy-edit'          
+        ), enableInReadOnlyContext, true, showIcon, true);
+    ;
+}
+
+/* Show the done editing button */
+*[class~="map/topicref"]:-oxy-edit:before(1007),
+*[class~="map/map"][title]:-oxy-edit:before(1007) {
+    outline:1px solid #AAAAAA;
+    content:
+       oxy_button(transparent, true, action, oxy_action(
+          name, 'Done', 
+          description, 'Done', 
+          icon, url('../img/edit16.png'), 
+          operation, 'ro.sync.ecss.extensions.commons.operations.ChangePseudoClassesOperation', 
+          arg-removePseudoClassNames, '-oxy-edit'          
+        ), enableInReadOnlyContext, true, showIcon, true);
+    
+    ;
+} 
+
+/* Removes the edit action in referenced content */
+*:-oxy-referenced-content *[class~="map/topicref"]:before(1007),
+*[class~="map/topicref"]:-oxy-referenced-content:before(1007),
+*:-oxy-referenced-content *[class~="map/map"]:before(1007),
+*[class~="map/map"]:-oxy-referenced-content:before(1007){
+    content:"";
+}
+
+/* alternative to above, in case the actions are visible the text should be grayed out */
+/*
+*:-oxy-referenced-content *[class~="map/topicref"]:-oxy-edit:before(1005),
+*[class~="map/topicref"]:-oxy-referenced-content:-oxy-edit:before(1005){
+    color:gray;
+}
+*/
+
+/* common styles for editing area */
+*[class~='map/reltable'] *[class~='map/topicref']:before(1005),
+*[class~="map/topicref"]:before(1005) {
+    display:block;
+    font-family: dialog, sans-serif;
+    font-size: 0.8em;
+    font-weight:normal;
+    margin-top:0.5em;
+    min-width: 40em; 
+}
+
+/* topic references in relationship tables - edit only the href*/
+*[class~='map/reltable'] *[class~='map/topicref']:-oxy-edit:before(1005) {
+    display:block;
+    content: oxy_editor(type, urlChooser, edit, "@href", width, 95%, fontInherit, true);
+    min-width: 20em;
+}
+
+*[class~="map/topicref"]:-oxy-edit:before(1005) {
+  content: 
+ oxy_label(text, "Href: "    , width, 5em, text-align, right) oxy_editor(type, urlChooser, edit, "@href", columns, 44, fontInherit, true) "\A"
+ oxy_label(text, "Navtitle: ", width, 5em, text-align, right) oxy_editor(type, text, edit, "@navtitle", columns, 35, fontInherit, true) " Lock Title: " oxy_editor(type, check, edit, "@locktitle", values, "yes", uncheckedValues, "no", labels, "", fontInherit, true) "\A"
+ oxy_label(text, "Keys: "    , width, 5em, text-align, right) oxy_editor(type, text, edit, "@keys", columns, 15, fontInherit, true)     oxy_label(text, "Keyref:"         , width, 10em, text-align, right) oxy_editor(type, combo, edit, "@keyref", columns, 15, fontInherit, true) "\A"
+ oxy_label(text, "Format: "  , width, 5em, text-align, right) oxy_editor(type, combo, edit, "@format", columns, 15, fontInherit, true)  oxy_label(text, "Collection type:", width, 10em, text-align, right) oxy_editor(type, combo, edit, "@collection-type", columns, 15, fontInherit, true) "\A"
+ oxy_label(text, "Audience: ", width, 5em, text-align, right) oxy_editor(type, text, edit, "@audience", columns, 15, fontInherit, true) oxy_label(text, "Platform:"       , width, 10em, text-align, right) oxy_editor(type, text, edit, "@platform", columns, 15, fontInherit, true) "\A"
+ oxy_label(text, "Product: " , width, 5em, text-align, right) oxy_editor(type, combo, edit, "@product", columns, 15, fontInherit, true) "\A"
+ oxy_label(text, "Props:"     , width, 5em, text-align, right) oxy_editor(type, text, edit, "@props", columns, 15, fontInherit, true)   oxy_label(text, "Other props:"     , width, 10em, text-align, right) oxy_editor(type, text, edit, "@otherprops", columns, 15, fontInherit, true)"\A"
+ oxy_label(text, "Type: "    , width, 5em, text-align, right) oxy_editor(type, text, edit, "@type", columns, 15, fontInherit, true)    oxy_label(text, "Scope: "         , width, 10em, text-align, right) oxy_editor(type, combo, edit, "@scope", columns, 15, fontInherit, true) "\A"
+ oxy_label(text, "Linking: " , width, 5em, text-align, right) oxy_editor(type, combo, edit, "@linking", columns, 15, fontInherit, true) oxy_label(text, "Toc: "           , width, 10em, text-align, right) oxy_editor(type, check, edit, "@toc", values, "yes", uncheckedValues, "no", labels, "", fontInherit, true) "\A"
+}
+
+/* Hides the label showing all attributes since they are presented in the content using form controls.*/
+*[class~='map/reltable'] *[class~='map/topicref']:-oxy-edit:before(1010),
+*[class~="map/topicref"]:-oxy-edit:before(1010) {
+  content: " " !important;
+}
+
+*[class~="map/topicref"]:-oxy-edit {
+  outline:1px solid #CCCCCC;
+  padding-bottom:0.4em;
+  padding-right:0.4em;
+}
+
+*[class~='map/map'][title]:before(1008) {
+    font-weight: bold; 
+    font-size: 2.5em;
+    content : oxy_label(text , attr(title , string , "No title attribute specified")) ;
+}
+*[class~="map/map"][title]:-oxy-edit:before(1008) {
+  font-weight: bold; 
+  font-size: 2.5em;
+  content: oxy_textfield(edit, '@title', width, 90%, fontInherit, true);
+}
+*[class~="map/map"] {
+  content: ""!important;
+}
+
+
+/* Shows the reltable title textfield. */
+*[class~="map/reltable"][title]:before {
+  content: oxy_label(text, "Title: ", width, 10%, color, inherit)
+           oxy_textfield(edit, '@title', width, 85%);
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<subjectScheme xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:oasis:names:tc:dita:spec:classification:xsd:subjectScheme.xsd">
+    <subjectHead>
+        <subjectHeadMeta>
+            <navtitle>
+                <!-- Enter a description of the subject scheme. -->
+            </navtitle>
+        </subjectHeadMeta>
+    </subjectHead>
+    <hasInstance>
+        <subjectdef keys="productSbjKey">
+            <!-- A tree of related values -->
+            <subjectdef keys="value1">
+                <topicmeta>
+                    <navtitle>First level value</navtitle>
+                </topicmeta>
+
+                <subjectdef keys="value21">
+                    <topicmeta>
+                        <navtitle>Second level value</navtitle>
+                    </topicmeta>
+                </subjectdef>
+
+                <subjectdef keys="value22">
+                    <topicmeta>
+                        <navtitle>Second level value</navtitle>
+                    </topicmeta>
+                </subjectdef>
+            </subjectdef>
+        </subjectdef>
+    </hasInstance>
+    <enumerationdef>
+        <!-- Bind an attribute to a tree of related values -->
+        <attributedef name="name"></attributedef>
+        <subjectdef></subjectdef>
+    </enumerationdef>
+</subjectScheme>

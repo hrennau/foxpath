@@ -1,0 +1,200 @@
+xliff, file, header, body, tool, trans-unit, source, target, note, unit,
+glossary, glossentry, term, translation, definition{
+    display:block;
+}
+
+glossary *{
+    display:block;
+}
+file{
+    -oxy-foldable:true;
+    border-bottom:1px solid black;
+}
+
+file:before{
+    content:"File";
+    color:gray;
+}
+
+file[id]:before{
+    -oxy-append-content:" ID:" oxy_textfield(edit, "@id");
+}
+
+file[original]:before{
+    -oxy-append-content:" Original:" oxy_textfield(edit, "@original");
+}
+
+file[source-language]:before{
+    -oxy-append-content:" Source:" oxy_textfield(edit, "@source-language");
+}
+
+file[target-language]:before{
+    -oxy-append-content:" Target:" oxy_textfield(edit, "@target-language");
+}
+
+file[datatype]:before{
+    -oxy-append-content:" Data Type:" oxy_textfield(edit, "@datatype");
+}
+
+file[srcDir]:before{
+    -oxy-append-content:" Source Dir:" oxy_combobox(edit, "@srcDir");
+}
+file[trgDir]:before{
+    -oxy-append-content:" Target Dir:" oxy_combobox(edit, "@trgDir");
+}
+file[translate]:before{
+    -oxy-append-content:" Translate:" oxy_combobox(edit, "@translate");
+}
+file[canResegment]:before{
+    -oxy-append-content:" Can Reseg:" oxy_combobox(edit, "@canResegment");
+}
+
+file > * {
+    padding-left:1em;
+}
+
+segment:before{
+    content:"Segment";
+    color:gray;
+}
+
+segment > * {
+    padding-left:1em;
+}
+
+ignorable:before{
+    content:"Ignorable";
+    color:gray;
+}
+
+ignorable > * {
+    padding-left:1em;
+}
+
+unit{
+    border-bottom:1px solid black;
+}
+
+unit:before{
+    content:"Unit";
+    color:gray;
+}
+
+unit[name]:before{
+    -oxy-append-content:" Name:" oxy_combobox(edit, "@name");
+}
+
+unit[type]:before{
+    -oxy-append-content:" Type:" oxy_combobox(edit, "@type");
+}
+
+unit[srcDir]:before{
+    -oxy-append-content:" Source Dir:" oxy_combobox(edit, "@srcDir");
+}
+unit[trgDir]:before{
+    -oxy-append-content:" Target Dir:" oxy_combobox(edit, "@trgDir");
+}
+unit[translate]:before{
+    -oxy-append-content:" Translate:" oxy_combobox(edit, "@translate");
+}
+unit[canResegment]:before{
+    -oxy-append-content:" Can Reseg:" oxy_combobox(edit, "@canResegment");
+}
+
+
+unit > * {
+    padding-left:1em;
+}
+
+
+header:before{
+    content:"Header";
+    color:gray;
+}
+
+header > * {
+    padding-left:1em;
+}
+
+body:before{
+    content:"Body";
+    color:gray;
+}
+
+body > * {
+    padding-left:1em;
+}
+
+tool:before{
+    content:"Tool ID:" oxy_textfield(edit, "@tool-id") " Name:" oxy_textfield(edit, "@tool-name") " Version:" oxy_textfield(edit, "@tool-version");
+    color:gray;
+}
+
+trans-unit{
+    margin:2px;
+}
+
+trans-unit:before{
+    content:"Translation Unit, Approved: "
+    oxy_checkbox(
+        edit, '@approved',
+        values, 'yes',
+        uncheckedValues, 'no',
+        labels, 'Approved'
+    );
+    color:gray;
+}
+
+trans-unit[approved="yes"] > * {
+    -oxy-editable: false;
+    background-color: #c8ffd2;
+    border: 1pt solid #82c896;
+    /* Add transparency */
+    color:rgba(50, 50, 50, 0.7);
+}
+
+trans-unit > *{
+    padding-left:1em;
+}
+
+source:before{
+    content:"Source: ";
+    color:gray;
+}
+
+target:before{
+    content:"Target: ";
+    color:gray;
+}
+
+note:before{
+    content:"Note: ";
+    color:gray;
+}
+/*Authors do not edit these nodes*/
+source, note{
+    -oxy-editable:false;
+}
+glossary:before{
+    content:"Glossary";
+    color:gray;
+}
+
+term:before{
+    content:"Term: ";
+    color:gray;
+}
+
+translation:before{
+    content:"Translation: ";
+    color:gray;
+}
+
+definition:before{
+    content:"Definition: ";
+    color:gray;
+}
+
+glossary > *{
+    padding-left:1em;
+}

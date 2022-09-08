@@ -1,0 +1,53 @@
+/*
+ * =====================================================
+ * 
+ * Defines the PDF bookmarks structure.
+ * 
+ * =====================================================
+ */
+
+@media print {
+
+*[class~="topic/topic"] > *[class~="topic/title"] {
+  prince-bookmark-level: 1;
+  -ah-bookmark-level: 1;
+  bookmark-level: 1;
+  bookmark-label:content(text);
+  -ah-bookmark-label:content();
+  
+}
+*[class~="topic/topic"] *[class~="topic/topic"] > *[class~="topic/title"] {
+  prince-bookmark-level: 2;
+  -ah-bookmark-level: 2;
+  bookmark-level: 2;
+}
+*[class~="topic/topic"] *[class~="topic/topic"] *[class~="topic/topic"] > *[class~="topic/title"] {
+  prince-bookmark-level: 3;
+  -ah-bookmark-level: 3;
+  bookmark-level: 3;
+}
+*[class~="topic/topic"] *[class~="topic/topic"] *[class~="topic/topic"] *[class~="topic/topic"] > *[class~="topic/title"] {
+  prince-bookmark-level: 4;
+  -ah-bookmark-level: 4;
+  bookmark-level: 4;
+}
+*[class~="topic/topic"] *[class~="topic/topic"] *[class~="topic/topic"] *[class~="topic/topic"] *[class~="topic/topic"] > *[class~="topic/title"] {
+  prince-bookmark-level: 5;
+  -ah-bookmark-level: 5;
+  bookmark-level: 5;
+
+}
+*[class~="topic/topic"] *[class~="topic/topic"] *[class~="topic/topic"] *[class~="topic/topic"] *[class~="topic/topic"] *[class~="topic/topic"] > *[class~="topic/title"] {
+  prince-bookmark-level: 6;
+  -ah-bookmark-level: 6;
+  bookmark-level: 6;
+
+}
+*[class~="topic/topic"] *[class~="topic/topic"] *[class~="topic/topic"] *[class~="topic/topic"] *[class~="topic/topic"] *[class~="topic/topic"] *[class~="topic/topic"] > *[class~="topic/title"] {
+  prince-bookmark-level: 7;
+  -ah-bookmark-level: 7;
+  bookmark-level: 7;
+
+}
+
+}

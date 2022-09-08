@@ -1,0 +1,28 @@
+@import "dita.css";
+/*Edit usual attributes on all topicrefs*/
+*[class~="map/topicref"]{
+ font-size:14px;
+ padding-top: 5px;
+ content:   
+    "\A "oxy_label(text, "Href: ", width, 150px, text-align, right)
+    oxy_editor(type, urlChooser, edit, "@href", columns, 25, fontInherit, true)
+    "\A "oxy_label(text, "Navtitle:", width, 150px, text-align, right)
+    oxy_editor(type, text, edit, "@navtitle", columns, 25, fontInherit, true)  " Lock Title: " oxy_editor(type, check, edit, "@locktitle", values, "yes", uncheckedValues, "no", labels, "", fontInherit, true)
+    "\A "oxy_label(text, "Keys:", width, 150px, text-align, right)
+    oxy_editor(type, text, edit, "@keys", columns, 15, fontInherit, true) 
+    oxy_label(text, "Keyref:", width, 150px, text-align, right)
+    oxy_editor(type, combo, edit, "@keyref", columns, 15, fontInherit, true)
+    "\A "oxy_label(text, "Format:", width, 150px, text-align, right) 
+    oxy_editor(type, combo, edit, "@format", columns, 15, fontInherit, true) 
+    oxy_label(text, "Collection type:", width, 150px, text-align, right) 
+    oxy_editor(type, combo, edit, "@collection-type", columns, 15, fontInherit, true)
+    "\A "oxy_label(text, "Audience:", width, 150px, text-align, right)
+    oxy_editor(type, text, edit, "@audience", columns, 15, fontInherit, true) 
+    oxy_label(text, "Platform:", width, 150px, text-align, right) 
+    oxy_editor(type, text, edit, "@platform", columns, 15, fontInherit, true)
+    "\A "oxy_label(text, "Product:", width, 150px, text-align, right)
+    oxy_editor(type, text, edit, "@product", columns, 15, fontInherit, true)
+    oxy_label(text, "Props:", width, 150px, text-align, right)
+    oxy_editor(type, text, edit, "@props", columns, 15, fontInherit, true)
+ !important;
+}

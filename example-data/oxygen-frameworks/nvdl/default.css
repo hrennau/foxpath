@@ -1,0 +1,20 @@
+@import "../xhtml/css/xhtml.css";
+@namespace nvdl url('http://purl.oclc.org/dsdl/nvdl/ns/structure/1.0');
+
+nvdl|* {
+    display : block;
+    padding-left:8px;
+    -oxy-foldable:true;
+}
+
+
+nvdl|*:before {
+    content : '<' oxy_name() oxy_attributes()'>';
+    color : blue;
+}
+
+nvdl|*:after {
+    content : '</' oxy_name() '>';
+    color : blue;
+}
+

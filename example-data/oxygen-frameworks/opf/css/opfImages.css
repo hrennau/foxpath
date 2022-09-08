@@ -1,0 +1,10 @@
+@import "opf.css";
+
+item[media-type="image/gif"]:after,
+item[media-type="image/jpg"]:after,
+item[media-type="image/jpeg"]:after {
+    color : #CCCCCC;
+    content: attr(href, url) ' [' attr(id) '] [' attr(media-type) ']';
+    width:32px;
+    padding-left:5px;
+}

@@ -1,0 +1,328 @@
+<feature extension="package.support.name" value="Oxygen XML Editor Support"/>
+<feature extension="package.support.email" value="support@oxygenxml.com"/>
+<feature extension="package.version" value="19.1"/>
+
+<feature extension="dita.conductor.transtype.check" value="webhelp-responsive" type="txt"/>
+
+<feature extension="dita.conductor.target.relative" value="integrator.xml" type="file"/>
+
+<feature extension="dita.conductor.lib.import" file="lib/ant-contrib-1.0b3.jar" type="file"/>
+<feature extension="dita.xsl.strings" file="oxygen-webhelp/resources/localization/strings.xml"/>
+
+<extension-point 
+    id="com.oxygenxml.responsive.internal.target.dependencies.xhtml.init" 
+    name="Internal extension point to inject some Ant targets from plugin.xml file."/>
+<extension-point 
+    id="com.oxygenxml.responsive.internal.target.dependencies.topics.html" 
+    name="Internal extension point to inject some Ant targets from plugin.xml file."/>
+<extension-point 
+    id="com.oxygenxml.responsive.internal.target.dependencies.outer.topics" 
+    name="Internal extension point to inject some Ant targets from plugin.xml file."/>
+
+<!--
+    XSLT extension point for the stylesheet that creates an HTML page for each topic when using 
+    the Webhelp transformation.    
+  -->
+<extension-point id="com.oxygenxml.webhelp.xsl.dita2webhelp" 
+    name="XSLT extension point for the stylesheet that creates an HTML page for each topic"/>
+
+<!-- 
+    Extension point to pass parameters to the XSLT transformation that creates an HTML page for each topic
+-->
+<extension-point id="com.oxygenxml.webhelp.xsl.dita2webhelp.param" 
+    name="Extension point to pass parameters to the XSLT transformation that creates an HTML page for each topic"/>
+
+<!--
+    XSLT extension point for the stylesheet that creates the main HTML page for (index.html) 
+    the Webhelp Responsive transformation.
+  -->
+<extension-point id="com.oxygenxml.webhelp.xsl.createMainPage" 
+    name="XSLT extension point for the stylesheet that creates the main HTML page"/>
+<!-- 
+    Extension point to pass parameters to the XSLT transformation that creates the main HTML page
+-->
+<extension-point id="com.oxygenxml.webhelp.xsl.createMainPage.param" 
+    name="Extension point to pass parameters to the XSLT transformation that creates the main HTML page"/>
+
+<!--
+    XSLT extension point for the stylesheet that creates the search HTML page(search.html) for 
+    the Webhelp Responsive transformation.
+  -->
+<extension-point id="com.oxygenxml.webhelp.xsl.createSearchPage" 
+    name="XSLT extension point for the stylesheet that creates the main HTML page"/>
+
+<!-- 
+     Extension point to pass parameters to the XSLT transformation that creates the search HTML page.
+-->
+<extension-point id="com.oxygenxml.webhelp.xsl.createSearchPage.param" 
+    name="Extension point to pass parameters to the XSLT transformation that creates the search HTML page"/>
+
+<!--
+    XSLT extension point for the stylesheet that creates the index terms HTML page(indexTerms.html) for 
+    the Webhelp Responsive transformation.
+  -->
+<extension-point id="com.oxygenxml.webhelp.xsl.createIndexTermsPage" 
+    name="XSLT extension point for the stylesheet that creates the main HTML page"/>
+
+<!-- 
+     Extension point to pass parameters to the XSLT transformation that creates the indexterms HTML page.
+-->
+<extension-point id="com.oxygenxml.webhelp.xsl.createIndexTermsPage.param" 
+    name="Extension point to pass parameters to the XSLT transformation that creates the search HTML page"/>
+
+<!--
+    XSLT extension point for the stylesheet that creates the toc.xml file.
+  -->
+<extension-point id="com.oxygenxml.webhelp.xsl.createTocXML" 
+    name="XSLT extension point for the stylesheet that creates the toc.xml file."/>
+
+<!-- 
+    Extension point to pass parameters to the XSLT transformation that creates the toc.xml file.
+-->
+<extension-point id="com.oxygenxml.webhelp.xsl.createTocXML.param" 
+    name="Extension point to pass parameters to the XSLT transformation that creates the 'toc.xml' file."/>
+
+<transtype name="webhelp-responsive" extends="webhelpCommons" desc="WebHelp Responsive">
+    <param name="webhelp.logo.image"
+        desc="The URL of a remote file or the file path of a local file that contains the logo image that will be added in the header area."
+        type="uri"/>
+    <param name="webhelp.logo.image.target.url"
+        desc="The URL of the link that will be opened when the user clicks the logo image."
+        type="string"/>
+    <param name="webhelp.search.ranking"
+        desc="If this parameter is set to false, then the 5-star rating mechanism is no longer included in the search results that are displayed on the Search tab (default setting is true)."
+        type="enum">
+        <val default="true">true</val>
+        <val>false</val>
+    </param>
+    <param name="webhelp.fragment.welcome"
+        desc="Specifies the path to the HTML file that contains the welcome message on the main page."
+        type="file">
+ 	</param>    
+    <param name="webhelp.top.menu.depth"
+        desc="Specifies the maximum depth of the topics top menu."
+        type="string">
+        <val desc="The menu has unlimited depth.">0</val>
+        <val default="true">3</val>
+    </param>
+    <param name="webhelp.show.main.page.tiles"
+        desc="Specifies if topic tiles will be presented in the main page."
+        type="enum">
+        <val default="true">no</val>
+        <val>yes</val>
+    </param>    
+    <param name="webhelp.show.main.page.toc"
+        desc="Specifies if Table of Contents (TOC) will be presented in the main page in a tree like (accordion) fashion."
+        type="enum">
+        <val default="true">yes</val>
+        <val>no</val>
+    </param>
+    <param name="webhelp.show.breadcrumb"
+        desc="Specifies if the breadcrumb component will be presented in the Webhelp Responsive output."
+        type="enum">
+        <val default="true">yes</val>
+        <val>no</val>
+    </param>
+    <param name="webhelp.show.navigation.links"
+        desc="Specifies if the navigation links component will be presented in the Webhelp Responsive output."
+        type="enum">
+        <val default="true">yes</val>
+        <val>no</val>
+    </param>
+    <param name="webhelp.show.print.link"
+        desc="Specifies if the print link component will be presented in the Webhelp Responsive output."
+        type="enum">
+        <val default="true">yes</val>
+        <val>no</val>
+    </param>
+    <param name="webhelp.show.indexterms.link"
+        desc="Specifies if the link to the index terms will be presented in the Webhelp Responsive output."
+        type="enum">
+        <val default="true">yes</val>
+        <val>no</val>
+    </param>
+    <param name="webhelp.show.side.toc"
+        desc="Specifies if the side TOC component will be presented in the Webhelp Responsive output for 'topic' files."
+        type="enum">
+        <val default="true">yes</val>
+        <val>no</val>
+    </param>
+    <param name="webhelp.side.toc.links"
+        desc="Specifies which links will be included in the Side TOC of each topic."
+        type="enum">
+        <val desc="The Side TOC will include only the links to the current topic and its children.">topic</val>
+        <val desc="The Side TOC will include the links to the current topic, its children, and its ancestors." default="true">chapter</val>
+        <val desc="The Side TOC will include all links.">all</val>
+    </param>
+    
+    <param name="webhelp.show.top.menu"
+        desc="Specifies if the top menu component will be presented in the Webhelp Responsive output."
+        type="enum">
+        <val default="true">yes</val>
+        <val>no</val>
+    </param>
+    <param name="webhelp.show.related.links"
+        desc="Specifies if the related links component will be presented in the Webhelp Responsive output."
+        type="enum">
+        <val default="true">yes</val>
+        <val>no</val>
+    </param>
+    <param name="webhelp.merge.nested.topics.related.links"
+        desc="Specifies if the related links from the nested topics of will be merged with the links in the parent topic.
+        Thus the links will be moved from the topic content to the related links component."
+        type="enum">
+        <val default="true">yes</val>
+        <val>no</val>
+    </param>
+    <param name="webhelp.show.child.links"
+        desc="Specifies if the child links component will be presented in the Webhelp Responsive output."
+        type="enum">
+        <val default="true">no</val>
+        <val>yes</val>
+    </param>
+    <param name="webhelp.show.toggle.highlights"
+        desc="Specifies if the toggle highlights component will be presented in the Webhelp Responsive output."
+        type="enum">
+        <val default="true">yes</val>
+        <val>no</val>
+    </param>
+    <param name="webhelp.fragment.footer"
+      desc="Specifies the path to the HTML file that contains the content for the WebHelp footer. It can also be an XML fragment."
+      type="file">
+        <val default="true">
+            Generated by &lt;a class="oxyFooter" href="http://www.oxygenxml.com/xml_webhelp.html" target="_blank"&gt;
+            &amp;lt;oXygen/&amp;gt; XML WebHelp
+        &lt;/a&gt;
+        </val>            
+    </param>
+    
+    <!-- Before & after logo and title -->
+    <param name="webhelp.fragment.before.logo_and_title"
+        desc="Specifies the path to the HTML file that contains the content to be included before the WebHelp logo and title. It can also be an XML fragment."
+        type="file">
+        <val default="true"></val>            
+    </param>
+    <param name="webhelp.fragment.after.logo_and_title"
+        desc="Specifies the path to the HTML file that contains the content to be included after the WebHelp logo and title. It can also be an XML fragment."
+        type="file">
+        <val default="true"></val>            
+    </param>
+    
+    <!-- Before & after top menu -->
+    <param name="webhelp.fragment.before.top_menu"
+        desc="Specifies the path to the HTML file that contains the content to be included before the WebHelp top menu. It can also be an XML fragment."
+        type="file">
+        <val default="true"></val>            
+    </param>
+    <param name="webhelp.fragment.after.top_menu"
+        desc="Specifies the path to the HTML file that contains the content to be included after the WebHelp top menu. It can also be an XML fragment."
+        type="file">
+        <val default="true"></val>            
+    </param>
+    
+    <!-- html head -->
+    <param name="webhelp.fragment.head"
+        desc="Specifies the path to the HTML file that contains the content to be included in the html 'head' element of the WebHelp pages. It can also be an XML fragment."
+        type="file">
+        <val default="true"></val>            
+    </param>
+    
+    <!-- Before & after html -->
+    <param name="webhelp.fragment.before.body"
+        desc="Specifies the path to the HTML file that contains the content to be included at the beginning of the html 'body' element of the WebHelp pages. It can also be an XML fragment."
+        type="file">
+        <val default="true"></val>            
+    </param>
+    <param name="webhelp.fragment.after.body"
+        desc="Specifies the path to the HTML file that contains the content to be included at the end of the html 'body' element of the WebHelp pages. It can also be an XML fragment."
+        type="file">
+        <val default="true"></val>            
+    </param>
+    
+    <!-- Before & after the main page search component -->
+    <param name="webhelp.fragment.before.main.page.search"
+        desc="Specifies the path to the HTML file that contains the content to be included before the WebHelp main page search component. It can also be an XML fragment."
+        type="file">
+        <val default="true"></val>            
+    </param>
+    <param name="webhelp.fragment.after.main.page.search"
+        desc="Specifies the path to the HTML file that contains the content to be included after the WebHelp main page search component. It can also be an XML fragment."
+        type="file">
+        <val default="true"></val>            
+    </param>
+    
+    <!-- Before & after the toc or tiles component -->
+    <param name="webhelp.fragment.before.toc_or_tiles"
+        desc="Specifies the path to the HTML file that contains the content to be included before the WebHelp main page TOC or tiles component. It can also be an XML fragment."
+        type="file">
+        <val default="true"></val>            
+    </param>
+    <param name="webhelp.fragment.after.toc_or_tiles"
+        desc="Specifies the path to the HTML file that contains the content to be included after the WebHelp main page TOC or tiles component. It can also be an XML fragment."
+        type="file">
+        <val default="true"></val>            
+    </param>
+    
+    <param name="webhelp.enable.search.autocomplete"
+        desc="Specifies if autocomplete feature is enabled in the WebHelp search text field."        
+        type="enum">
+        <val default="true">yes</val>
+        <val>no</val>
+    </param>
+    
+    <!--
+        <param name="webhelp.publishing.template"
+        desc="Specifies the path to the folder containing the custom WebHelp Responsive template."        
+        type="file"/>
+    -->        
+    
+    <!--<param name="webhelp.publishing.template.descriptor"
+        desc="Specifies the name of the descriptor to be loaded from the WebHelp Responsive template package. 
+        If it is not specified, the first encountered descriptor will be automatically loaded."        
+        type="string"/>-->
+    
+    <param name="webhelp.side.toc.tooltip.position" 
+        desc="Specifies the tooltip position relative to the current topic in the Side TOC."
+        type="enum">
+        <val default="true">left</val>
+        <val>right</val>
+        <val>top</val>
+        <val>bottom</val>
+        <val>hidden</val>
+    </param>
+    
+    <!-- List of deprecated parameters -->
+    <param name="args.hdf" desc="DEPRECATED: Use webhelp.fragment.head instead." type="file"/>
+    <param name="args.hdr" desc="DEPRECATED: Use webhelp.fragment.before.body instead." type="file"/>
+    
+    <param name="webhelp.search.enable.pagination"
+        desc="Specifies if search result items will be displayed on multiple pages or not."        
+        type="enum">
+        <val default="true">yes</val>
+        <val>no</val>
+    </param>    
+    <param name="webhelp.search.page.numberOfItems"
+        desc="Specifies the number of search results items displayed on each page. 
+        This parameter is used only when the 'webhelp.search.enable.pagination' parameter is enabled."
+        type="string">
+        <val>5</val>
+        <val default="true">10</val>
+        <val>20</val>
+    </param>
+    <param name="webhelp.default.collection.type.sequence"
+        desc="Specifies if the 'sequence' value will be used by default when the collection-type attribute is not specified.
+        This option is helpful if you want to have 'Next' and 'Previous' navigational buttons generated for all HTML pages."
+        type="enum">
+        <val default="true">no</val>
+        <val>yes</val>
+    </param>
+</transtype>
+
+<template file="xsl/dita2webhelp/dita2webhelp_template.xsl"/>
+<template file="xsl/navLinks/tocDita_template.xsl"/>
+
+<template file="xsl/mainFiles/createMainPage_template.xsl"/>
+<template file="xsl/mainFiles/createSearchPage_template.xsl"/>
+<template file="xsl/mainFiles/createIndextermsPage_template.xsl"/>
+
+<template file="build_dita_template.xml"/>

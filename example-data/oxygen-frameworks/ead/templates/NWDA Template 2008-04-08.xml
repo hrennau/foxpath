@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="http://nwda-db.wsulibs.wsu.edu/xsl/project.xsl"?>
+<!DOCTYPE ead PUBLIC "+//ISBN 1-931666-00-8//DTD ead.dtd (Encoded Archival Description (EAD) Version 2002)//EN" "ead.dtd">
+<!--Template updated 20080408 by J. Allison-Bunnell-->
+<!--Remember to name and save documents using the OCLC code + local filename. Documents that are revised/updated after initial submission much be submitted with precisely the same filename.-->
+<ead> 
+<!--The following section is header information that describes the finding aid-->
+  <eadheader langencoding="iso639-2b"
+	scriptencoding="iso15924" relatedencoding="dc" repositoryencoding="iso15511"
+	countryencoding="iso3166-1" dateencoding="iso8601" id="a0"> 
+	 <eadid countrycode="us" encodinganalog="identifier"><!--Enter here the 
+	 unique filename for this finding aid; attributes: also enter required value from MARC code list for organizations in 
+	 MAINAGENCYCODE and assigned NWDA ARK in IDENTIFIER. Required--></eadid> 
+	 <filedesc> 
+		<titlestmt> 
+		  <titleproper encodinganalog="title">Guide to the <!--Collection title; required-->
+			 <date encodinganalog="date"><!--Insert inclusive date(s), eg., 1944-1995; required--></date></titleproper>
+		  
+		  <titleproper type="filing" altrender="nodisplay"><!--Filing title of collection, eg. Adams (Glen R.) Papers; required--></titleproper>
+		  
+		  <author encodinganalog="creator">Finding aid prepared by <!--Name of the author(s) of the finding aid--></author>
+		</titlestmt> 
+		<publicationstmt> 
+		  <!--To link to your logo, click on the diamond in the <extptr> tag below and enter the full
+URL of the digital logo file in the HREF attribute. Describe image in TITLE attribute, eg., University of 
+Oregon logo-->
+		  <publisher encodinganalog="publisher"><!--Name of the publisher of 
+		  the finding aid; required-->
+			 <extptr actuate="onload" show="embed" role="image/jpeg"/></publisher>
+		  
+		  <date encodinganalog="date">© <!--Year published and/or copyrighted; 
+		  also enter normalized date in NORMAL attribute; required--></date> 
+		  <address> 
+			 <addressline><!--1st line of publisher's address. Use as many addressline elements 
+			 as needed; OK to include phone, fax, email, URLs; required--></addressline>
+			 
+		  </address> 
+		</publicationstmt> 
+	 </filedesc> 
+	 <profiledesc> 
+	 	
+		<creation>Finding aid encoded by <!--Name of EAD encoder(s)-->
+			<date><!--Full date or year of initial  encoding into EAD; also enter normalized date in NORMAL attribute--></date></creation>
+		
+		<langusage>Finding aid written in 
+		  <language langcode="eng" encodinganalog="language"
+		  scriptcode="latn">English</language>.</langusage> <descrules>Finding aid based
+		on DACS ( 
+		<title render="italic">Describing Archives: A Content
+		  Standard</title>).</descrules> 
+	 </profiledesc> 
+	 <revisiondesc> 
+		<change> 
+		  <date><!--Enter date of substantial revision of finding aid, if any--></date>
+		  
+		  <item><!--Describe the revision(s)--></item> 
+		</change> 
+	 </revisiondesc> 
+  </eadheader> 
+  <archdesc level="collection" type="inventory" relatedencoding="marc21"> 
+	 <did id="a1"> 
+		<repository> 
+		  <corpname encodinganalog="852$a"><!--Top-level name of repository e.g., 
+		  University of Montana; required--><subarea encodinganalog="852$b"> <!--Name 
+		  of unit within repository, e.g., K. Ross Toole Archives--></subarea></corpname>
+		  
+		  <address> 
+			 <addressline><!--1st line of address. Use as many addressline elements 
+			 as needed; OK to include phone, fax, email, URLs--></addressline> 
+		  </address> </repository> 
+		<unitid encodinganalog="099" countrycode="us"><!--Required. Enter collection, record group, or 
+		other collection control no., eg., 1990-24. Also fill in the REPOSITORYCODE attribute with the appropriate MARC code.--></unitid>
+		
+		<origination> 
+		  <persname encodinganalog="100" role="creator"><!--Personal creator's name if appropriate, surname 
+			first; or use famname element for family 
+		  papers or corpname element for organizational records. Add/verify info in SOURCE, RULES, and 
+		  ENCODINGANALOG attributes--></persname> </origination> 
+		<unittitle encodinganalog="245$a"><!--Collection title; required--></unittitle>
+		
+		<unitdate type="inclusive" encodinganalog="245$f"><!--Usually inclusive dates, eg., 1944-1995. Appropriate info in TYPE 
+		and NORMAL attributes is required. Repeat element if inclusive and bulk dates are recorded. Required--></unitdate>
+		
+		<physdesc> <extent encodinganalog="300$a"><!--Number of cubic or linear 
+		feet, and/or number of containers and/or items, eg., 3 cubic feet. Required--></extent>
+		  <extent encodinganalog="300$a"><!--If number of feet entered above, enter here 
+		  number of containers if desired, eg., (7 boxes)--></extent>
+		  <physfacet encodinganalog="300$b"><!--Optional brief description of appearance, materials, 
+		  or techniques if applicable--></physfacet>
+		  <dimensions encodinganalog="300$c"><!--State dimensions if applicable--></dimensions>
+		</physdesc>
+		<abstract encodinganalog="5203_"><!--Very brief summary of collection contents 
+		and biog./historical info; required--></abstract> 
+		<physloc><!--Physical location of materials--></physloc> 
+		<langmaterial><language encodinganalog="546"><!--Language(s) of the described 
+		materials; use one langcode element for each language. <langmaterial> is required--></language></langmaterial>
+		
+	 </did><!--To link to an image from the collection, use the following elements. In <daodesc>, enter caption info 
+inside <p> tags. In <daoloc>, enter full URL of the digital image file in HREF attribute;  enter MIME 
+type of digital file (eg., "image/jpeg") in ROLE attribute; enter brief description of image in TITLE attribute. 
+To link to a logo, use <extptr> or <extref> inside <publisher> in <eadheader> instead.-->
+	 <daogrp> 
+		<daodesc> 
+		  <p><!--Enter identifying or caption info--></p> 
+		</daodesc> <resource label="start"></resource> 
+		<daoloc href="" label="image" role="image/jpeg"> 
+		</daoloc> <arc show="embed" actuate="onload" from="start" to="image"/> 
+	 </daogrp><phystech encodinganalog="340"> 
+	 <p><!--Brief description of physical condition or equipment required; optional--></p></phystech>
+	 <originalsloc encodinganalog="535"> 
+	 <p><!--If materials described are reproductions, enter location of originals; optional--></p></originalsloc>
+	 
+	 <bioghist encodinganalog="545" id="a2">
+<!--Enter ENCODINGANALOG value of 5450_ for biog. or 5451_ for historical note, or use 
+<head> element-->
+		<head><!--Enter heading for Biographical Note or Historical Note as applicable--></head>
+		
+		<p><!--Text of biographical or historical note, in paragraphs; separate each with paragraph tags--></p>
+		
+	 </bioghist> 
+	 <scopecontent encodinganalog="5202_" id="a3"> 
+		<p><!--Text of the scope and content note, in paragraphs; separate each with 
+		paragraph tags; required--></p> 
+	 </scopecontent> 
+	 <odd encodinganalog="500" id="a5"> 
+		<p><!--Text of additional general note(s); optional; if used for 
+		interpretive/background essay, enter "hist" in <odd> TYPE attribute--></p> 
+	 </odd> 
+	 <arrangement encodinganalog="351" id="a4"> 
+		<p><!--Describe arrangement of materials--></p> 
+	 </arrangement> 
+	 <fileplan id="a37"> 
+		<p><!--Info about original arrangement system; optional--></p>
+		
+	 </fileplan> 
+	 <altformavail encodinganalog="530" id="a9"> 
+		<p><!--Describe any alternative formats such as microfilm; use daogrp to link to 
+		digital version(s)--></p> 
+	 </altformavail> 
+	 <accessrestrict encodinganalog="506" id="a14"> 
+		<p><!--Summary of access restrictions or lack of restrictions; required--></p>
+		
+	 </accessrestrict> 
+	 <userestrict encodinganalog="540" id="a15"> 
+		<p><!--Summary of use restrictions or lack of restrictions--></p>
+		
+	 </userestrict> 
+	 <prefercite encodinganalog="524" id="a18"> 
+		<p><!--Preferred format for citing the collection--></p> 
+	 </prefercite> 
+	 <custodhist encodinganalog="561" id="a16"> 
+		<p><!--Describe provenance or chain of ownership--></p> 
+	 </custodhist> 
+	 <acqinfo encodinganalog="541" id="a19"> 
+		<p><!--Details concerning the immediate acquisition of the material by the repository --></p>
+		
+	 </acqinfo> 
+	 <accruals encodinganalog="584" id="a10"> 
+		<p><!--Describe expected additions; optional--></p> 
+	 </accruals> 
+	 <processinfo encodinganalog="583" id="a20"> 
+		<p><!--Actions taken during accessioning, arranging, preserving, etc.--></p>
+		
+	 </processinfo> 
+	 <separatedmaterial encodinganalog="5440_" id="a7"> 
+		<p><!--Describe materials related by provenance but physically separated from the collection--></p>
+		
+	 </separatedmaterial> 
+	 <bibliography encodinganalog="581" id="a11"> 
+		<p><!--Citations to works based on, about, or of value in relation to 
+		the described materials; optional. If preferred, nest <bibref>, appropriate name element(s), 
+		<title>, <imprint> elements in <bibliography> element --></p> 
+	 </bibliography> 
+	 <otherfindaid encodinganalog="555" id="a8"> 
+		<p><!--Additional guides to the material--></p> 
+	 </otherfindaid> 
+	 <relatedmaterial encodinganalog="5441_" id="a6"> 
+		<p><!--Describe materials that are related, but not by provenance--></p>
+		
+	 </relatedmaterial> 
+	 <index id="a38"> 
+		<p><!--Index to key name(s) and/or term(s) in finding aid; optional. Linking
+		references to related locations in finding aid may be given--></p> 
+		<indexentry> 
+		  <name><!--Or use <subject> to index a topic--></name> 
+		  <ref show="replace" actuate="onrequest"><!--Use TARGET attribute to point to the ID of
+		  the referenced element--></ref> 
+		</indexentry> 
+	 </index> 
+	 <appraisal id="a39" encodinganalog="583"> 
+		<p><!--Info on archival value/disposition of records; optional--></p>
+		
+	 </appraisal> 
+	 <controlaccess id="a12"> 
+		<p>This collection is indexed under the following headings in the online
+		  catalog. Researchers desiring materials about related topics, persons, or
+		  places should search the catalog using these headings.</p> 
+		<controlaccess> 
+		  <persname encodinganalog="600" role="subject"><!--Creator of collection, surname first-->--Archives</persname>
+		  
+		  <persname role="subject" encodinganalog="600"><!--Additional personal name--></persname>
+		  
+		  <persname role="creator" encodinganalog="700"><!--Additional creator, personal--></persname>
+		  
+		</controlaccess> 
+		<controlaccess> 
+		  <famname role="subject" encodinganalog="600"><!--Family name--></famname>
+		  
+		  <famname role="creator" encodinganalog="700"><!--Additional creator, family--></famname>
+		  
+		</controlaccess> 
+		<controlaccess> 
+		  <corpname role="subject" encodinganalog="610"> <!--Corporate body name--></corpname>
+		  
+		  <corpname role="subject" encodinganalog="610"><!--Corporate body name--></corpname>
+		  
+		  <corpname role="creator" encodinganalog="710"><!--Additional creator, corporate--></corpname>
+		  
+		</controlaccess> 
+		<controlaccess> 
+		  <geogname role="subject" encodinganalog="651"><!--Place name--></geogname>
+		  
+		</controlaccess> 
+		<controlaccess> 
+		  <subject encodinganalog="650"><!--Subject term--></subject>
+		  
+		  <subject encodinganalog="650"><!--Subject term--></subject>
+		  
+		  <subject encodinganalog="650"><!--Subject term--></subject>
+		  
+		</controlaccess> 
+		<controlaccess> 
+		  <subject source="nwda" altrender="nodisplay" encodinganalog="690"><!--NWDA 
+		  browsing term; at least one is required--></subject> 
+		  <subject source="nwda" altrender="nodisplay" encodinganalog="690"><!--NWDA browsing term--></subject>
+		  
+		</controlaccess> 
+		<controlaccess> 
+		  <genreform encodinganalog="655"><!--Form or genre term--></genreform>
+		  
+		  <genreform encodinganalog="655"><!--Form or genre term--></genreform>
+		  
+		</controlaccess> 
+		<controlaccess> 
+		  <occupation encodinganalog="656"><!--Occupation term--></occupation>
+		  
+		  <occupation encodinganalog="656"><!--Occupation term--></occupation>
+		  
+		</controlaccess> 
+		<controlaccess> 
+		  <function encodinganalog="657"><!--Function--></function>
+		  
+		  <function encodinganalog="657"><!--Function--></function>
+		  
+		</controlaccess> 
+		<controlaccess> 
+		  <title encodinganalog="630"><!--Title of publication included/described in collection--></title>
+		  
+		</controlaccess> 
+	 </controlaccess> 
+  	<!--A finding aid without a series or container list may end here.-->
+  	<!--Be sure to choose the appropriate TYPE attribute for this collection-->
+	 <dsc type="combined" id="a23"> 
+	 	<!--At each <c0x> level, be certain that you have chosen the appropriate LEVEL attribute!-->
+		<c01 level="series"> 
+		  <did> 
+			 <unitid encodinganalog="099"><!--Unique identifying number or code--></unitid>
+			 
+			 <container><!--Enter container number if applicable at this level; use TYPE attribute for type of
+			 container--></container> 
+			 <origination><!--Use nested persname or corpname to give name of creator if different from parent-level creator--></origination>
+			 
+			 <unittitle encodinganalog="245$a"><!--Title of component--></unittitle>
+			 
+			 <unitdate type="inclusive" encodinganalog="245$f"><!--Date or range of dates of component material, or "undated"; repeatable--></unitdate>
+			 
+			 <physdesc> <extent encodinganalog="300$a"><!--Quantity of component material--></extent>
+				<physfacet encodinganalog="300$b"><!--Appearance, materials, or techniques if applicable--></physfacet>
+				<dimensions encodinganalog="300$c"><!--Dimensions if applicable--></dimensions>
+			 </physdesc>
+			 <langmaterial><language encodinganalog="546"><!--Language(s) of the materials if
+			 different from collection level--></language></langmaterial> 
+		  </did> 
+		  <scopecontent encodinganalog="5202_"> 
+			 <p><!--Brief description of component being described, such as series-->
+			 </p> 
+		  </scopecontent> 
+		  <arrangement encodinganalog="351"> 
+			 <p><!--Describe arrangement of component materials--></p>
+			 
+		  </arrangement> 
+		  <accessrestrict encodinganalog="506"> 
+			 <p><!--Summary of access restrictions, or lack of restrictions, on component material--></p>
+			 
+		  </accessrestrict> 
+		  <userestrict type="540"> 
+			 <p><!--Summary of use restrictions, or lack of restrictions, on component material--></p>
+			 
+		  </userestrict> 
+		  <c02 level="subseries"> 
+			 <did> 
+				<unitid encodinganalog="099"><!--Unique identifying number or code--></unitid>
+				
+				<container><!--Enter container number if applicable at this level; use TYPE attribute for type of
+			 container--></container> 
+				<origination><!--Use nested persname or corpname to give name of creator if different from parent-level creator--></origination>
+				
+				<unittitle encodinganalog="245$a"><!--Title of component--></unittitle>
+				
+				<unitdate type="inclusive" encodinganalog="245$f"><!--Date or range of dates of component material, or "undated"; repeatable--></unitdate>
+				
+				<physdesc> <extent encodinganalog="300$a"><!--Quantity of component material--></extent>
+				  <physfacet encodinganalog="300$b"><!--Appearance, materials, or techniques if applicable--></physfacet>
+				  <dimensions encodinganalog="300$c"><!--Dimensions if applicable--></dimensions>
+				</physdesc>
+				<langmaterial><language encodinganalog="546"><!--Language(s) of the materials if
+			 different from higher level--></language></langmaterial> 
+			 </did> 
+			 <scopecontent encodinganalog="5202_"> 
+				<p><!--Brief description of component being described-->
+				</p> 
+			 </scopecontent> 
+			 <arrangement encodinganalog="351"> 
+				<p><!--Describe arrangement of component materials--></p>
+				
+			 </arrangement> 
+			 <accessrestrict encodinganalog="506"> 
+				<p><!--Summary of access restrictions, or lack of restrictions on component material--></p>
+				
+			 </accessrestrict> 
+			 <userestrict type="540"> 
+				<p><!--Summary of use restrictions, or lack of restrictions, on component material--></p>
+				
+			 </userestrict> 
+		  </c02> 
+			
+		</c01> 
+	 </dsc> 
+  </archdesc> </ead>

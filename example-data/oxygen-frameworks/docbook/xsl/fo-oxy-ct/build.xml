@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="PDF with Change Tracking" default="dist">
+    <target name="dist" if="${show.changes.and.comments}">
+        <property name="currentFile" value=""/>
+        <property name="clean.temp" value="true"/>
+        <property name="currentFileFolder" value=""/>
+        <property name="outputFileName" value="output"/>
+                
+        <property name="reviewStylesheetsFolder" value="../com.oxygenxml.webhelp.classic/xsl/review"/>
+        <property name="tempDir" value="${currentFileFolder}/temp"/>
+        <makeurl file="../highlighting/xslthl-config.xml" property="xslt.config.absolute.path"/>
+        <property name="admon.graphics" value="1"/>
+        <property name="admon.graphics.extension" value="png"/>
+        <property name="admon.graphics.path" value="../css/img/"/>
+        <property name="body.font.family" value="Times New Roman, Arial Unicode MS, Tahoma, Batang, serif"/>
+        <property name="callout.graphics.path" value="images/callouts/"/>
+        <property name="draft.mode" value="no"/>
+        <property name="fop.extensions" value="0"/>
+        <property name="fop1.extensions" value="1"/>
+        <property name="highlight.source" value="1"/>
+        <property name="monospace.font.family" value="monospace, Courier New, Courier, Consolas, Liberation Mono, Arial Unicode MS"/>
+        <property name="paper.type" value="A4"/>
+        <property name="title.font.family" value="Arial, Arial Unicode MS, Tahoma, Batang, sans-serif"/>
+        
+        <!-- First apply the actual Docbook to XSL-FO conversion. -->
+        <xslt in="${currentFile}"
+            out="${tempDir}/tempRes.xml"
+            style="docbook-custom.xsl" 
+            force="true">
+            <factory name="com.icl.saxon.TransformerFactoryImpl"/>
+            <classpath path="../extensions/xslthl.jar"/>
+            <classpath path="../extensions/saxon65.jar"/>
+            <param name="admon.graphics" expression="${admon.graphics}"/>
+            <param name="admon.graphics.extension" expression="${admon.graphics.extension}"/>
+            <param name="admon.graphics.path" expression="${admon.graphics.path}"/>
+            <param name="body.font.family" expression="${body.font.family}"/>
+            <param name="callout.graphics.path" expression="${callout.graphics.path}"/>
+            <param name="draft.mode" expression="${draft.mode}"/>
+            <param name="fop.extensions" expression="${fop.extensions}"/>
+            <param name="fop1.extensions" expression="${fop1.extensions}"/>
+            <param name="highlight.source" expression="${highlight.source}"/>
+            <param name="highlight.xslthl.config" expression="${xslt.config.absolute.path}"/>
+            <param name="monospace.font.family" expression="${monospace.font.family}"/>
+            <param name="paper.type" expression="${paper.type}"/>
+            <param name="title.font.family" expression="${title.font.family}"/>
+            <param name="bibliography.collection" expression="${bibliography.collection}" if="bibliography.collection"/>
+            <sysproperty key="org.apache.xerces.xni.parser.XMLParserConfiguration"
+                value="org.apache.xerces.parsers.XIncludeParserConfiguration"
+            />
+        </xslt>
+        
+        <!-- Convert Oxygen change tracking processing instructions to Oxygen custom elements. -->
+        <xslt in="${tempDir}/tempRes.xml"
+            out="${tempDir}/tempRes.fo"
+            style="${reviewStylesheetsFolder}/review-pis-to-elements.xsl" 
+            force="true">
+            <param name="show.changes.and.comments" expression="${show.changes.and.comments}"/>
+            <param name="use.alpha.for.highlights" expression="'no'"/>
+        </xslt>
+        
+        <!-- Properly nest threaded PIs -->
+        <xslt in="${tempDir}/tempRes.fo"
+            out="${tempDir}/tempRes2.fo"
+            style="${reviewStylesheetsFolder}/review-group-replies.xsl" 
+            force="true">
+            <param name="show.changes.and.comments" expression="${show.changes.and.comments}"/>
+        </xslt>
+        
+        <!-- Custom Oxygen change tracking elements to FO elements -->
+        <xslt in="${tempDir}/tempRes2.fo"
+            out="${tempDir}/tempRes3.fo"
+            style="${reviewStylesheetsFolder}/review-elements-to-fo.xsl" 
+            force="true">
+            <param name="show.changes.and.comments" expression="${show.changes.and.comments}"/>
+        </xslt>
+        
+        <!--Produce the PDF from the XSL-FO file-->
+        
+        <taskdef name="fop"
+            classname="org.apache.fop.tools.anttasks.Fop"/>
+        <fop format="application/pdf"
+            fofile="${tempDir}/tempRes3.fo"
+            outfile="${currentFileFolder}/${outputFileName}.pdf" />
+        <antcall target="clean.temp"/>
+    </target>
+    <target name="clean.temp" if="${clean.temp}">
+        <delete dir="${tempDir}"/>
+    </target>
+</project>

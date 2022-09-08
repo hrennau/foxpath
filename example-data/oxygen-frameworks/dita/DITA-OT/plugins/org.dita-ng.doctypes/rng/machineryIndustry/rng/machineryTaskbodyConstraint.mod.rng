@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ============================================================= 
+  MODULE:    DITA Machine Industry Taskbody Constraint - RNG              
+  VERSION:   1.2                                                
+  DATE:      November 2010                                       
+  ============================================================= -->
+<!--
+  Refer to the latest version of this file by the following URI:
+  urn:dita-ng:dita:rng:machineryTaskbodyConstraint.mod.rng
+  To refer to this specific version, you may use this value:
+  urn:dita-ng:dita:rng:machineryTaskbodyConstraint.mod.rng:1.2
+-->
+<!-- ============================================================= 
+  SYSTEM:     Darwin Information Typing Architecture (DITA)     
+  PURPOSE:    Define constraints for for the machinery taskbody
+              elements  
+  ORIGINAL CREATION DATE:  
+  September 2010                                                
+  (C) Copyright Syncro Soft 2010-2011                                
+  All Rights Reserved.                                          
+  ============================================================= -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0">
+  <!-- Define the domain values of this module -->
+  <define name="domains-atts-value" combine="choice">
+    <value>(topic task)</value>
+  </define>
+  
+  <include href="../../technicalContent/rng/task.mod.rng">
+    <define name="taskbody.content">
+      <zeroOrMore>
+        <choice>
+          <ref name="prelreqs"/>
+          <ref name="context"/>
+          <ref name="section"/>
+        </choice>
+      </zeroOrMore>
+      <optional>
+        <choice>
+          <ref name="steps"/>
+          <ref name="steps-unordered"/>
+          <ref name="steps-informal"/>
+        </choice>
+      </optional>
+      <optional>
+        <ref name="result"/>
+      </optional>
+      <zeroOrMore>
+        <ref name="example"/>
+      </zeroOrMore>
+      <optional>
+        <ref name="closereqs"/>
+      </optional>
+    </define>
+  </include>
+  <include href="../../base/rng/topic.mod.rng"/>
+  
+  <define name="prelreqs">
+    <ref name="prelreqs.element"/>
+  </define>
+  <define name="closereqs">
+    <ref name="closereqs.element"/>
+  </define>
+  
+</grammar>

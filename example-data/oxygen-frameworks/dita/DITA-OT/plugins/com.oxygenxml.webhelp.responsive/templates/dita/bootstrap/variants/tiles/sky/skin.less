@@ -1,0 +1,691 @@
+/*
+ * ==============================================
+ * Skin for oXygen generated WebHelp.
+ * ==============================================
+ */
+@import (reference) "skin-props.less";
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Fonts.
+ *  
+ */
+@import (css) url(@fontUrl);
+
+body {
+  font-family: @fontFamily, sans-serif;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Fight with bootstrap
+ *  
+ */
+.navbar-brand {
+  height: auto;
+}
+
+.navbar {
+  background-image: none;
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  box-shadow: none;
+}
+
+.wh_header {
+  background-color: @headerBgr;
+}
+
+a,
+a:hover,
+a:visited {
+  color: @linkColor;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Publication titles
+ *  
+ */
+.wh_publication_title > a {
+  color: @publicationTitleColor;
+  text-transform: none;
+  font-weight: normal;
+  line-height: 1em;
+  font-size: 1.7em;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Menu
+ *  
+ */
+
+.wh_top_menu {
+  font-size: 1em;
+  margin: .4em 0;
+}
+
+/*.wh_top_menu ul {
+  background-color: @menuBgr;
+}*/
+
+.wh_top_menu ul a {
+  color: @menuColor;
+}
+
+/* The submenus */
+.wh_top_menu ul ul {
+  background-color: @submenuBgr;
+}
+
+@media only screen and (min-width: 768px) {
+
+  .wh_top_menu > ul > li > .topicref > a {
+    background-color: @menuBgr;
+    margin: 0 2px;
+    border-radius: 4px 4px 0 0;
+  }
+
+  .wh_top_menu > ul > li > ul {
+    margin: 0 2px;
+  }
+
+  /* Menu bar */
+  .wh_top_menu ul li:hover a {
+    background-color: @hoveredMenuBgr;
+    color: @hoveredMenuColor;
+  }
+
+  /* Sub menus */
+  .wh_top_menu ul ul li {
+    border: none;
+    background-color: @submenuBgr;
+  }
+
+  .wh_top_menu ul li:hover ul a {
+    color: @submenuColor;
+    transition: background-color .25s ease-out 0s,
+    color .3s ease-out 0s;
+  }
+
+  .wh_top_menu ul ul li a:hover {
+    color: @hoveredSubmenuColor;
+    background-color: @hoveredSubmenuBgr;
+    transition: background-color .25s ease-in 0s,
+    color .3s ease-in 0s;
+  }
+
+  .wh_top_menu ul ul li.has-children:after {
+    color: @submenuColor;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .wh_top_menu li a {
+    color: @menuColor
+  }
+
+  .wh_top_menu li.active a {
+    color: @hoveredMenuColor;
+  }
+
+  .wh_top_menu li.active {
+    background-color: @hoveredMenuBgr;
+  }
+
+  .wh_top_menu li.active > span a {
+    background-color: @hoveredSubmenuBgr;
+  }
+
+  .wh_toggle_button.navbar-toggle,
+  .wh_toggle_button.navbar-toggle:focus {
+    border: none;
+    border-color: @mobileMenuToggleColor;
+    background-color: @mobileMenuToggleBgr;
+  }
+
+  .wh_toggle_button.navbar-toggle .icon-bar {
+    background-color: @mobileMenuToggleColor;
+  }
+
+  .wh_top_menu ul ul li {
+    border: none;
+  }
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Link to the index.
+ * 
+ */
+.wh_indexterms_link a:before {
+  color: @indextermsLinkCol;
+  font-size: 1.5em;
+}
+
+.wh_indexterms_link a span {
+  display: none;
+}
+
+@media only screen and (max-width: 767px) {
+  .wh_indexterms_link a:before {
+    bottom: 0;
+  }
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Breadcrumb
+ *  
+ */
+
+.wh_breadcrumb ol,
+.wh_breadcrumb ol a {
+  color: @breadcrumbColor;
+}
+
+.wh_breadcrumb ol .active,
+.wh_breadcrumb ol .active a {
+  color: @breadcrumbActiveLinkColor;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Tools and navigation
+ * 
+ */
+.wh_tools {
+  border: solid 1px @breadcrumbBorderColor;
+  background-color: @breadcrumbBgr;
+  margin: 2em 1em;
+  font-size: 1em;
+}
+
+.wh_hide_highlight,
+.wh_print_link a,
+.wh_navigation_links a,
+.wh_navigation_links a:hover,
+.wh_navigation_links a:active,
+.wh_navigation_links a:visited,
+.wh_print_link a:before,
+.wh_navigation_links a:before,
+.wh_navigation_links a:hover:before,
+.wh_navigation_links a:active:before,
+.wh_navigation_links a:visited:before {
+  color: @breadcrumbColor;
+  text-decoration: none;
+}
+
+.wh_right_tools {
+  padding: 8px 15px;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Tiles
+ * 
+ */
+
+.wh_tile_shortdesc {
+  color: @tileShortDescColor;
+  font-weight: 400;
+  font-size: 1em;
+  margin-top: 0.5em;
+  text-align: justify;
+}
+
+.wh_tile_title {
+  font-size: 1em;
+  text-decoration: none;
+  text-transform: none;
+}
+
+.wh_tile_title a {
+  text-align: left;
+  color: @tileTitleColor !important;
+  font-size: 1.4em;
+  font-weight: 400;
+}
+
+@media only screen and (max-width: 767px) {
+  .wh_tile > div {
+    height: auto;
+  }
+}
+
+/*
+ * ------------------------------------------------------------------
+ *
+ * Tree TOC for the main page.
+ *
+ */
+.wh_main_page_toc {
+  border: none;
+  background-color: @tocEntryBgr;
+}
+
+.wh_main_page_toc .topicref a {
+  color: @tocEntryColor;
+}
+
+.wh_main_page_toc .wh_main_page_toc_accordion_header:hover,
+.wh_main_page_toc > .wh_main_page_toc_entry:hover {
+  background-color: @tocEntryHoverBgr;
+  color: @tocEntryHoverColor;
+}
+
+.wh_main_page_toc_accordion_header:hover > .wh_toc_shortdesc,
+.wh_main_page_toc > .wh_main_page_toc_entry:hover > .wh_toc_shortdesc {
+  background-color: @tocEntryHoverBgr;
+  color: @tocEntryHoverColor;
+}
+
+.wh_main_page_toc .wh_main_page_toc_accordion_header:hover a,
+.wh_main_page_toc > .wh_main_page_toc_entry:hover a {
+  color: @tocEntryHoverColor;
+}
+
+.wh_main_page_toc_accordion_header:hover:before {
+  color: @tocEntryHoverColor;
+}
+
+.wh_main_page_toc .wh_main_page_toc_accordion_header,
+.wh_main_page_toc > .wh_main_page_toc_entry,
+.wh_main_page_toc_accordion_entries {
+  border-bottom: 1px solid @tocBorderColor;
+  background-color: @tocEntryBgr;
+  text-align: left;
+}
+
+.wh_main_page_toc .wh_toc_shortdesc {
+  color: @tocShortDescColor;
+}
+
+.wh_main_page_toc_accordion_header:before {
+  color: @tocEntryColor;
+}
+
+.wh_main_page_toc .expanded {
+  border: none;
+}
+
+/* ---------------------------------   */
+
+.wh_main_page .wh_content_area {
+  .mainPageContentAreaBgr;
+
+  padding: 4em 0 2em 0;
+  color: @mainPageContentColor;
+  text-align: center;
+  align-items: center;
+}
+
+/*
+You can style some of the tiles in a special way. 
+Example:
+.wh_tiles *[data-id='getting_started']{
+    background-color:gray;
+}
+*/
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Search area
+ * 
+ */
+
+.wh_search_input {
+  padding: 4em 0 4em 0;
+  margin: 0;
+  align-items: center;
+  color: @searchFieldColor;
+  text-align: center;
+  background-color: @searchBgr;
+  background-image:
+          linear-gradient(@searchBgr, transparent),
+          url("resources/Clouds.png");
+  background-position: center bottom;
+  background-size: cover;
+}
+
+.wh_main_page_search {
+  height: ~"calc(50vh - 50px)";
+  min-height: 20em;
+  padding-top: ~"calc((50vh - 50px)/2 - 1em)";
+}
+
+.wh_main_page .wh_search_textfield,
+.wh_main_page .wh_search_button {
+  height: 2em;
+  font-size: 2em;
+}
+
+.wh_search_textfield,
+.wh_search_button {
+  border: solid 1px @searchFieldBorderColor;
+  color: @searchFieldColor;
+  background-color: @searchFieldBgr;
+  padding: 0 .4em;
+  height: 2em;
+    font-size: 1.2em;
+    line-height: 2em;
+}
+
+.wh_search_textfield {
+  border-radius: @searchFieldBorderRadius;
+}
+
+.wh_search_button {
+  border-radius:  0 @searchFieldBorderRadius @searchFieldBorderRadius 0 !important;
+}
+
+/* Search autocomplete */
+.ui-menu-item {
+  font-size: 1.2em;
+  color: @searchFieldColor;
+}
+
+/* Search relative path */
+.searchresult li .relativePath a {
+  color: @searchRelativePathColor;
+}
+
+/* Search autocomplete icons */
+.search-autocomplete-proposal-type-history a,
+.search-autocomplete-proposal-type-history a:hover,
+.search-autocomplete-proposal-type-history a:visited,
+.search-autocomplete-proposal-type-history a:active{
+    text-decoration: none;
+    color:inherit;
+    font-size: 0.8em;
+}
+
+.ui-state-active .search-autocomplete-proposal-type-history a,
+.ui-state-active .search-autocomplete-proposal-type-history a:hover,
+.ui-state-active .search-autocomplete-proposal-type-history a:visited,
+.ui-state-active .search-autocomplete-proposal-type-history a:active{
+    color: @contentBgr;
+}
+
+/* Active search page */
+#wh-search-pagination > ul > li.active > a {
+  background-color: @searchFieldColor;
+}
+
+/* Do not allow the text to go beneath the search button  */
+@media only screen and (min-width: 768px) {
+  .wh_search_textfield {
+    padding-right: 3em;
+  }
+}
+
+.wh_search_button:after {
+  color: @searchFieldColor;
+}
+
+.wh_search_button:hover {
+  background-color: @searchButtonHoverColor /*rgba(255, 255, 255, 0.1)*/;
+}
+
+/* Search field placeholder */
+
+::-webkit-input-placeholder {
+  color: @searchFieldColor;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+  color: @searchFieldColor;
+}
+
+::-moz-placeholder { /* Firefox 19+ */
+  color: @searchFieldColor;
+}
+
+:-ms-input-placeholder {
+  color: @searchFieldColor;
+}
+
+/* Change Autocomplete styles in Chrome */
+:-webkit-autofill,
+:-webkit-autofill:hover,
+:-webkit-autofill:focus {
+  border: 1px solid @searchFieldBorderColor;
+  -webkit-text-fill-color: @searchFieldColor;
+  -webkit-box-shadow: none;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *
+ * Side TOC
+ *
+ */
+.wh_side_toc {
+  border: 1px solid @sideTocBorderColor;
+  background-color: @sideTocBgr;
+  padding: 1em;
+  line-height: 2em;
+  margin-left: 2em;
+}
+
+.wh_side_toc > ul {
+  padding-left: 0;
+}
+
+.wh_side_toc .active > span {
+  color: @sideTocColor;
+  text-decoration: underline;
+}
+
+.wh_side_toc span, .wh_side_toc a, .wh_side_toc a:visited, .wh_side_toc a:hover {
+  color: @sideTocColor;
+}
+
+.wh_side_toc a:hover {
+  text-decoration: underline;
+}
+
+@media only screen and (max-width: 767px) {
+  .wh_side_toc {
+    padding: 1em;
+    margin-left: 0;
+    margin-top: 1em;
+  }
+}
+
+/* Side TOC tooltip */
+.wh_breadcrumb .topicref .wh-tooltip,
+.wh_side_toc .topicref .wh-tooltip {
+  background-color: @tooltipBgr;
+  color: @tooltipColor;
+}
+
+.wh_breadcrumb .topicref .wh-tooltip a,
+.wh_side_toc .topicref .wh-tooltip a {
+  color: @tooltipColor;
+  text-decoration: underline;
+}
+
+/* Tooltip arrow. */
+
+[data-tooltip-position="left"] .topicref .wh-tooltip::before {
+  border-left-color: @tooltipBgr;
+}
+
+[data-tooltip-position="right"] .topicref .wh-tooltip::before {
+  border-right-color: @tooltipBgr;
+}
+
+[data-tooltip-position="bottom"] .topicref .wh-tooltip::before {
+  border-bottom-color: @tooltipBgr;
+}
+
+[data-tooltip-position="top"] .topicref .wh-tooltip::before {
+  border-top-color: @tooltipBgr;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *
+ * Footer
+ *
+ */
+.wh_footer {
+  background-color: @footerBgr;
+  background-size: cover;
+  padding: 4em 0em;
+  color: @footerColor;
+  text-align: center;
+  align-items: center;
+}
+
+.wh_footer a {
+  color: @footerLinkColor;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *
+ * Topic content
+ *
+ */
+.wh_content_area {
+  background-color: @topicContentBgr;
+  padding: 1.5em;
+  font-size: 1em;
+  margin-bottom: 2em;
+}
+
+.wh_topic_content {
+  color: @topicContentColor;
+  line-height: 1.7em;
+}
+
+/*
+ * Title & subtitles
+ */
+
+.topictitle1 {
+  color: @titleColor;
+  font-weight: normal;
+}
+
+.topictitle2,
+.topictitle3,
+.topictitle4,
+.topictitle5,
+.topictitle6 {
+  color: #525151;
+}
+.wh_expand_btn{
+    left: -1px
+}
+
+
+/*
+ * Other content
+ */
+
+.wh_topic_content .shortdesc {
+  font-style: italic;
+}
+
+
+
+/* Related links */
+
+.wh_related_links .related-links,
+.wh_topic_content .related-links,
+.wh_child_links {
+  margin: 1em 0 0 0;
+  background-color: @relLinksBgr;
+  border: @relLinksBorderColor solid 1px;
+  padding: 0 1em;
+}
+
+.wh_child_links {
+  padding: 1em;
+}
+
+.wh_topic_content .related-links {
+  font-size: .91em;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *
+ * Search results.
+ *
+ */
+.searchresult {
+  list-style: none;
+}
+
+.searchresult li {
+  padding: .5em;
+}
+
+.searchresult li a {
+  color: @searchResultLinkColor;
+}
+
+.wh_search_expression {
+  color: @searchExpressionColor;
+}
+
+.searchresult .shortdesclink {
+  margin: .3em .5em 0 0;
+}
+
+.wh_search_expression {
+  font-weight: bold;
+}
+
+/* Highlights */
+.highlight {
+  background-color: @searchTermHighlightBgr;
+  color: @themeLightColor !important;
+  border-radius: 4px;
+  padding: 0 1px;
+}
+.wh-h{padding: 0 1px}
+
+/* Index terms */
+
+.wh_term_group {
+  border: 1px solid @indexTermGroupBorderColor;
+  background-color: @indexTermGroupBgr;
+  margin: 1em 0;
+  padding: 1em;
+}
+
+.wh_term > span {
+  color: @indexTermColor;
+  font-style: italic;
+}
+
+.wh_index_terms span.wh_first_letter {
+  color: @indexTermFirstLetterColor;
+  border: none;
+  font-size: 1.5em;
+  margin: 0;
+}
+
+.wh_index_terms #indexList {
+  padding: 0;
+}

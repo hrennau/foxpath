@@ -1,0 +1,38 @@
+@import "dita.css";
+/*Useful when opening a map with resolved topics and then printing it to PDF with change tracking, 
+removes extra indents and static texts*/
+*|reference:before {
+  content: "" !important;  
+}
+*|reference{
+    -oxy-editable:false !important;
+    background-color: transparent !important;
+    margin:0px !important;
+    padding: 0px !important;
+}
+*[class~="map/topicref"]{
+    margin-left:0em;
+    margin-top:0em;
+    margin-bottom:0em;
+}
+*[class~="map/topicref"]:before{
+    display:inline;
+    content: "" !important;
+    background-color:inherit;
+}
+
+*{
+    -oxy-foldable:false !important;
+}
+
+*[class~="topic/colspec"] {
+    display: none !important;    
+}
+
+*[class~="topic/tgroup"]:before {
+    display: none !important;    
+}
+
+*{
+    -oxy-display-tags:none !important;
+}

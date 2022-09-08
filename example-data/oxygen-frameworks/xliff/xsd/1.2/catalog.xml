@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+	XLIFF Version 2.0
+	OASIS Standard
+	05 August 2014
+	Copyright (c) OASIS Open 2014. All rights reserved.
+	Source: http://docs.oasis-open.org/xliff/xliff-core/v2.0/os/schemas/
+     -->
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+	<systemSuffix systemIdSuffix="xliff-core-1.2-strict.xsd" uri="xliff-core-1.2-strict.xsd"/>
+	<uri name="urn:oasis:names:tc:xliff:document:1.2" uri="xliff-core-1.2-strict.xsd"/>
+    <uri name="http://docs.oasis-open.org/xliff/v1.2/os/xliff-core-1.2-strict.xsd" uri="xliff-core-1.2-strict.xsd"/>
+    <uri name="http://docs.oasis-open.org/xliff/v1.2/os/xliff-core-1.2-transitional.xsd" uri="xliff-core-1.2-transitional.xsd"/>
+</catalog>

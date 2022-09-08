@@ -1,0 +1,25 @@
+pointOfInterest:after {
+    content:
+       oxy_button(
+            actionID, "delete.poi", transparent, true, fontInherit, false)
+        
+        oxy_button(
+            actionID, "add.poi", transparent, true, fontInherit, false);
+     display: none;
+}
+
+
+section:after! > infoTable {
+    background-color: white;
+    vertical-align: middle;
+    content: oxy_button(actionID, 'update.temps', transparent, true);
+}
+
+
+/* ---------------------------------------------- */
+/* --------------------POI EDIT------------------ */
+/* ---------------------------------------------- */
+
+address {
+    display:block;
+}

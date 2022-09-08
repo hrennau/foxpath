@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This file is part of the DITA Open Toolkit project.
+
+Copyright 2011 Jarno Elovirta
+
+See the accompanying LICENSE file for applicable license.
+-->
+<plugin id="org.dita.htmlhelp">
+  <!-- extension points -->
+  <extension-point id="dita.xsl.htmlhelp.map2hhp" name="HTML Help project XSLT import"/>
+  <extension-point id="dita.xsl.htmlhelp.map2hhc" name="HTML Help content XSLT import"/>
+  <!-- extensions -->
+  <transtype name="htmlhelp" extends="base-html" desc="HTMLHelp">
+    <param name="args.htmlhelp.includefile" desc="Specifies the name of a file that you want included in the HTML Help." type="file"/>
+        <!-- Oxygen provided parameter -->
+    <param name="args.htmlhelp.default.topic"
+      desc="The path of the default topic that will be opened the first time in the CHM output, relative to the base output directory (for example: topics\\intro.html)."
+      type="string"/>
+    <param name="htmlhelp.locale" type="string" desc="Global encoding for CHM output pages.">
+      <val default="true">en-US</val>
+    </param>
+  </transtype>
+  <require plugin="org.dita.xhtml"/>
+  <feature extension="dita.conductor.target.relative" file="conductor.xml"/>
+  <feature extension="dita.xsl.messages" file="resource/messages.xml"/>
+  <template file="xsl/map2hhc_template.xsl"/>
+  <template file="xsl/map2hhp_template.xsl"/>
+</plugin>

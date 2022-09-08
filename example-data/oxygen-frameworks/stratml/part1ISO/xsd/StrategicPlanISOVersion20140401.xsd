@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Schema agency: ISO AIIM Schema version: 1.1 Schema date: April 1, 2014 Disclaimer: This document and the information contained herein is provided on an "as is" basis and AIIM disclaims all warranties, express or implied, including but not limited to any warranty that the use of the information herein will not infringe any rights or any rights or any implied warranties of merchantability or fitness for a particular purpose. -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:stratml="urn:ISO:std:iso:17469:tech:xsd:stratml_core"
+    targetNamespace="urn:ISO:std:iso:17469:tech:xsd:stratml_core"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified"
+    version="1.1">
+  <xsd:element name="Acronym" type="xsd:string" id="uuid-a21e6dc4-b67c-4120-b881-ce72882fc958">
+    <xsd:annotation>
+      <xsd:documentation source="documentation" xml:lang="EN">An abbreviation of a proper name, usually composed of the first letters of each word in the name.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="AdministrativeInformation" type="stratml:AdministrativeInformationType" id="uuid-9d240214-9768-4dd9-b98a-c62448b63f26"/>
+  <xsd:element name="Description" type="xsd:string" id="uuid-6289635d-98a7-40bd-978c-37ae6ede5f7e">
+    <xsd:annotation>
+      <xsd:documentation source="documentation">A sentence or short paragraph defining and explaining a concept.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="EmailAddress" type="xsd:string" id="uuid-412bb450-d116-4dec-9269-a92209232df1">
+    <xsd:annotation>
+      <xsd:documentation source="documentation">The Email address of the person submitting the plan.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="EndDate" type="xsd:date" id="uuid-19977fd4-556d-41bc-be29-477e05e4c971">
+    <xsd:annotation>
+      <xsd:documentation source="documentation" xml:lang="EN">The year, month, and day the element with which it is associated is projected to cease, if it is not subsequently extended. Typically the end of a calendar or fiscal year.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="GivenName" type="xsd:string" id="uuid-a8c3e55c-96f2-404a-97b5-16022d9369ac">
+    <xsd:annotation>
+      <xsd:documentation source="documentation">The given name of the person submitting the plan.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="Goal" id="uuid-1e56b2c9-c6d6-4f79-8ad7-cdb1508a9614">
+    <xsd:annotation>
+      <xsd:documentation source="documentation">General Goal</xsd:documentation>
+      <xsd:documentation source="documentation">A relatively broad statement of intended results to be achieved over more than one resource allocation and performance measurement cycle.</xsd:documentation>
+      <xsd:documentation source="documentation">Supports Mission</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="stratml:Name" id="uuid-0b19dff1-b98e-470f-ac80-92a755d8aa37"/>
+        <xsd:element ref="stratml:Description" id="uuid-b454f40f-721c-42a1-ba43-3a56ef37766e"/>
+        <xsd:element ref="stratml:Identifier" id="uuid-f0543f96-c5be-4d77-a86d-d2f04122a5ea" minOccurs="0"/>
+        <xsd:element ref="stratml:SequenceIndicator" id="uuid-af23adab-d9d6-46b2-a627-8cd2547d8192" minOccurs="0"/>
+        <xsd:element ref="stratml:Stakeholder" id="uuid-93270a8d-75b5-4052-974e-19e5bd9c5931" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="stratml:OtherInformation" id="uuid-edd05fe8-91ca-4511-8f5b-c360ac07ebe8" minOccurs="0"/>
+        <xsd:element ref="stratml:Objective" id="uuid-f0648650-fa4d-49a3-bb6e-e1ca03894334" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="Identifier" type="xsd:ID" id="uuid-a9cee972-59f3-42a9-8876-03bd0166689c">
+    <xsd:annotation>
+      <xsd:documentation source="documentation" xml:lang="EN">A string of alphanumeric characters by which the information contained within an element is distinguished from other versions of the same information as well as information contained in other instances of the same element.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="Mission" id="uuid-755706ea-40d6-40f0-a8e5-998b91390620">
+    <xsd:annotation>
+      <xsd:documentation source="documentation">A brief description of the basic purpose of the organization.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="stratml:Description" id="uuid-d4000d59-fc40-4f93-bbae-f92de9808818" minOccurs="0"/>
+        <xsd:element ref="stratml:Identifier" id="uuid-e8484845-ea0e-47f3-8fe2-55b54db21202" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="Name" type="xsd:string" id="uuid-f6300ca4-40bc-455c-a963-dfef45f558d3">
+    <xsd:annotation>
+      <xsd:documentation source="documentation">A word or short phrase intended to identify a concept within the context in which is it being applied.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="Objective" id="uuid-2c39ac60-63c1-4c50-8ec6-26ea646c173b">
+    <xsd:annotation>
+      <xsd:documentation source="documentation">Performance Goal</xsd:documentation>
+      <xsd:documentation source="documentation">Strategy</xsd:documentation>
+      <xsd:documentation source="documentation">A target level of results expressed in units against which achievement is to be measured within a single resource allocation and performance execution cycle.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="stratml:Name" id="uuid-36e8852b-2761-460d-b911-0c01c7bdecd3" minOccurs="0"/>
+        <xsd:element ref="stratml:Description" id="uuid-687daacf-3b29-4e91-b1e7-8e9191d17338" minOccurs="0"/>
+        <xsd:element ref="stratml:Identifier" id="uuid-8e762c3e-85b6-4f5c-93d1-a2513667507f" minOccurs="0"/>
+        <xsd:element ref="stratml:SequenceIndicator" id="uuid-abbc7e84-6083-4c89-9c8e-30a9d09616d2" minOccurs="0"/>
+        <xsd:element ref="stratml:Stakeholder" id="uuid-3c9c0a38-4d9b-4641-a0f0-f05e722e6f4c" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="stratml:OtherInformation" id="uuid-75d113e5-ae18-4c6f-87ca-1811557471fb" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="Organization" id="uuid-9d589d53-ec24-4c18-b5db-5be8075c1be5">
+    <xsd:annotation>
+      <xsd:documentation source="documentation">The legal or logical entity to which the plan or report applies.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="stratml:Name" id="uuid-e871651e-e943-4414-b0b6-eb1f5754f3be" minOccurs="0"/>
+        <xsd:element ref="stratml:Acronym" id="uuid-eb510ea2-9d70-40ec-95f1-abdf6644e002" minOccurs="0"/>
+        <xsd:element ref="stratml:Identifier" id="uuid-d5b4b082-8326-46a8-a475-533813a4ed29" minOccurs="0"/>
+        <xsd:element ref="stratml:Description" id="uuid-2741f038-8123-4644-a649-dcf19a773673" minOccurs="0"/>
+        <xsd:element ref="stratml:Stakeholder" id="uuid-d9bccbbf-67ae-402c-8914-56d12c1a7190" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="OtherInformation" type="xsd:string" id="uuid-2cfca418-05c2-4fa1-b233-d1bd60d0d86a">
+    <xsd:annotation>
+      <xsd:documentation source="documentation">Additional explanation or guidance that is not expressly addressed in other elements of the schema.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="PhoneNumber" type="xsd:string" id="uuid-9084c2d2-4b7e-4189-a784-a86a4469a01c">
+    <xsd:annotation>
+      <xsd:documentation source="documentation">The telephone number of the person submitting the plan.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="PublicationDate" type="xsd:date" id="uuid-04d8f96c-b5fc-458e-8de4-f5e2746e8b8b">
+    <xsd:annotation>
+      <xsd:documentation source="documentation" xml:lang="EN">The day, month, and year a strategic plan was published in its current form.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="SequenceIndicator" type="xsd:string" id="uuid-7f10f639-e7cf-4513-804c-5f4f7592c5e5">
+    <xsd:annotation>
+      <xsd:documentation source="documentation">An alphanumeric identifier applied to an element to designate its order in a series.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="Source" type="xsd:anyURI" id="uuid-03b90177-d13b-4e32-ada9-7c7a1eb1703b">
+    <xsd:annotation>
+      <xsd:documentation source="documentation" xml:lang="EN">The Web address (URL) for the authoritative source of this document.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="Stakeholder" id="uuid-1effcb49-9462-4c9b-bdc2-92971c9fc9cf">
+    <xsd:annotation>
+      <xsd:documentation source="documentation">An individual, organization, or generic group whose interests may be affected by or whose action may be required to achieve a goal or objective.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="stratml:Name" id="uuid-35cc454d-43d4-46b2-a548-eeb3ff8605dd"/>
+        <xsd:element ref="stratml:Description" id="uuid-7e18eb24-475c-4bcf-a3c4-1c43adaf127c" minOccurs="0"/>
+      </xsd:sequence>
+			<xsd:attribute name="StakeholderTypeType" use="optional" id="uuid-F64605F4-D372-487C-9C5D-D68F1031BA86">
+				<xsd:annotation>
+					<xsd:documentation source="documentation" xml:lang="EN">An attribute indicating whether the stakeholder is an individual person, an organization, or a generic group of people.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="Person"/>
+						<xsd:enumeration value="Organization"/>
+						<xsd:enumeration value="Generic_Group"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="StartDate" type="xsd:date" id="uuid-11a1e9c3-959b-4c2e-b3de-5e1296eb6ab3">
+    <xsd:annotation>
+      <xsd:documentation source="documentation" xml:lang="EN">The year, month and day the element with which it is associated is scheduled to begin.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="StrategicPlan" id="uuid-63a6e34c-737d-4d24-955b-bbf72d8c1511">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="stratml:Name" id="uuid-eeb5b011-9843-4fa3-a280-1af6bb3477f4"/>
+        <xsd:element ref="stratml:Description" id="uuid-8e497247-1d8b-4f09-8332-06d3666f1dae" minOccurs="0"/>
+        <xsd:element ref="stratml:OtherInformation" id="uuid-63f013cf-6bd3-4050-a4b3-0eaa33bea69a" minOccurs="0"/>
+        <xsd:element ref="stratml:StrategicPlanCore" id="uuid-314a1a55-714a-4b74-85da-4fc705457800"/>
+        <xsd:element ref="stratml:AdministrativeInformation" id="uuid-1453760d-6cf8-4916-8c45-862adde59002" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="StrategicPlanCore" id="uuid-ce9c9293-e374-4800-8d62-9ee87d0c9887">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="stratml:Organization" id="uuid-f8d6372e-52e8-4a60-ab1c-274aad8bcf33" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="stratml:Vision" id="uuid-d4dbdad8-0cdd-4294-b091-b8bec961d03b" minOccurs="0"/>
+        <xsd:element ref="stratml:Mission" id="uuid-f66bec3e-2714-49ec-8e15-8820cecba9ae" minOccurs="0"/>
+        <xsd:element ref="stratml:Value" id="uuid-1ab0aa31-a42f-410e-8b2c-29c22eed8a77" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="stratml:Goal" id="uuid-294b80a3-7288-4477-9458-35292f7a47c3" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="Submitter" type="stratml:ContactInformationType" id="uuid-1dec258f-1656-4173-acfe-677c1cf24bf3">
+    <xsd:annotation>
+      <xsd:documentation source="documentation">The person submitting the plan in StratML format.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+    <xsd:element name="Surname" type="xsd:string" id="uuid-d48842b4-9324-4f71-9502-1a991b707b38">
+    <xsd:annotation>
+      <xsd:documentation source="documentation">The family name of the person submitting the plan.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+  <xsd:element name="Value" id="uuid-50f98ade-573c-4afa-8696-1d0e4a2c7ff3">
+    <xsd:annotation>
+      <xsd:documentation source="documentation">A principle that is important and helps to define the essential character of the organization.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="stratml:Name" id="uuid-54768289-ad1d-4983-8b30-081f6b1fdeb3" minOccurs="0"/>
+        <xsd:element ref="stratml:Description" id="uuid-f285ccf3-d061-47a5-ac0d-873a8971883b" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="Vision" id="uuid-5e02d6ec-d669-47c4-b443-e7716bd27528">
+    <xsd:annotation>
+      <xsd:documentation source="documentation">A concise and inspirational statement implicitly relating an organization's purpose to its values, thus motivating its actions toward a future state it strives to achieve.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="stratml:Description" id="uuid-8201c15c-8206-49f3-9bd3-d816209a8b3c" minOccurs="0"/>
+        <xsd:element ref="stratml:Identifier" id="uuid-333e71c6-6b27-4bd2-bf39-c6e7b69d0404" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="AdministrativeInformationType" id="uuid-32864389-230a-4f77-9c09-c083386fcad9">
+    <xsd:sequence>
+      <xsd:element ref="stratml:StartDate" id="uuid-9bafe734-ca3f-4d53-bbb1-2d904412a09e" minOccurs="0"/>
+      <xsd:element ref="stratml:EndDate" id="uuid-42642fba-a33a-469b-b1e0-d37b8782a741" minOccurs="0"/>
+      <xsd:element ref="stratml:PublicationDate" id="uuid-6ebfbf00-e08c-4118-8980-aba1f91c3936" minOccurs="0"/>
+      <xsd:element ref="stratml:Source" id="uuid-f2e49267-3f70-497a-827e-3b65644badd8" minOccurs="0"/>
+      <xsd:element ref="stratml:Submitter" id="uuid-6db73538-b4f3-449c-8715-90bb794a6caa" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="ContactInformationType" id="uuid-b07e1586-6676-4212-8a6a-4a365a4977ec">
+    <xsd:sequence>
+      <xsd:element ref="stratml:GivenName" id="uuid-be2396f2-cdf9-498c-82ef-1ce1b9209086" minOccurs="0"/>
+      <xsd:element ref="stratml:Surname" id="uuid-3d5034e0-328a-46a0-b5fb-776e070cca5f" minOccurs="0"/>
+      <xsd:element ref="stratml:PhoneNumber" id="uuid-160fe527-9d1d-423a-bc95-ad48f3257276" minOccurs="0"/>
+      <xsd:element ref="stratml:EmailAddress" id="uuid-9e408a3b-034a-486f-b045-7cc74505b44d" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>

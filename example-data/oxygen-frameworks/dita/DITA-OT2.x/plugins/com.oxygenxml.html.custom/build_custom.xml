@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="Custom HTML targets">
+    <target name="com.oxygenxml.cleanOutput" if="clean.output">
+        <if>
+            <equals arg1="${clean.output}" arg2="yes"/>
+            <then>
+                <delete includeemptydirs="true">
+                    <fileset dir="${output.dir}" includes="**/*" defaultexcludes="false"/>
+                </delete>
+            </then>
+        </if>
+    </target>
+</project>

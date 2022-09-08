@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<targetset>
+    <targetsetinfo> Description of this target database document. </targetsetinfo>    
+    <!-- Site map for generating relative paths between documents -->
+    <sitemap>
+        <dir name="documentation">
+        </dir>
+    </sitemap>
+</targetset>

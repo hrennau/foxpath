@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE learningSummary PUBLIC "-//OASIS//DTD DITA Learning Summary//EN" "learningSummary.dtd">
+<learningSummary id="summary_${id}">
+    <title>${caret}</title>
+    <shortdesc></shortdesc>
+    <learningSummarybody> </learningSummarybody>
+</learningSummary>

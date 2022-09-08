@@ -1,0 +1,48 @@
+@media print{
+
+/*
+ * 
+ * Page numbers and titles.
+ * 
+ */
+ 
+/* Reset the page counter on the first topic. */
+*[class ~= "map/map"] > 
+  *[class ~= "topic/topic"]:first { 
+    counter-reset: page; 
+}
+
+/* Define the string sets for the titles */
+*[class ~= "map/map"] >  
+ *[class ~= "topic/topic"] > 
+  *[class ~= "topic/title"] { 
+     string-set: chaptertitle content() 
+}
+
+*[class ~= "map/map"] { 
+     string-set: maptitle attr(title) 
+}
+
+
+@page :left{
+    @top-left {
+       content: string(maptitle) " | " string(chaptertitle) " | " counter(page);
+       font-size:8pt;
+    }
+    @bottom-left {
+    }
+    @bottom-right {
+    }
+ }
+ 
+@page :right{
+    @top-right {
+       content: string(maptitle) " | " string(chaptertitle) " | " counter(page);
+       font-size:8pt;
+    }
+    @bottom-right {
+    }    
+    @bottom-left {
+    }
+ } 
+}

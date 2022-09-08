@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE learningContent PUBLIC "-//OASIS//DTD DITA Learning Content//EN" "learningContent.dtd">
+<learningContent id="content_${id}">
+    <title>${caret}</title>
+    <shortdesc></shortdesc>
+    <learningContentbody> </learningContentbody>
+</learningContent>

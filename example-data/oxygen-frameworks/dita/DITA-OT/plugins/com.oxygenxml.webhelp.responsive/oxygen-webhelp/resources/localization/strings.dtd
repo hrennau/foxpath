@@ -1,0 +1,13 @@
+<!--
+
+Oxygen WebHelp Plugin
+Copyright (c) 1998-2017 Syncro Soft SRL, Romania.  All rights reserved.
+
+-->
+
+<!ELEMENT strings (str)+>
+<!ATTLIST strings xml:lang CDATA #REQUIRED>
+<!ELEMENT str (#PCDATA)>
+<!ATTLIST str name CDATA #REQUIRED>
+<!ATTLIST str js (true|false) 'true'>
+<!ATTLIST str php (true|false) 'false'>

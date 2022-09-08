@@ -1,0 +1,60 @@
+@media print {
+
+    /*
+     * 
+     * Sidenotes
+     *  
+     */
+    comment {
+      display:block;
+      position:relative;
+      float: left;
+      clear:left;
+      margin: 0 0 1em -1in;
+      width: 1in;
+      min-height:1in;
+      font-size: 0.8em;
+      page-break-inside: avoid;
+      background-color: yellow;
+      color:black;
+      padding:0.5em;
+      border-radius: 10px;
+      link:attr(href);
+    }
+    
+    comment:before {
+        content:'[' attr(hr_id) '] ';
+    } 
+    
+    comment-author {
+        font-weight:bold;    
+    }
+    comment-author:after {
+        content:':';    
+    }
+    
+    comment-text{
+        display:block;
+        margin-top:0.5em;
+        margin-bottom:0.5em;
+    }
+    comment-text:before {
+        content:'“';
+    }
+    comment-text:after {
+        content:'”';
+    }
+    
+    comment-date {
+        display:block;
+        margin-top:0.5em;
+        margin-bottom:0.5em;
+        text-align:right;
+    }
+    comment-anchor:before {
+        content:'[' attr(hr_id) ']';
+        background-color: yellow;
+    
+    }
+
+}

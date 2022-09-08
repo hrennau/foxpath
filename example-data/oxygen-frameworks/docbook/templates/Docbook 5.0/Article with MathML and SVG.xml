@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//W3C//DTD MathML 2.0//EN" "http://www.w3.org/Math/DTD/mathml2/mathml2.dtd">
+<?xml-model href="http://www.oxygenxml.com/docbook/xml/5.0/rng/dbmathmlsvg.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.0/rng/docbook.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<article xmlns="http://docbook.org/ns/docbook"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="5.0">
+    <title/>
+    <sect1>
+        <title/>
+        <para>An equation: <equation><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML"
+                    display="block">
+                    <mml:semantics>
+                        <mml:mrow>
+                            <mml:mrow>
+                                <mml:mi mathvariant="bold">a</mml:mi>
+                                <mml:mo>=</mml:mo>
+                                <mml:mfrac>
+                                    <mml:mrow>
+                                        <mml:mi mathvariant="bold">F</mml:mi>
+                                    </mml:mrow>
+                                    <mml:mi>m</mml:mi>
+                                </mml:mfrac>
+                                <mml:mo>=</mml:mo>
+                                <mml:mfrac>
+                                    <mml:mrow>
+                                        <mml:mi>q</mml:mi>
+                                        <mml:mo>[</mml:mo>
+                                        <mml:mi mathvariant="bold">E</mml:mi>
+                                        <mml:mo>+</mml:mo>
+                                        <mml:mfenced>
+                                            <mml:mrow>
+                                                <mml:mi mathvariant="bold">v</mml:mi>
+                                                <mml:mi>X</mml:mi>
+                                                <mml:mi mathvariant="bold">B</mml:mi>
+                                            </mml:mrow>
+                                        </mml:mfenced>
+                                        <mml:mo>]</mml:mo>
+                                    </mml:mrow>
+                                    <mml:mi>m</mml:mi>
+                                </mml:mfrac>
+                            </mml:mrow>
+                        </mml:mrow>
+                    </mml:semantics>
+                </mml:math>
+            </equation></para>
+        <para>An inline SVG graphic: <inlinemediaobject>
+                <imageobject>
+                    <imagedata>
+                        <svg:svg xmlns:svg="http://www.w3.org/2000/svg" width="3cm" height="3cm"
+                            viewBox="0 0 400 400">
+                            <svg:g style="fill-opacity:0.7; stroke:black; stroke-width:0.1cm;">
+                                <svg:circle cx="6cm" cy="2cm" r="100" style="fill:red;"
+                                    transform="translate(0,50)"/>
+                                <svg:circle cx="6cm" cy="2cm" r="100" style="fill:blue;"
+                                    transform="translate(70,150)"/>
+                                <svg:circle cx="6cm" cy="2cm" r="100" style="fill:green;"
+                                    transform="translate(-70,150)"/>
+                            </svg:g>
+                        </svg:svg>
+                    </imagedata>
+                </imageobject>
+            </inlinemediaobject>
+        </para>
+    </sect1>
+</article>

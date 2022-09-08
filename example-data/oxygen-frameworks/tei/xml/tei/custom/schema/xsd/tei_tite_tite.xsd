@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.tei-c.org/ns/tite/1.0" xmlns:tite="http://www.tei-c.org/ns/tite/1.0" xmlns:tei="http://www.tei-c.org/ns/1.0">
+  <xs:import namespace="http://www.tei-c.org/ns/1.0" schemaLocation="tei_tite.xsd"/>
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="tei_tite_xml.xsd"/>
+  <xs:element name="b">
+    <xs:annotation>
+      <xs:documentation>(bold) for capturing typographical feature: bold glyphs.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="tei:macro.paraContent">
+          <xs:attributeGroup ref="tei:att.global.attributes"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="i">
+    <xs:annotation>
+      <xs:documentation>(italics) for capturing typographical feature: italicized glyphs.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="tei:macro.paraContent">
+          <xs:attributeGroup ref="tei:att.global.attributes"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ul">
+    <xs:annotation>
+      <xs:documentation>(underline) for capturing typographical feature: underlined glyphs.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="tei:macro.paraContent">
+          <xs:attributeGroup ref="tei:att.global.attributes"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sub">
+    <xs:annotation>
+      <xs:documentation>(subscript) for capturing typographical feature: subscript glyphs.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="tei:macro.paraContent">
+          <xs:attributeGroup ref="tei:att.global.attributes"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sup">
+    <xs:annotation>
+      <xs:documentation>(superscript) for capturing typographical feature: superscript glyphs.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="tei:macro.paraContent">
+          <xs:attributeGroup ref="tei:att.global.attributes"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="smcap">
+    <xs:annotation>
+      <xs:documentation>(smallcaps) for capturing typographical feature: glyphs in small capitals.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="tei:macro.paraContent">
+          <xs:attributeGroup ref="tei:att.global.attributes"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="colShift">
+    <xs:annotation>
+      <xs:documentation>(column shift) with the cols attribute is used to mark where a document changes columnar layout.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="tei:att.global.attributes"/>
+      <xs:attribute name="ed" form="qualified">
+        <xs:annotation>
+          <xs:documentation>indicates the edition or version in which the change in columnar layout is located at this point</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:pattern value="(\p{L}|\p{N}|\p{P}|\p{S})+"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="cols" form="qualified" type="xs:nonNegativeInteger">
+        <xs:annotation>
+          <xs:documentation>indicates the new number of columns</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ornament">
+    <xs:annotation>
+      <xs:documentation>for capturing typographical feature: printer's ornament, horizontal line, strings of asterisks or periods, etc, indicating an informal division that does not call for a new div element. If a horizontal rule or printer's ornament, use appropriate rend attribute and leave the element empy; if the ornament can be represented with characters, include these in the element.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="tei:att.global.attributes"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

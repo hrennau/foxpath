@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <contentModel parent="topicmeta">
+        <!--
+           ((navtitle)?,
+            (linktext)?,
+            (searchtitle)?,
+            (shortdesc)?,
+            (author)*,
+            (source)?,
+            (publisher)?,
+            (copyright)*,
+            (critdates)?,
+            (permissions)?,
+            (metadata)*,
+            (audience)*,
+            (category)*,
+            (keywords|exportanchors)*,
+            (prodinfo)*,
+            (othermeta)*,
+            (resourceid)*,
+            (data|data-about|foreign|unknown)*)
+        -->
+        
+        <element name="navtitle" longName="Navigation Title" occurs="?"/>
+        <element name="linktext" occurs="?"/>
+        <element name="searchtitle" longName="Search Title" occurs="?"/>
+        <element name="shortdesc" longName="Short Description" occurs="?"/>
+        <element name="author" occurs="*"/>
+        <element name="source" occurs="?"/>
+        <element name="publisher" occurs="?"/>
+        <element name="copyright" occurs="*">
+            <fragment><![CDATA[
+                <copyright>
+                    <copyryear year=""/>
+                    <copyrholder/>
+                </copyright>
+            ]]></fragment>
+        </element>   
+        <element name="critdates" longName="Critical Dates" occurs="?"/>
+        <element name="permissions" occurs="?" empty="yes">
+            <fragment><![CDATA[<permissions view=""/>]]></fragment>
+        </element>   
+        <element name="metadata" occurs="*"/>
+        <element name="audience" occurs="*" empty="yes"/>
+        <element name="category" occurs="*"/>
+        <choice occurs="*">
+            <element name="keywords" occurs="1"/>
+            <element name="exportanchors" occurs="1"/>
+        </choice>
+        <element name="prodinfo" longName="Product Information" occurs="*">
+            <fragment><![CDATA[
+                <prodinfo>
+                    <prodname>${caret}</prodname>
+                    <vrmlist>
+                        <vrm version=""/>
+                    </vrmlist>
+                </prodinfo>
+            ]]></fragment>
+        </element>   
+        <element name="othermeta" longName="Other Metadata" occurs="*">
+            <fragment><![CDATA[<othermeta name="" content=""/>]]></fragment>
+        </element>   
+        
+        <element name="resourceid" longName="Resource Identifier" occurs="*" empty="yes">
+            <fragment><![CDATA[<resourceid id=""/>]]></fragment>
+        </element>   
+        <choice occurs="*">
+            <element name="data" occurs="1"/>
+            <element name="data-about" occurs="1">
+                <fragment><![CDATA[
+                    <data-about>
+                        <data>${caret}</data>
+                    </data-about>
+                ]]></fragment>
+            </element>
+            <element name="foreign" occurs="1">
+                <description>Insert foreign content</description>
+            </element>
+            <element name="unknown" occurs="1">
+                <description>Insert unknown content</description>
+            </element>
+        </choice>
+    </contentModel>
+    <contentModel parent="copyright">
+        <!-- ((copyryear)+, (copyrholder)) -->
+        <element name="copyryear" longName="Copyright Year" occurs="+" empty="yes">
+            <fragment><![CDATA[<copyryear year=""/>]]></fragment>
+        </element>
+        <element name="copyrholder" longName="Copyright Holder" occurs="1"/>
+    </contentModel>
+    <contentModel parent="critdates">
+        <!-- ((created)?, (revised)*) -->
+        <element name="created" longName="Creation Date" occurs="?" empty="yes">
+            <fragment><![CDATA[<created date=""/>]]></fragment>
+        </element>
+        <element name="revised" longName="Revision Date" occurs="*" empty="yes">
+            <fragment><![CDATA[<revised modified=""/>]]></fragment>
+        </element>
+    </contentModel>
+    <contentModel parent="metadata">
+        <!--
+            ((audience)*,
+             (category)*,
+             (keywords|exportanchors)*,
+             (prodinfo)*,
+             (othermeta)*,
+             (data|data-about|foreign|unknown)*)
+        -->
+        <element name="audience" occurs="*" empty="yes"/>
+        <element name="category" occurs="*"/>
+        <choice occurs="*">
+            <element name="keywords" occurs="1"/>
+            <element name="exportanchors" occurs="1"/>
+        </choice>
+        <element name="prodinfo" longName="Product Information" occurs="*">
+            <fragment><![CDATA[
+                <prodinfo>
+                    <prodname>${caret}</prodname>
+                    <vrmlist>
+                        <vrm version=""/>
+                    </vrmlist>
+                </prodinfo>
+            ]]></fragment>
+        </element>   
+        <element name="othermeta" longName="Other Metadata" occurs="*">
+            <fragment><![CDATA[<othermeta name="" content=""/>]]></fragment>
+        </element>   
+        <choice occurs="*">
+            <element name="data" occurs="1"/>
+            <element name="data-about" longName="Data About" occurs="1">
+                <fragment><![CDATA[
+                    <data-about>
+                        <data>${caret}</data>
+                    </data-about>
+                ]]></fragment>
+            </element>
+            <element name="foreign" occurs="1">
+                <description>Insert foreign content</description>
+            </element>
+            <element name="unknown" occurs="1">
+                <description>Insert unknown content</description>
+            </element>
+        </choice>
+    </contentModel>
+    <contentModel parent="keywords">
+        <!-- (indexterm|keyword|apiname|option|parmname|cmdname|msgnum|varname|wintitle)* -->
+        <choice occurs="*">
+            <element name="indexterm" longName="Index Term" occurs="1"/>
+            <element name="keyword" occurs="1"/>
+            <element name="apiname" longName="API Name" occurs="1">
+                <description>Insert API name</description>
+            </element>
+            <element name="option" occurs="1"/>
+            <element name="parmname" longName="Parameter Name" occurs="1"/>
+            <element name="cmdname" longName="Command Name" occurs="1"/>
+            <element name="msgnum" longName="Message Number" occurs="1"/>
+            <element name="varname" longName="Variable Name" occurs="1"/>
+            <element name="wintitle" longName="Window Title" occurs="1"/>
+        </choice>
+    </contentModel>
+    <contentModel parent="prodinfo">
+        <!--  
+            ((prodname),
+            (vrmlist),
+            (brand|component|featnum|platform|prognum|series)*)      
+        -->
+        <element name="prodname" longName="Product Name" occurs="1"/>
+        <element name="vrmlist" longName="VRM List" occurs="1">
+            <description>Insert version, release, modification information.</description>
+            <fragment><![CDATA[<vrmlist><vrm version=""/></vrmlist>]]></fragment>
+        </element>
+        <choice occurs="*">
+            <element name="brand" occurs="1">
+                <description>Insert product brand</description>
+            </element>
+            <element name="component" occurs="1"/>
+            <element name="featnum" longName="Feature Number" occurs="1"/>
+            <element name="platform" occurs="1"/>
+            <element name="prognum" longName="Program Number" occurs="1"/>
+            <element name="series" occurs="1"/>
+        </choice>
+    </contentModel>
+    <contentModel parent="vrmlist">
+        <element name="vrm" longName="Version Release Modification" occurs="+" empty="yes">
+            <fragment><![CDATA[<vrm version=""/>]]></fragment>
+        </element>
+    </contentModel>
+
+    <contentModel parent="dl">
+        <!-- ((dlhead)?,(dlentry)+) -->
+        <element name="dlhead" occurs="?" longName="Definition List Head"/>
+        <element name="dlentry" occurs="+" longName="Definition List Entry">
+            <fragment><![CDATA[
+                <dlentry>
+                    <dt>${caret}</dt>
+                    <dd/>
+                </dlentry>
+            ]]></fragment>            
+        </element>
+    </contentModel>
+    <contentModel parent="dlhead">
+        <!-- ((dthd)?,(ddhd)?) -->
+        <element name="dthd" longName="Definition Term Header" occurs="?"/>
+        <element name="ddhd" longName="Definition Description Header" occurs="?"/>
+    </contentModel>
+    <contentModel parent="dlentry">
+        <!-- ((dt)+,(dd)+) -->
+        <element name="dt" longName="Definition Term" occurs="+"/>
+        <element name="dd" longName="Definition Description" occurs="+"/>
+    </contentModel>
+
+    <contentModel parent="parml">
+        <element name="plentry" occurs="+" longName="Parameter List Entry">
+            <fragment><![CDATA[
+                <plentry>
+                    <pt>${caret}</pt>
+                    <pd></pd>
+                </plentry>
+            ]]></fragment>
+        </element>
+    </contentModel>
+    <contentModel parent="plentry">
+        <!-- ((pt)+,(pd)+) -->
+        <element name="pt" longName="Parameter Term" occurs="+"/>
+        <element name="pd" longName="Parameter Definition" occurs="+"/>
+    </contentModel>
+
+    <contentModel parent="ol">
+        <element name="li" occurs="+" longName="List Item"/>
+    </contentModel>
+    <contentModel parent="ul">
+        <element name="li" occurs="+" longName="List Item"/>
+    </contentModel>
+    <contentModel parent="sl">
+        <element name="sli" occurs="+" longName="Simple List Item"/>
+    </contentModel>
+
+    
+    <contentModel parent="hazardstatement">
+        <!--((messagepanel)+,(hazardsymbol)*)-->
+        <element name="messagepanel" longName="Message Panel" occurs="+">
+            <description>Insert message panel information</description>
+            <fragment><![CDATA[
+                <messagepanel>
+                    <typeofhazard>${caret}</typeofhazard>
+                    <howtoavoid/>
+                </messagepanel>
+            ]]></fragment>
+        </element>
+        <element name="hazardsymbol" longName="Hazard Symbol" occurs="*">
+            <fragment><![CDATA[<hazardsymbol href="">${caret}</hazardsymbol>]]></fragment>
+        </element>
+    </contentModel>
+    
+    <contentModel parent="messagepanel">
+        <!-- ((typeofhazard),(consequence)*,(howtoavoid)+) -->
+        <element name="typeofhazard" longName="Type of Hazard" occurs="1"/>
+        <element name="consequence" occurs="*"/>
+        <element name="howtoavoid" longName="How to Avoid" occurs="+">
+            <description>Insert information on how to avoid this hazzard</description>
+        </element>
+    </contentModel>
+    
+</actions>

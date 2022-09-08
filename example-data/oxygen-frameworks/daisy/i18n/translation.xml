@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<translation>
+<languageList>
+        <language description="English" lang="en_US"/>
+        <language description="German" lang="de_DE"/>
+        <language description="French" lang="fr_FR"/>
+        <language description="Japanese" lang="ja_JP"/>
+        <language description="Dutch" lang="nl_NL"/>
+    </languageList>
+<key type="action" value="insert.equation">
+        <comment>Insert Equation action name.</comment>
+        <val lang="en_US">Insert Equation</val>
+        <val lang="de_DE">Gleichung einfügen</val>
+        <val lang="fr_FR">Insérer Équation</val>
+        <val lang="ja_JP">方程式の挿入</val>
+        <val lang="nl_NL">Voeg een vergelijking in</val>
+    </key>
+<key type="action" value="insert.equation_description">
+        <comment>Insert Equation action description.</comment>
+        <val lang="en_US">Insert a MathML Equation</val>
+        <val lang="de_DE">Eine MathML-Gleichung einfügen</val>
+        <val lang="fr_FR">Insérer une Équation MathML</val>
+        <val lang="ja_JP">MathML 方程式の挿入</val>
+        <val lang="nl_NL">Voeg een MathML-vergelijking in</val>
+    </key>
+</translation>

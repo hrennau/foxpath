@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+     DocBook Version 5.1
+     Committee Specification 01 
+     15 November 2015
+     Copyright (c) OASIS Open 2015. All Rights Reserved.
+     Source: http://docs.oasis-open.org/docbook/docbook/v5.1/cs01/schemas/
+     Link to latest version of specification: http://docs.oasis-open.org/docbook/docbook/v5.1/docbook-v5.1.html
+
+-->
+<rules xmlns="http://purl.oclc.org/dsdl/nvdl/ns/structure/1.0"
+       startMode="docbook">
+
+<mode name="docbook">
+  <namespace ns="http://docbook.org/ns/docbook">
+    <validate schema="rng/docbook.rng" useMode="attach"/>
+    <validate schema="sch/docbook.sch" useMode="attach"/>
+  </namespace>
+</mode>
+
+<mode name="attach">
+  <anyNamespace>
+    <attach/>
+  </anyNamespace>
+</mode>
+
+</rules>

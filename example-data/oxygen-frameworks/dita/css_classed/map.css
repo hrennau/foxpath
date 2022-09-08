@@ -1,0 +1,84 @@
+/*
+====================================
+    Map elements. [map]
+====================================
+*/
+
+@import "map_ext.css";
+
+*[class~="map/map"]{
+    display:block;
+}
+
+*[class~="map/anchor"],
+*[class~="map/navref"],
+*[class~="map/topicref"]{
+    display:block;
+    margin-left:1em;
+    margin-top:0.5em;
+    margin-bottom:0.5em;
+}
+
+*[class~="map/topicgroup"]{
+    display:block;
+    border:1px solid silver;
+    padding:0.2em;
+}
+
+/*
+    The <topicmeta> element defines the metadata 
+    that applies to a topic when it appears in a 
+    map, and to the other topics in the map that 
+    are contained by the same element that contains 
+    the <topicmeta> element.
+*/
+*[class~="map/topicmeta"]{
+    display: block;
+    background-color: #FFFFEE;
+    color:inherit;
+    border: 1pt solid #808000;
+    padding: 0.5em;
+    margin-top: 1.33em;
+    margin-bottom: 1.33em; 
+}
+
+/*
+    Relation tables.
+*/
+*[class~="map/reltable"]{
+    display:table;
+    border-spacing:1pt;
+    margin-left:0.5em;
+}
+
+*[class~="map/relrow"]{
+    display:table-row;
+}
+
+*[class~="map/relheader"]{
+    display:table-row;
+    background-color: #EEEEFF;
+    color:inherit;
+}
+
+*[class~="map/relcell"],
+*[class~="map/relcolspec"]{
+    display:table-cell;
+    border:1px solid silver;   
+    padding:5px;
+}
+
+*[class~="map/relcell"] > *[class~="map/topicgroup"],
+*[class~="map/relcell"] > *[class~="map/topichead"],
+*[class~="map/relcell"] > *[class~="map/topicref"]{
+    margin-left: 0;
+}
+
+*[class~="map/relcolspec"][type]:before{
+    font-weight:bold;
+    content:"type=" attr(type);
+}
+
+*[class~="map/reltable"] > *[class~="map/topicmeta"]{
+    display:table-caption;    
+}

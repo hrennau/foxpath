@@ -1,0 +1,18 @@
+
+*[revisionflag=added]{
+    text-decoration: underline;
+    background-color: #90ee90;  /* CSS - LightGreen */
+}
+
+*[revisionflag=deleted]{
+    text-decoration: line-through;
+    background-color: #ffa07a; /* CSS - LightSalmon */
+}
+
+*[revisionflag=changed]{
+    background-color: #87cefa; /* CSS - LightSkyBlue */
+}
+
+
+
+

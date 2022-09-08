@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.w3.org/XML/1998/06/schema/xmlspec.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<spec>
+    <header>
+        <title>Sample specification</title>
+        <w3c-designation>W3C Designation</w3c-designation>
+        <w3c-doctype>W3C Recomandation</w3c-doctype>
+        <pubdate>
+            <month>Month</month>
+            <year>Year</year>
+        </pubdate>
+        <publoc>Document location</publoc>
+        <authlist>
+            <author>
+                <name>Author name</name>
+            </author>
+        </authlist>
+        <status>
+            <p>Status of this Document</p>
+        </status>
+        <abstract>
+            <p>Abstract</p>
+        </abstract>
+        <langusage>
+            <language>Language</language>
+        </langusage>
+        <revisiondesc>
+            <p>Revision description</p>
+        </revisiondesc>
+    </header>
+    <body>
+        <div1>
+            <head>First part</head>
+            <p>First part content</p>            
+        </div1>
+        <div1>
+            <head>Second part</head>
+            <p>Second part content</p> 
+        </div1>
+    </body>
+</spec>

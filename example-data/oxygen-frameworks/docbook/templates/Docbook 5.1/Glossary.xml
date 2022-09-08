@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.1/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.1/sch/docbook.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<glossary xmlns="http://docbook.org/ns/docbook" version="5.1">
+    <title/>
+    <para/>
+    <glossdiv>
+        <title></title>
+        <glossentry>
+            <glossterm></glossterm>
+            <glossdef>
+                <para></para>
+            </glossdef>
+        </glossentry>
+    </glossdiv>
+</glossary>

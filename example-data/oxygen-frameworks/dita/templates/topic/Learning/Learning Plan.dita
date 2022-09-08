@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE learningPlan PUBLIC "-//OASIS//DTD DITA Learning Plan//EN" "learningPlan.dtd">
+<learningPlan id="plan_${id}">
+    <title>${caret}</title>
+    <shortdesc></shortdesc>
+    <learningPlanbody></learningPlanbody>
+</learningPlan>

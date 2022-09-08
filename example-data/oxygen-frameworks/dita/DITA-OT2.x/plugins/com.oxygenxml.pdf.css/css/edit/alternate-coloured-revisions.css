@@ -1,0 +1,34 @@
+/**
+ * Puts some color on the elements marked with revision status.
+ */
+ 
+*[status=new]{
+    text-decoration: underline;
+    background-color: #90ee90;  /* CSS - LightGreen */
+}
+
+*[status=deleted]{
+    text-decoration: line-through;
+    background-color: #ffa07a; /* CSS - LightSalmon */
+}
+
+*[status=changed]{
+    text-decoration: underline;
+    background-color: #eeB0B0;  /* CSS - Dark pink */
+}
+
+*[status=unchanged]{
+    background-color: #FFDDB0;  /* CSS - Dark yellow */
+}
+
+
+*[rev=deltaxml-add]{
+    text-decoration: underline;
+    background-color: #90ee90;  /* CSS - LightGreen */
+}
+
+*[rev=deltaxml-delete]{
+    text-decoration: line-through;
+    background-color: #ffa07a; /* CSS - LightSalmon */
+}
+

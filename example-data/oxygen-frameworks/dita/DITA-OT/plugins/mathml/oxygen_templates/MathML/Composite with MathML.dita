@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dita PUBLIC "-//FIRELAB//DTD DITA Composite Plus MathML//EN" "ditabase.dtd">
+<dita>
+  <topic id="topic_${id}">
+    <title>${caret}</title>
+    <body>
+      <p>An equation: <equation>
+          <math type="presentation">
+            <mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML"
+              display="block">
+              <mml:semantics>
+                <mml:mrow>
+                  <mml:mrow>
+                    <mml:mi mathvariant="bold">a</mml:mi>
+                    <mml:mo>=</mml:mo>
+                    <mml:mfrac>
+                      <mml:mrow>
+                        <mml:mi mathvariant="bold">F</mml:mi>
+                      </mml:mrow>
+                      <mml:mi>m</mml:mi>
+                    </mml:mfrac>
+                    <mml:mo>=</mml:mo>
+                    <mml:mfrac>
+                      <mml:mrow>
+                        <mml:mi>q</mml:mi>
+                        <mml:mo>[</mml:mo>
+                        <mml:mi mathvariant="bold">E</mml:mi>
+                        <mml:mo>+</mml:mo>
+                        <mml:mfenced>
+                          <mml:mrow>
+                            <mml:mi mathvariant="bold">v</mml:mi>
+                            <mml:mi>X</mml:mi>
+                            <mml:mi mathvariant="bold">B</mml:mi>
+                          </mml:mrow>
+                        </mml:mfenced>
+                        <mml:mo>]</mml:mo>
+                      </mml:mrow>
+                      <mml:mi>m</mml:mi>
+                    </mml:mfrac>
+                  </mml:mrow>
+                </mml:mrow>
+              </mml:semantics>
+            </mml:math>
+          </math>
+        </equation>
+      </p>
+    </body>
+  </topic>
+</dita>

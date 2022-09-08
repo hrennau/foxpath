@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dtbook PUBLIC "-//NISO//DTD dtbook 2005-3//EN" "http://www.daisy.org/z3986/2005/dtbook-2005-3.dtd"
+ [
+  <!ENTITY % MATHML.prefixed "INCLUDE" >
+  <!ENTITY % MATHML.prefix "m">
+  <!ENTITY % MATHML.Common.attrib
+          "xlink:href    CDATA       #IMPLIED
+          xlink:type     CDATA       #IMPLIED
+          class          CDATA       #IMPLIED
+          style          CDATA       #IMPLIED
+          id             ID          #IMPLIED
+          xref           IDREF       #IMPLIED
+          other          CDATA       #IMPLIED
+          xmlns:dtbook   CDATA       #FIXED 'http://www.daisy.org/z3986/2005/dtbook/'
+          dtbook:smilref CDATA       #IMPLIED"
+  >
+  <!ENTITY % mathML2 PUBLIC "-//W3C//DTD MathML 2.0//EN"
+             "http://www.w3.org/Math/DTD/mathml2/mathml2.dtd"
+  >
+  %mathML2;
+  <!ENTITY % externalFlow "| m:math">
+  <!ENTITY % externalNamespaces "xmlns:m CDATA #FIXED
+	'http://www.w3.org/1998/Math/MathML'">
+ ]>
+<dtbook>
+  <head>
+    <meta http-equiv="Content-Type" content="text/xml;charset=UTF-8"/>
+  </head>
+  <book>
+    <frontmatter>
+      <doctitle>Book Title</doctitle>
+      <docauthor>Book Author</docauthor>
+    </frontmatter>
+  </book>
+</dtbook>

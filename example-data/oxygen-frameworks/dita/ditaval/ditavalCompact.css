@@ -1,0 +1,154 @@
+@import "ditavalCommon.css";
+
+* {
+  padding : 2px;
+  margin : 5px;
+}
+
+prop[action='flag'], revprop[action='flag'] {
+  border : 1px solid gray;  
+}
+
+prop:before {
+  padding : 1px;
+  content:
+    oxy_label(text, "Filter ", styles, "font-weight:bold;")
+    oxy_combobox(edit, '@action', editable, false)
+    oxy_label(text, '@', width, 2ex, text-align, center)
+    oxy_combobox(edit, '@att', 
+      values, 'audience, platform, product, props, otherprops'
+    )
+    oxy_label(text, '=', width, 2ex, text-align, center)
+    oxy_textfield(edit, '@val', columns, 20)
+    ;
+}
+
+revprop:before {
+  padding : 1px;
+  content:
+    oxy_label(text, "Flag revision  ", styles, "font-weight:bold;")
+    oxy_combobox(edit, '@action', editable, false)
+    oxy_label(text, '@', width, 2ex, text-align, center)
+    oxy_label(text, 'rev',
+      styles, 'font-weight:bold;'
+    )
+    oxy_label(text, '=', width, 2ex, text-align, center)
+    oxy_textfield(edit, '@val', columns, 23)    
+    ;  
+}
+
+prop[action='flag']:hover,
+revprop[action='flag']:hover {
+  content:  
+    "["
+    oxy_buttonGroup(
+      label, '+...'
+      tooltip, 'Click to see available actions'
+      actionIDs, 'add.startflag, add.endflag, add.filter, add.flag-revision'
+      transparent, true
+    )
+    "] ["
+    oxy_button(actionID, 'delete2', transparent, true)
+    "]"
+  ;
+}
+
+prop:hover,
+revprop:hover {
+  content:
+    "["  
+    oxy_buttonGroup(
+      label, '+...'
+      tooltip, 'Click to see available actions'
+      actionIDs, 'add.filter, add.flag-revision'
+      transparent, true
+    ) 
+    "] ["
+    oxy_button(actionID, 'delete2', transparent, true)
+    "]"
+  ;
+}
+
+
+
+prop[action='flag']:after {
+  display:block;
+  content:
+  
+  oxy_label(text, ' style ', width, 19ex, color, gray)
+    oxy_label(text, ' color ', width, 19ex, color, gray)
+    oxy_label(text, ' background ', width, 19ex, color, gray)
+    "\A"
+    oxy_combobox(edit, '@style', columns, 20)
+    oxy_combobox(
+      edit, "@color",
+      columns, 20,
+      values, "black,   silver,  gray,    white,   maroon,  red,     purple,  fuchsia, green,   lime,    olive,   yellow,  navy,    blue,    teal,    aqua"    
+    )
+    oxy_combobox(edit, "@backcolor", 
+      columns, 20,
+      values, "black,   silver,  gray,    white,   maroon,  red,     purple,  fuchsia, green,   lime,    olive,   yellow,  navy,    blue,    teal,    aqua"
+    )
+    ;
+}
+
+revprop[action='flag']:after{
+  display:block;
+  content:
+  
+  oxy_label(text, ' style ', width, 19ex, color, gray)
+    oxy_label(text, ' color ', width, 19ex, color, gray)
+    oxy_label(text, ' background ', width, 19ex, color, gray)
+    oxy_label(text, ' changebar ', width, 19ex, color, gray)
+    "\A"
+    oxy_combobox(edit, '@style', columns, 20)
+    oxy_combobox(
+      edit, "@color",
+      columns, 20,
+      values, "black,   silver,  gray,    white,   maroon,  red,     purple,  fuchsia, green,   lime,    olive,   yellow,  navy,    blue,    teal,    aqua"    
+    )
+    oxy_combobox(edit, "@backcolor", 
+      columns, 20,
+      values, "black,   silver,  gray,    white,   maroon,  red,     purple,  fuchsia, green,   lime,    olive,   yellow,  navy,    blue,    teal,    aqua"      
+    )
+    oxy_combobox(edit, "@changebar",
+      columns, 20,
+      values, "underline, double-underline, italics, overline, bold, black,   silver,  gray,    white,   maroon,  red,     purple,  fuchsia, green,   lime,    olive,   yellow,  navy,    blue,    teal,    aqua"
+    )
+    ;
+}
+
+prop[action='include'] > startflag,
+prop[action='exclude'] > startflag,
+prop[action='passthrough'] > startflag,
+revprop[action='include'] > startflag,
+revprop[action='passthrough'] > startflag,
+prop[action='include'] > endflag,
+prop[action='exclude'] > endflag,
+prop[action='passthrough'] > endflag,
+revprop[action='include'] > endflag,
+revprop[action='passthrough'] > endflag
+{
+  display:none;
+}
+
+startflag:before {
+  content :
+    "\A"
+    "Start flag image reference: "
+    oxy_urlChooser(edit, imageref)
+    "\A";
+}
+
+startflag[imageref]:before {
+  content :
+    "\A"
+    "Start flag image reference: "
+    oxy_urlChooser(edit, imageref)
+    "\A"
+    attr(imageref, url);
+}
+
+
+
+

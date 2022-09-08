@@ -1,0 +1,317 @@
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * Centralizes all the colors used for styling DITA elements
+ * and defines also the high-contrast theme colors.
+ * 
+ * Note: The form control colors are not defined here.
+ * 
+ * ==================================================
+ * ==================================================
+ * 
+ */
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+  /* ====================================
+     *
+     * built-in oXygen elements
+     * 
+     */
+  oxy|comment {
+    color: #3DB39B !important;
+    background-color: transparent !important;
+  }
+  oxy|reference,
+  oxy|entity {
+    background-color: rgb(100, 100, 100) !important;
+  }
+  /* ====================================
+     *
+     * Reset all the elements colors. 
+     */
+  *:before,
+  *,
+  *:after {
+    color: inherit !important;
+    background-color: inherit !important;
+    border-color: inherit !important;
+  }
+}
+
+*[class~="pr-d/syntaxdiagram"] {
+  color: maroon;
+}
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+  *[class~="pr-d/syntaxdiagram"] {
+    color: #A63D17 !important;
+  }
+}
+
+
+*[class~="reference/properties"] {
+}
+*[class~="reference/prophead"] {
+  background-color: #ffe0e0;
+}
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+  *[class~="reference/properties"] {
+  }
+  *[class~="reference/prophead"] {
+    background-color: inherit !important;
+  }
+}
+
+/* ====================================
+ *
+ * Tables
+ */
+*[class~="topic/table"] {
+  border-color: transparent;
+}
+*[class~="topic/thead"],
+*[class~="map/relheader"] {
+  background-color: #EEFAFF;
+}
+*[class~="topic/sthead"],
+*[class ~= "topic/simpletable"][keycol="1"]> *[class ~= "topic/strow"] > *[class ~= "topic/stentry"]:first-child,
+*[class ~= "topic/simpletable"][keycol="2"]> *[class ~= "topic/strow"] > *[class ~= "topic/stentry"]:nth-child(2),
+*[class ~= "topic/simpletable"][keycol="3"]> *[class ~= "topic/strow"] > *[class ~= "topic/stentry"]:nth-child(3),
+*[class ~= "topic/simpletable"][keycol="4"]> *[class ~= "topic/strow"] > *[class ~= "topic/stentry"]:nth-child(4){
+  background-color: rgb(246, 246, 246);
+} 
+
+
+@media print {
+  *[class~="topic/thead"],
+  *[class~="map/relheader"],
+  *[class~="topic/sthead"] {
+    background-color: inherit;
+  }
+}
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+  *[class~="topic/thead"],
+  *[class~="map/relheader"] {
+    background-color: rgb(3, 9, 107) !important;
+  }
+ *[class~="topic/sthead"],
+ *[class ~= "topic/simpletable"][keycol="1"]> *[class ~= "topic/strow"] > *[class ~= "topic/stentry"]:first-child,
+ *[class ~= "topic/simpletable"][keycol="2"]> *[class ~= "topic/strow"] > *[class ~= "topic/stentry"]:nth-child(2),
+ *[class ~= "topic/simpletable"][keycol="3"]> *[class ~= "topic/strow"] > *[class ~= "topic/stentry"]:nth-child(3),
+ *[class ~= "topic/simpletable"][keycol="4"]> *[class ~= "topic/strow"] > *[class ~= "topic/stentry"]:nth-child(4){
+    background-color: rgb(87, 87, 87) !important;
+ } 
+
+}
+*[class~="topic/entry"] {
+  border-color: #EEEEEE;
+}
+
+
+
+/* ====================================
+ *
+ * Formatted text.
+ */
+*[class~="topic/pre"] {
+  background-color: #F0F0F0;
+}
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+  *[class~="topic/pre"] {
+    background-color: inherit;
+  }
+}
+
+/* ====================================
+ *
+ * Editorial
+ */
+*[class~="topic/draft-comment"] {
+  background-color: #99FF99;
+  border-left-color: green;
+  border-right-color: green;
+}
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+  *[class~="topic/draft-comment"] {
+    background-color: green !important;
+  }
+}
+*[class~="topic/required-cleanup"] {
+  background-color: #FFFF99;
+  border-left-color: red;
+  border-right-color: red;
+}
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+  *[class~="topic/required-cleanup"] {
+    background-color: red !important;
+  }
+}
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+  *[class~="topic/pre"] {
+    color: black !important;
+    background-color: #FFE080 !important;
+  }
+}
+*[class~="topic/indextermref"] {
+  color: red;
+}
+
+
+
+/* ====================================
+ *
+ * Metainfo  
+ */
+*[class~="topic/prolog"],
+*[class~="map/topicmeta"] {
+background-color: #FFFFD9;
+}
+*[class~="topic/prolog"] > *,
+*[class~="map/topicmeta"] > * {
+border-top-color: #e5e500;
+}
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+  *[class~="topic/prolog"],
+  *[class~="map/topicmeta"] {
+    color: black !important;
+    background-color: #FFE080 !important;
+  }
+}
+
+
+/* ====================================
+ *
+ * Specialization
+ */
+*[class~="topic/boolean"] {
+  color: green;
+}
+*[class~="topic/state"] {
+  color: green;
+}
+*[class~="topic/no-topic-nesting"]:before {
+  color: red;
+}
+*[class~="topic/example"] {
+  border-color: gray;
+}
+
+
+
+/* ====================================
+ *
+ * Links
+ */
+*[class~="topic/link"][role]:before {
+  color: black;
+}
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+  *[class~="topic/link"][role]:before {
+    color: inherit;
+  }
+}
+*[keyref]:before,
+*[href]:before,
+*[mapref]:before,
+*[class~="topic/link"],
+*[class~="topic/xref"],
+*[class~="topic/longquoteref"][href]:before,
+*[class~="topic/source"][href]:after {
+  /* -link-color >>> */
+  color: navy;
+  /* <<< */
+}
+
+*[class~="topic/desc"],
+*[class~="topic/alt"]{
+    color: #707070;
+}
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+  *[class~="topic/desc"],
+  *[class~="topic/alt"] {
+    color: #a6a6a6 !important;
+  }
+}
+
+@media oxygen{
+
+    /* These are breaking the Prince publishing. Better isolated in an oXygen @media */
+    *:before(1100){
+      color: navy;
+    }
+   
+    *:before(1050),
+    *:before(1040),
+    *:before(1030),
+    *:before(1020){
+      color: #222222;
+    }
+
+    *:before(1010) {
+      color: purple;
+    }
+}
+
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+  *[keyref]:before,
+  *[href]:before,
+  *[mapref]:before,
+  *:before(1100),
+  *:before(1050),
+  *:before(1040),
+  *:before(1030),
+  *:before(1020),
+  *:before(1010),
+  *[class~="topic/link"],
+  *[class~="topic/xref"],
+  *[class~="topic/longquoteref"][href]:before,
+  *[class~="topic/source"][href]:after {
+    /* -link-color >>> */
+    color: #AAAAFF !important;
+    /* <<< */
+  }
+  
+  *:before(1010) {
+    color: inherit;
+  }
+}
+/* ====================================
+ *
+ * Troubleshooting.
+ */
+*[class~='troubleshooting/cause'],
+*[class~="task/tasktroubleshooting"],
+*[class~="task/steptroubleshooting"] {
+  border-color: gray;
+}
+*[class~='troubleshooting/remedy']{
+  border-color: silver;
+}
+
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+  *[class~='troubleshooting/cause'],
+  *[class~='troubleshooting/remedy'],
+  *[class~="task/tasktroubleshooting"],
+  *[class~="task/steptroubleshooting"] {
+    border-color: yellow;
+  }
+}
+
+
+
+/* ====================================
+ *
+ * Image map shapes.
+ */
+*[class~="ut-d/shape"]:before(2){    
+    background-color:blue;
+    color:white;
+}
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+	*[class~="ut-d/shape"]:before(2){    
+	    background-color:yellow;
+	    color:black;
+	}
+}
+	
+	

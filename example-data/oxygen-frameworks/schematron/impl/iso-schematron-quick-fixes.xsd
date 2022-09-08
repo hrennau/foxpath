@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+  targetNamespace="http://purl.oclc.org/dsdl/schematron"
+  xmlns:sqf="http://www.schematron-quickfix.com/validator/process"
+  xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+
+  <xs:import namespace="http://www.schematron-quickfix.com/validator/process" schemaLocation="../../sqf/xsd/schematron-quickFix.xsd"/>
+  <xs:redefine schemaLocation="iso-schematron.xsd">
+    <!-- Extend the assert/report type and add the quick fix attributes. -->
+    <xs:complexType name="assertReportType">
+      <xs:complexContent>
+        <xs:extension base="sch:assertReportType">
+          <!-- Add the fix attributes. -->
+          <xs:attributeGroup ref="sqf:messageAttributes"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:redefine>
+</xs:schema>

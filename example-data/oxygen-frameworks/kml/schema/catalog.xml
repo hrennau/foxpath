@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE catalog PUBLIC "-//OASIS//DTD XML Catalogs V1.1//EN" "http://www.oasis-open.org/committees/entity/release/1.1/catalog.dtd">
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+  <uri name="http://code.google.com/apis/kml/schema/kml22gx.xsd" uri="kml22gx.xsd"/>
+  <uri name="http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd" uri="ogckml22.xsd"/>
+  <uri name="http://schemas.opengis.net/kml/2.2.0/atom-author-link.xsd" uri="atom-author-link.xsd"/>
+  <uri name="http://docs.oasis-open.org/election/external/xAL.xsd" uri="xAL.xsd"/>
+</catalog>

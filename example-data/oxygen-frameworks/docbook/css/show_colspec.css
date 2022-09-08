@@ -1,0 +1,8 @@
+
+colspec, spanspec, col {
+  display: block !important;
+}
+
+tgroup:before {
+  display: none !important;
+}

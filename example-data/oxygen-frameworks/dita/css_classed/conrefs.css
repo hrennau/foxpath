@@ -1,0 +1,275 @@
+/* EXM-22130 If a table refers other table, its display is block */
+*[class~="topic/table"][conref]:not([conaction]),
+*[class~="topic/table"][conkeyref]:not([conaction]){
+    display : block;
+}
+
+/* EXM-17012 Avoid layout messages in tables with conref */
+*[class~="topic/simpletable"][conref]:not([conaction]),
+*[class~="topic/simpletable"][conkeyref]:not([conaction]){
+    display : block;
+}
+/*No margins and static content to elements with conref.
+The content will we present on the conreffed element.*/
+*[conref]:not([conaction]) > *,
+*[conkeyref]:not([conaction]) > *{
+    background-color:inherit;
+    margin:0;
+    padding:0;
+    border:none;
+}
+/*EXM-20282 Remove static text, no margins*/
+*[conref]:not([conaction]):before,
+*[conkeyref]:not([conaction]):before{
+    content:"";
+    display:inline;
+    margin:0px;
+}
+/* start conref/conkeyref handling */
+/* Hides the required content that is just needed for display on 
+ conkeyref and conref for topic, ol/li, ul/li, table */
+ /*topic*/
+*[class~="topic/topic"][conkeyref]:not([conaction]) > *[class~="topic/topic"],
+*[class~="topic/topic"][conref]:not([conaction]) > *[class~="topic/topic"],
+/*table*/
+*[class~="topic/table"][conkeyref]:not([conaction]) > *[class~="topic/table"],
+*[class~="topic/table"][conref]:not([conaction]) > *[class~="topic/table"],
+/*ol*/
+*[class~="topic/ol"][conkeyref]:not([conaction]) > *[class~="topic/ol"],
+*[class~="topic/ol"][conref]:not([conaction]) > *[class~="topic/ol"],
+/* ul */
+*[class~="topic/ul"][conkeyref]:not([conaction]) > *[class~="topic/ul"],
+*[class~="topic/ul"][conref]:not([conaction]) > *[class~="topic/ul"],
+/* Definition list of parml */
+*[class~="topic/dl"][conkeyref]:not([conaction]) > *[class~="topic/dl"],
+*[class~="topic/dl"][conref]:not([conaction]) > *[class~="topic/dl"],
+/* Product info */
+*[class~="topic/prodinfo"][conkeyref]:not([conaction]) > *[class~="topic/prodinfo"],
+*[class~="topic/prodinfo"][conref]:not([conaction]) > *[class~="topic/prodinfo"],
+/*Phrase*/
+*[class~="topic/ph"][conkeyref]:not([conaction]) > *[class~="topic/ph"],
+*[class~="topic/ph"][conref]:not([conaction]) > *[class~="topic/ph"],
+/*dlentry*/
+*[class~="topic/dlentry"][conkeyref]:not([conaction]) > *[class~="topic/dlentry"],
+*[class~="topic/dlentry"][conref]:not([conaction]) > *[class~="topic/dlentry"]
+
+{
+    display : inherit;
+}
+/*simpletable*/
+*[class~="topic/simpletable"][conkeyref]:not([conaction]) > *[class~="topic/simpletable"],
+*[class~="topic/simpletable"][conref]:not([conaction]) > *[class~="topic/simpletable"]
+{
+    display : table;
+}
+
+*[class~="topic/table"][conkeyref]:not([conaction]) > *,    
+*[class~="topic/table"][conref]:not([conaction]) > *,
+*[class~="topic/simpletable"][conkeyref]:not([conaction]) > *,    
+*[class~="topic/simpletable"][conref]:not([conaction]) > *,
+*[class~="topic/ol"][conkeyref]:not([conaction]) > *,    
+*[class~="topic/ol"][conref]:not([conaction]) > *,
+*[class~="topic/ul"][conkeyref]:not([conaction]) > *,    
+*[class~="topic/ul"][conref]:not([conaction]) > *, 
+*[class~="topic/topic"][conref]:not([conaction]) > *,
+*[class~="topic/topic"][conkeyref]:not([conaction]) > *,
+/* Definition list of parml */
+*[class~="topic/dl"][conref]:not([conaction]) > *,
+*[class~="topic/dl"][conkeyref]:not([conaction]) > *,
+/* Product info */
+*[class~="topic/prodinfo"][conref]:not([conaction]) > *,
+*[class~="topic/prodinfo"][conkeyref]:not([conaction]) > *,
+/*Phrase*/
+*[class~="topic/ph"][conref]:not([conaction]) > *,
+*[class~="topic/ph"][conkeyref]:not([conaction]) > *,
+/*Dlentry*/
+*[class~="topic/dlentry"][conref]:not([conaction]) > *,
+*[class~="topic/dlentry"][conkeyref]:not([conaction]) > *
+{
+    display : none;
+}
+
+/* --- end conref/conkeyref handling --- */
+
+/*EXM-16989 Some conref cases start*/
+/* Try to avoid re-declaring the counter when a content reference is used */
+
+*[class~="topic/ul"] > *[class~="topic/li"][conref]:not([conaction]),
+*[class~="topic/ul"] > *[class~="topic/li"][conkeyref]:not([conaction]) {
+    display: block;    
+}
+
+/*  OL  -  LI */
+*[class~="topic/ol"] > *[class~="topic/li"][conref]:not([conaction]) > *[class~="topic/li"]:first-child,
+*[class~="topic/ol"] > *[class~="topic/li"][conkeyref]:not([conaction]) > *[class~="topic/li"]:first-child {
+    counter-reset: none;
+}
+
+*[class~="topic/ol"] > *[class~="topic/li"][conref]:not([conaction]),
+*[class~="topic/ol"] > *[class~="topic/li"][conkeyref]:not([conaction]){
+    counter-increment: none;
+}
+
+*[class~="topic/ol"] > *[class~="topic/li"][conref]:not([conaction]):before,
+*[class~="topic/ol"] > *[class~="topic/li"][conkeyref]:not([conaction]):before{
+   /*Avoid showing the counter*/
+    content: "";
+}
+
+*[class~="topic/ol"] > *[class~="topic/li"][conref]:not([conaction]) > *[class~="topic/li"],
+*[class~="topic/ol"] > *[class~="topic/li"][conkeyref]:not([conaction]) > *[class~="topic/li"]{
+    counter-increment: item-count;
+}
+
+/*EXM-28795 second level of ordered list*/
+*[class~="topic/ol"] *[class~="topic/ol"]  > *[class~="topic/li"][conref]:not([conaction]) > *[class~="topic/li"],
+*[class~="topic/ol"] *[class~="topic/ol"]  > *[class~="topic/li"][conkeyref]:not([conaction]) > *[class~="topic/li"]{
+    counter-increment: item2-count;
+}
+
+*[class~="topic/ol"] > *[class~="topic/li"][conref]:not([conaction]) > *[class~="topic/li"]:before,
+*[class~="topic/ol"] > *[class~="topic/li"][conkeyref]:not([conaction]) > *[class~="topic/li"]:before{
+    content: counters(item-count, ".", decimal) " ";
+    font-weight:bold;
+}
+/*EXM-28795 second level of ordered list*/
+*[class~="topic/ol"] *[class~="topic/ol"] > *[class~="topic/li"][conref]:not([conaction]) > *[class~="topic/li"]:before,
+*[class~="topic/ol"] *[class~="topic/ol"] > *[class~="topic/li"][conkeyref]:not([conaction]) > *[class~="topic/li"]:before{
+    content: counters(item2-count, ".", lower-alpha) " ";
+    font-weight:bold;
+}
+
+*[class~="topic/ol"] > *[class~="topic/li"][conref]:not([conaction]) > *[class~="topic/li"],
+*[class~="topic/ol"] > *[class~="topic/li"][conkeyref]:not([conaction]) > *[class~="topic/li"] {
+   /* Use list-item instead of block to avoid putting the 
+    sentinels markers of the "ol" and the first "li"
+    on the same line, in compact tag display.*/
+    display:list-item;
+    list-style:none;    
+}
+
+/*EXM-16989 Some conref cases end*/
+/*EXM-16989 Some conref cases start*/
+*[class~="task/steps"] > *[class~="task/step"][conref]:not([conaction]):before,
+*[class~="task/steps"] > *[class~="task/step"][conkeyref]:not([conaction]):before{
+    counter-increment:none;
+}
+
+*[class~="task/steps"] > *[class~="task/step"][conref]:not([conaction]) > *[class~="task/step"]:before,
+*[class~="task/steps"] > *[class~="task/step"][conkeyref]:not([conaction]) > *[class~="task/step"]:before{
+    content: "Step " counter(step-count);
+    counter-increment:step-count;
+    background-color:inherit;
+    font-weight:bold;
+}
+
+*[class~="task/steps"] > *[class~="task/step"][conref]:not([conaction]) > *[class~="task/step"],
+*[class~="task/steps"] > *[class~="task/step"][conkeyref]:not([conaction]) > *[class~="task/step"]{
+   display:list-item;
+   list-style:none;
+}
+
+/*EXM-16989 Some conref cases end*/
+/*EXM-16989 Some conref cases start*/
+*[class~="task/substeps"]>*[class~="task/substep"][conref]:not([conaction]):before,
+*[class~="task/substeps"]>*[class~="task/substep"][conkeyref]:not([conaction]):before{
+    counter-increment:none;
+}
+
+*[class~="task/substeps"] > *[class~="task/substep"][conref]:not([conaction]) > *[class~="task/substep"]:before,
+*[class~="task/substeps"] > *[class~="task/substep"][conkeyref]:not([conaction]) > *[class~="task/substep"]:before,
+*[class~="task/step"] *[class~="task/substeps"] > *[class~="task/substep"][conref]:not([conaction]) > *[class~="task/substep"]:before,
+*[class~="task/step"] *[class~="task/substeps"] > *[class~="task/substep"][conkeyref]:not([conaction]) > *[class~="task/substep"]:before{
+    content:counter(substep-count, lower-alpha) ". Sub-step " ;
+    counter-increment:substep-count;
+    background-color:inherit;
+    margin-left:20px;
+    font-weight:bold;
+}
+
+/*Make the steps and substeps more readable when using conrefs.*/
+
+*[class~="task/substeps"] > *[class~="task/substep"][conref]:not([conaction]):before,
+*[class~="task/substeps"] > *[class~="task/substep"][conkeyref]:not([conaction]):before{
+	display:none;  
+}
+
+*[class~="task/substeps"] > *[class~="task/substep"][conref]:not([conaction]) > *,
+*[class~="task/substeps"] > *[class~="task/substep"][conkeyref]:not([conaction]) > *{
+	display:none;  
+}
+
+*[class~="task/steps"] > *[class~="task/step"][conref]:not([conaction]):before,
+*[class~="task/steps"] > *[class~="task/step"][conkeyref]:not([conaction]):before {
+	display:none;  
+}
+
+*[class~="task/steps"] > *[class~="task/step"][conref]:not([conaction]) > * ,
+*[class~="task/steps"] > *[class~="task/step"][conkeyref]:not([conaction]) > * {
+	display:none;  
+}
+
+/*EXM-31899 Allow arrows between UI controls referred with conref or conkeyref*/
+*[class~="ui-d/menucascade"] > *[class~="ui-d/uicontrol"][conref] > *[class~="ui-d/uicontrol"]:before,
+*[class~="ui-d/menucascade"] > *[class~="ui-d/uicontrol"][conkeyref] > *[class~="ui-d/uicontrol"]:before{
+    content: "→";
+}
+*[class~="ui-d/menucascade"] > *[class~="ui-d/uicontrol"][conref]:first-child > *[class~="ui-d/uicontrol"]:before,
+*[class~="ui-d/menucascade"] > *[class~="ui-d/uicontrol"][conkeyref]:first-child > *[class~="ui-d/uicontrol"]:before{
+    content: "";
+}
+
+/*  SOME SPECIAL HANDLING FOR CONACTION mark, push before, after and replace */
+*[conaction="pushbefore"],
+*[conaction="pushafter"],
+*[conaction="pushreplace"]
+{
+    border:1px dotted black;
+}
+
+*[conaction="mark"]
+{
+    border-left:1px solid blue;
+}
+
+*[conaction="pushbefore"]:before{
+    -oxy-append-content: oxy_label(text, " (Push Before)", styles,
+      "font-size:smaller;color:gray;")"" !important;
+}
+
+*[conaction="pushafter"]:before{
+    -oxy-append-content: oxy_label(text, " (Push After)", styles,
+      "font-size:smaller;color:gray;")"" !important;
+}
+
+*[conaction="pushreplace"]:before{
+    -oxy-append-content: oxy_label(text, " (", styles,
+      "font-size:smaller;color:gray;")"" url("../img/link.png") oxy_label(text, " Push Replace)", styles,
+      "font-size:smaller;color:gray;")"" !important;
+      link: attr(conref);
+}
+
+*[conaction="mark"]:before{
+    -oxy-append-content: oxy_label(text, " (", styles,
+      "font-size:smaller;color:gray;")"" url("../img/link.png") oxy_label(text, " Mark)", styles,
+      "font-size:smaller;color:gray;")"" !important;
+      link: attr(conref);
+}
+
+*[conaction="pushreplace"][conkeyref]:before,
+*[conaction="mark"][conkeyref]:before{
+      link: oxy_concat("", attr(conkeyref, keyref));
+}
+
+*[conaction="pushreplace"][conref]:before,
+*[conaction="mark"][conref]:before{
+      link: attr(conref);
+}
+
+/*EXM-16989 Some conref cases end*/
+
+/*EXM-30888 Avoid full tags on directly linked content*/
+*[conref] > *, 
+*[conkeyref] > *{
+    -oxy-display-tags: none;
+}

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Descriptor for the 'Convert Conref to Conkeyref' operation.     
+-->
+<refactoringOperationDescriptor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.oxygenxml.com/ns/xmlRefactoring" id="convertConrefToConkeyref"
+    name="${i18n(xr_convert_conref_to_conkeyref)}">
+    <description>${i18n(xr_convert_conref_to_conkeyref_description)}</description>
+    <script type="XSLT" href="convertConrefToConkeyref.xsl"/>
+    <category>DITA</category>
+</refactoringOperationDescriptor>

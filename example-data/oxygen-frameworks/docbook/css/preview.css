@@ -1,0 +1,38 @@
+@import "docbook.css";
+@import "hide_colspec.css";
+
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+
+/*
+===========================================
+    Docbook CSS for author preview area. 
+===========================================
+*/
+
+xref:before{
+    content: url("img/link.png");
+}
+
+olink[targetdoc][targetptr]:before {
+    content: url('img/olink.png');
+}
+
+oxy|reference:before,
+oxy|entity:before {
+  display: none !important;
+  background-color:inherit !important;
+}
+
+oxy|reference,
+oxy|entity {
+    background-color: inherit !important;
+}
+/*EXM-35935 Hide buttons from imagemap, show areas*/
+imageobjectco > imageobject:before,
+imageobjectco > imageobject:before(2) {
+    display : none ;
+}
+
+imageobjectco areaspec{
+    display: block !important;
+}

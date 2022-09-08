@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ============================================================= 
+  MODULE:    DITA Abbreviated Form Domain - RNG              
+  VERSION:   1.2                                                
+  DATE:      October 2010                                       
+  ============================================================= -->
+<!--
+  Refer to the latest version of this file by the following URI:
+  urn:dita-ng:dita:rng:abbreviateDomain.mod.rng
+  To refer to this specific version, you may use this value:
+  urn:dita-ng:dita:rng:abbreviateDomain.mod.rng:1.2
+-->
+<!-- ============================================================= 
+  SYSTEM:     Darwin Information Typing Architecture (DITA)     
+  PURPOSE:    Define elements and specialization attributes
+              for Abbreviated Form Domain             
+  ORIGINAL CREATION DATE:  
+  September 2010                                                
+  (C) Copyright Syncro Soft 2010-2011                                
+  All Rights Reserved.                                          
+  ============================================================= -->
+<grammar xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns="http://relaxng.org/ns/structure/1.0">
+  <!-- Define the domain values of this module -->
+  <define name="domains-atts-value" combine="choice">
+    <value>(topic abbrev-d)</value>
+  </define>
+  
+  <!-- Define domain extension patterns -->
+  <define name="abbrev-d-term">
+    <ref name="abbreviated-form.element"/>
+  </define>
+  
+  <!-- Extend the patterns with the domain contribution -->
+  <define name="term" combine="choice">
+    <ref name="abbrev-d-term"/>
+  </define>
+  
+  <!-- Define patterns -->
+  <define name="abbreviated-form">
+    <ref name="abbreviated-form.element"/>
+  </define>
+  
+  <!-- Define elements content and attributes -->
+  
+  <!-- LONG NAME: Abbreviated Form -->
+  <define name="abbreviated-form.content">
+    <empty/>
+  </define>
+  <define name="abbreviated-form.attributes">
+    <attribute name="keyref"/>
+    <ref name="univ-atts"/>
+    <optional>
+      <attribute name="outputclass"/>
+    </optional>
+  </define>
+  <define name="abbreviated-form.element">
+    <element name="abbreviated-form">
+      <a:documentation>The &lt;abbreviated-form> element represents a reference to a term that may
+        appear in an abbreviated form (often an acronym). The long and short forms of the term are
+        generally defined in a &lt;glossentry> topic. Processors should display the referenced term
+        when rendering an &lt;abbreviated-form> element.</a:documentation>
+      <ref name="abbreviated-form.attlist"/>
+      <ref name="abbreviated-form.content"/>
+    </element>
+  </define>
+  <define name="abbreviated-form.attlist" combine="interleave">
+    <ref name="abbreviated-form.attributes"/>
+  </define>
+  
+  <!-- Specialization attributes. Global attributes and class defaults -->
+  
+  <define name="abbreviated-form.attlist" combine="interleave">
+    <ref name="global-atts"/>
+    <optional>
+      <attribute name="class" a:defaultValue="+ topic/term abbrev-d/abbreviated-form "/>
+    </optional>
+  </define>
+</grammar>

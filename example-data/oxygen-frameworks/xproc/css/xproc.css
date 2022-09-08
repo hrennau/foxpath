@@ -1,0 +1,127 @@
+@import "../../xhtml/css/xhtml.css";
+@namespace p url('http://www.w3.org/ns/xproc');
+@namespace c url('http://www.w3.org/ns/xproc-step');
+@namespace oxy url('http://www.oxygenxml.com/extensions/author');
+
+p|declare-step:before {
+  content : "Step: " attr(name);
+}
+
+p|declare-step {
+  display : block;
+  font-size : 2em;
+  border : 0px dashed #CCCCCC;
+  margin : 5px;
+  content : '';
+}
+
+p|declare-step > * {
+  font-size : medium;
+  background-color : #FCFAFA;
+}
+
+p|input:before{
+    content : oxy_local-name();
+}
+
+p|input {
+    content : ' ' oxy_attributes();
+    border : 1px dashed green;
+    background-color:#E8FFA8;
+    margin : 10px;
+    
+    
+    display:block;    
+    padding-left:5px;
+    padding-right:0;
+    color:inherit;
+    font-size:medium;
+}
+
+p|output {
+  border : 1px dashed blue;
+  background-color:#FFE8A8;
+
+}
+
+p|option:before, p|with-option:before {
+  content : attr(name) ' = ' attr(select) ;
+}
+p|option[required]:before {
+  content : attr(name) ' [required = ' attr(required) ']';
+}
+
+p|option, p|with-option {
+  display : list-item;
+  margin-left : 20px;
+  font-size : medium;
+  border : none;
+  content : '';
+}
+
+p|option{
+    display:list-item;
+    margin-bottom :10px;
+}
+p|option:after{
+    content: "";
+}
+
+p|documentation:before {
+  content :'';
+}
+
+p|documentation {
+    border-right :2px solid gray;
+    border-bottom :2px solid gray;
+    border-left :1px solid #BBBBBB;
+    border-top :1px solid #BBBBBB;
+    display : block;
+    padding-left:10px;
+    padding-bottom:6px;
+    padding-top:6px;
+    margin-bottom:3px;
+    margin-top:3px;
+    margin-right:10px;
+    margin-left:10px;
+    font-weight :normal;
+    font-size :medium;
+    content : '';
+}
+
+p|inline:before {
+  background-color : #DDEEBB;
+}
+
+p|inline {
+  display : block;
+  background-color : #FFFFBB;
+  margin : 10px;
+  border : 1px solid green;
+}
+
+p|*:before {
+    content : oxy_local-name();
+    font-weight : bold;
+}
+p|*{
+    content : ' ' oxy_attributes();
+    border : 1px dashed #CCCCCC;
+    margin : 10px;
+    display:block;
+    padding-left:5px;
+}
+
+/* serialize inline content */
+p|inline  *:before {
+    content : '<' oxy_name() oxy_attributes()'>';
+    color : blue;
+}
+p|inline  *{
+    -oxy-foldable:true;
+    display:block;
+}
+p|inline  *:after {
+    content : '</' oxy_name() '>';
+    color : blue;
+}

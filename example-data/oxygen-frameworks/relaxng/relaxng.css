@@ -1,0 +1,558 @@
+@namespace rng url('http://relaxng.org/ns/structure/1.0');
+@namespace a url("http://relaxng.org/ns/compatibility/annotations/1.0");
+@namespace oxy url('http://www.oxygenxml.com/extensions/author');
+
+/* grammar */
+rng|grammar:before {
+    content : 'Relax NG Grammar';
+    color : black;
+    font-size : large;
+    font-weight : bold;
+}
+rng|grammar {
+    content : ' ' oxy_attributes();
+    color : gray;
+    font-size : small;
+    font-weight : normal;
+}
+rng|grammar:after {
+    content : ' ';
+}
+/* reset styles on gramar children */
+rng|grammar > * {
+    font-size : medium;
+    font-weight : normal;
+    color : black;
+}
+
+/* inner grammars */
+rng|* > rng|grammar:before {
+    content : 'grammar {';
+    color : blue;
+    font-size : medium;
+    font-weight : normal;
+}
+rng|* > rng|grammar:after {
+    content : '}';
+    color : blue;
+    font-size : medium;
+    font-weight : normal;
+}
+
+
+
+/* include */
+rng|include:before {
+    content : 'include "' attr(href) '"';
+    link : attr(href);
+    color : brown;
+    font-size : medium;
+;
+    font-weight : bold;
+}
+rng|include {
+    color : gray;
+    font-size : small;
+    font-weight : normal;
+}
+rng|include[ns] {
+    content : ' ns="' attr(ns) '"';
+}
+rng|include[datatypeLibrary] {
+    content : ' datatypeLibrary="' attr(datatypeLibrary) '"';
+}
+rng|include[ns][datatypeLibrary] {
+    content : ' ns="' attr(ns) '"' ' datatypeLibrary="' attr(datatypeLibrary) '"';
+}
+/* reset styles on include children */
+rng|include > * {
+    font-size : medium;
+    font-weight : normal;
+}
+
+/* external ref */
+rng|externalRef:before {
+    content : 'external "' attr(href) '"';
+    link : attr(href);
+    color : brown;
+    font-size : medium;
+}
+
+/* start and named patterns */
+rng|start:before,
+rng|define:before {
+    color : #BB7755;
+}
+rng|start:before {
+    content : 'start';
+}
+rng|define:before {
+    content : attr(name);
+}
+rng|start, rng|define {
+    content : ' =';
+}
+rng|start[combine='choice'], rng|define[combine='choice']{
+    content : ' |=';
+}
+rng|start[combine='interleave'], rng|define[combine='interleave'] {
+    content : ' &=';
+}
+
+/* div */
+rng|div:before {
+    content : 'div {';
+    color : blue;
+}
+rng|div {
+    margin-top : 1em;
+    
+    border-left : 1px dotted #AFAAAE;
+    margin-left : 8px;
+    -oxy-foldable : true;
+}
+rng|div:after {
+    content : '}';
+    color : blue;
+}
+rng|div > *:before,
+rng|div > * {
+    padding-left : 8px;
+}
+/* references */
+rng|ref:before {
+    content : attr(name);
+    color : #77BB55;
+}
+
+rng|* > rng|* + rng|ref:before {
+    content : ', ' attr(name);
+}
+rng|choice > rng|* + rng|ref:before {
+    content : '| ' attr(name);
+}
+rng|interleave > rng|* + rng|ref:before {
+    content : '& ' attr(name);
+}
+
+/* parent references */
+rng|parentRef:before {
+    content : 'parent ' attr(name);
+    color : #77BB55;
+}
+
+rng|* > rng|* + rng|parentRef:before {
+    content : ', parent ' attr(name);
+}
+rng|choice > rng|* + rng|parentRef:before {
+    content : '| parent ' attr(name);
+}
+rng|interleave > rng|* + rng|parentRef:before {
+    content : '& parent ' attr(name);
+}
+
+/* optional, oneOrMore, zeroOrMore,  group, choice, interleave */
+rng|* > rng|optional:before,
+rng|* > rng|oneOrMore:before,
+rng|* > rng|zeroOrMore:before,
+rng|* > rng|group:before,
+rng|* > rng|choice:before,
+rng|* > rng|interleave:before {
+    content:'(';
+}
+rng|* > rng|* + rng|optional:before,
+rng|* > rng|* + rng|oneOrMore:before,
+rng|* > rng|* + rng|zeroOrMore:before,
+rng|* > rng|* + rng|group:before,
+rng|* > rng|* + rng|choice:before,
+rng|* > rng|* + rng|interleave:before {
+    content:', (';
+}
+rng|choice > rng|* + rng|optional:before,
+rng|choice > rng|* + rng|oneOrMore:before,
+rng|choice > rng|* + rng|zeroOrMore:before,
+rng|choice > rng|* + rng|group:before,
+rng|choice > rng|* + rng|choice:before,
+rng|choice > rng|* + rng|interleave:before {
+    content:'| (';
+}
+
+rng|interleave > rng|* + rng|optional:before, 
+rng|interleave > rng|* + rng|oneOrMore:before, 
+rng|interleave > rng|* + rng|zeroOrMore:before, 
+rng|interleave > rng|* + rng|group:before,
+rng|interleave > rng|* + rng|choice:before, 
+rng|interleave > rng|* + rng|interleave:before {
+    content:'& (';
+}
+
+rng|* > rng|group:after,
+rng|* > rng|choice:after,
+rng|* > rng|interleave:after  {
+    content:')';
+}
+/* optional */
+rng|optional:after {
+    content : ')?';
+}
+/* one or more */
+rng|oneOrMore:after {
+    content : ')+';
+    color : black;
+}
+/* zero or more */
+rng|zeroOrMore:after {
+    content : ')*';
+    color : black;
+}
+
+
+
+/* text */
+rng|text:before {
+    content : 'text';
+    color : #66AADD;
+}
+rng|attribute > rng|* + rng|text:before,
+rng|element > rng|* + rng|text:before,
+rng|define > rng|* + rng|text:before,
+rng|group > rng|* + rng|text:before {
+    content : ', text';
+}
+rng|choice > rng|* + rng|text:before {
+    content : '| text';
+}
+rng|interleave > rng|* + rng|text:before {
+    content : '& text';
+}
+
+/* empty */
+rng|empty:before {
+    content : 'empty';
+    color : #66AADD;
+}
+rng|* > rng|* + rng|empty:before {
+    content : ', empty';
+}
+rng|choice > rng|* + rng|empty:before {
+    content : '| empty';
+}
+rng|interleave > rng|* + rng|empty:before {
+    content : '& empty';
+}
+
+/* notAllowed */
+rng|notAllowed:before {
+    content : 'notAllowed';
+    color : red;
+}
+rng|* > rng|* + rng|notAllowed:before {
+    content : ', notAllowed';
+}
+rng|choice > rng|* + rng|notAllowed:before {
+    content : '| notAllowed';
+}
+rng|interleave > rng|* + rng|notAllowed:before {
+    content : '& notAllowed';
+}
+
+
+/* mixed */
+rng|mixed:before {
+    content : 'mixed';
+    color : #66AADD;
+}
+rng|* > rng|* + rng|mixed:before {
+    content : ', mixed';
+}
+rng|choice > rng|* + rng|mixed:before {
+    content : '| mixed';
+}
+rng|interleave > rng|* + rng|mixed:before {
+    content : '& mixed';
+}
+
+rng|mixed {
+    content : ' {';
+}
+
+rng|mixed:after {
+    content : '}'
+}
+
+
+/* list */
+rng|list:before {
+    color : #66AADD;
+    content : 'list'
+}
+
+rng|list {
+    content : ' {'
+}
+
+rng|list:after {
+    content : '}'
+}
+
+/* value */
+rng|value:before {
+    content : '"';
+    color : brown;
+}
+rng|value[type]:before {
+    content : attr(type) ' "';
+    color : brown;
+}
+
+rng|value{
+    color : orange;
+}
+
+rng|value:after {
+    content : '"';
+    color : brown;
+}
+
+
+/* data */
+rng|data:before {
+    content : attr(type);
+    color : orange;
+}
+
+/* data except */
+rng|data > rng|except:before {
+    content : '- (';
+}
+rng|data > rng|except:after {
+    content : ')';
+}
+
+/* param */
+rng|param:before {
+    content : attr(name) ' = "';
+}
+rng|param:after {
+    content : '"';
+}
+
+/* elements and attributes */
+rng|element:before {
+    content : 'element ';
+    color : blue;
+}
+rng|attribute:before {
+    content : 'attribute ';
+    color : blue;
+}
+rng|attribute[a|defaultValue]:before {
+    content : '[ a:defaultValue = "' attr(a|defaultValue) '" ] attribute ';
+    color : blue;
+}
+
+rng|* > rng|* + rng|element:before {
+    content : ', element ';
+}
+rng|* > rng|* + rng|attribute:before  {
+    content : ', attribute ';
+}
+rng|choice > rng|* + rng|element:before {
+    content : '| element ';
+}
+rng|choice > rng|* + rng|attribute:before  {
+    content : '| attribute ';
+}
+rng|interleave > rng|* + rng|element:before {
+    content : '& element ';
+}
+rng|interleave > rng|* + rng|attribute:before {
+    content : '& attribute ';
+}
+
+rng|element,
+rng|attribute {
+    content : '{';
+    color : black;
+}
+rng|element[name],
+rng|attribute[name] {
+    content : attr(name) ' {';
+    color : black;
+}
+
+rng|element:after,
+rng|attribute:after {
+    content : '}';
+    color : black;
+}
+
+
+
+/* name classes */
+
+rng|name,
+rng|nsName,
+rng|anyName,
+rng|element > rng|choice:first-child,
+rng|attribute > rng|choice:first-child {
+    background-color : #FEEECF;
+}
+rng|element[name] > rng|choice:first-child,
+rng|attribute[name] > rng|choice:first-child {
+        background-color : #FFFFFF;
+}
+
+rng|except > rng|* + rng|name:before,
+rng|choice > rng|* + rng|name:before {
+    content : '| ';
+}
+
+rng|except > rng|* + rng|nsName:before,
+rng|except > rng|* + rng|anyName:before,
+rng|choice > rng|* + rng|nsName:before,
+rng|choice > rng|* + rng|anyName:before {
+    content : '| ';
+}
+
+
+rng|nsName {
+    content: '({}*';
+}
+
+rng|nsName[ns] {
+    content: '({' attr(ns) '}*';
+}
+
+rng|nsName[ns]:after {
+    content: ')';
+}
+
+rng|anyName {
+    content: '(*';
+}
+rng|anyName:after {
+    content: ')';
+}
+
+/* nsName except */
+rng|nsName > rng|except:before {
+    content : '- (';
+}
+rng|nsName > rng|except:after {
+    content : ')';
+}
+/* anyName except */
+rng|anyName > rng|except:before {
+    content : '- (';
+}
+rng|anyName > rng|except:after {
+    content : ')';
+}
+
+/* documentation */
+
+a|documentation:before {
+    font-weight :normal;
+    content : '## ';
+    color : green;
+}
+a|documentation {
+    color: green;
+    background-color: #F5F5FF;
+    
+}
+a|documentation:after {
+    content : '';
+}
+
+oxy|comment:before {
+    content : '# ';
+}
+oxy|comment {
+    color: green !important;
+    background-color: #F5F5FF !important;
+    margin-left : 0px !important;
+    margin-top : 0px !important;
+    margin-bottom : 0px !important;
+    padding: 0px !important;
+    border-right :0px solid gray !important;
+    border-bottom :0px solid gray !important;
+    border-left :0px dotted gray !important;
+    border-top :0px dotted gray !important;
+    margin-right:10px !important;
+}
+
+
+
+rng|* > rng|* {
+    padding-left:8px;
+}
+
+rng|* > rng|*:before {
+    padding-left:0px;
+}
+
+
+/* some tuning */
+
+rng|start, rng|define {
+    display : block;
+}
+
+rng|grammar {
+    display : block;
+}
+
+rng|include {
+    display : block;
+}
+
+rng|div {
+    display:block;
+}
+
+a|documentation {
+    display : block;
+}
+
+rng|start:before,
+rng|define:before {
+     display : block; 
+     font-weight : bold;
+     padding-top : 10px;
+}
+
+rng|start,
+rng|define {
+     display : block;      
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,118 @@
+@import "xsltdoc.css";
+@namespace xsl url('http://www.w3.org/1999/XSL/Transform');
+@namespace xs url('http://www.w3.org/2001/XMLSchema');
+@namespace oxy url('http://www.oxygenxml.com/extensions/author');
+*{
+    display : block;
+    padding-left:0.5em;
+    white-space :pre;
+}
+
+xsl|* {
+  white-space :normal;
+}
+
+xsl|text {
+  white-space :pre;
+}
+
+*:before {
+    content : '<' oxy_name() oxy_attributes()'>';
+    color : rgb(0,0,150);
+}
+xsl|*{
+    -oxy-foldable:true;
+}
+*:after {
+    content : '</' oxy_name() '>';
+    color : rgb(0,0,150);
+}
+
+/* XML comments */
+oxy|*:before {
+    content : '';
+}
+oxy|*:after {
+    content : '';
+}
+oxy|comment {
+    display:block !important;
+    background-color: #F5F5FF !important;
+    margin: 20px !important;
+    padding: 4px !important;
+    border-right :2px solid gray !important;
+    border-bottom :2px solid gray !important;
+    border-left :1px dotted gray !important;
+    border-top :1px dotted gray !important;
+    margin-right:1em !important;
+}
+* > oxy|comment {
+    display:block !important;
+}
+
+/* stylesheet */
+
+xsl|stylesheet:before {
+    content : 'XSLT Stylesheet';
+    font-size : 2em;
+}
+xsl|stylesheet {
+    content : oxy_attributes();
+    color : gray;
+    padding-left : 0;
+}
+xsl|stylesheet:after {
+    content : '';
+}
+
+/* set fonts bigger on stylesheet components and reset them after */
+xsl|stylesheet > * {
+    font-size : 1.5em;
+}
+xsl|stylesheet > * > * {
+    font-size : medium;
+}
+
+/* first level */
+xsl|stylesheet > xsl|*:before {
+    color : blue;
+    font-size : 1.5em;
+    content : oxy_local-name();
+}
+xsl|stylesheet > xsl|* {
+    font-size:medium;
+    content : ' ' oxy_attributes();
+    background-color:#FCFFF2;
+    margin : 20px;
+    border-right :2px solid gray !important;
+    border-bottom :2px solid gray !important;
+    border-left :1px dotted gray !important;
+    border-top :1px dotted gray !important;
+}
+
+xsl|stylesheet > xsl|*:after {
+    content : '';
+}
+
+xsl|stylesheet > xsl|* > * {
+    color : black;
+}
+
+xsl|import,
+xsl|import-schema,
+xsl|include {
+    content : '';
+}
+xsl|import:after, 
+xsl|include:after {
+    link : attr(href, url);
+    content : ' ' url('img/link.png') '' oxy_attributes();
+}
+xsl|import-schema:after {
+    link : attr(schema-location, url);
+    content : ' ' url('img/link.png') '' oxy_attributes();
+}
+xsl|comment {
+    white-space:pre-wrap;
+}
+

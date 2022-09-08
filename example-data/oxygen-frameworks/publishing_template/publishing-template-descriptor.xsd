@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="publishing-template">
+    <xs:annotation>
+      <xs:documentation>
+        <p>
+          <b>Publishing Template</b>
+        </p>
+        <p>Defines a custom template for the WebHelp Responsive transformation.</p>
+        <p>TODO: Review and link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="name" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>
+              <p>
+                <b>Template Name</b>
+              </p>
+              <p>The name of the publishing template.</p>
+              <p>TODO: Review and link to the documentation.</p>
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+
+        <xs:element ref="description" minOccurs="0"/>
+
+
+        <xs:element ref="author" minOccurs="0" maxOccurs="unbounded"/>
+
+        <xs:element ref="webhelp" minOccurs="0"/>
+
+
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="description" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>
+        <p>
+          <b>Template Description</b>
+        </p>
+        <p>A short description associated with the publishing template.</p>
+        <p>TODO: Review and link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="author">
+    <xs:annotation>
+      <xs:documentation>
+        <p>
+          <b>Template Author</b>
+        </p>
+        <p>Information about the template's author.</p>
+        <p>TODO: Review and add a link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="name" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>
+              <p>
+                <b>Author Name</b>
+              </p>
+              <p>The full name of the contributor.</p>
+              <p>TODO: Review and add a link to the documentation.</p>
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element ref="email" minOccurs="0"/>
+        <xs:element ref="organization" minOccurs="0"/>
+        <xs:element ref="organizationUrl" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="email" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>
+        <p>
+          <b>Author Email</b>
+        </p>
+        <a>The email address of the contributor.</a>
+        <p>TODO: Review and add a link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="organization" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>
+        <p>
+          <b>Author Organization</b>
+        </p>
+        <p>The organization to which the contributor belongs.</p>
+        <p>TODO: Review and add a link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="organizationUrl" type="xs:anyURI">
+    <xs:annotation>
+      <xs:documentation>
+        <p>
+          <b>Author Organization URL</b>
+        </p>
+        <p>The URL of the organization.</p>
+        <p>TODO: Review and add a link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="html-page-templates">
+    <xs:annotation>
+      <xs:documentation>
+        <html>
+          <body>
+            <p>
+              <b>WebHelp Responsive HTML page templates</b>
+            </p>
+            <p>Defines the WebHelp Responsive Template pages. See more details in <a
+                href="https://www.oxygenxml.com/doc/ug-editor/topics/webhelp_template_pages.html"
+                >oXygen WebHelp User Guide</a>.</p>
+            <p>TODO: Review and add a link to the documentation.</p>
+          </body>
+        </html>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="page-template"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="page-template">
+    <xs:annotation>
+      <xs:documentation>
+        <p>
+          <b>HTML Page Template</b>
+        </p>
+        <p>Defines a WebHelp Responsive HTML Template page. There are four types of template
+          pages:</p>
+        <ul>
+          <li><b>main</b> - the main page template (wt_index.html file) used to produce the main
+            home page of the WebHelp Responsive output.</li>
+          <li><b>topic</b> - the topic template (wt_topic.html file) used to generate the HTML pages
+            associated with individual topics.</li>
+          <li><b>search</b> - t search results template (wt_search.html file) used to generate the
+            HTML page that presents the search results.</li>
+          <li><b>index-terms</b> - the index terms template (wt_terms.html file) used to generate
+            the HTML page that presents the documentation index.</li>
+        </ul>
+        <p>See more details in <a
+            href="https://www.oxygenxml.com/doc/ug-editor/topics/webhelp_template_pages.html">oXygen
+            WebHelp User Guide</a>.</p>
+        <p>TODO: Review and add a link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="file" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>Specifies a file path. It should be relative to the root of the
+            customization package.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="page" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            <p><b>HTML Page Template</b></p>
+            <p>Specifies the identifier for the page template. One of the next possible values </p>            
+            <p>TODO: Review and add a link to the documentation.</p>
+          </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="main"/>
+            <xs:enumeration value="search"/>
+            <xs:enumeration value="topic"/>
+            <xs:enumeration value="index-terms"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="resources">
+    <xs:annotation>
+      <xs:documentation>
+        <p><b>WebHelp Responsive Template Resources</b></p>
+        <p>Defines the resources that will be copied to the publishing output
+        folder.</p>
+        <p>TODO: Review and add a link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="css"/>
+
+        <xs:element ref="logo" minOccurs="0"/>
+        <xs:element ref="favicon" minOccurs="0"/>
+        <xs:element ref="fileset" maxOccurs="unbounded" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="css">
+    <xs:annotation>
+      <xs:documentation>
+        <p><b>WebHelp Responsive Template CSS</b></p>
+        <p>Defines the main CSS stylesheet that will be referenced from all generated
+        HTML files.</p>
+        <p>TODO: Review and add a link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="file" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>Specifies a file path. It should be relative to the root of the
+            customization package.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="logo">
+    <xs:annotation>
+      <xs:documentation>
+        <p>WebHelp Responsive Logo</p>
+        <p>
+          Specifies the path to an image used as logo for the WebHelp Responsive output. 
+          Optionally you can specify a target URL opened when you click on the logo image.</p>
+        <p>TODO: Review and add a link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="file" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>Specifies a file path. It should be relative to the root of the
+            customization package.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="target-url" use="required" type="xs:anyURI">
+        <xs:annotation>
+          <xs:documentation>
+            <p>Logo Target URL</p>
+            <p>
+              Specifies an URL opened when you click on the logo image.</p>
+            <p>TODO: Review and add a link to the documentation.</p>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="favicon">
+    <xs:annotation>
+      <xs:documentation>
+        <p>WebHelp Responsive Favicon</p>
+        <p>Specifies a path to an image that will be used as favicon for all generated HTML files.</p>
+        <p>TODO: Review and add a link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="file" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>            
+            <p>Specifies a file path. It should be relative to the root of the
+            customization package.</p></xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fileset">
+    <xs:annotation>
+      <xs:documentation>
+        <p>Resources File Set</p>
+        <p>Specifies a set of resources that will be copied to the output folder.</p>
+        <p>TODO: Review and add a link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="include" maxOccurs="unbounded" minOccurs="0"/>
+        <xs:element maxOccurs="unbounded" minOccurs="0" ref="exclude"/>
+      </xs:sequence>
+      <xs:attribute name="dir" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            <p>Fileset Source Directory</p>
+            <p>
+              Specifies the source directory.</p>
+            <p>TODO: Review and add a link to the documentation.</p>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="include">
+    <xs:annotation>
+      <xs:documentation>
+        <p>Resources Include Pattern</p>
+        <p>Defines a pattern for the resources copied to the output folder.</p>
+        <p>TODO: Review and add a link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="name" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            <p>Resources Include Pattern</p>
+            <p>Defines a pattern for the resources copied to the output folder.</p>
+            <p>TODO: Review and add a link to the documentation.</p>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="exclude">
+    <xs:annotation>
+      <xs:documentation>
+        <p>Resources Exclude Pattern</p>
+        <p>Defines the pattern for resources excluded from the fileset.</p>
+        <p>TODO: Review and add a link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            <p>Resources Exclude Pattern</p>
+            <p>Defines the pattern for resources excluded from the fileset.</p>
+            <p>TODO: Review and add a link to the documentation.</p>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="xslt">
+    <xs:annotation>
+      <xs:documentation>
+        <p>Template XSLT Extension Points</p>
+        <p>Defines one or more XSLT extension points for the WebHelp Responsive transformation.</p>
+        <p>TODO: Review and add a link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="extension"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="extension">
+    <xs:annotation>
+      <xs:documentation>
+        <p>Template XSLT Extension Point</p>
+        <p>TODO: Review and add a link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="file" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>Specifies a file path. It should be relative to the root of the
+            customization package.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="id" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            <p>XSLT Extension Point ID</p>
+            <p>Specifies the ID associated with the XSLT extension point.</p>
+            <p>TODO: Review and add a link to the documentation.</p>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="html-fragments">
+    <xs:annotation>
+      <xs:documentation>
+        <p>Template XSLT Extension Points</p>
+        <p>Defines one or more XSLT extension points for the WebHelp Responsive transformation.</p>
+        <p>TODO: Review and add a link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="fragment"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fragment">
+    <xs:annotation>
+      <xs:documentation>
+        <p>HTML Fragment Extension Points</p>
+        <p>Specifies an HTML fragment extension point.</p>
+        <p>TODO: Review and add a link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="file" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>Specifies a file path. It should be relative to the root of the
+            customization package.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="placeholder" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            <p>HTML Fragment Placeholder</p>
+            <p>Specifies the HTML fragment placeholder.</p>
+            <p>TODO: Review and add a link to the documentation.</p>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="parameters">
+    <xs:annotation>
+      <xs:documentation>
+        <p>Additional Transformation Parameters</p>
+        <p>Specifies additional parameters for WebHelp Responsive Transformation.</p>
+        <p>TODO: Review and add a link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="parameter" maxOccurs="unbounded"/>
+        <xs:element ref="load-parameters" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="parameter">
+    <xs:annotation>
+      <xs:documentation>
+        <p>WebHelp Responsive Transformation Parameter</p>
+        <p>Specifies an additional parameter for the WebHelp Responsive transformation.</p>
+        <p>TODO: Review and add a link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="name" use="required" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            <p>Parameter Name</p>
+            <p>Specifies the parameter name.</p>
+            <p>TODO: Review and add a link to the documentation.</p>
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="value" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            <p>Parameter Value</p>
+            <p>Specifies the parameter value.</p>
+            <p>TODO: Review and add a link to the documentation.</p>
+          </xs:documentation>
+        </xs:annotation>        
+      </xs:attribute>
+      <xs:attribute name="type" use="optional"  default="string">
+        <xs:annotation>
+          <xs:documentation>
+            <p>Parameter Type</p>
+            <p>Specifies the type of the parameter. One of the following values are possible:</p>
+            <ul>
+              <li>filePath - the parameter value is an relative path to the template root folder.</li>
+              <li>string - the parameter value is a generic string value. This is the default value.</li>
+            </ul>
+            <p>TODO: Review and add a link to the documentation.</p>
+          </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="filePath"/>
+            <xs:enumeration value="string"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="load-parameters">
+    <xs:annotation>
+      <xs:documentation>Load parameters from a file. For file path values you have to use the
+        ${optr} macro at the beginning of the parameter value. Something like:
+        ${optr}/resources/skin.css</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="file" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>Specifies a file path. It should be relative to the root of the
+            customization package.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="webhelp">
+    <xs:annotation>
+      <xs:documentation>
+        <p>TODO: Review and link to the documentation.</p>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="preview-image" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>
+              <p>
+                <b>Preview Image</b>
+              </p>
+              <p/>
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:attribute name="file" type="xs:string" use="required">
+              <xs:annotation>
+                <xs:documentation>Specifies a file path. It should be relative to the root of the
+                  customization package.</xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="html-page-templates"/>
+        <xs:element ref="resources"/>
+        <xs:element ref="parameters" minOccurs="0"/>
+        <xs:element ref="html-fragments" minOccurs="0"/>
+        <xs:element ref="xslt" minOccurs="0"/>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

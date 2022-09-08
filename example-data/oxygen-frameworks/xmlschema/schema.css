@@ -1,0 +1,744 @@
+@import "../xhtml/css/xhtml.css";
+@namespace xs url('http://www.w3.org/2001/XMLSchema');
+@namespace oxy url('http://www.oxygenxml.com/extensions/author');
+/* XML comments */
+oxy|comment {
+    background-color: #F5F5FF !important;
+    margin-left : 20px !important;
+    margin-top : 10px !important;
+    margin-bottom : 10px !important;
+    padding: 0px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    border-right :2px solid gray !important;
+    border-bottom :2px solid gray !important;
+    border-left :1px dotted gray !important;
+    border-top :1px dotted gray !important;
+    margin-right:10px !important;
+}
+/* schema */
+xs|schema {
+    display : block;
+    font-weight :bold;
+    border-left :1px solid gray;
+    border-bottom :1px solid gray;    
+    padding-left:10px;
+    padding-bottom:3px;
+    padding-top:10px;
+    font-family:Segoe UI, arial, helvetica, sans-serif;
+}
+xs|schema:before {
+    content : 'XML Schema';
+    padding-bottom:10px;
+}
+xs|schema[targetNamespace]:before {
+    content : 'XML Schema for ';
+}
+xs|schema[targetNamespace] {
+    content : attr(targetNamespace);
+}
+xs|schema[version] {
+    content : ' version ' attr(version);
+}
+xs|schema[targetNamespace][version] {
+    content : attr(targetNamespace) ' version ' attr(version);
+}
+/* first level components */
+xs|schema > *:before, 
+xs|redefine > *:before {
+    font-weight :bold !important;
+}
+xs|schema > *, 
+xs|schema > xs|redefine > * {
+    margin-top:1em;
+    margin-bottom:1em;
+    display : block !important;
+    content : attr(name) ' ' !important;
+    font-weight :normal !important;
+    padding-left:8px !important;
+    -oxy-foldable:true !important;
+}
+xs|schema > oxy|comment{
+font-size:0.37em !important;
+}
+
+xs|schema > * > *, 
+xs|schema > xs|redefine > * > * {
+    font-size : 0.8em !important;
+}
+xs|schema > xs|complexType:before,
+xs|schema > xs|redefine > xs|complexType:before {
+    content : 'Complex Type: ';
+}
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+    xs|schema > xs|complexType:before,
+    xs|schema > xs|redefine > xs|complexType:before {
+        color: white !important;
+    }
+}
+
+xs|schema > xs|simpleType:before,
+xs|schema > xs|redefine > xs|simpleType:before {
+    content : 'Simple type: ';
+}
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+    xs|schema > xs|simpleType:before,
+    xs|schema > xs|redefine > xs|simpleType:before {
+        color: white !important;
+    }
+}
+
+xs|schema > xs|element:before {
+    content : 'Element: ';
+}
+@media oxygen-dark-theme{
+    xs|schema > xs|element:before {
+     color: white !important;
+ }
+}
+
+xs|schema > xs|attribute:before {
+    content : 'Attribute: ';
+}
+@media oxygen-dark-theme{
+    xs|schema > xs|attribute:before {
+       color: white !important;
+     }
+}
+
+
+/* handle import, includes and redefines */
+xs|schema > xs|import:before {
+    content : 'Import namespace: ';
+}
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+    xs|schema > xs|import:before {
+        color: white !important;
+    }
+}
+xs|schema > xs|import {
+    content : attr(namespace) ' ' !important;
+}
+xs|schema > xs|import[schemaLocation]:after {
+    content : 'from 'attr(schemaLocation);
+    link : attr(schemaLocation);
+    font-weight : bold;
+}
+
+xs|schema > xs|include:before {
+    content : 'Include schema ';
+}
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+    xs|schema > xs|include:before {
+     color: white !important;
+ }
+}
+
+xs|schema > xs|include:after {
+    content : ' ' attr(schemaLocation)!important;
+    link : attr(schemaLocation);
+    font-weight : bold !important;
+}
+
+xs|schema > xs|redefine:before {
+    content : 'Redefine schema ';
+}
+@media oxygen-dark-theme{
+    xs|schema > xs|redefine:before {
+        color: white !important;
+    }
+}
+xs|schema > xs|redefine:after {
+    content : attr(schemaLocation)!important;
+    link : attr(schemaLocation);
+    font-weight : bold !important;
+}
+
+/* handle notation */
+xs|schema > xs|notation:before {
+    content : 'Notation: ';
+}
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+    xs|schema > xs|notation:before {
+        color: white !important;
+    }
+}
+xs|schema > xs|notation:after {
+    content : '    "' attr(public) '"    "' attr(system) '"';
+    font-weight : bold;
+}
+/* local/anonymous types */
+xs|complexType:before,
+xs|simpleType:before {
+    content: 'Type: ';
+}
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+    xs|complexType:before,
+    xs|simpleType:before {
+        color: #CD76D9 !important;
+    }
+}
+xs|complexType, xs|simpleType {
+    display : block;
+    padding-left:8px;
+    -oxy-foldable:true;
+}
+xs|complexType {
+    content: 'complex';
+}
+xs|simpleType {
+    content: 'simple';
+}
+/* complex and simple content */
+xs|complexContent:before,
+xs|simpleContent:before {
+    content: 'Content: ';
+}
+xs|complexContent {
+    display : block;
+    padding-left:0px;
+    content: 'complex';
+}
+xs|simpleContent {
+    display : block;
+    padding-left:0px;
+    content: 'simple';
+}
+
+/* extension */
+xs|extension:before {
+    content: 'Extends ';
+}
+@media oxygen-dark-theme{
+    xs|extension:before {
+        color: #CD76D9 !important;
+    }
+}
+xs|extension {
+    display : block;
+    padding-left:0px;
+    content: attr(base);
+
+}
+/* restriction */
+xs|restriction:before {
+    content: 'Restricts ';
+}
+@media oxygen-dark-theme{
+    xs|restriction:before {
+        color: #CD76D9 !important;
+    }
+}
+xs|restriction {
+    display : block;
+    padding-left:0px;
+    content: attr(base);
+}
+/* local attributes and references */
+xs|attribute:before {
+    font-weight : normal;
+}
+xs|attribute {
+    font-weight :normal;
+    display:block;
+    -oxy-foldable : true;
+}
+xs|attribute:before {
+    content : 'Attribute: ';
+}
+@media oxygen-dark-theme{
+    xs|attribute:before {
+        color: white !important;
+    }
+}
+xs|attribute[name] {
+    content : attr(name) ' ';
+}
+
+xs|attribute[ref] {
+    content : '→ ' attr(ref) ' ';
+}
+xs|attribute[type]:after {
+    content : 'as ' attr(type);
+}
+@media oxygen-dark-theme{
+    xs|attribute[type]:after {
+        color: #E06A53 !important;
+    }
+}
+
+/* local elements and references */
+
+xs|element {
+    padding-left : 8px;
+    font-weight :normal;
+    display:block;
+    -oxy-foldable : true;
+}
+
+
+xs|element[name] {
+    content : ' ' attr(name) ' ';
+}
+xs|element[ref] {
+    content : '→ ' attr(ref) ' ';
+}
+xs|element[type]:after {
+    content : 'as ' attr(type);
+}
+@media oxygen-dark-theme{
+    xs|element[type]:after {
+        color: #E06A53 !important;
+    }
+}
+
+xs|element[substitutionGroup]:after {
+    content : 'may substitute → ' attr(substitutionGroup);
+}
+
+xs|element[type][substitutionGroup]:after {
+    content : 'as ' attr(type) ' may substitute → ' attr(substitutionGroup);
+}
+
+
+/* Wildcards */
+xs|anyAttribute:before {
+    font-weight : normal;
+    content : 'Any attribute';
+}
+xs|anyAttribute {
+    font-weight :normal;
+    display:block;
+    -oxy-foldable : true;
+    content : attr(namesapce) ' ';
+}
+xs|anyAttribute:after {
+    font-weight : normal;
+    content : 'process contents: strict';
+}
+xs|anyAttribute:after[processContents] {
+    content : 'process contents: ' attr(processContents);
+}
+
+xs|any {
+    font-weight :normal;
+    display:block;
+    -oxy-foldable : true;
+    content : 'Any element ' attr(namesapce) ' ';
+}
+xs|any:after {
+    font-weight : normal;
+    content : 'process contents: strict';
+}
+xs|any[processContents]:after {
+    content : 'process contents: ' attr(processContents);
+}
+
+/* groups */
+
+
+xs|group:before {
+    font-weight : normal;
+}
+xs|group {
+    padding-left : 8px;
+    font-weight :normal;
+    display:block;
+    -oxy-foldable : true;
+}
+
+xs|schema > xs|group:before,
+xs|redefine > xs|group:before {
+    content : 'Group: ';
+}
+@media oxygen-dark-theme{
+    xs|schema > xs|group:before,
+    xs|redefine > xs|group:before {
+        color: white !important;
+    }
+}
+
+xs|group[ref] {
+    content : 'Group → ' attr(ref) ' ';
+}
+
+xs|attributeGroup:before {
+    font-weight : normal;
+}
+xs|attributeGroup {
+    padding-left : 8px;
+    font-weight :normal;
+    display:block;
+    -oxy-foldable : true;
+}
+
+xs|attributeGroup:before {
+    content : 'Attribute group: ';
+}
+@media oxygen-dark-theme{
+    xs|attributeGroup:before {
+        color: white !important;
+    }
+}
+xs|attributeGroup[ref] {
+    content : '→ ' attr(ref) ' ';
+}
+
+
+/* handle particles sequence, choice and all */
+xs|sequence:before, 
+xs|choice:before, 
+xs|all:before, 
+xs|element:before, 
+xs|group:before, 
+xs|any:before {
+    content : '[1..1] ';
+}
+@media oxygen-dark-theme{
+    xs|sequence:before, 
+    xs|choice:before, 
+    xs|all:before, 
+    xs|element:before, 
+    xs|group:before, 
+    xs|any:before {
+        color: gray !important;
+    }
+}
+xs|*[minOccurs][maxOccurs]:before {
+    content : '['attr(minOccurs)'..'attr(maxOccurs)'] ';
+}
+@media oxygen-dark-theme{
+    xs|*[minOccurs][maxOccurs]:before {
+        color: gray !important;
+    }
+}
+xs|*[maxOccurs]:before {
+    content : '[1..'attr(maxOccurs)'] ';
+}
+@media oxygen-dark-theme{
+    xs|*[maxOccurs]:before {
+     color: gray !important;
+ }
+}
+xs|*[minOccurs][maxOccurs='unbounded']:before {
+    content : '['attr(minOccurs)'..∞] ';
+}
+@media oxygen-dark-theme{
+    xs|*[minOccurs][maxOccurs='unbounded']:before {
+        color: gray !important;
+    }
+}
+xs|*[maxOccurs='unbounded']:before {
+    content : '[1..∞] ';
+}
+@media oxygen-dark-theme{
+    xs|*[maxOccurs='unbounded']:before {
+        color: gray !important;
+    }
+}
+xs|*[minOccurs]:before {
+    content : '['attr(minOccurs)'..1] ';
+}
+@media oxygen-dark-theme{
+    xs|*[minOccurs]:before {
+        color: gray !important;
+    }
+}
+
+xs|sequence, xs|choice, xs|all {
+    display : block;
+    content : oxy_local-name()' of {';
+    padding-left:8px;
+    padding-bottom : 2px;
+}
+xs|sequence:after, xs|choice:after, xs|all:after {
+    content : '}';
+}
+
+
+/* simple type extensios */
+xs|union[memberTypes]:before, xs|list[itemType]:before {
+    display:block;
+}
+xs|union:before, xs|list:before {
+    content : oxy_local-name()' of { ';
+    padding-left:8px;
+    padding-bottom : 0px;
+}
+
+xs|union[memberTypes] {
+    content : '  member type(s) 'attr(memberTypes) ' ';
+    padding-left:8px;    
+}
+xs|union, xs|list {
+    content:'';
+}
+xs|list[itemType] {
+    content : attr(itemType);
+}
+xs|union:after, xs|list:after {
+    content : '}';
+}
+
+
+/* constraints */
+xs|unique:before {
+    content : 'Unique constraint: ';
+}
+xs|key:before {
+    content : 'Key constraint: ';
+}
+xs|keyref:before {
+    content : 'Keyref constraint: ';
+}
+xs|unique, xs|key, xs|keyref {
+    display : block;
+    content : attr(name) ' ';
+    -oxy-foldable : true;
+}
+xs|keyref:after {
+    content : 'refers to ' attr(refer);
+}
+
+xs|selector:before {
+    content: 'Selector ';
+}
+xs|field:before {
+    content: 'Field ';
+}
+xs|selector, xs|field {
+    display : block;
+    padding-left:8px;
+    content: attr(xpath);
+}
+
+/* facets */
+xs|enumeration:before,
+xs|minExclusive:before,
+xs|minInclusive:before,
+xs|maxExclusive:before,
+xs|maxInclusive:before,
+xs|totalDigits:before,
+xs|fractionDigits:before,
+xs|length:before,
+xs|minLength:before,
+xs|maxLength:before,
+xs|whiteSpace:before,
+xs|pattern:before {
+    content: oxy_local-name() ' ';
+}
+xs|enumeration,
+xs|minExclusive,
+xs|minInclusive,
+xs|maxExclusive,
+xs|maxInclusive,
+xs|totalDigits,
+xs|fractionDigits,
+xs|length,
+xs|minLength,
+xs|maxLength,
+xs|whiteSpace,
+xs|pattern {
+    display :block;
+    content : attr('value');
+    padding-left : 8px;
+}
+/* serialize */
+xs|appinfo  * {
+    display : block;
+    padding-left:8px;
+    -oxy-foldable:true;
+}
+
+xs|annotation, 
+xs|schema > xs|annotation {
+    display:block;
+    font-weight :normal;
+    padding-left:0px;
+}
+
+xs|appinfo {
+    display : block;
+    -oxy-foldable : true;
+    content : 'Application information' oxy_attributes() ' ';
+}
+
+/* reset styles on documentation */
+xs|documentation {
+    border-right :2px solid gray;
+    border-bottom :2px solid gray;
+    border-left :1px solid #BBBBBB;
+    border-top :1px solid #BBBBBB;
+    display : block;
+    padding-left:10px;
+    padding-bottom:6px;
+    padding-top:6px;
+    margin-bottom:3px;
+    margin-top:3px;
+    margin-right:10px;
+    font-weight :normal;
+}
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+    xs|documentation {
+        color: white !important;
+    }
+}
+xs|documentation[source]:before {
+    content : 'See: ' attr(source) '.';
+}
+
+xs|documentation:empty{
+    content:"Insert documentation here...";
+    color:gray;
+}
+xs|documentation:empty:focus{
+    content:" ";
+}
+
+
+/* 
+==================
+Colors
+==================
+ */
+
+xs|enumeration,
+xs|minExclusive,
+xs|minInclusive,
+xs|maxExclusive,
+xs|maxInclusive,
+xs|totalDigits,
+xs|fractionDigits,
+xs|length,
+xs|minLength,
+xs|maxLength,
+xs|whiteSpace,
+xs|pattern,
+xs|selector, 
+xs|field,
+xs|restriction,
+xs|extension,
+xs|simpleContent,
+xs|complexContent,
+xs|simpleType,
+xs|complexType
+{
+    color : #111199;
+}
+
+
+xs|complexType:before,
+xs|simpleType:before,
+xs|extension:before,
+xs|restriction:before,
+xs|unique:before,
+xs|key:before,
+xs|keyref:before,
+xs|selector:before,
+xs|field:before,
+xs|complexType:before,
+xs|simpleType:before,
+xs|enumeration:before,
+xs|minExclusive:before,
+xs|minInclusive:before,
+xs|maxExclusive:before,
+xs|maxInclusive:before,
+xs|totalDigits:before,
+xs|fractionDigits:before,
+xs|length:before,
+xs|minLength:before,
+xs|maxLength:before,
+xs|whiteSpace:before,
+xs|pattern:before,
+xs|complexContent:before,
+xs|simpleContent:before
+{
+    color : #661166;
+}
+
+xs|attribute,
+xs|element,
+xs|anyAttribute,
+xs|any,
+xs|group,
+xs|attributeGroup,
+xs|appinfo *:before,
+xs|appinfo *:after{
+    color : #111199;
+}
+xs|schema > *, 
+xs|schema > xs|redefine > * {
+    color : #1111AA !important;
+}
+
+@media oxygen-high-contrast-black, oxygen-dark-theme {
+    xs|schema > *, 
+    xs|schema > xs|redefine > * {
+        color : #5FC8FD !important;
+    }
+}
+
+xs|schema,
+xs|schema > xs|import[schemaLocation]:after,
+xs|schema > xs|notation:after {
+    color : #336633;
+}
+oxy|comment,
+xs|schema > xs|import,
+xs|schema > xs|include:after,
+xs|schema > xs|redefine:after {
+    color : #336633 !important;
+}
+
+
+xs|schema:before,
+xs|attribute:before,
+xs|anyAttribute:before,
+xs|anyAttribute:after,
+xs|any:after,
+xs|group:before,
+xs|attributeGroup:before,
+xs|annotation{
+    color : black ;
+ }
+
+xs|schema > xs|annotation{
+    color : black !important;
+ }
+
+
+xs|unique, 
+xs|key, 
+xs|keyref {
+    color : #AA3311;
+}
+xs|union:before, xs|list:before,
+xs|union:after, xs|list:after, 
+xs|element[type]:after,
+xs|element[substitutionGroup]:after,
+xs|attribute[type]:after,
+xs|sequence, 
+xs|choice, 
+xs|all,
+xs|keyref:after {
+    color : #AA3311;
+}
+
+xs|sequence:before, 
+xs|choice:before, 
+xs|all:before, 
+xs|element:before, 
+xs|group:before, 
+xs|any:before {
+    color : gray;
+}
+xs|schema > *:before, 
+xs|redefine > *:before {
+    color : #333333 !important;
+}
+@media oxygen-dark-theme{
+    xs|schema > *:before, 
+    xs|redefine > *:before {
+        color : white !important;
+    }
+}

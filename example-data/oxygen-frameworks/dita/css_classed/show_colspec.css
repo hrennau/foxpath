@@ -1,0 +1,9 @@
+@import "dita.css";
+
+*[class~="topic/colspec"] {
+    display: block !important;    
+}
+
+*[class~="topic/tgroup"]:before {
+    display: none !important;    
+}

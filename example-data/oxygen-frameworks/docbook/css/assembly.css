@@ -1,0 +1,169 @@
+/*Support for Docbook 5.1 Assembly elements*/
+
+@namespace xml "http://www.w3.org/XML/1998/namespace";
+
+topic{
+    display:block;
+    margin-left:2px;
+    padding-left: 2px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+topic > title,
+topic > info > title {
+    font-size: 2.2em;
+    border-bottom: 1px solid #002244;    
+}
+
+assembly{
+    display:block;
+    margin-left:2px;
+    padding-left: 2px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+/*Resources*/
+resources:before{
+    content:"Resources: ";
+    color:gray;
+    display:block;
+}
+
+resources {
+    display:block;
+}
+
+resource {
+    display:block;
+    content: 'Resource: ' oxy_urlChooser(edit, "@href", columns, 25) "   ID:" oxy_textfield(edit, "@xml:id", columns, 10);
+}
+
+resource:before {
+    content: url("img/link.png") " ";
+    link: attr(href);
+    padding-left:1em;
+}
+
+resource > description {
+    content: "Description: ";
+    padding-left:3em;
+    display:block;
+}
+
+structure:before{
+    content:"Structure: ";
+    display:block;
+    color:gray;
+}
+
+/*Structure*/
+structure {
+    display:block;
+}
+
+module {
+    display:block;
+    content: 'Module Reference: ' oxy_combobox(edit, "@resourceref", columns, 10);
+}
+
+module[renderas]{
+    -oxy-append-content: "  Render As:" oxy_textfield(edit, "@renderas", columns, 10); 
+}
+
+structure > *{
+    padding-left:1em;
+}
+
+module > *{
+    padding-left:1em;
+}
+
+module[resourceref]:before{
+    content: url("img/link.png") " ";
+    link: "#" attr(resourceref);
+}
+module:before{
+    content: "    ";
+}
+
+merge{
+    display:block;
+}
+
+merge:before{
+    content:"Merge: ";
+    color:gray;
+    display:block;
+}
+
+merge > *{
+    padding-left:1em;
+}
+
+/*Transforms*/
+transforms:before{
+    content:"Transforms: ";
+    color:gray;
+    display:block;
+}
+
+transforms {
+    display:block;
+}
+
+transform {
+    display:block;
+    content: 'Transform: ' oxy_urlChooser(edit, "@href", columns, 25) "   Name:" oxy_textfield(edit, "@name", columns, 10);
+}
+
+transform:before {
+    content: url("img/link.png") " ";
+    link: attr(href);
+}
+
+transforms > * {
+    padding-left:1em;
+}
+
+/*Relationships*/
+relationships:before{
+    content:"Relationships: ";
+    color:gray;
+    display:block;
+}
+
+relationships {
+    display:block;
+}
+
+relationship:before {
+    display:block;
+    content: 'Relationship';
+    color:gray;
+}
+
+relationship {
+    display:block;
+}
+
+association {
+    display:block;
+    content: "Association: "; 
+}
+
+instance {
+    display:block;
+    content: "Instance: " oxy_combobox(edit, "@linkend", columns, 10); 
+}
+
+instance[linkend]:before{
+    content: url("img/link.png") " ";
+    link: "#" attr(linkend);
+}
+
+relationships > *,
+relationship > * {
+    padding-left:1em;
+}

@@ -1,0 +1,611 @@
+@namespace oxy url('http://www.oxygenxml.com/extensions/author');
+@namespace eg url('http://www.tei-c.org/ns/Examples');
+@namespace tei url('http://www.tei-c.org/ns/1.0');
+
+teiHeader { 
+  display: none; 
+}
+
+TEI {
+    display: block;
+    width: 40em;
+}
+
+TEI:before, text:before {
+  border: 1px solid black;
+  font-size: 16pt;
+  font-style: italic;
+  width: 100%;
+  display: block;
+  margin-bottom: 1em;    
+  text-align: center;
+}
+
+@media oxygen AND (platform:"eclipse") {
+  TEI:before, text:before {
+    font-style: normal;
+  }
+}
+
+TEI:before {
+  content: "The Journal of the Text Encoding Initiative, " oxy_xpath('(//teiHeader/fileDesc/publicationStmt/idno/string(),//teiHeader/fileDesc/seriesStmt/biblScope[@unit="issue"]/@n/concat("Issue ", .))[1]');
+  padding: 1em 0;
+  font-weight: bold;
+}
+text:before {
+  content: oxy_label(text, oxy_xpath('string-join(//teiHeader/fileDesc/titleStmt/(author|editor)/string-join(name/(forename, surname), " "), ", ")'), styles, "font-weight: bold;font-style: normal;") ": " oxy_xpath('string-join(//teiHeader/fileDesc/titleStmt/title/string(), ": ")');
+  font-size: 14pt;
+}
+
+text{
+    display: block;
+}
+
+front {
+  border: 1px dotted black;
+  color: gray;
+}
+
+div {
+    display: block;
+}
+
+body {
+    display: block;
+}
+
+p {
+    display: block;
+}
+
+head {
+    display: block;
+    margin: 1em 0;
+}
+
+body {
+  counter-reset: div1;
+  counter-reset: div2;
+  counter-reset: div3;
+  counter-reset: div4;
+}
+
+body > div {
+  counter-increment: div1;
+}
+
+body > div > div {
+  counter-increment: div2;
+}
+
+body > div > div > div {
+  counter-increment: div3;
+}
+
+body > div > div > div > div {
+  counter-increment: div4;
+}
+
+div[type=appendix] {
+  counter-increment: appendix;
+}
+
+body > head, body > div > head {
+  font-size: 200%;
+}
+
+body > div > head:before{
+  content: counter(div1)" "
+}
+
+body > div > div > head:before{
+  content: counter(div1)"."counter(div2)" ";
+}
+
+body > div > div > div > head:before{
+    content: counter(div1)"."counter(div2)"."counter(div3)" ";
+}
+
+body > div > div > div > div > head:before{
+    content: counter(div1)"."counter(div2)"."counter(div3)"."counter(div4)" ";
+}
+
+body > div > div > head{
+  font-size: 150%;
+}
+
+/* All heads level 3 and below can be the same size. */
+body > div > div div > head{
+  font-size: 120%;
+}
+
+figure head {
+  font-size: 100%;
+  display: block;
+  font-weight: bold;
+  margin-left: 2em;
+  margin-right: 2em;
+}
+
+p{
+    margin-bottom: 1em;
+    /*text-align: justify;*/ /* Not supported, curses! */
+}
+
+graphic {
+    display: block;
+    width: 36em;
+    margin-left: 2em;
+    margin-right: 2em;
+    border: solid 1px green;
+    content: attr(url, url);
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
+lb {
+  content: '\000A';
+}
+
+cit {
+  display: block;
+  margin-left: 2em;
+  margin-right: 2em;
+  margin-bottom: 1em;
+}
+
+p cit{
+  margin-top: 1em;
+}
+
+cit > quote, cit > bibl, cit > ref {
+  display: block;
+  margin-bottom: 0.5em;
+  font-size: 90%;
+}
+
+quote:before {
+  content: '\201C'
+}
+quote:after {
+  content: '\201D'
+}
+cit > quote:before {
+  content: ''
+}
+cit > quote:after {
+  content: ''
+}
+
+hi[rendition='#sup'] {
+  background-color: transparent;
+  baseline-shift: super;
+}
+
+hi[rend] {
+  color: red;
+}
+hi[rend=bold] {
+  font-weight: bold;
+}
+hi[rend=italic] {
+  font-style: italic;
+}
+@media oxygen AND (platform:"eclipse") {
+  hi[rend=italic] {
+    font-style: normal;
+  }
+}
+
+table {
+  counter-increment: table;  
+}
+
+table > head:before {
+  content: "Table " counter(table) ": ";
+}
+
+figure > graphic {
+  counter-increment: figure;
+}
+
+/*figure graphic{
+    content: attr(url, url);
+    margin-left: 1em;
+    margin-right: 1em;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}*/
+
+figure > graphic+head:before {
+  content: "Figure " counter(figure) ": ";
+}
+
+figure > egXML, figure > eg {
+  counter-increment: example;
+}
+
+figure > egXML+head:before, figure > eg+head:before {
+  content: "Example " counter(example) ": ";
+}
+
+note {
+  display: block;
+/* Note: Oxygen's renderer does not seem to support 
+   floats, so we can't put the note in the margin. Instead 
+   we simply show it in place. */
+  float: right;
+  font-size: 80%;
+  margin: 2em 5em;
+  background-color: #d0d0d0;
+  counter-increment: note;
+}
+
+note:before {
+  content: "[note " counter(note) "] ";
+}
+
+list, listBibl{
+  display: block;
+  margin-bottom: 1em;
+}
+
+p > list{
+  margin-top: 1em;
+}
+
+list list, listBibl listBibl{
+  margin-bottom: 0;
+  margin-top: 0.5em;
+}
+
+list item, listBibl bibl{
+  display: list-item;
+  margin-left: 2em;
+  margin-bottom: 0.5em;
+}
+
+list[rend~="bulleted"] {
+  list-style-type: disc;
+  list-style-position: outside;
+}
+list[rend~="ordered"] {
+  list-style-type: decimal;
+  list-style-position: outside;
+}
+list[rend~="simple"], list[type="gloss"] {
+  list-style-type: none;
+}
+list[rend~="inline"], note list {
+  display: inline;
+}
+list[rend~="inline"] item, note[rend~="inline"] list item {
+  display: inline;
+}
+list[type="gloss"] label {
+  font-weight: bold;
+}
+/*Note: What is below cannot work; the W3C has not yet 
+  decided how selectors matching multiple values in the 
+  same space-separated attribute should work. */
+/*list[rend~="inline"][rend~="ordered"] item{
+    
+}*/
+
+/*Instead, we have to match on the whole string. */
+list[rend="ordered inline"], list[rend="inline ordered"]{
+  counter-reset: inline-list-counter;
+}
+
+list[rend="ordered inline"] item:before, list[rend="inline ordered"] item:before{
+  content: " ("counter(inline-list-counter)") ";
+	counter-increment: inline-list-counter;
+}
+
+/* Embedded lists don't need a margin bottom. */
+item > list{
+  margin-bottom: 0;
+}
+
+front > div[type] {
+  margin: 0 2em;
+}
+front > div[type]:before, back > div[type]:before {
+  display: block;
+  font-size: larger;
+/*  padding-top: 14px;
+  padding-left: 10px;
+  padding-bottom: 10px;
+  color: inherit;
+  background-color: #BBBBBB;
+*/  font-weight: bold;
+  margin-bottom: 0.5em;
+  margin-top: 1em;
+    padding-top:0.6em;
+    padding-bottom:0.2em;
+    padding-left:0.2em;
+    padding-right:0em;
+    background-color:inherit;
+    color:#004477;
+    border-bottom:1px solid #004477;
+}
+
+front > div[type]:before {
+  content: oxy_capitalize(attr(type));
+}
+
+back > div[type]:before {
+  content: oxy_capitalize(attr(type))" "counter(appendix)". "oxy_xpath("head/text()");
+}
+
+back > div[type="appendix"] > head {
+  display:none;
+}
+
+back > div[type='bibliography'] > listBibl > bibl {
+  display: list-item;
+  margin-left: 2em;
+  margin-top: 1em;
+}
+
+gi, val, att, tag{
+  font-family: monospace;
+}
+
+gi:before{
+  content: "<";
+}
+  
+gi:after{
+  content: ">";
+}
+
+att:before{
+  content: "@";
+}
+
+val:before, val:after {
+  content: '"';
+}
+
+tag[type='end']:before{
+  content: "</";
+}
+
+tag[type='pi']:before{
+  content: "<?";
+}
+
+tag[type='comment']:before{
+  content: "<!--";
+}
+
+tag[type='ms']:before{
+  content: "<![CDATA[";
+}
+
+tag:before{
+  content: "<";
+}
+
+tag[type='pi']:after{
+  content: "?>";
+}
+
+tag[type='comment']:after{
+  content: "-->";
+}
+
+tag[type='ms']:after{
+  content: "]]>";
+}
+
+tag[type='empty']:after{
+  content: "/>";
+}
+
+tag:after{
+  content: ">";
+}
+
+emph{
+  font-style: italic;
+}
+
+term {
+  font-style: italic;
+}
+
+foreign {
+  font-style: italic;
+}
+
+/* We default to assuming all titles are monograph or periodical. */
+title {
+  font-style: italic;
+}
+@media oxygen AND (platform:"eclipse") {
+  title {
+    font-style: normal;
+  }
+}
+
+/* Then we redefine those which are not. */
+title[level="u"], title[level="a"], title[level="s"] {
+  font-style: normal;
+}
+
+mentioned {
+  font-style: italic;
+}
+
+soCalled:before, title[level="a"]:before, q:before {
+  content: "\201C";
+}
+
+soCalled:after, title[level="a"]:after, q:after {
+  content: "\201D";
+}
+
+ident {
+  font-family: monospace;
+}
+
+code {
+  font-family: monospace;
+}
+
+cit > q:before, cit > q:after{
+  content: "";
+}
+
+oxy|comment:before {
+  content: "<!-- ";
+}
+oxy|comment:after {
+  content: " -->";
+}
+
+/* Tables. Mostly pinched from the tei.css file. */
+table {
+  text-align: center;
+  display: table;
+  margin: 1em
+}
+table > head{
+    display:table-caption;
+    font-style: italic;
+    margin-bottom: 1em;
+    caption-side: bottom;
+}
+@media oxygen AND (platform:"eclipse") {
+  table > head{
+    font-style: normal;
+  }
+}
+row {
+  display: table-row;
+}
+row[role='label'] {
+   color: inherit;
+   background-color: #BBBBBB;
+}
+cell {
+  display: table-cell;
+  border: 1px solid #EEEFEE;
+  padding: 3px;
+  color: inherit;
+  background-color:inherit;
+}
+cell[role='label'] {
+   color: inherit;
+   background-color: #BBBBBB;
+}
+
+/* Lists */
+
+
+eg, eg|egXML{
+  font-family: monospace;
+}
+
+/* reset styles for all egXML content */
+/* alternative could be to namespace all other CSS templates 
+   to the TEI namespace, which could still be problematic  
+   for the default TEI stylesheets */
+eg|egXML *:before {
+  content: none;
+}
+eg|egXML *:after {
+  content: none;
+}
+eg|egXML *, eg|egXML *:before, eg|egXML *:after {
+  color: black;
+  font-weight: normal;
+  font-style: normal;
+  font-size: medium;
+  text-decoration: none;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  border: none;
+  background: none;
+  background-color: transparent;
+}
+figure eg|egXML, figure eg {
+  border: solid 1px black;
+  padding: 0.5em;
+  margin-left: 2em;
+  margin-right: 2em;
+  margin-top: 1em;
+  display: block;
+  white-space: pre-wrap;
+}
+eg|egXML eg|* {
+  margin-left: .5em;
+  text-align: left;
+  display: block;
+}
+eg|egXML *:before { 
+  content: "<" oxy_name() oxy_attributes() ">";
+}
+eg|egXML *:after { 
+  content: "</" oxy_name() ">"
+}
+eg|egXML oxy|comment {
+    display:block !important;
+    color:gray !important;
+    background-color:transparent !important;
+}
+eg|egXML oxy|comment:before {
+  content: "<!--";
+  color:gray;
+  background-color:transparent;
+}
+eg|egXML oxy|comment:after {
+  content: "-->";
+  color:gray;
+  background-color:transparent;
+}
+
+ptr[target]:after, ref[target]:after{
+  content: "["attr(target)"]";
+  background-color: #BBBBBB;
+  text-decoration: underline;
+  color: blue;
+  link:attr(target);
+  font-style: italic;
+  font-size: 90%;
+}
+@media oxygen AND (platform:"eclipse") {
+  ptr[target]:after, ref[target]:after{
+    font-style: normal;
+  }
+}
+
+ref[target^=http]:after{
+  content:"";
+}
+
+ref[target^=http]{
+  text-decoration: underline;
+  color: blue;
+  link:attr(target);
+  font-weight: normal;
+}
+
+supplied:before{
+  content: "[";
+}
+
+supplied:after{
+  content: "]";
+}
+
+gap{
+  content: "..."
+}
+
+
+
+

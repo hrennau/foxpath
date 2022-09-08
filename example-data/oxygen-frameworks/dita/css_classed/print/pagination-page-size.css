@@ -1,0 +1,11 @@
+/*
+  * 
+  * Page size, borders.
+  * 
+  */
+@page{
+    padding-top:0.2em;
+    padding-bottom:0.2em;
+    size: 7in 9.25in;
+    margin: 0.75in 0.25in 0.75in 1in;
+}

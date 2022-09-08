@@ -1,0 +1,84 @@
+/* 
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * 
+ * IMPORTANT
+ * 
+ * This file was compiled from 'hints.less' and is not intended to be modified!
+ * 
+ * Any changes should be done in the 'hints.less' source file.
+ * 
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ */
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+/* colors as variables */
+/*#FFFAD5*/
+/*#FFD34E*/
+/* before layer used for hints */
+/* hints styles */
+*:before(201) {
+  border: 1px solid #d89e36;
+  background-color: rgba(255, 250, 213, 0.6);
+}
+/* define mixins */
+/* Hints and placeholders */
+/* Topic types */
+StrategicPlan:before(201) {
+  background-color: rgba(255, 211, 78, 0.6) !important;
+}
+StrategicPlanCore,
+AdministrativeInformation,
+Acronym,
+Description,
+EmailAddress,
+EndDate,
+GivenName,
+Goal,
+Identifier,
+Mission,
+Name,
+Objective,
+Organization,
+OtherInformation,
+PhoneNumber,
+PublicationDate,
+SequenceIndicator,
+Source,
+Stakeholder,
+StartDate,
+Submitter,
+Surname,
+Value,
+Vision {
+  -oxy-show-placeholder: always;
+}
+StrategicPlanCore:before(201),
+AdministrativeInformation:before(201),
+Acronym:before(201),
+Description:before(201),
+EmailAddress:before(201),
+EndDate:before(201),
+GivenName:before(201),
+Goal:before(201),
+Identifier:before(201),
+Mission:before(201),
+Name:before(201),
+Objective:before(201),
+Organization:before(201),
+OtherInformation:before(201),
+PhoneNumber:before(201),
+PublicationDate:before(201),
+SequenceIndicator:before(201),
+Source:before(201),
+Stakeholder:before(201),
+StartDate:before(201),
+Submitter:before(201),
+Surname:before(201),
+Value:before(201),
+Vision:before(201) {
+  display: block;
+  font-family: arial, helvetica, sans-serif;
+  line-height: 1rem;
+  margin-top: 0.4em;
+  margin-bottom: 0.2em;
+  content: oxy_htmlContent(href, 'hints.html', id, oxy_concat('hints', '-', oxy_local-name()), width, 100%);
+}

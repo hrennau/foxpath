@@ -1,0 +1,635 @@
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * Bookmap metadata elements
+ * 
+ * http://docs.oasis-open.org/dita/v1.2/os/spec/common/bookmap-meta.html
+ * 
+ * The Bookmap specialization of ditamap supports 
+ * standard book production for collections of DITA topics. 
+ * This section contains the metadata elements used by bookmap 
+ * ==================================================
+ * ==================================================
+ * 
+ */
+ 
+ 
+/* ====================================
+ *
+ * <bookmeta>
+ * 
+ * The <bookmeta> element contains information about the 
+ * book that is not considered book content, such as 
+ * copyright information, author information, and any 
+ * classifications. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicmeta   
+ */
+*[class~="bookmap/bookmeta"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <bookchangehistory>
+ * 
+ * The <bookchangehistory> element contains information 
+ * about the history of the book's creation and publishing 
+ * lifecycle, including who wrote, reviewed, edited, and 
+ * tested the book.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data  
+ */
+*[class~="bookmap/bookchangehistory"]{
+/**/
+} 
+
+
+/* ====================================
+ *
+ * <approved>
+ * 
+ * The <approved> element contains information about when 
+ * and by whom the book was approved during its publication 
+ * history.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data  
+ */
+*[class~="bookmap/approved"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <bookevent>
+ * 
+ * The <bookevent> element indicates a general event in 
+ * the publication history of a book. This is an appropriate 
+ * element for specialization if the current set of specific 
+ * book event types does not meet your needs. If an element 
+ * already exists to describe a specific type of event, such 
+ * as <reviewed>, <edited>, or <approved>, that element 
+ * should be used instead.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data  
+ */
+*[class~="bookmap/bookevent"]{
+/**/
+} 
+
+
+
+/* ====================================
+ *
+ * <bookeventtype>
+ * 
+ * The <bookeventtype> element indicates the specific 
+ * nature of a <bookevent>, such as updated, indexed, 
+ * or deprecated. The required name attribute indicates 
+ * the event's type. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data  
+ */
+*[class~="bookmap/bookeventtype"]:before{
+  content: "Type ";
+} 
+
+
+/* ====================================
+ *
+ * <edited>
+ * 
+ * The <edited> element contains information about 
+ * when and by whom the book was edited during 
+ * its publication history.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data  
+ */
+*[class~="bookmap/edited"]{
+/**/
+} 
+
+
+
+/* ====================================
+ *
+ * <reviewed>
+ * 
+ * The <reviewed> element contains information about 
+ * when and by whom the book was reviewed during its 
+ * publication history.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data  
+ */
+*[class~="bookmap/reviewed"]{
+/**/
+} 
+
+
+
+/* ====================================
+ *
+ * <tested>
+ * 
+ * The <tested> element contains information about 
+ * when and by whom the book was tested during 
+ * its publication history.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data  
+ */
+*[class~="bookmap/tested"]{
+/**/
+} 
+
+
+
+/* ====================================
+ *
+ * <bookid>
+ * 
+ * The <bookid> element contains the publisher's identification 
+ * information for the book, such as part number, 
+ * edition number and ISBN number. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data  
+ */
+*[class~="bookmap/bookid"]{
+/**/
+} 
+
+
+
+/* ====================================
+ *
+ * <booknumber>
+ * 
+ * The <booknumber> element contains the 
+ * book's form number, such as SC21-1920.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data  
+ */
+*[class~="bookmap/booknumber"]{
+/**/
+} 
+
+
+
+/* ====================================
+ *
+ * <bookowner>
+ * 
+ * The <bookowner> element contains the 
+ * owner of the copyright.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data  
+ */
+*[class~="bookmap/bookowner"]{
+/**/
+}
+
+
+
+/* ====================================
+ *
+ * <bookpartno>
+ * 
+ * The <bookpartno> element contains the book's 
+ * part number, such as 99F1234. A publisher may 
+ * use a number like this one to identify a book 
+ * for tracking purposes.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data  
+ */
+*[class~="bookmap/bookpartno"]{
+/**/
+} 
+
+
+
+/* ====================================
+ *
+ * <bookrestriction>
+ * 
+ * The <bookrestriction> element indicates whether 
+ * the book is classified or restricted in some way. 
+ * The value attribute indicates any restrictions on 
+ * the use of the material, such as declaring the 
+ * information confidential or for licensed use only.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data  
+ */
+*[class~="bookmap/bookrestriction"]{
+/**/
+} 
+
+
+/* ====================================
+ *
+ * <bookrights>
+ * 
+ * The <bookrights> element contains the information 
+ * about the legal rights associated with the book, 
+ * including copyright dates and owners.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data  
+ */
+*[class~="bookmap/bookrights"]{
+/**/
+} 
+
+
+/* ====================================
+ *
+ * <completed>
+ * 
+ * The <completed> element indicates a completion 
+ * date for some type of book event, such as a 
+ * review, editing, or testing. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph   
+ */
+*[class~="bookmap/completed"]:before{
+  content: "Completed ";
+}
+
+
+/* ====================================
+ *
+ * <started>
+ * 
+ * The <started> element indicates a start date 
+ * for some type of book event, such as a review, 
+ * editing, or testing. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph   
+ */
+*[class~="bookmap/started"]{
+/**/
+}
+
+
+
+/* ====================================
+ *
+ * <copyrfirst>
+ * 
+ * The <copyfirst> element contains the first 
+ * copyright year within a multiyear copyright 
+ * statement.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data    
+ */
+*[class~="bookmap/copyrfirst"]{
+/**/
+}
+
+
+
+/* ====================================
+ *
+ * <copyrlast>
+ * 
+ * The <copylast> element contains the last 
+ * copyright year within a multiyear copyright 
+ * statement.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data    
+ */
+*[class~="bookmap/copyrlast"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <day>
+ * 
+ * The <day> element denotes a day of the month. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph    
+ */
+/* increase specificity to override the one from map/opticmeta */
+*[class~="bookmap/bookmap"] *[class~="bookmap/day"]{
+  display:inline;
+}
+
+
+/* ====================================
+ *
+ * <month>
+ * 
+ * The <month> element denotes a month of the year. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph    
+ */
+/* increase specificity to override the one from map/opticmeta */
+*[class~="bookmap/bookmap"] *[class~="bookmap/month"]{
+  display:inline;
+}
+
+/* ====================================
+ *
+ * <year>
+ * 
+ * The <year> element denotes a year. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph    
+ */
+/* increase specificity to override the one from map/opticmeta */
+*[class~="bookmap/bookmap"] *[class~="bookmap/year"]{
+  display:inline;
+}
+
+
+
+/* ====================================
+ *
+ * <edition>
+ * 
+ * The <edition> element contains the 
+ * edition number information, such as First 
+ * Edition, or Third Edition, used by a 
+ * publisher to identify a book.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data    
+ */
+*[class~="bookmap/edition"]{
+/**/
+}
+
+
+
+/* ====================================
+ *
+ * <isbn>
+ * 
+ * The <isbn> element contains the book's 
+ * International Standard Book Number (ISBN).
+ *  
+ * Inherits styles from parent class:
+ *  
+ * TODO - sa specificam in transformarea LESS sa pastreze regulile vide?
+ * TODO - in orice caz ar trebui sa optimizam calcularea stilurilor, eliminand 
+ * din setul de reguli cele care nu au proprietati!
+ *   
+ *     + topic/data    
+ */
+*[class~="bookmap/isbn"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <maintainer>
+ * 
+ * The <maintainer> element contains 
+ * information about who maintains the 
+ * document; the maintainer may be an 
+ * organization or a person.
+ *  
+ * Inherits styles from parent class:
+ *   
+ *     + topic/data    
+ */
+*[class~="bookmap/maintainer"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <organization>
+ * 
+ * The <organization> element contains the name 
+ * of an organization. Note that unlike <organizationname>, 
+ * the <organization> element is not restricted to use 
+ * within <authorinformation>; it does not have to contain 
+ * the name of an authoring organization.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data    
+ */
+*[class~="bookmap/organization"]{
+/**/
+}
+
+
+
+/* ====================================
+ *
+ * <person>
+ * 
+ * The <person> element contains information about the 
+ * name of a person. Note that unlike the <personname> 
+ * element, the <person> element is not restricted to 
+ * describing the names of authors.
+ *    
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data    
+ */
+*[class~="bookmap/person"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <printlocation>
+ * 
+ * The <printlocation> element indicates the location 
+ * where the book was printed. Customarily, the content 
+ * is restricted to the name of the country. 
+ *    
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data
+ */
+*[class~="bookmap/printlocation"]{
+/**/
+}
+
+
+
+/* ====================================
+ *
+ * <publisherinformation>
+ * 
+ * The <publisherinformation> contains information 
+ * about what group or person published the book, 
+ * where it was published, and certain details about 
+ * its publication history. Other publication history 
+ * information is found in the <bookchangehistory> element. 
+ *    
+ * Inherits styles from parent class:
+ *  
+ *     + topic/publisher
+ */
+*[class~="bookmap/publisherinformation"]{
+/**/
+}
+
+
+
+/* ====================================
+ *
+ * <publisherinformation>
+ * 
+ * The <publisherinformation> contains information 
+ * about what group or person published the book, 
+ * where it was published, and certain details about 
+ * its publication history. Other publication history 
+ * information is found in the <bookchangehistory> element. 
+ *    
+ * Inherits styles from parent class:
+ *  
+ *     + topic/publisher
+ */
+*[class~="bookmap/publisherinformation"]{
+/**/
+}
+
+
+
+/* ====================================
+ *
+ * <published>
+ * 
+ * The <published> element contains information 
+ * about the person or organization publishing 
+ * the book, the dates when it was started and 
+ * completed, and any special restrictions 
+ * associated with it. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data   
+ */
+*[class~="bookmap/published"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <publishtype>
+ * 
+ * The <publishtype> element indicates whether the 
+ * book is generally available from the publisher 
+ * or is restricted in some way. The value attribute 
+ * indicates the restrictions, such as beta release, 
+ * limited availability, or general availability.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data   
+ */
+*[class~="bookmap/publishtype"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <revisionid>
+ * 
+ * The <revisionid> element indicates the revision 
+ * number or revision ID of the book. The processing 
+ * implementation determines how the level is displayed. 
+ * Common methods include using a dash, for example 
+ * "-01", or a period, such as ".01".
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph   
+ */
+*[class~="bookmap/revisionid"]:before{
+  content:"Revision";
+}
+
+
+
+/* ====================================
+ *
+ * <summary>
+ * 
+ * The <summary> element contains a text 
+ * summary associated with a book event (such as 
+ * <approved> or <reviewed>) or with the 
+ * list of copyrights for the book. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph   
+ */
+*[class~="bookmap/summary"]{
+/**/
+}
+
+
+
+/* ====================================
+ *
+ * <volume>
+ * 
+ * The <volume> element contains the 
+ * book's volume number, such as Volume 2.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data
+ */
+*[class~="bookmap/volume"]{
+/**/
+}
+
+

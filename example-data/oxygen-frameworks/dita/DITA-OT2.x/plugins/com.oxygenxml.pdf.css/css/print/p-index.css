@@ -1,0 +1,190 @@
+/*
+ * =====================================================
+ * 
+ * Defines the placement of the intexterms in the index.
+ * 
+ * =====================================================
+ */
+
+@media print {
+
+      /* 
+        
+        	Make invisible the metadata prolog from the topics.
+        	Cannot hide it directly (display:none) because Prince 
+        	would ignore the indexterms from it.
+        	So we are making it transparent, and of 0 size. 
+        	
+        */
+        /* *[class~="map/topicmeta"] - must remain visible, for the TOC of the PDF output.*/
+      *[class~="topic/prolog"]{
+        border: none;
+        display:block;
+        background-color: transparent;
+        color: transparent;
+        margin: 0;
+        padding: 0;
+        width: 0;
+        height: 0;
+      }
+      *[class~="map/topicmeta"] {
+      
+        /* The topic meta should not be displayed in yellow, as defined in -colors.css */
+	    border-color: transparent;
+	    color:inherit;
+	    background-color: inherit;
+ 
+        border:none;
+        margin:0;
+        padding:0;
+      }
+      *[class~="topic/prolog"] *:before,
+      *[class~="map/topicmeta"] *:before {
+        content: none !important;
+      }
+
+    /* Make invisible the indexterms in the content */
+    *[class ~= "topic/topic"] index\.entry {
+        max-width:2px;
+        background-color:transparent;
+        color:transparent;
+        font-size:0px;
+    }
+
+
+    /*
+     *
+     * Create the index page.
+     *
+     */
+    index\.groups {
+        display: block;
+        page: index;
+        counter-reset: page 1;
+        columns: 2;
+        column-fill: auto;
+    }
+	
+   /**
+	* Static label before the index section.
+	*/ 
+    index\.groups:before {
+        content: "Index";
+        display: block;
+        margin-bottom: 0.5em;
+        font-size: 3em;        
+        column-span: all;
+    }
+
+    @page index {
+        @top-left-corner    {          content:none }
+        @top-left           {          content:none }
+        /*@top-center         {          content: "Index" }*/
+        @top-right          {          content:none }
+        @top-right-corner   {          content:none }
+        @bottom-left-corner {          content:none }
+        @bottom-left        {          content:none }
+        @bottom-center      {          content: counter(page, lower-alpha) }
+        @bottom-right       {          content:none }
+        @bottom-right-corner{          content:none }
+    }
+    
+    @media oxygen-chemistry {
+        @page index {
+            column-count: 2;
+            column-fill: auto;
+        }
+    }
+
+    index\.groups index\.group {
+        display:block;
+    }
+
+    index\.groups index\.group label {
+        display:block;
+        font-size:larger;
+        font-weight:bold;
+    }
+
+    index\.groups index\.entry {
+        display:block;
+        margin-left:1em;
+    }
+
+    index\.groups formatted\.value {
+        display:block;
+        margin-left:1em;
+    }
+
+    index\.groups refID:before {
+        content: " ";
+    }
+
+    index\.groups index-link {
+        content: target-counter(attr(href), page) ",";
+        link:attr(href);
+        -ah-link: attr(href);
+        -oxy-link: attr(href);
+    }
+
+    index\.groups index-link:last-child {
+        content: target-counter(attr(href), page);
+    }
+    
+    /* 
+    
+        Deal with <index-see> and <index-see-also>. 
+        
+        The <index-see> should list the labels of the index terms the user needs to see. 
+        No page number should be shown, since this is a pure redirection. 
+
+        The <index-see-also> should list the labels of the index terms the user needs to see. 
+        The page numbers must be shown. 
+
+    */
+    index\.groups see-childs{
+        display:inline;
+    }
+    index\.groups see-childs:before {
+        content:" see ";
+        font-style:italic;
+    } 
+    
+    index\.groups see-also-childs {
+        display:block;
+        padding-left:1em;
+    }
+    index\.groups see-also-childs:before {
+       content:"see also ";
+       font-style:italic;
+    }
+    
+    /* All "see" terms are on a line. */    
+    index\.groups see-childs *,
+    index\.groups see-also-childs * {
+        display:inline;
+        margin:0;
+    }
+    
+    /* There may be multiple formatted value under the same indexterm. We need to separated them. */
+    index\.groups see-childs formatted-value:after,
+    index\.groups see-also-childs formatted-value:after {
+        content:" ";
+    }
+
+    /* Separator in the list of terms*/
+    index\.groups see-childs > index\.entry:before,
+    index\.groups see-also-childs > index\.entry:before {
+        content:", ";
+    }
+    index\.groups see-childs > index\.entry:first-child:before,
+    index\.groups see-also-childs > index\.entry:first-child:before {
+        content:none;
+    }
+}
+
+@media oxygen-chemistry{
+      *[class~="topic/prolog"]{
+        display:none;        
+      }
+}

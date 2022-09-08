@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dtbook PUBLIC "-//NISO//DTD dtbook 2005-3//EN" "http://www.daisy.org/z3986/2005/dtbook-2005-3.dtd">
+<dtbook>
+  <head>
+    <meta http-equiv="Content-Type" content="text/xml;charset=UTF-8"/>
+  </head>
+  <book>
+    <frontmatter>
+      <doctitle>Book Title</doctitle>
+      <docauthor>Book Author</docauthor>
+    </frontmatter>
+  </book>
+</dtbook>

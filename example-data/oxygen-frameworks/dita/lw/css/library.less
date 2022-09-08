@@ -1,0 +1,472 @@
+.addActions(@actions, @actionsLayer:1090) {
+    &:empty {
+        -oxy-show-placeholder:always;
+    }
+    &:after(@{actionsLayer}) {
+        visibility:hidden;        
+        display:block;
+        @actions();
+    }
+    &:focus-within:after(@{actionsLayer}),
+    &:hover:after(@{actionsLayer}){
+        visibility:visible;    
+    }
+}
+
+.actionSeparator(@separator:" | ") {
+    & {
+     content+_:@separator;
+    }
+}
+
+
+.action(@actionID) {
+    & {
+     content+_:oxy_button(
+         transparent, true,
+         actionID, '@{actionID}',
+         showIcon, true
+        )
+    }
+}
+
+.actionGroup(@actionIDs, @label:'[…]') {
+    & {
+     content+_:
+        oxy_buttonGroup(
+            transparent, true,
+           label, '@{label}',
+           tooltip, 'More actions...',    
+           actionIDs, '@{actionIDs}'
+        )
+    }
+}
+
+
+.actionPlus(@action, @label:@action, @description:@label, @preAction:'done.editing') {
+    & {
+        content+_: oxy_button(  
+            color, #B08A5D,
+            action,
+            oxy_action(
+                name, '[@{label}]', 
+                description, '@{description}', 
+                operation, 'ro.sync.ecss.extensions.commons.operations.ExecuteMultipleWebappCompatibleActionsOperation', 
+                arg-actionIDs, '@{preAction}\A@{action}'
+            ), 
+            transparent, true,
+            actionContext, element,
+            showIcon, true
+        );
+    }
+}
+
+
+.inlineAction(@fragment, @label, @description) {
+    & {
+        content+_: oxy_button(  
+            color, #B08A5D,
+            action,
+            oxy_action(
+                name, '[@{label}]', 
+                description, '@{description}', 
+                operation, 'ro.sync.ecss.extensions.commons.operations.InsertFragmentOperation', 
+                arg-fragment, '@{fragment}',
+                arg-insertLocation, '.',
+                arg-schemaAware, false
+            ), 
+            transparent, true,
+            actionContext, element,
+            showIcon, true
+        );
+    }
+}
+
+.inlineActionAfter(@fragment, @label, @description) {
+    & {
+        content+_: oxy_button(  
+            color, #B08A5D,
+            action,
+            oxy_action(
+                name, '[@{label}]', 
+                description, '@{description}', 
+                operation, 'ro.sync.ecss.extensions.commons.operations.InsertFragmentOperation', 
+                arg-fragment, '@{fragment}',
+                arg-insertLocation, '.',
+                arg-insertPosition, 'After',
+                arg-schemaAware, false
+            ), 
+            transparent, true,
+            actionContext, element,
+            showIcon, true
+        );
+    }
+}
+
+
+.plusAction() {
+   & {
+    content:
+        oxy_button(
+            action, oxy_action(
+                name, '[+]', 
+                description, 'See actions', 
+                operation, 'ro.sync.ecss.extensions.commons.operations.TogglePseudoClassOperation', 
+                arg-elementLocation, '.',
+                icon, url('img/add16.png'),
+                arg-name, '-oxy-add'
+            ),
+            transparent, true,
+            showIcon, true)
+        ;
+   }    
+}
+.minusAction() {
+    & {
+    content:
+        oxy_button(
+            action, oxy_action(
+                name, '[-]', 
+                description, 'Hide actions', 
+                operation, 'ro.sync.ecss.extensions.commons.operations.TogglePseudoClassOperation', 
+                arg-elementLocation, '.',
+                icon, url('img/close16.png'),
+                arg-name, '-oxy-add'
+            ),
+            transparent, true,
+            showIcon, true)
+         ;
+    }
+}
+
+.actions-after(@actions, @separator:1109, @actionsTriggerLayer:1110, @actionsLayer:1111) {
+    &:empty{-oxy-show-placeholder:always;}
+    
+    &:after(@{separator}) {
+        display:block;
+        font-size:1px;
+        content:" ";
+    }
+    &:after(@{actionsTriggerLayer}) {
+        visibility:hidden;
+        .plusAction();
+    }
+
+    &:focus-within:after(@{actionsTriggerLayer}),
+    &:hover:after(@{actionsTriggerLayer}) {
+        visibility:visible;
+    }
+    
+    &:-oxy-add:after(@{actionsTriggerLayer}) {
+        visibility:hidden;
+        .minusAction();
+    }
+    &:hover:-oxy-add:after(@{actionsTriggerLayer}),
+    &:focus-within:-oxy-add:after(@{actionsTriggerLayer}){
+        visibility:visible;
+    }
+    
+    &:-oxy-add:after(@{actionsLayer}){
+        visibility:hidden;
+        @actions();
+    }
+    
+    &:hover:-oxy-add:after(@{actionsLayer}),
+    &:focus-within:-oxy-add:after(@{actionsLayer}){
+        visibility:visible;
+    }
+}
+
+.actions-before(@actions, @separator:109, @actionsTriggerLayer:111, @actionsLayer:110) {
+    &:empty{
+        -oxy-show-placeholder:always;
+    }
+    &:before(@{separator}) {
+        display:block;
+        font-size:1px;
+        content:" ";
+    }
+    
+    &:before(@{actionsTriggerLayer}) {
+        visibility:hidden;
+        .plusAction();
+    }
+
+    &:focus-within:before(@{actionsTriggerLayer}),
+    &:hover:before(@{actionsTriggerLayer}) {
+        visibility:visible;
+    }
+    
+    &:-oxy-add:before(@{actionsTriggerLayer}) {
+        visibility:hidden;
+        .minusAction();
+    }
+    &:hover:-oxy-add:before(@{actionsTriggerLayer}),
+    &:focus-within:-oxy-add:before(@{actionsTriggerLayer}){
+        visibility:visible;
+    }
+    
+    &:-oxy-add:before(@{actionsLayer}){
+        visibility:hidden;
+        @actions();
+    }
+    
+    &:hover:-oxy-add:before(@{actionsLayer}),
+    &:focus-within:-oxy-add:before(@{actionsLayer}){
+        visibility:visible;
+    }
+}
+
+.editableInline(@editClass:'-oxy-edit', @editLayer:10) {
+    &:after(@{editLayer}){
+        content:
+           oxy_button(transparent, true, action, oxy_action(
+              name, 'Edit', 
+              description, 'Edit', 
+              icon, url('img/edit16.png'), 
+              operation, 'ro.sync.ecss.extensions.commons.operations.ChangePseudoClassesOperation', 
+              arg-setPseudoClassNames, '@{editClass}'          
+            ), showIcon, true);
+        ;
+    }
+    &:-oxy-edit:after(@{editLayer}) {
+        content:
+           oxy_button(transparent, true, action, oxy_action(
+              name, 'Done', 
+              description, 'Done', 
+              icon, url('img/done16.png'), 
+              operation, 'ro.sync.ecss.extensions.commons.operations.ChangePseudoClassesOperation', 
+              arg-removePseudoClassNames, '@{editClass}'          
+            ), showIcon, true);
+        
+        ;
+    }
+}
+.editable(@editClass:'-oxy-edit', @editLayer:10) {
+    &:after(@{editLayer}){
+        visibility:hidden;
+        content:
+           oxy_button(transparent, true, action, oxy_action(
+              name, 'Edit', 
+              description, 'Edit', 
+              icon, url('img/edit16.png'), 
+              operation, 'ro.sync.ecss.extensions.commons.operations.ChangePseudoClassesOperation', 
+              arg-setPseudoClassNames, '@{editClass}'          
+            ), showIcon, true);
+        ;
+    }
+    
+    &:-oxy-edit:after(@{editLayer}) {
+        visibility:hidden;
+        content:
+           oxy_button(transparent, true, action, oxy_action(
+              name, 'Done', 
+              description, 'Done', 
+              icon, url('img/done16.png'), 
+              operation, 'ro.sync.ecss.extensions.commons.operations.ChangePseudoClassesOperation', 
+              arg-removePseudoClassNames, '@{editClass}'          
+            ), showIcon, true);
+        
+        ;
+    }
+    
+    &:focus-within:after(@{editLayer}),
+    &:hover:after(@{editLayer}) {
+        visibility:visible;
+    }
+}
+
+.deleteAction(@layer:80) {
+    &:-oxy-delete {
+        background-color:rgba(210, 200, 200, 0.20);
+    }
+
+    &:after(@{layer}) {
+        visibility:hidden;
+        content:
+            " "
+            oxy_button(
+                color, #CC5400,
+                action, oxy_action(
+                    name, '[X]', 
+                    icon, '/images/Remove16.png',
+                    description, oxy_concat('Delete the current "', oxy_local-name(), '" element'), 
+                    operation, 'ro.sync.ecss.extensions.commons.operations.DeleteElementOperation'
+                ), 
+                transparent, true,
+                hoverPseudoclassName, '-oxy-delete',
+                showIcon, true);    
+        ;
+    }
+    &:focus-within:after(@{layer}),
+    &:hover:after(@{layer}) {
+        visibility:visible;
+    }
+}
+
+/* Inline Hints */
+@aboutToDeleteHintColor:rgba(255, 255, 255, 0.20);
+.infoButton(@layer:5000) {
+    &{
+        position:relative;
+    }
+    &:before(@{layer}) {
+        line-height:1px;
+        width:1em;
+        display:block;
+        position:absolute;
+        top:2px;
+        text-align:right;
+        right:2px;
+        visibility:hidden;
+        content:
+            oxy_button(
+                action, oxy_action(
+                    name, '[+]', 
+                    description, oxy_concat('See description for ', oxy_local-name()), 
+                    operation, 'ro.sync.ecss.extensions.commons.operations.TogglePseudoClassOperation', 
+                    arg-elementLocation, '.',
+                    icon, url('img/info16.png'),
+                    arg-name, '-oxy-hints'
+                ),
+                transparent, true,
+                showIcon, true)
+            ;
+    }
+    
+    &:-oxy-hints:before(@{layer}) {
+        visibility:hidden;
+        content:
+            oxy_button(
+                action, oxy_action(
+                    name, '[-]', 
+                    description, oxy_concat('See description for ', oxy_local-name()), 
+                    operation, 'ro.sync.ecss.extensions.commons.operations.TogglePseudoClassOperation', 
+                    arg-elementLocation, '.',
+                    icon, url('img/info16.png'),
+                    arg-name, '-oxy-hints'
+                ),
+                transparent, true,
+                hoverPseudoclassName, '-oxy-delete-hints',
+                showIcon, true)
+            ;
+    }
+    
+    &:hover:before(@{layer}){
+        visibility:visible;
+    }
+}
+
+.base-hint(@category, @layer, @borderColor, @bgColor) {
+    &:-oxy-hints:-oxy-delete-hints:before(@{layer}) {
+        background-color:@aboutToDeleteHintColor;
+    }
+    &:before(@{layer}) {
+        display:block;
+        border:1px solid @borderColor;
+        background-color: @bgColor;
+        border-radius:8px;
+        font-family:arial, helvetica, sans-serif;
+        font-size:1rem;
+        line-height:1.2rem;
+        margin-bottom:0.6rem;
+        padding:0.2rem;
+        padding-right:1.2rem;
+        content:
+            oxy_htmlContent( 
+                href, 'hints.html',
+                id, oxy_concat(@category, '-', oxy_local-name()), 
+                width, 100%
+            ); 
+    }
+}
+
+
+
+@labelLayer:                202;
+@labelColor:                #55AAFF;
+@hintsLayer:                201;
+@borderColor:               #D89E36;
+@hintsBgNormal:             rgba(255, 250, 213, 0.60); /*#FFFAD5*/
+@hintsBgImportant:          rgba(255, 211, 78, 0.60);  /*#FFD34E*/
+.hint(@category: 'hints', @layer:@hintsLayer, @borderColor:@borderColor, @bgColor:@hintsBgNormal) {
+    .infoButton();
+    &:-oxy-hints {
+        .base-hint(@category, @layer, @borderColor, @bgColor);
+    }
+} 
+.important-hint(@category:'hints', @layer:@hintsLayer, @borderColor:@borderColor, @bgColor:@hintsBgImportant) {
+    & {
+        .base-hint(@category, @layer, @borderColor, @bgColor);
+    }
+}
+.markSection(@label:"Section", @labelColor:@labelColor, @layer:@labelLayer) {
+    &:-oxy-hints:-oxy-delete-hints:before(@{layer}) {
+        background-color:@aboutToDeleteHintColor;
+    }
+    &:-oxy-hints:before(@{layer}) {
+        display:block;
+        font-family:verdana, arial, helvetica, sans-serif;
+        color: @labelColor;
+        content:@label;
+    }
+}
+
+
+
+/* placeholders */
+@placeholderColor:          #555555;
+@placeholderWarningColor:   saturate(@placeholderColor, 80%);
+.placeholder(@content,  @color:@placeholderColor) {
+    &:empty {
+        color:@color!important;
+        -oxy-show-placeholder:always;
+        -oxy-placeholder-content: @content;
+    } 
+    @media oxygen-high-contrast-black, oxygen-dark-theme {
+        &:empty {
+            color:white!important;
+        }
+    }
+}
+.placeholder-warning(@content, @color:@placeholderWarningColor) {
+    .placeholder(@content, @color);
+}
+
+/* editors */
+.textfield(@label, @attribute) {
+    & {
+     content+_:"\A"
+        oxy_label(text, "@{label}", width, 20%, color, inherit)
+        oxy_textfield(
+          edit, '@@{attribute}',
+          width, 70%);
+    }
+}
+.combobox(@label, @attribute) {
+    & {
+     content+_:"\A"
+        oxy_label(text, "@{label}", width, 20%, color, inherit)
+        oxy_combobox( 
+          edit, '@@{attribute}',
+          width, 70%,
+          editable, true
+        );
+    }
+}
+
+.urlChooser(@label, @attribute) {
+    & {
+     content+_:"\A"
+        oxy_label(text, "@{label}", width, 20%, color, inherit)
+        oxy_urlChooser(
+          edit, '@@{attribute}',
+          width, 70%
+        );
+    }
+}
+
+
+
+
+

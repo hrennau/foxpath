@@ -1,0 +1,1 @@
+Sample files taken from an installation of the Oxygen XML Editor, used with kind permission from Syncro Soft SRL.

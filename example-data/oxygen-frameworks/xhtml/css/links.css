@@ -1,0 +1,11 @@
+@media oxygen {
+	a[href]:before,
+	link[href]:before {
+	    link: attr(href);
+	    content:url(img/link.png);
+	    display:inline;
+	    text-decoration:underline;
+	    color:navy;
+	    background-color:inherit;
+	}
+}

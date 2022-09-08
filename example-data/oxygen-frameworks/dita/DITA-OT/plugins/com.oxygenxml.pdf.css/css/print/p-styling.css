@@ -1,0 +1,22 @@
+/*
+ * =================================================
+ * 
+ * You can override here the aspect of DITA elements
+ * (for PDF).
+ * 
+ * =================================================
+ */
+
+@media print {
+  /**
+   * Remove topic bofy margins from media print. 
+   * Margins will be controlled by the page margins. 
+   */
+  *[class~="topic/body"] {
+    margin-left:0 !important;
+
+    margin-bottom:0;
+    margin-top:0;
+    margin-right:0;
+  }
+}

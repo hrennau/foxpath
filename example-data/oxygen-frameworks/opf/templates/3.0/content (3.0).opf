@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://www.idpf.org/2007/opf" xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:dcterms="http://purl.org/dc/terms/" version="3.0" xml:lang="en"
+    unique-identifier="bookid">
+    <metadata>
+        <dc:title>Book title</dc:title>
+        <dc:language id="pub-language">en</dc:language>
+        <dc:identifier id="bookid">http://my-URI-stub/</dc:identifier>
+        <meta property="dcterms:modified">2012-02-20T22:17:24Z</meta>
+    </metadata>
+    <manifest>
+        <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
+        <item id="htmltoc" properties="nav" media-type="application/xhtml+xml" href="toc.xhtml"/>
+        <item id="front_cover" href="front-cover.xhtml" media-type="application/xhtml+xml"/>
+        <item id="chapter1" href="chapter1.xhtml" media-type="application/xhtml+xml"/>
+        <item id="style" href="stylesheet.css" media-type="text/css"/>
+    </manifest>
+    <spine toc="ncx">
+        <itemref idref="front_cover"/>
+        <itemref idref="chapter1"/>
+    </spine>
+</package>

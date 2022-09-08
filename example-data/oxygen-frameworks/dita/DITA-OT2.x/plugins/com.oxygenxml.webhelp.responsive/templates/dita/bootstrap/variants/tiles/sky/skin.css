@@ -1,0 +1,576 @@
+/*
+ * ==============================================
+ * Skin for oXygen generated WebHelp.
+ * ==============================================
+ */
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Fonts.
+ *  
+ */
+@import url("https://fonts.googleapis.com/css?family=Questrial:300,400,700");
+body {
+  font-family: "Questrial", sans-serif;
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Fight with bootstrap
+ *  
+ */
+.navbar-brand {
+  height: auto;
+}
+.navbar {
+  background-image: none;
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  box-shadow: none;
+}
+.wh_header {
+  background-color: #0b6a9c;
+}
+a,
+a:hover,
+a:visited {
+  color: #1ea7ef;
+}
+a:hover {
+  text-decoration: none;
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Publication titles
+ *  
+ */
+.wh_publication_title > a {
+  color: #ffffff;
+  text-transform: none;
+  font-weight: normal;
+  line-height: 1em;
+  font-size: 1.7em;
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Menu
+ *  
+ */
+.wh_top_menu {
+  font-size: 1em;
+  margin: .4em 0;
+}
+/*.wh_top_menu ul {
+  background-color: @menuBgr;
+}*/
+.wh_top_menu ul a {
+  color: #ffffff;
+}
+/* The submenus */
+.wh_top_menu ul ul {
+  background-color: #E3F0F7;
+}
+@media only screen and (min-width: 768px) {
+  .wh_top_menu > ul > li > .topicref > a {
+    background-color: #0b6a9c;
+    margin: 0 2px;
+    border-radius: 4px 4px 0 0;
+  }
+  .wh_top_menu > ul > li > ul {
+    margin: 0 2px;
+  }
+  /* Menu bar */
+  .wh_top_menu ul li:hover a {
+    background-color: #E3F0F7;
+    color: #0b6a9c;
+  }
+  /* Sub menus */
+  .wh_top_menu ul ul li {
+    border: none;
+    background-color: #E3F0F7;
+  }
+  .wh_top_menu ul li:hover ul a {
+    color: #777777;
+    transition: background-color 0.25s ease-out 0s, color 0.3s ease-out 0s;
+  }
+  .wh_top_menu ul ul li a:hover {
+    color: #0b6a9c;
+    background-color: #addff9;
+    transition: background-color 0.25s ease-in 0s, color 0.3s ease-in 0s;
+  }
+  .wh_top_menu ul ul li.has-children:after {
+    color: #777777;
+  }
+}
+@media only screen and (max-width: 767px) {
+  .wh_top_menu li a {
+    color: #ffffff;
+  }
+  .wh_top_menu li.active a {
+    color: #0b6a9c;
+  }
+  .wh_top_menu li.active {
+    background-color: #E3F0F7;
+  }
+  .wh_top_menu li.active > span a {
+    background-color: #addff9;
+  }
+  .wh_toggle_button.navbar-toggle,
+  .wh_toggle_button.navbar-toggle:focus {
+    border: none;
+    border-color: #0b6a9c;
+    background-color: #E3F0F7;
+  }
+  .wh_toggle_button.navbar-toggle .icon-bar {
+    background-color: #0b6a9c;
+  }
+  .wh_top_menu ul ul li {
+    border: none;
+  }
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Link to the index.
+ * 
+ */
+.wh_indexterms_link a:before {
+  color: #ffffff;
+  font-size: 1.5em;
+}
+.wh_indexterms_link a span {
+  display: none;
+}
+@media only screen and (max-width: 767px) {
+  .wh_indexterms_link a:before {
+    bottom: 0;
+  }
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Breadcrumb
+ *  
+ */
+.wh_breadcrumb ol,
+.wh_breadcrumb ol a {
+  color: #9d9d9d;
+}
+.wh_breadcrumb ol .active,
+.wh_breadcrumb ol .active a {
+  color: #1ea7ef;
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Tools and navigation
+ * 
+ */
+.wh_tools {
+  border: solid 1px #E3F0F7;
+  background-color: #E3F0F7;
+  margin: 2em 1em;
+  font-size: 1em;
+}
+.wh_hide_highlight,
+.wh_print_link a,
+.wh_navigation_links a,
+.wh_navigation_links a:hover,
+.wh_navigation_links a:active,
+.wh_navigation_links a:visited,
+.wh_print_link a:before,
+.wh_navigation_links a:before,
+.wh_navigation_links a:hover:before,
+.wh_navigation_links a:active:before,
+.wh_navigation_links a:visited:before {
+  color: #9d9d9d;
+  text-decoration: none;
+}
+.wh_right_tools {
+  padding: 8px 15px;
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Tiles
+ * 
+ */
+.wh_tile_shortdesc {
+  color: #1ea7ef;
+  font-weight: 400;
+  font-size: 1em;
+  margin-top: 0.5em;
+  text-align: justify;
+}
+.wh_tile_title {
+  font-size: 1em;
+  text-decoration: none;
+  text-transform: none;
+}
+.wh_tile_title a {
+  text-align: left;
+  color: #0b6a9c !important;
+  font-size: 1.4em;
+  font-weight: 400;
+}
+@media only screen and (max-width: 767px) {
+  .wh_tile > div {
+    height: auto;
+  }
+}
+/*
+ * ------------------------------------------------------------------
+ *
+ * Tree TOC for the main page.
+ *
+ */
+.wh_main_page_toc {
+  border: none;
+  background-color: #ffffff;
+}
+.wh_main_page_toc .topicref a {
+  color: #0b6a9c;
+}
+.wh_main_page_toc .wh_main_page_toc_accordion_header:hover,
+.wh_main_page_toc > .wh_main_page_toc_entry:hover {
+  background-color: #E3F0F7;
+  color: #0b6a9c;
+}
+.wh_main_page_toc_accordion_header:hover > .wh_toc_shortdesc,
+.wh_main_page_toc > .wh_main_page_toc_entry:hover > .wh_toc_shortdesc {
+  background-color: #E3F0F7;
+  color: #0b6a9c;
+}
+.wh_main_page_toc .wh_main_page_toc_accordion_header:hover a,
+.wh_main_page_toc > .wh_main_page_toc_entry:hover a {
+  color: #0b6a9c;
+}
+.wh_main_page_toc_accordion_header:hover:before {
+  color: #0b6a9c;
+}
+.wh_main_page_toc .wh_main_page_toc_accordion_header,
+.wh_main_page_toc > .wh_main_page_toc_entry,
+.wh_main_page_toc_accordion_entries {
+  border-bottom: 1px solid #E3F0F7;
+  background-color: #ffffff;
+  text-align: left;
+}
+.wh_main_page_toc .wh_toc_shortdesc {
+  color: #1ea7ef;
+}
+.wh_main_page_toc_accordion_header:before {
+  color: #0b6a9c;
+}
+.wh_main_page_toc .expanded {
+  border: none;
+}
+/* ---------------------------------   */
+.wh_main_page .wh_content_area {
+  background-color: #ffffff;
+  padding: 4em 0 2em 0;
+  color: #0b6a9c;
+  text-align: center;
+  align-items: center;
+}
+/*
+You can style some of the tiles in a special way. 
+Example:
+.wh_tiles *[data-id='getting_started']{
+    background-color:gray;
+}
+*/
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Search area
+ * 
+ */
+.wh_search_input {
+  padding: 4em 0 4em 0;
+  margin: 0;
+  align-items: center;
+  color: #0b6a9c;
+  text-align: center;
+  background-color: #0b6a9c;
+  background-image: linear-gradient(#0b6a9c, transparent), url("resources/Clouds.png");
+  background-position: center bottom;
+  background-size: cover;
+}
+.wh_main_page_search {
+  height: calc(50vh - 50px);
+  min-height: 20em;
+  padding-top: calc((50vh - 50px)/2 - 1em);
+}
+.wh_main_page .wh_search_textfield,
+.wh_main_page .wh_search_button {
+  height: 2em;
+  font-size: 2em;
+}
+.wh_search_textfield,
+.wh_search_button {
+  border: solid 1px #E3F0F7;
+  color: #0b6a9c;
+  background-color: #ffffff;
+  padding: 0 .4em;
+  height: 2em;
+  font-size: 1.2em;
+  line-height: 2em;
+}
+.wh_search_textfield {
+  border-radius: 4px;
+}
+.wh_search_button {
+  border-radius: 0 4px 4px 0 !important;
+}
+/* Search autocomplete */
+.ui-menu-item {
+  font-size: 1.2em;
+  color: #0b6a9c;
+}
+/* Search relative path */
+.searchresult li .relativePath a {
+  color: #666;
+}
+/* Search autocomplete icons */
+.search-autocomplete-proposal-type-history a,
+.search-autocomplete-proposal-type-history a:hover,
+.search-autocomplete-proposal-type-history a:visited,
+.search-autocomplete-proposal-type-history a:active {
+  text-decoration: none;
+  color: inherit;
+  font-size: 0.8em;
+}
+.ui-state-active .search-autocomplete-proposal-type-history a,
+.ui-state-active .search-autocomplete-proposal-type-history a:hover,
+.ui-state-active .search-autocomplete-proposal-type-history a:visited,
+.ui-state-active .search-autocomplete-proposal-type-history a:active {
+  color: #ffffff;
+}
+/* Active search page */
+#wh-search-pagination > ul > li.active > a {
+  background-color: #0b6a9c;
+}
+/* Do not allow the text to go beneath the search button  */
+@media only screen and (min-width: 768px) {
+  .wh_search_textfield {
+    padding-right: 3em;
+  }
+}
+.wh_search_button:after {
+  color: #0b6a9c;
+}
+.wh_search_button:hover {
+  background-color: #E3F0F7 /*rgba(255, 255, 255, 0.1)*/;
+}
+/* Search field placeholder */
+::-webkit-input-placeholder {
+  color: #0b6a9c;
+}
+:-moz-placeholder {
+  /* Firefox 18- */
+  color: #0b6a9c;
+}
+::-moz-placeholder {
+  /* Firefox 19+ */
+  color: #0b6a9c;
+}
+:-ms-input-placeholder {
+  color: #0b6a9c;
+}
+/* Change Autocomplete styles in Chrome */
+:-webkit-autofill,
+:-webkit-autofill:hover,
+:-webkit-autofill:focus {
+  border: 1px solid #E3F0F7;
+  -webkit-text-fill-color: #0b6a9c;
+  -webkit-box-shadow: none;
+  transition: background-color 5000s ease-in-out 0s;
+}
+/*
+ * ------------------------------------------------------------------
+ *
+ * Side TOC
+ *
+ */
+.wh_side_toc {
+  border: 1px solid #E3F0F7;
+  background-color: #ffffff;
+  padding: 1em;
+  line-height: 2em;
+  margin-left: 2em;
+}
+.wh_side_toc > ul {
+  padding-left: 0;
+}
+.wh_side_toc .active > span {
+  color: #1ea7ef;
+  text-decoration: underline;
+}
+.wh_side_toc span,
+.wh_side_toc a,
+.wh_side_toc a:visited,
+.wh_side_toc a:hover {
+  color: #1ea7ef;
+}
+.wh_side_toc a:hover {
+  text-decoration: underline;
+}
+@media only screen and (max-width: 767px) {
+  .wh_side_toc {
+    padding: 1em;
+    margin-left: 0;
+    margin-top: 1em;
+  }
+}
+/* Side TOC tooltip */
+.wh_breadcrumb .topicref .wh-tooltip,
+.wh_side_toc .topicref .wh-tooltip {
+  background-color: #444;
+  color: #E3F0F7;
+}
+.wh_breadcrumb .topicref .wh-tooltip a,
+.wh_side_toc .topicref .wh-tooltip a {
+  color: #E3F0F7;
+  text-decoration: underline;
+}
+/* Tooltip arrow. */
+[data-tooltip-position="left"] .topicref .wh-tooltip::before {
+  border-left-color: #444;
+}
+[data-tooltip-position="right"] .topicref .wh-tooltip::before {
+  border-right-color: #444;
+}
+[data-tooltip-position="bottom"] .topicref .wh-tooltip::before {
+  border-bottom-color: #444;
+}
+[data-tooltip-position="top"] .topicref .wh-tooltip::before {
+  border-top-color: #444;
+}
+/*
+ * ------------------------------------------------------------------
+ *
+ * Footer
+ *
+ */
+.wh_footer {
+  background-color: #0b6a9c;
+  background-size: cover;
+  padding: 4em 0em;
+  color: #ffffff;
+  text-align: center;
+  align-items: center;
+}
+.wh_footer a {
+  color: #1ea7ef;
+}
+/*
+ * ------------------------------------------------------------------
+ *
+ * Topic content
+ *
+ */
+.wh_content_area {
+  background-color: #E3F0F7;
+  padding: 1.5em;
+  font-size: 1em;
+  margin-bottom: 2em;
+}
+.wh_topic_content {
+  color: #444;
+  line-height: 1.7em;
+}
+/*
+ * Title & subtitles
+ */
+.topictitle1 {
+  color: #444;
+  font-weight: normal;
+}
+.topictitle2,
+.topictitle3,
+.topictitle4,
+.topictitle5,
+.topictitle6 {
+  color: #525151;
+}
+.wh_expand_btn {
+  left: -1px;
+}
+/*
+ * Other content
+ */
+.wh_topic_content .shortdesc {
+  font-style: italic;
+}
+/* Related links */
+.wh_related_links .related-links,
+.wh_topic_content .related-links,
+.wh_child_links {
+  margin: 1em 0 0 0;
+  background-color: #ffffff;
+  border: #E3F0F7 solid 1px;
+  padding: 0 1em;
+}
+.wh_child_links {
+  padding: 1em;
+}
+.wh_topic_content .related-links {
+  font-size: .91em;
+}
+/*
+ * ------------------------------------------------------------------
+ *
+ * Search results.
+ *
+ */
+.searchresult {
+  list-style: none;
+}
+.searchresult li {
+  padding: .5em;
+}
+.searchresult li a {
+  color: #1ea7ef;
+}
+.wh_search_expression {
+  color: #0b6a9c;
+}
+.searchresult .shortdesclink {
+  margin: .3em .5em 0 0;
+}
+.wh_search_expression {
+  font-weight: bold;
+}
+/* Highlights */
+.highlight {
+  background-color: #0b6a9c;
+  color: #E3F0F7 !important;
+  border-radius: 4px;
+  padding: 0 1px;
+}
+.wh-h {
+  padding: 0 1px;
+}
+/* Index terms */
+.wh_term_group {
+  border: 1px solid #E3F0F7;
+  background-color: #E3F0F7;
+  margin: 1em 0;
+  padding: 1em;
+}
+.wh_term > span {
+  color: #444;
+  font-style: italic;
+}
+.wh_index_terms span.wh_first_letter {
+  color: #0b6a9c;
+  border: none;
+  font-size: 1.5em;
+  margin: 0;
+}
+.wh_index_terms #indexList {
+  padding: 0;
+}

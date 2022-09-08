@@ -1,0 +1,114 @@
+/* extensible Name and Address Language */
+
+@import "xnal_ext.css";
+
+*[class~="xnal-d/personinfo"],
+*[class~="xnal-d/organizationinfo"],
+*[class~="xnal-d/namedetails"],
+*[class~="xnal-d/personname"],
+*[class~="xnal-d/organizationnamedetails"],
+*[class~="xnal-d/addressdetails"],
+*[class~="xnal-d/contactnumbers"],
+*[class~="xnal-d/emailaddresses"],
+*[class~="xnal-d/urls"] {
+    display: list-item;
+    margin-left: 20px;
+    margin-top: 1ex;
+    margin-bottom: 1ex; 
+    border-width: 0;
+    border-style: none;
+    padding: 0;
+}
+
+*[class~="xnal-d/personinfo"],
+*[class~="xnal-d/organizationinfo"]{
+    list-style:square;
+}
+
+*[class~="xnal-d/namedetails"],
+*[class~="xnal-d/contactnumbers"],
+*[class~="xnal-d/emailaddresses"],
+*[class~="xnal-d/addressdetails"] {
+    list-style:disc;
+}
+
+*[class~="xnal-d/organizationnamedetails"],
+*[class~="xnal-d/personname"],
+*[class~="xnal-d/contactnumber"],
+*[class~="xnal-d/emailaddress"],
+*[class~="xnal-d/urls"] {
+    list-style:circle;
+}
+
+
+*[class~="xnal-d/authorinformation"]:before,
+*[class~="xnal-d/personinfo"]:before,
+*[class~="xnal-d/organizationinfo"]:before,
+*[class~="xnal-d/namedetails"]:before,
+*[class~="xnal-d/personname"]:before,
+*[class~="xnal-d/organizationnamedetails"]:before,
+*[class~="xnal-d/addressdetails"]:before,
+*[class~="xnal-d/contactnumbers"]:before,
+*[class~="xnal-d/emailaddresses"]:before,
+*[class~="xnal-d/urls"]:before {
+    font-size: smaller;
+    font-weight: bold;
+    color: #333333;
+    background-color:inherit;
+    margin-left:1em;
+}
+
+*[class~="xnal-d/honorific"],
+*[class~="xnal-d/firstname"],
+*[class~="xnal-d/middlename"],
+*[class~="xnal-d/lastname"],
+*[class~="xnal-d/generationidentifier"],
+*[class~="xnal-d/organizationname"],
+*[class~="xnal-d/otherinfo"],
+*[class~="xnal-d/locality"],
+*[class~="xnal-d/localityname"],
+*[class~="xnal-d/postalcode"],
+*[class~="xnal-d/administrativearea"],
+*[class~="xnal-d/thoroughfare"],
+*[class~="xnal-d/country"] {
+    display: inline;
+    border-width: 0;
+    border-style: none;
+    padding: 0;
+}
+
+*[class~="xnal-d/honorific"]:before,
+*[class~="xnal-d/firstname"]:before,
+*[class~="xnal-d/middlename"]:before,
+*[class~="xnal-d/lastname"]:before,
+*[class~="xnal-d/generationidentifier"]:before,
+*[class~="xnal-d/organizationname"]:before,
+*[class~="xnal-d/otherinfo"]:before,
+*[class~="xnal-d/locality"]:before,
+*[class~="xnal-d/localityname"]:before,
+*[class~="xnal-d/postalcode"]:before,
+*[class~="xnal-d/administrativearea"]:before,
+*[class~="xnal-d/thoroughfare"]:before,
+*[class~="xnal-d/country"]:before {
+    display: inline;
+    content: " ";
+}
+
+*[class~="xnal-d/personname"] > *:first-child:before,
+*[class~="xnal-d/organizationnamedetails"]  > *:first-child:before,
+*[class~="xnal-d/addressdetails"] > *:first-child:before,
+*[class~="xnal-d/locality"] > *:first-child:before {
+    content: "";
+}
+
+*[class~="xnal-d/contactnumber"],
+*[class~="xnal-d/emailaddress"],
+*[class~="xnal-d/url"] {
+    display: list-item;
+    margin-left: 20px;
+    margin-top: 0;
+    margin-bottom: 0; 
+    border-width: 0;
+    border-style: none;
+    padding: 0;
+}

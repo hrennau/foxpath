@@ -1,0 +1,338 @@
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * langRef/containers/ut-d.html
+ * 
+ * The utilities domain elements represent common 
+ * features of a language that may not necessarily be 
+ * semantic, such as image maps.
+ * 
+ * ==================================================
+ * ==================================================
+ */
+
+
+
+/*
+ * ==================================================
+ * 
+ * <sort-as>
+ *
+ * For elements that are sorted, the sort-as element 
+ * provides text that is combined with the base sort phrase 
+ * to construct the effective sort phrase.
+ * 
+ * Inherits styles from parent class:
+ *  
+ *     + topic/data 
+ */
+*[class~="ut-d/sort-as"]{    
+    display:inline;
+    font-size:10pt;
+    content: oxy_textfield(edit, '@value', columns, 10) !important;
+}
+
+*[class~="ut-d/sort-as"]:before {
+    content: "Sort As: " !important;
+}
+
+@media print {
+  *[class~="ut-d/sort-as"]{    
+      display:none;
+  }
+}
+
+
+/*
+ * ==================================================
+ * 
+ * <imagemap>
+ *
+ * The imagemap element supports the basic functionality 
+ * of the HTML "client-side" image map markup. imagemap 
+ * allows you to designate a linkable area or region 
+ * over an image, allowing a link in that region to 
+ * display another topic.
+ * 
+ * Inherits styles from parent class:
+ *  
+ *     + topic/fig 
+ */
+*[class~="ut-d/imagemap"]{
+    display:table;
+    width:95%;
+    border:1pt solid;    
+    padding:0.5em;
+    counter-reset: areas;
+}
+
+/*Force block display in order to have it show up in Author*/
+*[class~="ut-d/imagemap"] > *[class~="topic/image"] {
+  display: block;
+}
+
+@media print {
+  *[class~="ut-d/imagemap"]{
+    border:none;
+    padding:0;
+  }
+}
+
+
+/*
+ * Support for expanding and collapsing the area elements (in Web Author it is expanded always).
+ */
+@media oxygen AND (platform:eclipse),
+    oxygen AND (platform:standalone) {
+    *[class~="ut-d/imagemap"]  > *[class~="topic/image"]:after(2){ 
+        display:inline;
+            
+        content:oxy_button(
+            actionID, 'imagemap.expand.area',          
+            showText, true, 
+            showIcon, false, 
+            enableInReadOnlyContext, true);
+            
+        text-align:left;
+        font-family: sansserif, verdana, helvetica;
+        font-size: 0.75em;
+        padding-bottom: 0.2em;
+    }
+    
+    *[class~="ut-d/imagemap"]:-oxy-visible-imagemap-area  > *[class~="topic/image"]:after(2){
+        display:inline;    
+        content:oxy_button(
+            actionID, 'imagemap.collapse.area',          
+            showText, true, 
+            showIcon, false, 
+            enableInReadOnlyContext, true);		
+    }
+}
+
+/**
+ * Show an URL chooser for an empty imagemap. 
+ */
+*[class~="ut-d/imagemap"]  > *[class~="topic/image"]:not([href]),
+*[class~="ut-d/imagemap"]  > *[class~="topic/image"][href=""] {
+    content: "Choose image:" oxy_urlChooser(edit, '@href');
+}
+
+/*
+ * Support for editing the image map.
+ */
+*[class~="ut-d/imagemap"] > *[class~="topic/image"][href]:not([href=""]):after(1){
+    display:inline;
+    content:'\a' oxy_button(actionID, 'edit.image.map');    
+}
+*:-oxy-has-valid-referenced-content  *[class~="ut-d/imagemap"] > *[class~="topic/image"]:after(1)
+{
+    /* Hide the button when the topic is in a map with expanded topics. */
+    display:none;
+}
+
+@media oxygen and (platform:webapp) {
+  *[class~="ut-d/imagemap"] > *[class~="topic/image"] {
+    content: oxy_editor(
+      webappRendererClassName, "ro.sync.ecss.webapp.formcontrols.WebappImageMapRenderer"
+      edit, "custom");
+  }
+}
+
+/*
+ * ==================================================
+ * 
+ * <area>
+ *
+ * The area element describes a linkable area within an 
+ * imagemap. It allows the author to specify a shape 
+ * within the image, the coordinates of that shape, 
+ * and a link target for the area.
+ * 
+ * Inherits styles from parent class:
+ *  
+ *     + topic/figgroup 
+ */
+*[class~="ut-d/area"]{
+  display:none;
+  counter-increment:areas;
+}
+
+*[class~="ut-d/imagemap"]:-oxy-visible-imagemap-area *[class~="ut-d/area"]{
+    display:table-row;
+}
+@media oxygen and (platform:webapp) {
+    *[class~="ut-d/imagemap"] *[class~="ut-d/area"][class~="ut-d/area"]{
+        display:table-row;
+    }
+}
+
+*[class~="ut-d/imagemap"]  *[class~="ut-d/area"] > *[class~="topic/xref"] {
+     padding-left:0.5em;
+     display: table-cell;
+}
+
+@media oxygen AND (platform: webapp) {
+    /**
+     * For xrefs with no target set, use a placeholder.
+     */
+    *[class~="ut-d/imagemap"]  *[class~="ut-d/area"] > *[class~="topic/xref"]:not([href])[keyref=""]:empty,
+    *[class~="ut-d/imagemap"]  *[class~="ut-d/area"] > *[class~="topic/xref"]:not([href]):not([keyref]):empty,
+    *[class~="ut-d/imagemap"]  *[class~="ut-d/area"] > *[class~="topic/xref"][href=""][keyref=""]:empty,
+    *[class~="ut-d/imagemap"]  *[class~="ut-d/area"] > *[class~="topic/xref"][href=""]:not([keyref]):empty {
+      content: oxy_label(text, "[Choose target] ", styles, "color: black;");
+      text-decoration: none;
+    }
+    
+    /**
+     * Add a button to change the xref target.
+     */
+    *[class~="ut-d/imagemap"]  *[class~="ut-d/area"] > *[class~="topic/xref"]:after {
+      content: oxy_label(text, "  ", styles, "text-decoration: none;color: black;")
+          oxy_buttonGroup(
+                 icon, "../../img/edit16.png",
+                 tooltip, "Change",
+                 transparent, true,
+                 actionIDs, 'change.cross.reference, change.file.reference, change.url.reference'
+             )
+    }
+
+    /**
+     * Simulate a table header. 
+     */
+    *[class~="ut-d/imagemap"]  *[class~="ut-d/area"] > *[class~="topic/xref"] {
+         border: 1px solid #d0d0d0;
+         padding: 3px;
+         -oxy-display-tags:none;
+    }  
+    *[class~="ut-d/imagemap"]  *[class~="topic/image"] + *[class~="ut-d/area"] > *[class~="topic/xref"]:before(2) {
+      content: oxy_label(text, "Target", styles, "text-decoration: none;font-weight: bold;color:black;");
+    }
+    *[class~="ut-d/imagemap"]  *[class~="ut-d/area"] > *[class~="topic/xref"]:before(2) {
+      display: block;
+      width: 100%;
+      border-bottom: 1px solid #d0d0d0;
+      padding: 0 3px 3px 3px;
+      margin-bottom: 3px;
+      position: relative;
+      left: -3px;
+    }
+}
+
+@media print {
+  *[class~="ut-d/area"]{
+    display:none;
+  }
+}
+
+
+/*
+ * ==================================================
+ * 
+ * <shape>
+ *
+ * The shape element defines the shape of a linkable 
+ * area in an imagemap.
+ * 
+ * Inherits styles from parent class:
+ *  
+ *     + topic/keyword 
+ */
+*[class~="ut-d/shape"]:before(1){
+    content:"  " oxy_combobox(
+        edit, "#text");
+    font-weight: bold;
+    min-width:5em;
+
+}
+
+*[class~="ut-d/shape"]:before(2){
+   /* For colors see -colors.css */
+    content: " " counter(areas) " ";
+    border-radius:1em;
+    padding:0.1em;
+    margin-left:0.1em;
+    margin-right: 0.3em;
+    font-weight: bold;
+    width:2em;
+    font-size:smaller;
+    text-align:center;
+    display:inline-block;
+}
+
+*[class~="ut-d/shape"]{
+    display:table-cell;
+    padding-right:0.5em;
+    min-width:7em;
+    visibility:-oxy-collapse-text;
+    -oxy-display-tags:none;
+}
+
+/**
+ * In Web Author the shape type is not editable.
+ */
+@media oxygen and (platform:webapp) {
+    *[class~="ut-d/shape"] {
+        -oxy-editable: false;
+        visibility: visible;
+        border: 1px solid #d0d0d0;
+        padding: 3px;
+        margin-right:0.2em;
+    }
+    *[class~="ut-d/shape"]:before(1) {
+        content: none;
+    }
+    /**
+     * Emulate a table header
+     */
+    *[class~="ut-d/area"] {
+        position: relative;
+    }
+    *[class~="ut-d/area"] + *[class~="ut-d/area"] {
+        position: static;
+    }
+    
+    *[class~="topic/image"] + *[class~="ut-d/area"] > *[class~="ut-d/shape"]:before(3) {
+        content: "Shape";
+    }
+    *[class~="ut-d/area"] > *[class~="ut-d/shape"]:before(3) {
+        font-weight: bold;
+        display: block;
+        width: 100%;
+        border-bottom: 1px solid #d0d0d0;
+        padding: 0 3px 3px 3px;
+        margin-bottom: 3px;
+        position: relative;
+        left: -3px;
+    }
+}
+
+/*
+ * ==================================================
+ * 
+ * <coords>
+ *
+ * The coords element specifies the coordinates of a 
+ * linkable region in an imagemap. (px)
+ * 
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph 
+ */
+*[class~="ut-d/coords"]{
+    display:table-cell;
+    padding-right:0.5em;
+    font-size:smaller;
+    border:1px solid #EEEEEE;
+}
+
+/**
+ * In Web Author hide the coordinates of a shape.
+ */
+@media oxygen and (platform:webapp) {
+    *[class~="ut-d/coords"]{
+      display: none;
+    }
+}

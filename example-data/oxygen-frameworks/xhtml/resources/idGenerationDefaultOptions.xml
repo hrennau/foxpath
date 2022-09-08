@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ID Generation default options for XHTML -->
+<idGeneration>
+    <autoGenerate>false</autoGenerate>
+    <idAttribute>id</idAttribute>
+    <idPattern>${localName}_${id}</idPattern>
+</idGeneration>

@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE troubleshooting PUBLIC "-//OASIS//DTD DITA Troubleshooting//EN"
+"../dtd/troubleshooting.dtd">
+<troubleshooting id="resolve" xml:lang="en-us">
+  <title>Trouble</title>
+  <shortdesc>Big trouble has happened.</shortdesc>
+  <troublebody>
+    <condition>
+      <p>You may notice that this has happened.</p>
+    </condition>
+    <troubleSolution>
+      <cause><title>Foo</title>
+        <p>It should have happened, but it did not.</p>
+      </cause>
+      <remedy>
+        <steps>
+          <step>
+            <cmd>This first</cmd>
+          </step>
+          <step>
+            <cmd>This next</cmd>
+          </step>
+        </steps>
+      </remedy>
+      <remedy></remedy>
+    </troubleSolution>
+    <troubleSolution>
+      <cause><p>one</p></cause>
+      <cause><p>two</p></cause>
+    </troubleSolution>
+    <troubleSolution>
+      <cause><title>Problem is elsewhere</title>
+        <p>The problem lies elsewhere.</p>
+      </cause>
+      <remedy><title>Remedy</title>
+        <steps-informal>
+          <p>There is nothing to do except to look elsewhere.</p>
+        </steps-informal>
+      </remedy>
+    </troubleSolution>
+  </troublebody>
+</troubleshooting>

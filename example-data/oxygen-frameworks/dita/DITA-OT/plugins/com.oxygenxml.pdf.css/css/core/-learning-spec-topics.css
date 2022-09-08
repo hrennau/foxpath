@@ -1,0 +1,243 @@
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * Learning and training topic elements
+ * 
+ * http://docs.oasis-open.org/dita/v1.2/os/spec/common/lc_spec_topics.html
+ * 
+ * Use the learning and training topic types to provide 
+ * the instructional content, according to the needs 
+ * identified by the learning goals and objectives.
+ * 
+ * ==================================================
+ * ==================================================
+ * 
+ */
+ 
+ 
+/* ====================================
+ *
+ * <learningBase>
+ * 
+ * The learningBase topic type is not used to 
+ * deliver any actual learning content, but 
+ * instead provides a set of common elements 
+ * for use in the other more specific learning 
+ * content types: learningOverview, learningContent, 
+ * learningSummary, learningAssessment, 
+ * and learningPlan.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/topic
+ */
+*[class~="learningBase/learningBase"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <learningBasebody>
+ * 
+ * The <learningBasebody> element is the main 
+ * body-level element in a learningBase topic. 
+ * The learningBase topic provides a set of base 
+ * elements for use in the other specialized 
+ * learning types. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/body
+ */
+*[class~="learningBase/learningBasebody"]{
+/**/
+}
+
+
+ 
+/* ====================================
+ *
+ * <learningOverview>
+ * 
+ * A Learning Overview topic identifies the 
+ * learning objectives, includes other information 
+ * helpful to the learner, such as prerequisites, 
+ * duration, intended audience, and can include 
+ * information and strategies that seeks to gain 
+ * attention and stimulate recall of prior learning.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/topic learningBase/learningBase
+ */
+*[class~="learningOverview/learningOverview"]{
+/**/
+}
+
+
+ 
+/* ====================================
+ *
+ * <learningOverviewbody>
+ * 
+ * The <learningOverviewbody> element is the 
+ * main body-level element in a learningOverview 
+ * topic.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/body learningBase/learningBasebody
+ */
+*[class~="learningOverview/learningOverviewbody"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <learningContent>
+ * 
+ * A Learning Content topic provides the learning 
+ * content itself, and enables direct use of content 
+ * from DITA task, concept, and reference topics, 
+ * as well as additional content of any topic type 
+ * that supports specific objectives declared in 
+ * the Learning Overview topic type.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/body learningBase/learningBasebody
+ */
+*[class~="learningContent/learningContent"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <learningContentbody>
+ * 
+ * The <learningContentbody> element is the main 
+ * body-level element in a learningContent topic.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/body learningBase/learningBasebody
+ */
+*[class~="learningContent/learningContentbody"]{
+/**/
+}
+
+
+
+/* ====================================
+ *
+ * <learningSummary>
+ * 
+ * A Learning Summary recaps and provides context for 
+ * the achievement or accomplishment of learning 
+ * objectives, provides guidance to reinforce learning 
+ * and long-term memory, and may pose questions to 
+ * enhance encoding and verification of the learning 
+ * content.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/body learningBase/learningBase
+ */
+*[class~="learningSummary/learningSummary"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <learningSummarybody>
+ * 
+ * The <learningSummarybody> element is the main 
+ * body-level element in a learningSummary topic. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/body learningBase/learningBasebody
+ */
+*[class~="learningSummary/learningSummarybody"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <learningAssessment>
+ * 
+ * A Learning Assessment presents questions 
+ * or interactions that measure progress, 
+ * encourage recollection, and stimulate 
+ * reinforcement of the learning content, and 
+ * can be presented before the content as a 
+ * pre-assessment or as a post-assessment test.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/body learningBase/learningBase
+ */
+*[class~="learningAssessment/learningAssessment"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <learningAssessmentbody>
+ * 
+ * The <learningAssessmentbody> element is 
+ * the main body-level element in a 
+ * learningAssessment topic.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/body learningBase/learningBasebody
+ */
+*[class~="learningAssessment/learningAssessmentbody"]{
+/**/
+}
+
+
+
+/* ====================================
+ *
+ * <learningPlan>
+ * 
+ * A Learning Plan topic describes learning 
+ * needs and goals, instructional design models, 
+ * task analyses, learning taxonomies, and 
+ * other information necessary to the lesson 
+ * planning process.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/body learningBase/learningBase
+ */
+*[class~="learningPlan/learningPlan"]{
+/**/
+}
+
+
+/* ====================================
+ *
+ * <learningPlanbody>
+ * 
+ * The <learningPlanbody> element is the main 
+ * body-level element in a learningPlan topic. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/body learningBase/learningBasebody
+ */
+*[class~="learningPlan/learningPlanbody"]{
+/**/
+}
+
+

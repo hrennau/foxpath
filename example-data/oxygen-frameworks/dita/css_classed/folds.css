@@ -1,0 +1,24 @@
+*[class~="topic/topic"] > *[class~="topic/topic"],
+*[class~="topic/section"],
+*[class~="topic/example"],
+*[class~="topic/table"],
+*[class~="topic/simpletable"]{
+    -oxy-foldable:true;
+    -oxy-not-foldable-child: title;
+}
+
+/* Foldable but without foldable child, will fold to permit only before and after pseudo elements */
+*[class~="map/topicref"]{
+    -oxy-foldable:true;
+}
+
+/** Bookmap folds */
+*[class~="bookmap/part"],
+*[class~="bookmap/chapter"],
+*[class~="bookmap/appendix"],
+*[class~="bookmap/glossarylist"],
+*[class~="bookmap/notices"],
+*[class~="bookmap/draftintro"],
+*[class~="bookmap/preface"]{
+    -oxy-foldable:true;
+}

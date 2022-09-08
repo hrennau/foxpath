@@ -1,0 +1,12 @@
+<xliff version='1.2'
+    xmlns='urn:oasis:names:tc:xliff:document:1.2'>
+    <file original='test.txt' source-language='en' target-language='fr'
+        datatype='plaintext'>
+        <body>
+            <trans-unit id='tid'>
+                <source></source>
+                <target></target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

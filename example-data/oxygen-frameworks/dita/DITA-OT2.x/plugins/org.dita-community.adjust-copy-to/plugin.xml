@@ -1,0 +1,25 @@
+<plugin id="org.dita-community.adjust-copy-to">
+  <!-- 
+    
+   Post processes the resolve map (output of the mappull preprocess step)
+   in order to add additional copy-to values in order to ensure unique
+   result files for all references to a given topic or to impose additional
+   output filenaming rules, such as using navigation keys for result filenames.
+   
+   This process should be run between the mappull and chunk steps of the normal
+   OT preprocess sequence.   
+    
+    -->
+  
+  <feature extension="package.support.name" value="Eliot Kimber"/>
+  <feature extension="package.support.email" value="ekimber@contrext.com"/>  
+
+  <extension-point id="xsl.dcAdjustCopyTo" name="DITA Community adjust-copy-to XSLT extensions"/>
+  
+  <require plugin="org.dita-community.common.xslt"/>
+  
+  <template file="xsl/adjustCopyTo_template.xsl"/>
+  
+  <feature extension="dita.conductor.target.relative" file="build.xml"/>
+  
+</plugin>

@@ -1,0 +1,23 @@
+/**
+ * Puts syntax highlight on the codeblock. Uses a TextArea form control for this.
+ */
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+
+*[class~="pr-d/codeblock"][outputclass^="language-" ]{
+  visibility: -oxy-collapse-text;
+	background-color: #ffffff;
+	border: 0px solid; 
+}
+
+*[class~="pr-d/codeblock"][outputclass^="language-" ] > oxy|entity {
+    display:none;
+}
+
+*[class~="pr-d/codeblock"][outputclass^="language-" ]:before{
+content:
+    oxy_textArea(
+      edit, '#text',
+      contentType, oxy_concat('text/', 
+        oxy_substring(attr(outputclass), oxy_add(oxy_indexof(attr(outputclass), '-'), 1, 'integer'))),
+      fontInherit, true);
+}

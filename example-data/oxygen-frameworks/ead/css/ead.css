@@ -1,0 +1,627 @@
+@namespace oxy url('http://www.oxygenxml.com/extensions/author');
+
+/* Use Times New Roman for default font */
+oxy|document {
+  font-family: "Times New Roman" !important;
+  font-size: 12pt !important;
+  margin-top: 5px !important;
+  margin-left: 5px !important;
+}
+
+oxy|comment {
+  display: block !important;
+  color: purple !important;
+  white-space: pre !important;
+  margin-left: 20pt !important;
+}
+
+oxy|processing-instruction {
+  color: black !important;
+  background-color: #40E0D0 !important;
+}
+
+abstract {
+  display: block;
+  margin-left: 20pt;
+}
+
+accessrestrict {
+  display: block;
+  margin-left: 20pt;
+}
+
+accruals {
+  display: block;
+  margin-left: 20pt;
+}
+
+acqinfo {
+  display: block;
+  margin-left: 20pt;
+}
+
+add {
+  display: block;
+}
+
+address {
+  display: block;
+  margin-left: 20pt;
+}
+
+addressline {
+  display: block;
+  margin-left: 20pt;
+}
+
+admininfo {
+  display: block;
+  margin-left: 20pt;
+}
+
+altformavail {
+  display: block;
+  margin-left: 20pt;
+}
+
+appraisal {
+  display: block;
+}
+
+archdesc {
+  display: block;
+  margin-left: 20pt;
+}
+
+archref {
+  display: block;
+}
+
+arrangement {
+  display: block;
+  margin-left: 20pt;
+}
+
+author {
+  display: block;
+  margin-left: 20pt;
+}
+
+bibliography {
+  display: block;
+  margin-left: 20pt;
+}
+
+bibref {
+  display: block;
+}
+
+bibseries {
+  display: block;
+}
+
+bioghist {
+  display: block;
+  margin-left: 20pt;
+}
+
+blockquote {
+  display: block;
+}
+
+c {
+  display: block;
+}
+
+c01 {
+  display: block;
+  margin-left: 20pt;
+}
+
+c02 {
+  display: block;
+  margin-left: 20pt;
+}
+
+c03 {
+  display: block;
+  margin-left: 20pt;
+}
+
+c04 {
+  display: block;
+  margin-left: 20pt;
+}
+
+c05 {
+  display: block;
+  margin-left: 20pt;
+}
+
+c06 {
+  display: block;
+}
+
+c07 {
+  display: block;
+}
+
+c08 {
+  display: block;
+}
+
+c09 {
+  display: block;
+}
+
+c10 {
+  display: block;
+}
+
+c11 {
+  display: block;
+}
+
+c12 {
+  display: block;
+}
+
+change {
+  display: block;
+  margin-left: 20pt;
+}
+
+chronitem {
+  display: block;
+}
+
+chronlist {
+  display: block;
+}
+
+container {
+  display: block;
+  margin-left: 20pt;
+}
+
+controlaccess {
+  display: block;
+  margin-left: 20pt;
+}
+
+corpname {
+  display: block;
+  margin-left: 20pt;
+}
+
+creation {
+  display: block;
+  margin-left: 20pt;
+}
+
+custodhist {
+  display: block;
+  margin-left: 20pt;
+}
+
+dao {
+  display: block;
+}
+
+daodesc {
+  display: block;
+}
+
+daogrp {
+  display: block;
+}
+
+daoloc {
+  display: block;
+}
+
+date {
+  display: block;
+  margin-left: 20pt;
+}
+
+defitem {
+  display: block;
+}
+
+dentry {
+  display: block;
+}
+
+did {
+  display: block;
+  margin-left: 20pt;
+}
+
+div {
+  display: block;
+}
+
+drow {
+  display: block;
+}
+
+dsc {
+  display: block;
+  margin-left: 20pt;
+}
+
+ead {
+  display: block;
+}
+
+eadheader {
+  display: block;
+  margin-left: 20pt;
+}
+
+eadid {
+  display: block;
+  margin-left: 20pt;
+}
+
+edition {
+  display: block;
+}
+
+editionstmt {
+  display: block;
+}
+
+entry {
+  display: block;
+}
+
+event {
+  display: block;
+}
+
+eventgrp {
+  display: block;
+}
+
+extref {
+  display: block;
+}
+
+extrefloc {
+  display: block;
+}
+
+famname {
+  display: block;
+  margin-left: 20pt;
+}
+
+filedesc {
+  display: block;
+  margin-left: 20pt;
+}
+
+fileplan {
+  display: block;
+}
+
+frontmatter {
+  display: block;
+  margin-left: 20pt;
+}
+
+function {
+  display: block;
+  margin-left: 20pt;
+}
+
+genreform {
+  display: block;
+  margin-left: 20pt;
+}
+
+geogname {
+  display: block;
+  margin-left: 20pt;
+}
+
+head {
+  display: block;
+  margin-left: 20pt;
+}
+
+head01 {
+  display: block;
+}
+
+head02 {
+  display: block;
+}
+
+index {
+  display: block;
+}
+
+indexentry {
+  display: block;
+}
+
+item {
+  display: block;
+  margin-left: 20pt;
+}
+
+label {
+  display: block;
+}
+
+langusage {
+  display: block;
+  margin-left: 20pt;
+}
+
+linkgrp {
+  display: block;
+}
+
+list {
+  display: block;
+}
+
+listhead {
+  display: block;
+}
+
+name {
+  display: block;
+}
+
+namegrp {
+  display: block;
+}
+
+note {
+  display: block;
+  margin-left: 20pt;
+}
+
+notestmt {
+  display: block;
+  margin-left: 20pt;
+}
+
+num {
+  display: block;
+}
+
+occupation {
+  display: block;
+  margin-left: 20pt;
+}
+
+odd {
+  display: block;
+  margin-left: 20pt;
+}
+
+organization {
+  display: block;
+}
+
+origination {
+  display: block;
+  margin-left: 20pt;
+}
+
+otherfindaid {
+  display: block;
+  margin-left: 20pt;
+}
+
+p {
+  display: block;
+  margin-left: 20pt;
+}
+
+persname {
+  display: block;
+  margin-left: 20pt;
+}
+
+physdesc {
+  display: block;
+  margin-left: 20pt;
+}
+
+physloc {
+  display: block;
+  margin-left: 20pt;
+}
+
+prefercite {
+  display: block;
+  margin-left: 20pt;
+}
+
+processinfo {
+  display: block;
+  margin-left: 20pt;
+}
+
+profiledesc {
+  display: block;
+  margin-left: 20pt;
+}
+
+ptrgrp {
+  display: block;
+}
+
+publicationstmt {
+  display: block;
+  margin-left: 20pt;
+}
+
+publisher {
+  display: block;
+  margin-left: 20pt;
+}
+
+ref {
+  display: block;
+}
+
+refloc {
+  display: block;
+}
+
+relatedmaterial {
+  display: block;
+  margin-left: 20pt;
+}
+
+repository {
+  display: block;
+  margin-left: 20pt;
+}
+
+revisiondesc {
+  display: block;
+  margin-left: 20pt;
+}
+
+row {
+  display: block;
+}
+
+runner {
+  display: block;
+}
+
+scopecontent {
+  display: block;
+  margin-left: 20pt;
+}
+
+separatedmaterial {
+  display: block;
+  margin-left: 20pt;
+}
+
+seriesstmt {
+  display: block;
+}
+
+sponsor {
+  display: block;
+}
+
+subject {
+  display: block;
+  margin-left: 20pt;
+}
+
+subtitle {
+  display: block;
+}
+
+table {
+  display: block;
+}
+
+tbody {
+  display: block;
+}
+
+tfoot {
+  display: block;
+}
+
+tgroup {
+  display: block;
+}
+
+thead {
+  display: block;
+}
+
+title {
+  display: block;
+  margin-left: 20pt;
+}
+
+titlepage {
+  display: block;
+  margin-left: 20pt;
+}
+
+titleproper {
+  display: block;
+  margin-left: 20pt;
+}
+
+titlestmt {
+  display: block;
+  margin-left: 20pt;
+}
+
+tspec {
+  display: block;
+}
+
+unitdate {
+  display: block;
+  margin-left: 20pt;
+}
+
+unitid {
+  display: block;
+  margin-left: 20pt;
+}
+
+unittitle {
+  display: block;
+  margin-left: 20pt;
+}
+
+userestrict {
+  display: block;
+  margin-left: 20pt;
+}
+
+extent {
+  display: block;
+  margin-left: 20pt;
+}
+
+physfacet {
+  display: block;
+  margin-left: 20pt;
+}
+
+dimensions {
+  display: block;
+  margin-left: 20pt;
+}
+
+materialspec {
+  display: block;
+  margin-left: 20pt;
+}
+
+langmaterial {
+  display: block;
+  margin-left: 20pt;
+}
+
+phystech {
+  display: block;
+  margin-left: 20pt;
+}
+
+originalsloc {
+  display: block;
+  margin-left: 20pt;
+}

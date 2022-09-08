@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  Copyright 2001-2011 Syncro Soft SRL. All rights reserved.
+ -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+  targetNamespace="http://www.oxygenxml.com/ns/doc/xsl-internal"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
+  xmlns:xint="http://www.oxygenxml.com/ns/doc/xsl-internal">
+
+  <xs:import namespace="http://www.oxygenxml.com/ns/doc/xsl"
+    schemaLocation="stylesheet_documentation.xsd"/>
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace"
+    schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+
+  <xs:complexType name="baseType">
+    <xs:sequence>
+      <xs:element minOccurs="0" ref="xint:qname"/>
+      <xs:element ref="xint:namespace"/>
+      <xs:element ref="xint:stylesheetURL" minOccurs="0"/>
+      <xs:element ref="xint:source" minOccurs="0"/>
+      <xs:element minOccurs="0" ref="xint:docSection" maxOccurs="unbounded"/>
+      <xs:group ref="xint:hierarchyAndReferences" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:NCName"/>
+  </xs:complexType>
+  <xs:group name="hierarchyAndReferences">
+    <xs:sequence>
+      <xs:element minOccurs="0" ref="xint:usedBy"/>
+      <xs:element minOccurs="0" ref="xint:references"/>
+      <xs:element minOccurs="0" ref="xint:overriding"/>
+      <xs:element minOccurs="0" ref="xint:supersedes"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:complexType name="referencesType">
+    <xs:sequence>
+      <xs:element ref="xint:ref" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="index" type="xint:indexType"> </xs:element>
+  <xs:element name="splitInfo">
+    <xs:complexType>
+      <xs:attribute name="criteria" use="required" type="xs:NCName"/>
+      <xs:attribute name="value" use="required" type="xs:anyURI"/>
+      <xs:attribute name="indexLocation" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="xslDocumentation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="xint:splitInfo"/>
+        <xs:element maxOccurs="unbounded" ref="xint:stylesheet" minOccurs="0"/>
+        <xs:element maxOccurs="unbounded" ref="xint:template" minOccurs="0"/>
+        <xs:element maxOccurs="unbounded" ref="xint:attributeSet" minOccurs="0"/>
+        <xs:element maxOccurs="unbounded" ref="xint:parameter" minOccurs="0"/>
+        <xs:element maxOccurs="unbounded" ref="xint:variable" minOccurs="0"/>
+        <xs:element ref="xint:function" maxOccurs="unbounded" minOccurs="0"/>
+        <xs:element ref="xint:output" maxOccurs="unbounded" minOccurs="0"/>
+        <xs:element maxOccurs="unbounded" ref="xint:key" minOccurs="0"/>
+        <xs:element ref="xint:decimalFormat" maxOccurs="unbounded" minOccurs="0"/>
+        <xs:element ref="xint:characterMap" maxOccurs="unbounded" minOccurs="0"/>
+        <xs:element ref="xint:index" maxOccurs="unbounded" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="stylesheet">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="xint:qname"/>
+        <xs:element ref="xint:stylesheetURL" minOccurs="0"/>
+        <xs:element minOccurs="0" ref="xint:docSection"/>
+        <xs:element minOccurs="0" ref="xint:importedFrom"/>
+        <xs:element minOccurs="0" ref="xint:imports"/>
+        <xs:element minOccurs="0" ref="xint:includes"/>
+        <xs:element minOccurs="0" ref="xint:includedFrom"/>
+        <xs:element name="version" type="xs:decimal">
+          <xs:annotation>
+            <xs:documentation>Stylesheet version: 1.0 or 2.0</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" name="extensionFunctions">
+          <xs:annotation>
+            <xs:documentation>Extension functions detected in the main module and the imported/included modules. Only appears on the main stylesheet information because this is the module that will be applied in a transformation so is important to knoe which extension functions are needed.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence maxOccurs="unbounded">
+              <xs:element name="extensionFunction">
+                <xs:annotation>
+                  <xs:documentation>An extension function. It's name, namespace, arity and xslt module where it was used are present.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence maxOccurs="unbounded">
+                    <xs:element name="location" type="xs:string"/>
+                  </xs:sequence>
+                  <xs:attribute name="name" type="xs:NCName" use="required"/>
+                  <xs:attribute name="ns" use="required" type="xs:anyURI"/>
+                  <xs:attribute name="arity" type="xs:int" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:string"/>
+      <xs:attribute name="type" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="main"/>
+            <xs:enumeration value="imported"/>
+            <xs:enumeration value="included"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="template">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="xint:baseType">
+          <xs:sequence>
+            <xs:element minOccurs="0" ref="xint:parameters"/>
+            <xs:element ref="xint:match" minOccurs="0"/>
+            <xs:element ref="xint:mode" minOccurs="0"/>
+            <xs:element ref="xint:importPrecedence" minOccurs="0"/>
+            <xs:element ref="xint:priority" minOccurs="0"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="function">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="xint:baseType">
+          <xs:sequence>
+            <xs:element ref="xint:parameters" minOccurs="0"/>
+            <xs:element ref="xint:type" minOccurs="0"/>
+            <xs:element ref="xint:importPrecedence" minOccurs="0"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="attributeSet">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="xint:baseType">
+          <xs:sequence>
+            <xs:element minOccurs="0" ref="xint:attributes"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="parameter">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="xint:baseType">
+          <xs:sequence>
+            <xs:element ref="xint:required" minOccurs="0"/>
+            <xs:element minOccurs="0" ref="xint:select"/>
+            <xs:element ref="xint:tunnel" minOccurs="0"/>
+            <xs:element ref="xint:type" minOccurs="0"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="variable">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="xint:baseType">
+          <xs:sequence>
+            <xs:element minOccurs="0" ref="xint:select"/>
+            <xs:element ref="xint:type" minOccurs="0"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="output">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="xint:baseType">
+          <xs:sequence>
+            <xs:element minOccurs="0" ref="xint:method"/>
+            <xs:element minOccurs="0" ref="xint:encoding"/>
+            <xs:element minOccurs="0" ref="xint:indent"/>
+            <xs:element minOccurs="0" ref="xint:byte-order-mark"/>
+            <xs:element minOccurs="0" ref="xint:cdata-section-elements"/>
+            <xs:element minOccurs="0" ref="xint:doctype-public"/>
+            <xs:element minOccurs="0" ref="xint:doctype-system"/>
+            <xs:element minOccurs="0" ref="xint:escape-uri-attributes"/>
+            <xs:element minOccurs="0" ref="xint:include-content-type"/>
+            <xs:element minOccurs="0" ref="xint:media-type"/>
+            <xs:element minOccurs="0" ref="xint:normalization-form"/>
+            <xs:element minOccurs="0" ref="xint:omit-xml-declaration"/>
+            <xs:element minOccurs="0" ref="xint:standalone"/>
+            <xs:element minOccurs="0" ref="xint:undeclare-prefixes"/>
+            <xs:element minOccurs="0" ref="xint:use-caracter-maps"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="key">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="xint:baseType">
+          <xs:sequence>
+            <xs:element minOccurs="0" ref="xint:match"/>
+            <xs:element minOccurs="0" ref="xint:use"/>
+            <xs:element ref="xint:collation" minOccurs="0"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="characterMap">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="xint:baseType">
+          <xs:sequence>
+            <xs:element ref="xint:characters"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="decimalFormat">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="xint:baseType">
+          <xs:sequence>
+            <xs:element minOccurs="0" ref="xint:decimal-separator"/>
+            <xs:element minOccurs="0" ref="xint:digit"/>
+            <xs:element minOccurs="0" ref="xint:grouping-separator"/>
+            <xs:element minOccurs="0" ref="xint:infinity"/>
+            <xs:element minOccurs="0" ref="xint:minus-sign"/>
+            <xs:element minOccurs="0" ref="xint:NaN"/>
+            <xs:element minOccurs="0" ref="xint:pattern-separator"/>
+            <xs:element minOccurs="0" ref="xint:per-mille"/>
+            <xs:element minOccurs="0" ref="xint:percent"/>
+            <xs:element minOccurs="0" ref="xint:zero-digit"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="imports" type="xint:referencesType"> </xs:element>
+  <xs:element name="includes" type="xint:referencesType"> </xs:element>
+  <xs:element name="importedFrom" type="xint:referencesType"> </xs:element>
+  <xs:element name="includedFrom" type="xint:referencesType"> </xs:element>
+  <xs:element name="overriding" type="xint:referencesType"> </xs:element>
+  <xs:element name="supersedes" type="xint:referencesType"> </xs:element>
+  <xs:element name="usedBy" type="xint:referencesType"> </xs:element>
+  <xs:element name="references" type="xint:referencesType"> </xs:element>
+  <xs:element name="parameters">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="xint:parameter"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="attributes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="xint:attribute"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="attribute">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="xint:qname"/>
+        <xs:element ref="xint:namespace"/>
+        <xs:element ref="xint:select" minOccurs="0"/>
+        <xs:element ref="xint:type" minOccurs="0"/>
+        <xs:element ref="xint:validation" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ref">
+    <xs:complexType mixed="true">
+      <xs:attribute name="base" use="required" type="xs:NCName"/>
+      <xs:attribute name="location" use="required" type="xs:anyURI"/>
+      <xs:attribute name="match"/>
+      <xs:attribute name="mode"/>
+      <xs:attribute name="name" type="xs:NCName"/>
+      <xs:attribute name="ns" use="required"/>
+      <xs:attribute name="refId" use="required"/>
+      <xs:attribute name="refType" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="source">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="xint:token"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="token">
+    <xs:complexType mixed="true">
+      <xs:attribute name="type" use="required" type="xs:NCName"/>
+      <xs:attribute ref="xml:space"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="qname" type="xs:string"/>
+  <xs:element name="namespace" type="xs:anyURI"> </xs:element>
+  <xs:element name="stylesheetURL" type="xint:referencesType"/>
+  <xs:element name="mode" type="xs:string"/>
+  <xs:element name="validation" type="xs:string"> </xs:element>
+  <xs:element name="method" type="xs:string"/>
+  <xs:element name="encoding" type="xs:string"/>
+  <xs:element name="indent" type="xs:string"/>
+  <xs:element name="use" type="xs:string"/>
+  <xs:element name="required" type="xs:string"> </xs:element>
+  <xs:element name="tunnel" type="xs:string"> </xs:element>
+  <xs:element name="match" type="xs:string"/>
+  <xs:element name="select" type="xs:string"/>
+  <xs:element name="type" type="xs:string"> </xs:element>
+  <xs:element name="importPrecedence" type="xs:string"/>
+  <xs:element name="priority" type="xs:string"/>
+  <xs:element name="characters">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="xint:outputCharacter"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="outputCharacter">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="xint:character"/>
+        <xs:element ref="xint:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="character" type="xs:string"/>
+  <xs:element name="string" type="xs:string"/>
+  <xs:element name="decimal-separator" type="xs:string"/>
+  <xs:element name="digit" type="xs:string"/>
+  <xs:element name="grouping-separator" type="xs:string"/>
+  <xs:element name="infinity" type="xs:string"/>
+  <xs:element name="minus-sign" type="xs:string"/>
+  <xs:element name="NaN" type="xs:string"/>
+  <xs:element name="pattern-separator" type="xs:string"/>
+  <xs:element name="per-mille" type="xs:string"/>
+  <xs:element name="percent" type="xs:string"/>
+  <xs:element name="zero-digit" type="xs:string"/>
+  <xs:element name="byte-order-mark" type="xs:string"/>
+  <xs:element name="cdata-section-elements" type="xs:string"/>
+  <xs:element name="doctype-public" type="xs:string"/>
+  <xs:element name="doctype-system" type="xs:string"/>
+  <xs:element name="escape-uri-attributes" type="xs:string"/>
+  <xs:element name="include-content-type" type="xs:string"/>
+  <xs:element name="media-type" type="xs:string"/>
+  <xs:element name="normalization-form" type="xs:string"/>
+  <xs:element name="omit-xml-declaration" type="xs:string"/>
+  <xs:element name="standalone" type="xs:string"/>
+  <xs:element name="undeclare-prefixes" type="xs:string"/>
+  <xs:element name="use-caracter-maps" type="xs:string"/>
+  <xs:element name="collation" type="xs:string"/>
+  <xs:element name="docSection">
+    <xs:complexType>
+      <xs:sequence maxOccurs="unbounded" minOccurs="0">
+        <!--        <xs:element ref="xd:doc" minOccurs="0"/>-->
+        <xs:any namespace="##any" minOccurs="0" processContents="lax"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="stylesheetReferences" type="xint:referencesType"/>
+  <xs:complexType name="indexType">
+    <xs:sequence>
+      <xs:element minOccurs="1" ref="xint:stylesheetReferences"/>
+      <xs:element ref="xint:ref" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

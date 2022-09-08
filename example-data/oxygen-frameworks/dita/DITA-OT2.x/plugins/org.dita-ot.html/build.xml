@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+
+  <target name="org.dita-ot.html.init">
+    <property name="args.xsl" location="${dita.plugin.org.dita-ot.html.dir}/xslt/dita2html.xsl"/>
+    <property name="args.html5.toc.xsl" location="${dita.plugin.org.dita-ot.html.dir}/xslt/map2html5-cover.xsl"/>
+    <property name="args.html5.toc" value="toc"/>
+  </target>
+    
+  <target name="dita2org.dita-ot.html"
+          depends="org.dita-ot.html.init,
+                   html5.init,
+                   build-init,
+                   preprocess,
+                   html5.topic,
+                   html5.map"/>
+  
+</project>

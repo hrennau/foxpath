@@ -1,0 +1,3 @@
+<dummy>
+    <param name="com.oxygenxml.xhtml.linkToMediaResources" expression="${com.oxygenxml.xhtml.linkToMediaResources}" if="com.oxygenxml.xhtml.linkToMediaResources"/>
+</dummy>

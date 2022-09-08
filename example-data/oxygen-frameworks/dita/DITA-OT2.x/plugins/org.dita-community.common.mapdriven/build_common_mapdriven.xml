@@ -1,0 +1,19 @@
+<project name="org.dita-community.common.mapdriven"  >
+
+
+  <target name="ditacommunity.map-driven-build-init"
+     description="Sets properties that should be set for map-driven transformation types."
+    >
+
+  	<property name="ditacommunity.is.map.driven" value="true"/>
+    <!-- This version is for backwards compatibility with the older D4P version
+         of this plugin.
+      -->
+  	<property name="d4p.is.map.driven" value="true"/>
+    <!-- NOTE: Not turning off preprocessing copy files because that breaks
+               coderef, among other things.
+      -->
+    
+  </target>
+  
+</project>

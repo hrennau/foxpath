@@ -1,0 +1,1005 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serialized version="19.1" xml:space="preserve">
+	<serializableOrderedMap>
+		<entry>
+			<String>document.types</String>
+			<documentTypeDescriptor-array>
+				<documentTypeDescriptor>
+					<field name="extensionPatch">
+						<null/>
+					</field>
+					<field name="name">
+						<String>XSLT</String>
+					</field>
+					<field name="schemaDescriptor">
+						<null/>
+					</field>
+					<field name="classpath">
+						<String-array>
+							<String>${framework}/xslt.jar</String>
+							<String>${framework}/i18n/</String>
+						</String-array>
+					</field>
+					<field name="parentClassLoaderID">
+						<null/>
+					</field>
+					<field name="authorExtensionDescriptor">
+						<authorExtension>
+							<field name="cssDescriptors">
+								<cssFile-array>
+									<cssFile>
+										<field name="href">
+											<String>${framework}/xslt.css</String>
+										</field>
+										<field name="title">
+											<String>Default</String>
+										</field>
+										<field name="alternate">
+											<Boolean>false</Boolean>
+										</field>
+									</cssFile>
+								</cssFile-array>
+							</field>
+							<field name="mergeCSSsFromDocument">
+								<Boolean>true</Boolean>
+							</field>
+							<field name="multipleAlternateSelectionEnabled">
+								<Boolean>false</Boolean>
+							</field>
+							<field name="actionDescriptors">
+								<action-array>
+									<action>
+										<field name="id">
+											<String>bold</String>
+										</field>
+										<field name="name">
+											<String>${i18n(bold)}</String>
+										</field>
+										<field name="description">
+											<String>${i18n(bold_description)}</String>
+										</field>
+										<field name="largeIconPath">
+											<String>/images/Bold24.png</String>
+										</field>
+										<field name="smallIconPath">
+											<String>/images/Bold16.png</String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<String>M1 B</String>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>self::*:p[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+self::*:i[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+self::*:ref[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+self::*:a[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+self::*:desc[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+self::*:param[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+self::*:return[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"]</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>fragment</String>
+																<String>&lt;xd:b xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl">&lt;/xd:b></String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>ro.sync.ecss.extensions.commons.operations.SurroundWithFragmentOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>italic</String>
+										</field>
+										<field name="name">
+											<String>${i18n(italic)}</String>
+										</field>
+										<field name="description">
+											<String>${i18n(italic_description)}</String>
+										</field>
+										<field name="largeIconPath">
+											<String>/images/Italic24.png</String>
+										</field>
+										<field name="smallIconPath">
+											<String>/images/Italic16.png</String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<String>M1 I</String>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>self::*:p[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+self::*:b[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+self::*:ref[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+self::*:a[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+self::*:desc[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+self::*:param[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+self::*:return[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"]</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>fragment</String>
+																<String>&lt;xd:i xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl">&lt;/xd:i></String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>ro.sync.ecss.extensions.commons.operations.SurroundWithFragmentOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>paragraph</String>
+										</field>
+										<field name="name">
+											<String>${i18n(paragraph)}</String>
+										</field>
+										<field name="description">
+											<String>${i18n(paragraph_description)}</String>
+										</field>
+										<field name="largeIconPath">
+											<String>/images/Paragraph24.png</String>
+										</field>
+										<field name="smallIconPath">
+											<String>/images/Paragraph16.png</String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<String>M1 M2 P</String>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>self::*:desc[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+self::*:param[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+self::*:return[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+self::*:p[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+self::*:li[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] 
+</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>fragment</String>
+																<String>&lt;xd:p xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl">&lt;/xd:p></String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>ro.sync.ecss.extensions.commons.operations.SurroundWithFragmentOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>list</String>
+										</field>
+										<field name="name">
+											<String>${i18n(list)}</String>
+										</field>
+										<field name="description">
+											<String>${i18n(list_description)}</String>
+										</field>
+										<field name="largeIconPath">
+											<String>/images/UnorderedList24.png</String>
+										</field>
+										<field name="smallIconPath">
+											<String>/images/UnorderedList16.png</String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<null/>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>ancestor-or-self::*:desc[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+ancestor-or-self::*:param[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+ancestor-or-self::*:return[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"]</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>fragment</String>
+																<String>&lt;xd:ul xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl">
+  &lt;xd:li>&lt;/xd:li>
+&lt;/xd:ul></String>
+															</entry>
+															<entry>
+																<String>insertLocation</String>
+																<String></String>
+															</entry>
+															<entry>
+																<String>insertPosition</String>
+																<String>Inside as first child</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>ro.sync.ecss.extensions.commons.operations.InsertFragmentOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>list_item</String>
+										</field>
+										<field name="name">
+											<String>${i18n(item)}</String>
+										</field>
+										<field name="description">
+											<String>${i18n(listitem_description)}</String>
+										</field>
+										<field name="largeIconPath">
+											<String>/images/ListItem24.png</String>
+										</field>
+										<field name="smallIconPath">
+											<String>/images/ListItem16.gif</String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<String>M1 M2 L</String>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>ancestor::*:ul[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"]
+</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>fragment</String>
+																<String>&lt;xd:li xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl">
+  &lt;xd:p>&lt;/xd:p>
+&lt;/xd:li></String>
+															</entry>
+															<entry>
+																<String>insertLocation</String>
+																<String>ancestor-or-self::*:li[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"]</String>
+															</entry>
+															<entry>
+																<String>insertPosition</String>
+																<String>After</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>ro.sync.ecss.extensions.commons.operations.InsertFragmentOperation</String>
+													</field>
+												</actionMode>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>self::*:ul[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"]
+</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>fragment</String>
+																<String>&lt;xd:li xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl">
+  &lt;xd:p>&lt;/xd:p>
+&lt;/xd:li></String>
+															</entry>
+															<entry>
+																<String>insertLocation</String>
+																<String>self::*:ul[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"]</String>
+															</entry>
+															<entry>
+																<String>insertPosition</String>
+																<String>Inside as first child</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>ro.sync.ecss.extensions.commons.operations.InsertFragmentOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>ref</String>
+										</field>
+										<field name="name">
+											<String>${i18n(reference)}</String>
+										</field>
+										<field name="description">
+											<String>${i18n(reference_description)}</String>
+										</field>
+										<field name="largeIconPath">
+											<String>/images/Link24.png</String>
+										</field>
+										<field name="smallIconPath">
+											<String>/images/Link16.png</String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<String>M1 M2 A</String>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>ancestor-or-self::*:descr[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+ancestor-or-self::*:param[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"] |
+ancestor-or-self::*:return[namespace-uri() = "http://www.oxygenxml.com/ns/doc/xsl"]
+</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>fragment</String>
+																<String>&lt;xd:ref xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" name="" type="">&lt;/xd:ref></String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>ro.sync.ecss.extensions.commons.operations.SurroundWithFragmentOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>add_component_documentation</String>
+										</field>
+										<field name="name">
+											<String>${i18n(add_component_documentation)}</String>
+										</field>
+										<field name="description">
+											<String>${i18n(add_component_documentation_description)}</String>
+										</field>
+										<field name="largeIconPath">
+											<String>/images/AddDocumentation24.png</String>
+										</field>
+										<field name="smallIconPath">
+											<String>/images/AddDocumentation16.gif</String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<null/>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>ancestor-or-self::*[namespace-uri() = "http://www.w3.org/1999/XSL/Transform"][parent::*/local-name()="stylesheet"]</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>fragment</String>
+																<String>&lt;xd:doc xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl">
+    &lt;xd:desc>
+          &lt;xd:p>&lt;/xd:p>
+    &lt;/xd:desc>  
+&lt;/xd:doc></String>
+															</entry>
+															<entry>
+																<String>insertLocation</String>
+																<String>ancestor-or-self::*[namespace-uri() = "http://www.w3.org/1999/XSL/Transform"][parent::*/local-name()="stylesheet"]</String>
+															</entry>
+															<entry>
+																<String>insertPosition</String>
+																<String>Before</String>
+															</entry>
+															<entry>
+																<String>schemaAware</String>
+																<String>false</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>ro.sync.ecss.extensions.commons.operations.InsertFragmentOperation</String>
+													</field>
+												</actionMode>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>self::*:stylesheet[namespace-uri() = "http://www.w3.org/1999/XSL/Transform"]</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>fragment</String>
+																<String>&lt;xd:doc xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl">
+    &lt;xd:desc>
+          &lt;xd:p>&lt;/xd:p>
+    &lt;/xd:desc>  
+&lt;/xd:doc></String>
+															</entry>
+															<entry>
+																<String>insertLocation</String>
+																<String></String>
+															</entry>
+															<entry>
+																<String>insertPosition</String>
+																<String>Inside as first child</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>ro.sync.ecss.extensions.commons.operations.InsertFragmentOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
+								</action-array>
+							</field>
+							<field name="menubarDescriptor">
+								<menu>
+									<field name="label">
+										<String>Author</String>
+									</field>
+									<field name="accessKey">
+										<String></String>
+									</field>
+									<field name="iconPath">
+										<String></String>
+									</field>
+									<field name="menuEntriesDescriptorList">
+										<menuEntry-array>
+											<menu>
+												<field name="label">
+													<String>Component documentation</String>
+												</field>
+												<field name="accessKey">
+													<String></String>
+												</field>
+												<field name="iconPath">
+													<String></String>
+												</field>
+												<field name="menuEntriesDescriptorList">
+													<menuEntry-array>
+														<menuItem>
+															<field name="actionID">
+																<String>add_component_documentation</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>paragraph</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>bold</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>italic</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>list</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>list_item</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>ref</String>
+															</field>
+														</menuItem>
+													</menuEntry-array>
+												</field>
+												<field name="context">
+													<null/>
+												</field>
+											</menu>
+										</menuEntry-array>
+									</field>
+									<field name="context">
+										<null/>
+									</field>
+								</menu>
+							</field>
+							<field name="popupMenuDescriptor">
+								<menu>
+									<field name="label">
+										<String>Contextual menu</String>
+									</field>
+									<field name="accessKey">
+										<null/>
+									</field>
+									<field name="iconPath">
+										<null/>
+									</field>
+									<field name="menuEntriesDescriptorList">
+										<menuEntry-array>
+											<menu>
+												<field name="label">
+													<String>Component documentation</String>
+												</field>
+												<field name="accessKey">
+													<String></String>
+												</field>
+												<field name="iconPath">
+													<String></String>
+												</field>
+												<field name="menuEntriesDescriptorList">
+													<menuEntry-array>
+														<menuItem>
+															<field name="actionID">
+																<String>add_component_documentation</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>paragraph</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>bold</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>italic</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>list</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>list_item</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>ref</String>
+															</field>
+														</menuItem>
+													</menuEntry-array>
+												</field>
+												<field name="context">
+													<null/>
+												</field>
+											</menu>
+										</menuEntry-array>
+									</field>
+									<field name="context">
+										<null/>
+									</field>
+								</menu>
+							</field>
+							<field name="toolbarDescriptor">
+								<toolbar>
+									<field name="id">
+										<String>XSL Documentation</String>
+									</field>
+									<field name="type">
+										<Integer>2</Integer>
+									</field>
+									<field name="largeIconPath">
+										<null/>
+									</field>
+									<field name="smallIconPath">
+										<null/>
+									</field>
+									<field name="toolbarEntriesDescriptorList">
+										<toolbarEntry-array>
+											<toolbarItem>
+												<field name="actionID">
+													<String>add_component_documentation</String>
+												</field>
+											</toolbarItem>
+											<toolbarSeparator/>
+											<toolbarItem>
+												<field name="actionID">
+													<String>bold</String>
+												</field>
+											</toolbarItem>
+											<toolbarItem>
+												<field name="actionID">
+													<String>italic</String>
+												</field>
+											</toolbarItem>
+											<toolbarSeparator/>
+											<toolbarItem>
+												<field name="actionID">
+													<String>list</String>
+												</field>
+											</toolbarItem>
+											<toolbarItem>
+												<field name="actionID">
+													<String>list_item</String>
+												</field>
+											</toolbarItem>
+											<toolbarSeparator/>
+											<toolbarItem>
+												<field name="actionID">
+													<String>ref</String>
+												</field>
+											</toolbarItem>
+										</toolbarEntry-array>
+									</field>
+								</toolbar>
+							</field>
+							<field name="additionalToolbarsDescriptors">
+								<null/>
+							</field>
+							<field name="contextualItems">
+								<contextProvider>
+									<field name="items">
+										<contextItem-array/>
+									</field>
+									<field name="removeItems">
+										<null/>
+									</field>
+								</contextProvider>
+							</field>
+							<field name="tableSupportClassName">
+								<null/>
+							</field>
+							<field name="tableCellSeparatorSupportClassName">
+								<null/>
+							</field>
+							<field name="tableColWidthSupportClassName">
+								<null/>
+							</field>
+							<field name="customReferencesResolver">
+								<null/>
+							</field>
+							<field name="editPropertiesHandler">
+								<null/>
+							</field>
+							<field name="authorExtensionStateListener">
+								<null/>
+							</field>
+							<field name="attributesRecognizer">
+								<null/>
+							</field>
+							<field name="authorActionEventHandler">
+								<null/>
+							</field>
+							<field name="authorImageDecorator">
+								<null/>
+							</field>
+						</authorExtension>
+					</field>
+					<field name="templatesLocations">
+						<String-array/>
+					</field>
+					<field name="xmlCatalogs">
+						<String-array/>
+					</field>
+					<field name="description">
+						<String>Visual mode for XSLT stylesheets </String>
+					</field>
+					<field name="doctypeRules">
+						<documentTypeRule-array>
+							<documentTypeRule>
+								<field name="namespace">
+									<String>http://www.w3.org/1999/XSL/Transform</String>
+								</field>
+								<field name="rootElem">
+									<String>*</String>
+								</field>
+								<field name="fileName">
+									<String>*</String>
+								</field>
+								<field name="publicID">
+									<String>*</String>
+								</field>
+								<field name="javaRuleClass">
+									<String></String>
+								</field>
+								<field name="attributeLocalName">
+									<String>*</String>
+								</field>
+								<field name="attributeNamespace">
+									<String>*</String>
+								</field>
+								<field name="attributeValue">
+									<String>*</String>
+								</field>
+							</documentTypeRule>
+						</documentTypeRule-array>
+					</field>
+					<field name="scenarios">
+						<scenario-array/>
+					</field>
+					<field name="validationScenarios">
+						<validationScenario-array>
+							<validationScenario>
+								<field name="pairs">
+									<list>
+										<validationUnit>
+											<field name="validationType">
+												<validationUnitType>
+													<field name="validationInputType">
+														<String>text/any</String>
+													</field>
+												</validationUnitType>
+											</field>
+											<field name="url">
+												<String>${currentFileURL}</String>
+											</field>
+											<field name="validationEngine">
+												<validationEngine>
+													<field name="engineType">
+														<String>&lt;Default engine></String>
+													</field>
+													<field name="allowsAutomaticValidation">
+														<Boolean>true</Boolean>
+													</field>
+												</validationEngine>
+											</field>
+											<field name="allowAutomaticValidation">
+												<Boolean>true</Boolean>
+											</field>
+											<field name="extensions">
+												<null/>
+											</field>
+											<field name="validationSchema">
+												<null/>
+											</field>
+										</validationUnit>
+										<validationUnit>
+											<field name="validationType">
+												<validationUnitType>
+													<field name="validationInputType">
+														<String>text/xml</String>
+													</field>
+												</validationUnitType>
+											</field>
+											<field name="url">
+												<String>${currentFileURL}</String>
+											</field>
+											<field name="validationEngine">
+												<validationEngine>
+													<field name="engineType">
+														<String>&lt;Default engine></String>
+													</field>
+													<field name="allowsAutomaticValidation">
+														<Boolean>true</Boolean>
+													</field>
+												</validationEngine>
+											</field>
+											<field name="allowAutomaticValidation">
+												<Boolean>true</Boolean>
+											</field>
+											<field name="extensions">
+												<null/>
+											</field>
+											<field name="validationSchema">
+												<validationUnitSchema>
+													<field name="dtdSchemaPublicID">
+														<null/>
+													</field>
+													<field name="schematronPhase">
+														<null/>
+													</field>
+													<field name="type">
+														<Integer>7</Integer>
+													</field>
+													<field name="uri">
+														<String>${framework}/sch/xsltDocCheck.sch</String>
+													</field>
+												</validationUnitSchema>
+											</field>
+										</validationUnit>
+										<validationUnit>
+											<field name="validationType">
+												<validationUnitType>
+													<field name="validationInputType">
+														<String>text/xml</String>
+													</field>
+												</validationUnitType>
+											</field>
+											<field name="url">
+												<String>${currentFileURL}</String>
+											</field>
+											<field name="validationEngine">
+												<validationEngine>
+													<field name="engineType">
+														<String>&lt;Default engine></String>
+													</field>
+													<field name="allowsAutomaticValidation">
+														<Boolean>true</Boolean>
+													</field>
+												</validationEngine>
+											</field>
+											<field name="allowAutomaticValidation">
+												<Boolean>true</Boolean>
+											</field>
+											<field name="extensions">
+												<null/>
+											</field>
+											<field name="validationSchema">
+												<validationUnitSchema>
+													<field name="dtdSchemaPublicID">
+														<null/>
+													</field>
+													<field name="schematronPhase">
+														<null/>
+													</field>
+													<field name="type">
+														<Integer>7</Integer>
+													</field>
+													<field name="uri">
+														<String>${framework}/sch/xsltCodeQA.sch</String>
+													</field>
+												</validationUnitSchema>
+											</field>
+										</validationUnit>
+										<validationUnit>
+											<field name="validationType">
+												<validationUnitType>
+													<field name="validationInputType">
+														<String>text/xml</String>
+													</field>
+												</validationUnitType>
+											</field>
+											<field name="url">
+												<String>${currentFileURL}</String>
+											</field>
+											<field name="validationEngine">
+												<validationEngine>
+													<field name="engineType">
+														<String>&lt;Default engine></String>
+													</field>
+													<field name="allowsAutomaticValidation">
+														<Boolean>true</Boolean>
+													</field>
+												</validationEngine>
+											</field>
+											<field name="allowAutomaticValidation">
+												<Boolean>true</Boolean>
+											</field>
+											<field name="extensions">
+												<null/>
+											</field>
+											<field name="validationSchema">
+												<validationUnitSchema>
+													<field name="dtdSchemaPublicID">
+														<null/>
+													</field>
+													<field name="schematronPhase">
+														<null/>
+													</field>
+													<field name="type">
+														<Integer>7</Integer>
+													</field>
+													<field name="uri">
+														<String>${framework}/sch/xsltBadPractices.sch</String>
+													</field>
+												</validationUnitSchema>
+											</field>
+										</validationUnit>
+									</list>
+								</field>
+								<field name="type">
+									<String>Validation_scenario</String>
+								</field>
+								<field name="name">
+									<String>XSLT</String>
+								</field>
+							</validationScenario>
+						</validationScenario-array>
+					</field>
+					<field name="defaultValidationScenarios">
+						<list>
+							<String>XSLT</String>
+						</list>
+					</field>
+					<field name="defaultTransformationScenarios">
+						<null/>
+					</field>
+					<field name="extensionsBundleClassName">
+						<String>ro.sync.ecss.extensions.xslt.XSLTExtensionsBundle</String>
+					</field>
+					<field name="useImposedInitialPage">
+						<Boolean>false</Boolean>
+					</field>
+					<field name="imposedInitialPage">
+						<String>Text</String>
+					</field>
+					<field name="elementLocatorExtension">
+						<null/>
+					</field>
+					<field name="schemaManagerFilterExtension">
+						<null/>
+					</field>
+					<field name="authorSWTDndExtension">
+						<null/>
+					</field>
+					<field name="textSWTDndExtension">
+						<null/>
+					</field>
+					<field name="authorSwingDndExtension">
+						<null/>
+					</field>
+					<field name="cssStylesFilterExtension">
+						<null/>
+					</field>
+					<field name="attributesValueEditor">
+						<null/>
+					</field>
+					<field name="priority">
+						<Integer>2</Integer>
+					</field>
+					<field name="xmlNodeCustomizerExtension">
+						<null/>
+					</field>
+					<field name="externalObjectInsertionHandler">
+						<null/>
+					</field>
+					<field name="customAttributeValueEditor">
+						<null/>
+					</field>
+				</documentTypeDescriptor>
+			</documentTypeDescriptor-array>
+		</entry>
+	</serializableOrderedMap>
+</serialized>

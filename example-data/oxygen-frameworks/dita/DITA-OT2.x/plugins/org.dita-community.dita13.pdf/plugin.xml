@@ -1,0 +1,23 @@
+<!-- 
+  Copyright (c) 2015 DITA Community
+    
+  Basic implementations of DITA 1.3 vocabulary to PDF for use
+  with the 1.x Open Toolkit.
+  
+  -->
+<plugin id="org.dita-community.dita13.pdf">
+  
+  <require plugin="org.dita-community.common.xslt" />
+  <require plugin="org.dita-community.dita13.html" />
+  
+  <feature extension="package.support.name" value="Eliot Kimber"/>
+  <feature extension="package.support.email" value="ekimber@contrext.com"/>  
+  
+  <extension-point id="xsl.dita13html" name="DITA 1.3 PDF Support XSLT extension" />
+  <template file="xsl/dita13Vocab2Pdf_template.xsl"/>
+
+  <feature extension="dita.xsl.xslfo" value="xsl/dita13Vocab2Pdf.xsl" type="file"/>
+  <feature extension="dita.conductor.pdf2.param" value="learning2domainParams.xml" type="file"/>
+  <feature extension="dita.conductor.pdf2.param" value="localFunctionsParams.xml" type="file"/>
+
+</plugin>

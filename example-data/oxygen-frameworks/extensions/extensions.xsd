@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+    targetNamespace="http://www.oxygenxml.com/ns/extension"
+    xmlns:xt="http://www.oxygenxml.com/ns/extension" xmlns="http://www.oxygenxml.com/ns/extension">
+
+    <xs:import namespace="http://www.w3.org/1999/xhtml"
+        schemaLocation="http://www.w3.org/MarkUp/SCHEMA/xhtml11.xsd"/>
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace"
+        schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+
+    <xs:element name="extensions">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="xt:extension" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="extension">
+        <xs:annotation>
+            <xs:documentation>An oXygen extension (or add-on). Can identify either a framework or a plugin.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="location">
+                    <xs:annotation>
+                        <xs:documentation>Location of the archive that contains the add-on. The root folder of the add-on must be contained in the archive. Ex: SDF/...</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:attribute name="href" type="xs:anyURI">
+                            <xs:annotation>
+                                <xs:documentation>The URL to the archive. If it's a relative location it is resolved relative to the base URL.</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="version">
+                    <xs:annotation>
+                        <xs:documentation>The version of the add-on. It will be used to offer update proposals. It must have three numeric parts. Ex: 1.5.76</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:pattern value="\d+\.\d+\.\d+"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="oxy_version">
+                    <xs:annotation>
+                        <xs:documentation>The Oxygen version compatible with the add-on. It must have 2 digits and an optional '+' which represents "starting with". Ex: 14.2 means compatible only with version 14.2 while 14.2+ means compatible with any version starting with 14.2.</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:pattern value="\d+\.\d(\+)?"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="type">
+                    <xs:annotation>
+                        <xs:documentation>The type of add-on. Either a framework or a plugin.</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="framework"/>
+                            <xs:enumeration value="plugin"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="author" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation>The author of the add-on.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="name" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation>The name of the plugin.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element minOccurs="0" name="description">
+                    <xs:annotation>
+                        <xs:documentation>A description of the add-on that will be presented to the user. HTML elements can be used in order to provide styling.</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType mixed="true">
+                        <xs:sequence minOccurs="0">
+                            <xs:any namespace="http://www.w3.org/1999/xhtml" maxOccurs="unbounded"
+                                minOccurs="0"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element minOccurs="0" name="license" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation>The license agreement.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:all>
+            <xs:attribute name="id" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation>An unique identifier for an add-on.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute ref="xml:base">
+                <xs:annotation>
+                    <xs:documentation>If an extension is loaded inside the extensions using an XInclude element, an xml:base attribute might be added by the processor so we make the schema flexible to allow these attributes.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="update_site" type="xs:anyURI">
+                <xs:annotation>
+                    <xs:documentation>Internal use only.
+The update site location from where this extension was installed and where it should look for updates. It's presence will guarantee that updates will be detected even if the update site is no longer present in oXygen preferences.
+If an add-on is shipped inside an oXygen distribution, this attribute may be set in the descriptor for the previous stated benefits.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

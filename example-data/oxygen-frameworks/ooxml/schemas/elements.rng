@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <define name="nsList">
+    <list>
+      <zeroOrMore>
+        <data type="NCName"/>
+      </zeroOrMore>
+    </list>
+  </define>
+  <define name="qnameList">
+    <list>
+      <zeroOrMore>
+        <choice>
+          <data type="QName"/>
+          <data type="string">
+            <param name="pattern">\i\c*:\*</param>
+          </data>
+        </choice>
+      </zeroOrMore>
+    </list>
+  </define>
+  <start>
+    <element name="AlternateContent">
+      <oneOrMore>
+        <ref name="choice"/>
+      </oneOrMore>
+      <optional>
+        <ref name="fallback"/>
+      </optional>
+    </element>
+  </start>
+  <define name="choice">
+    <element name="Choice">
+      <attribute name="Requires">
+        <ref name="nsList"/>
+      </attribute>
+      <text/>
+    </element>
+  </define>
+  <define name="fallback">
+    <element name="Fallback">
+      <text/>
+    </element>
+  </define>
+</grammar>

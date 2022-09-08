@@ -1,0 +1,224 @@
+# ============================================================= 
+# MODULE:    DITA Subject Classification Domain - RNC              
+# VERSION:   1.2                                                
+# DATE:      November 2010                                       
+# =============================================================
+
+# Refer to the latest version of this file by the following URI:
+# urn:dita-ng:dita:rnc:classifyDomain.mod.rnc
+# To refer to this specific version, you may use this value:
+# urn:dita-ng:dita:rnc:classifyDomain.mod.rnc:1.2
+
+# ============================================================= 
+# SYSTEM:     Darwin Information Typing Architecture (DITA)     
+# PURPOSE:    Define elements and specialization attributes for 
+#             Map Subject Classification Domain
+# ORIGINAL CREATION DATE:  
+# September 2010                                                
+# (C) Copyright Syncro Soft 2010-2011                                
+# All Rights Reserved.                                          
+# =============================================================
+
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+# Define the domain values of this module
+domains-atts-value |= "(map classify-d)"
+classify-d-topicref = topicsubject.element | topicapply.element
+topicref |= classify-d-topicref
+classify-d-reltable = topicSubjectTable.element
+reltable |= classify-d-reltable
+# Define patterns
+subjectref = subjectref.element
+topicSubjectHeader = topicSubjectHeader.element
+topicSubjectRow = topicSubjectRow.element
+topicCell = topicCell.element
+subjectCell = subjectCell.element
+# ELEMENT DECLARATIONS
+
+# LONG NAME: Topic Subject
+
+# SKOS equivalent:  primary if href or keyref are specified
+topicsubject.content =
+  topicmeta?, (data.elements.incl | subjectref | topicref)*
+topicsubject.attributes =
+  attribute navtitle { text }?,
+  attribute href { text }?,
+  attribute keyref { text }?,
+  attribute keys { text }?,
+  attribute query { text }?,
+  attribute type { text }?,
+  [ a:defaultValue = "resource-only" ]
+  attribute processing-role {
+    "normal" | "resource-only" | "-dita-use-conref-target"
+  }?,
+  attribute scope {
+    "external" | "local" | "peer" | "-dita-use-conref-target"
+  }?,
+  attribute format { text }?,
+  [ a:defaultValue = "no" ]
+  attribute toc { "no" | "yes" | "-dita-use-conref-target" }?,
+  univ-atts
+# doc:The <topicsubject> element identifies the subjects for which the topic or collection of topics provides the authoritative treatment. The subjects can be identified by keys (if defined in the scheme) or, if the subject definition topic exists, by href (as with ordinary topic references). Additional secondary subjects can be specified by nested <subjectref> elements.
+topicsubject.element =
+  element topicsubject { topicsubject.attlist, topicsubject.content }
+topicsubject.attlist &= topicsubject.attributes
+# LONG NAME: Topic Apply
+topicapply.content =
+  topicmeta?, (data.elements.incl | subjectref | topicref)*
+topicapply.attributes =
+  attribute navtitle { text }?,
+  attribute href { text }?,
+  attribute keyref { text }?,
+  attribute keys { text }?,
+  attribute query { text }?,
+  attribute collection-type {
+    "choice"
+    | "family"
+    | "sequence"
+    | "unordered"
+    | "-dita-use-conref-target"
+  }?,
+  attribute type { text }?,
+  [ a:defaultValue = "resource-only" ]
+  attribute processing-role {
+    "normal" | "resource-only" | "-dita-use-conref-target"
+  }?,
+  attribute scope {
+    "external" | "local" | "peer" | "-dita-use-conref-target"
+  }?,
+  attribute format { text }?,
+  attribute linking {
+    "none"
+    | "normal"
+    | "sourceonly"
+    | "targetonly"
+    | "-dita-use-conref-target"
+  }?,
+  [ a:defaultValue = "no" ]
+  attribute toc { "no" | "yes" | "-dita-use-conref-target" }?,
+  univ-atts
+# doc:The <topicapply> element identifies subjects that qualify the content for filtering or flagging but not retrieval. The <topicapply> element can identify a single subject. Additional subjects can be specified by nested <subjectref> elements.
+topicapply.element =
+  element topicapply { topicapply.attlist, topicapply.content }
+topicapply.attlist &= topicapply.attributes
+# LONG NAME: Subject Reference
+subjectref.content = topicmeta?, data.elements.incl*
+subjectref.attributes =
+  attribute navtitle { text }?,
+  attribute href { text }?,
+  attribute keyref { text }?,
+  attribute keys { text }?,
+  attribute query { text }?,
+  attribute collection-type {
+    "choice"
+    | "family"
+    | "sequence"
+    | "unordered"
+    | "-dita-use-conref-target"
+  }?,
+  attribute type { text }?,
+  [ a:defaultValue = "resource-only" ]
+  attribute processing-role {
+    "normal" | "resource-only" | "-dita-use-conref-target"
+  }?,
+  attribute scope {
+    "external" | "local" | "peer" | "-dita-use-conref-target"
+  }?,
+  attribute format { text }?,
+  attribute linking {
+    "none"
+    | "normal"
+    | "sourceonly"
+    | "targetonly"
+    | "-dita-use-conref-target"
+  }?,
+  [ a:defaultValue = "no" ]
+  attribute toc { "no" | "yes" | "-dita-use-conref-target" }?,
+  univ-atts
+# doc:The <subjectref> element identifies a subject to classify content. The <subjectref> can identify the subject with a keyref attribute (if the scheme has a <subjectdef> with a keys attribute that assigns a key to the subject) or an href attribute (if a topic captures the consensus definition for the subject).
+subjectref.element =
+  element subjectref { subjectref.attlist, subjectref.content }
+subjectref.attlist &= subjectref.attributes
+# LONG NAME: Topic Subject Relationship Table
+topicSubjectTable.content =
+  title, topicmeta?, topicSubjectHeader?, topicSubjectRow+
+topicSubjectTable.attributes = topicref-atts-no-toc, univ-atts
+# doc:The <topicSubjectTable> element is a specialized relationship table which allows a map to use relationship tables to associate topics with subjects. In a <topicSubjectTable>, the first column is reserved for references to content. Subsequent columns are reserved for subjects that classify the content, each column supplying the subjects for a different category as identified in the header. The table resembles a traditional relationship table in which the first column identifies the source and the other columns identify the targets, but the relationship reflects the subjects covered by the content rather than linking between documents.
+topicSubjectTable.element =
+  element topicSubjectTable {
+    topicSubjectTable.attlist, topicSubjectTable.content
+  }
+topicSubjectTable.attlist &= topicSubjectTable.attributes
+# LONG NAME: Topic Subject Table Header
+
+# The header defines the set of subjects for each column.
+# By default, the subject in the header cell must be a broader ancestor
+#     within a scheme available during processing for the subjects
+#     in the same column of other rows
+# In the header, the topicCell serves primarily as a placeholder
+#     for the topic column but could also provide some constraints
+#     or metadata for the topics
+topicSubjectHeader.content = topicCell, subjectCell+
+topicSubjectHeader.attributes = univ-atts
+# doc:The <topicSubjectHeader> element specifies constraints on the subjects used in classifications.
+topicSubjectHeader.element =
+  element topicSubjectHeader {
+    topicSubjectHeader.attlist, topicSubjectHeader.content
+  }
+topicSubjectHeader.attlist &= topicSubjectHeader.attributes
+# LONG NAME: Topic Subject Table Row
+topicSubjectRow.content = topicCell, subjectCell+
+topicSubjectRow.attributes = univ-atts
+# doc:The <topicSubjectRow> is a grouping element that contains one row of a subject table. It contains topic references in the first column, and relates those references to the subjects in each following column.
+topicSubjectRow.element =
+  element topicSubjectRow {
+    topicSubjectRow.attlist, topicSubjectRow.content
+  }
+topicSubjectRow.attlist &= topicSubjectRow.attributes
+# LONG NAME: Topic Subject Table Cell
+topicCell.content = (data.elements.incl | topicref)+
+topicCell.attributes = univ-atts, topicref-atts
+# doc:The <topicCell> element contains topics that will be associated with subjects in each following column of the current row in the <topicSubjectTable>.
+topicCell.element =
+  element topicCell { topicCell.attlist, topicCell.content }
+topicCell.attlist &= topicCell.attributes
+# LONG NAME: Topic Subject Cell
+subjectCell.content = (data.elements.incl | subjectref | topicref)*
+subjectCell.attributes = univ-atts, topicref-atts
+# doc:The <subjectCell> element contains subjects that are associated with topics in the first column of the current row in the <topicSubjectTable>. The subjects themselves have no defined relationship across columns, other than the fact that they apply to the same content.
+subjectCell.element =
+  element subjectCell { subjectCell.attlist, subjectCell.content }
+subjectCell.attlist &= subjectCell.attributes
+# SPECIALIZATION ATTRIBUTE DECLARATIONS
+topicsubject.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ map/topicref classify-d/topicsubject " ]
+  attribute class { text }?
+topicapply.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ map/topicref classify-d/topicapply " ]
+  attribute class { text }?
+subjectref.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ map/topicref classify-d/subjectref " ]
+  attribute class { text }?
+topicSubjectTable.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ map/reltable classify-d/topicSubjectTable " ]
+  attribute class { text }?
+topicSubjectHeader.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ map/relrow classify-d/topicSubjectHeader " ]
+  attribute class { text }?
+topicSubjectRow.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ map/relrow classify-d/topicSubjectRow " ]
+  attribute class { text }?
+topicCell.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ map/relcell classify-d/topicCell " ]
+  attribute class { text }?
+subjectCell.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ map/relcell classify-d/subjectCell " ]
+  attribute class { text }?

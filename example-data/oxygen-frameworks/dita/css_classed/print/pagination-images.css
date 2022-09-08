@@ -1,0 +1,6 @@
+ @media print{
+    /* TODO - parameter */
+    *[class ~= "map/map"] {
+        prince-image-resolution: 196dpi; 
+    }      
+ }

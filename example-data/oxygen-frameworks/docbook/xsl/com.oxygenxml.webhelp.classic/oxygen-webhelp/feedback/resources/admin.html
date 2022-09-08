@@ -1,0 +1,328 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<!--
+    
+Oxygen WebHelp Plugin
+Copyright (c) 1998-2017 Syncro Soft SRL, Romania.  All rights reserved.
+
+-->
+
+<html dir="@WEBHELP_PAGE_DIRECTION@">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+    
+    <!-- include Bootstrap -->
+    <link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="screen"><!--  --></link>
+    <link href="./bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css" media="screen"><!--  --></link>
+    
+    <link href="./php/css.php?admin=true" rel="stylesheet" type="text/css" media="screen"><!--  --></link>
+    
+    <script src="../config/config.js" charset="UTF-8"></script>
+    <script src="./js/jquery-3.1.1.min.js" charset="utf-8"></script>
+    
+    <script src="./php/cnf.php" charset="utf-8"></script>
+    <script src="./js/jquery.quicksearch.js" charset="utf-8"></script>
+    <script src="./bootstrap/js/bootstrap.min.js" charset="utf-8"></script>
+    <script src="./localization/strings.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+        function getLocalization(localizationKey) {
+            var toReturn = localizationKey;
+            if (localizationKey in localization) {
+                toReturn = localization[localizationKey];
+            }
+            return toReturn;
+        }
+    </script>
+    <title>Admin Panel</title>
+</head>
+<body id="admin-page">
+
+<div id="cover"></div>
+
+<div id="comments">
+    <span id="cm_count"></span> <span id="cm_title"> </span> <span id="cmt_info"></span>
+    <div id="userAccount">
+        <span id="accountInfo"></span> <input type="button" id="bt_logIn" style="display: none;" value="Log In"/>
+        <input type="button" id="bt_logOff" value="Log Off" style="display: none;"/>
+    </div>
+</div>
+
+<div id="adminMenu">
+    <button type="button" class="btn btn-primary" id="cleanDbBtn">Clean DB</button>
+    <button type="button" class="btn btn-primary" id="cleanDbUsrBtn">Clean Users</button>
+    <button type="button" class="span_bt btn btn-primary" id="bt_setVersion" style="display: none;">Set Version</button>
+    <button type="button" class="span_bt btn btn-primary" id="bt_export"  style="display: none;">Export</button>
+    <button type="button" class="span_bt btn btn-primary" id="bt_viewPosts">View Posts</button>
+    
+    <div class="modal fade" id="setVersionDiv" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">
+                        <div id="ll_setVersion"></div>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div id="v_preload" style="display: none">
+                        <img src="./img/loadingSmall.gif" alt="Loading"/>
+                    </div>
+                    <div id="setVersionInfo"></div>
+                    <div id="versions"></div>
+                </div>
+                <div class="modal-footer">
+                    <div class="text-center">
+                        <button type="button" class="btn btn-default" id="l_cancelVer" data-dismiss="modal">Reset</button>
+                        <script type="text/javascript"> $('#l_cancelVer').html(getLocalization('label.close')); </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="exportDiv" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">
+                        <div id="ll_exp_tit"></div>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div id="ex_prod_val"></div>
+                </div>
+                <div class="modal-footer">
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-default" id="bt_do_export" data-dismiss="modal">Submit</button>
+                        <button type="button" class="btn btn-default" id="l_cancelMsg" data-dismiss="modal">Reset</button>
+                        <script type="text/javascript">  $('#l_cancelMsg').html(getLocalization('label.cancel')); </script>
+                    </div>
+                    <form action="php/exportComments.php" enctype="application/x-www-form-urlencoded" method="post" name="exportCmts">
+                        <input type="hidden" id="exFrmProductName" name="productN"/>
+                        <input type="hidden" id="exProductVersion" name="productV"/>
+                        <input type="hidden" id="fl_ProductName" name="productName"/>
+                        <input type="hidden" id="fl_ProductVersion" name="productVersion"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+        </div>
+
+    <div class="modal fade" id="inlineViewDiv" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">
+                        <span class="inLineFormTitle" id="ll_viewAll_tit"></span>
+                        <div class="inLineFormTitle" id="ll_viewAll_tit_info"></div>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div style="width: 100%; position: absolute; top: 100px; left: 0;">
+                        <div id="v_preload" style="margin: auto; float: none; clear: both; width: 40px;"><img src="./img/loadingSmall.gif" alt="Loading"/></div>
+                    </div>
+                    <div id="ex_inline"></div>
+                </div>
+                <div class="modal-footer">
+<div class="inLineBand">
+                        <button type="button" class="btn btn-default" id="l_cancelEdit" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-default" id="checkAll">Invert Selection</button>
+
+                        <script>
+                            $('#l_cancelEdit').html(getLocalization('label.cancel'));
+                            $('#checkAll').html(getLocalization('label.invertSel'));
+                        </script>
+                        <button type="button" class="btn btn-default" id="bt_cleanUsr" onclick="cleanDeleteUsr()">Clean Users</button>
+                        <button type="button" class="btn btn-default" id="bt_deleteCmts" onclick="deleteCmts()">Delete Comments</button>
+                        <button type="button" class="btn btn-default" id="bt_cleanCmts" onclick="cleanDeleteCmts()">Clean Comments</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="msgInfo"></div>
+</div>
+
+<div id="adminUsers" style="display: none">
+    <form action="" enctype="application/x-www-form-urlencoded" method="post">
+        <div class="input-group">
+            <span class="input-group-addon" id="l_Search"></span>
+            <input type="text" id="id_search" class="form-control" placeholder="" />
+        </div>
+    </form>
+    <div id="list"></div>
+</div>
+
+<div id="preload" style="display: none">
+    <img src="./img/loadingSmall.gif" id="preload_circle" alt="Loading..."/>
+    <br/>
+    <span id="l_plsWait"> </span>
+</div>
+
+<div class="modal" id="loginData" role="dialog">
+    <div class="modal-dialog">
+        <form action="" method="post" name="loginForm" onsubmit="return logInAdmin();">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span id="ll_login"> </span> </h4>
+                </div>
+                <div class="modal-body">
+                    <div id="loginResponse"></div>
+
+
+                    <div class="form-group">
+                        <label for="myUserName"><span id="ll_username"></span></label>
+                        <input name="username" type="text" class="form-control" id="myUserName" autocomplete="on" required="required" autofocus="autofocus"><!----></input>
+                    </div>
+                    <div class="form-group">
+                        <label for="myPassword" id="ll_pswd"></label>
+                        <input name="password" class="form-control" type="password" id="myPassword" autocomplete="on" required="required"><!----></input>
+                    </div>
+
+                    <div class="checkbox">
+                        <label><input name="myLoginRemember" type="checkbox" class="ck" id="myRemember" value="no"><!----></input>
+                            <span id="ll_remember"></span> </label>
+                            <script type="text/javascript">$('#ll_remember').html(getLocalization('label.rememberme'));</script>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <div class="text-center">
+                        <button id="logIn" type="submit" class="btn btn-default">Log in</button>
+
+                        <script type="text/javascript">
+                            $('#logIn').html(getLocalization('label.login'));
+                        </script>
+                    </div>
+                    </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+<div id="editUser" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <form action="" enctype="application/x-www-form-urlencoded" method="post" name="updateUser" onsubmit="return persistEdit();">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><span id="ll_editUser"> </span> <span id="edit_uName"></span></h4>
+                <input type="hidden" id="edit_userId" value=""/>
+            </div>
+            <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="edit_name"><span id="ll_name"></span></label>
+                        <input name="edit_name" type="text" class="form-control" id="edit_name" autocomplete="on" autofocus="autofocus" />
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_level"><span id="ll_level"></span></label>
+                        <select name="edit_level" id="edit_level" class="form-control" >
+                            <option value="admin" id="leveladmin"></option>
+                            <option value="moderator" id="levelmoderator"></option>
+                            <option value="user" id="leveluser"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_company"><span id="ll_company"></span></label>
+                        <input name="edit_company" type="text" class="form-control" id="edit_company"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_email"><span id="ll_email"></span></label>
+                        <input name="edit_email" type="text" class="form-control" id="edit_email"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_status"><span id="ll_status"></span></label>
+                        <select name="edit_status" id="edit_status" class="form-control" >
+                            <option value="created" id="statuscreated"></option>
+                            <option value="validated" id="statusvalidated"></option>
+                            <option value="suspended" id="statussuspended"></option>
+                        </select>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" id="edit_nAll"/><span id="ll_wh_notify"></span></label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" id="edit_nReply"/><span id="ll_r_notify"></span></label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" id="edit_nPage"/><span id="ll_p_notify"></span></label>
+                    </div>
+                    <div class="form-group">
+                        <label><span id="ll_date"> </span></label> <span id="edit_date"></span>
+                    </div>
+
+
+            </div>
+            <div class="modal-footer text-center">
+                <button type="submit" class="btn btn-default" id="bt_confirmUserEdit"  name="editUsr">Update User</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="l_cancelEditU">Cancel</button>
+
+                <script>
+                    $('#bt_confirmUserEdit').html(getLocalization('label.updateUser'));
+                    $('#l_cancelEditU').html(getLocalization('label.cancel'));
+                </script>
+
+
+
+                </div>
+        </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    if ($("html").attr("dir") != "rtl") {
+        $('#cm_title').append(productName + "&nbsp;" + productVersion + "&nbsp; - &nbsp;" + getLocalization('label.admin.title'));
+    } else {
+        $('#cm_title').append(getLocalization('label.admin.title') + "&nbsp; - &nbsp;" + productVersion + "&nbsp;" + productName);
+    }
+    $('#bt_logOff').attr("value", getLocalization('label.logOff'));
+    $('#bt_logIn').attr("value", getLocalization('label.login'));
+    $('#l_Search').append(getLocalization('label.search.user'));
+    $('#l_plsWait').html(getLocalization('label.plsWait'));
+    $('#ll_pswd').html(getLocalization('label.pswd'));
+    $('#ll_editUser').append(getLocalization('label.editUser'));
+    $('#bt_lostPwd').append(getLocalization('label.lostPswd'));
+    $('#bt_signUp').attr("value", getLocalization('label.signUp'));
+    $('#ll_level').append(getLocalization('admin.level.label'));
+    $('#ll_name').append(getLocalization('admin.name.label'));
+    $('#leveluser').html(getLocalization('label.user'));
+    $('#levelmoderator').html(getLocalization('label.moderator'));
+    $('#ll_company').append(getLocalization('admin.company.label'));
+    $('#ll_email').append(getLocalization('admin.email.label'));
+    $('#ll_date').append(getLocalization('admin.date.label'));
+    $('#ll_wh_notify').append(getLocalization('admin.notifyAll.label'));
+    $('#ll_r_notify').append(getLocalization('admin.notifyReply.label'));
+    $('#ll_p_notify').append(getLocalization('admin.notifyPage.label'));
+    $('#ll_status').append(getLocalization('admin.status.label'));
+    $('#statuscreated').html(getLocalization('label.created'));
+    $('#statusvalidated').html(getLocalization('label.validated'));
+    $('#statussuspended').html(getLocalization('label.suspendend'));
+    $('#leveladmin').html(getLocalization('label.admin'));
+    $('#ll_login').append(getLocalization('label.login'));
+    $('#ll_username').append(getLocalization('admin.userName.label'));
+    $('#bt_setVersion').html(getLocalization('label.setVersion')).attr("title", getLocalization('label.setVersionTooltip'));
+    $('#bt_export').html(getLocalization('label.export')).attr("title", getLocalization('label.exportTooltip'));
+    $('#ll_setVersion').html(getLocalization('label.version'));
+    $('#setVersionInfo').html(getLocalization('label.versionInfo'));
+    $('#bt_do_export').html(getLocalization('label.confirmGo'));
+    //$('#ll_exp_sel').html(getLocalization('label.selection'));
+    $('#bt_viewPosts').html(getLocalization('label.viewAllPosts')).attr("title", getLocalization('label.viewAllPostsTooltip'));
+    $('#ll_viewAll_tit').html(getLocalization('label.allPosts'));
+    $('#bt_deleteCmts').html(getLocalization('delete'));
+    $('#cleanDbBtn').html(getLocalization('label.cleanComments')).attr("title", getLocalization('label.cleanCommentsTooltip'));
+    $('#bt_cleanCmts').html(getLocalization('label.cleanComments'));
+    $('#cleanDbUsrBtn').html(getLocalization('label.cleanUsers')).attr("title", getLocalization('label.cleanUsersTooltip'));
+    $('#bt_cleanUsr').html(getLocalization('label.cleanUsers'));
+</script>
+
+<script src="./js/base64.js" type="text/javascript" charset="utf-8"></script>
+<script src="./js/comments-admin.js" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>

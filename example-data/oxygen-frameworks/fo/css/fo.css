@@ -1,0 +1,438 @@
+root{
+    display:block;
+}
+
+block{
+    display:block;
+}
+
+flow{
+    display:block;
+}
+
+list-item-label > block,
+list-item-body > block{
+    display:inline;
+}
+
+inline{
+    display:inline;
+}
+
+layout-master-set,
+simple-page-master,
+page-sequence-master,
+region-body,
+region-before,
+region-after
+{
+    display:block;
+}
+
+layout-master-set:before,
+layout-master-set *:before
+{
+    content : '<' oxy_name() oxy_attributes()'>';
+    color : #111199;
+}
+
+
+layout-master-set:after,
+layout-master-set *:after
+{
+    content : '</' oxy_name() oxy_attributes()'>';
+    color : #111199;
+}
+
+page-sequence{
+    display:block;
+}
+
+page-sequence:before{
+    content:"[" attr(master-reference) "]";
+}
+
+static-content{
+    display:block;
+}
+
+static-content:before{
+    content:"[" attr(flow-name) "]";
+    color:#444444;
+}
+
+list-block{
+    display:block;
+    margin-top:1.5em;
+    margin-bottom:1.5em;
+}
+
+list-item{
+    display:list-item;
+}
+
+list-item-label {
+    display:block;
+    font-weight:bold;
+}
+
+list-item-body {
+    display:block;
+    margin-left: 3em;
+}
+
+page-number{
+    display:inline;
+}
+
+leader{
+    display:block;
+    border-top-color: black;
+    border-top-width:1px;
+    border-top-style:solid;
+    content: "";
+}
+
+wrapper{
+    display:inline;
+}
+
+/*Text align*/
+*[text-align]{
+    text-align:attr(text-align);
+}
+
+/*Justify is not supported*/
+*[text-align=justify]{
+    text-align:left;
+}
+
+*[text-align=start]{
+    text-align:left;
+}
+
+*[text-align=end]{
+    text-align:right;
+}
+
+*[text-decoration]{
+    text-decoration:attr(text-decoration);
+}
+
+*[text-transform]{
+    text-transform:attr(text-transform);
+}
+
+/*Font*/
+*[font]{
+    font:attr(font);
+}
+
+*[font-size]{
+    font-size:attr(font-size);
+}
+
+*[font-style]{
+    font-style:attr(font-style);
+}
+
+*[font-family]{
+    font-family:attr(font-family);
+}
+
+*[font-weight]{
+    font-weight:attr(font-weight);
+}
+
+/*Margin*/
+*[margin]{
+    margin:attr(margin);
+}
+
+*[margin-bottom]{
+    margin-bottom:attr(margin-bottom);
+}
+
+*[margin-top]{
+    margin-top:attr(margin-top);
+}
+
+*[margin-left]{
+    margin-left:attr(margin-left);
+}
+
+*[margin-right]{
+    margin-right:attr(margin-right);
+}
+
+/*Colors*/
+*[color]{
+    color:attr(color);
+}
+
+*[background]{
+    background:attr(background);
+}
+
+/*Border color*/
+*[border-color]{
+    border-color:attr(border-color);
+}
+
+*[border-top-color]{
+    border-top-color:attr(border-top-color);
+}
+
+*[border-bottom-color]{
+    border-bottom-color:attr(border-bottom-color);
+}
+
+*[border-before-color]{
+    border-left-color:attr(border-before-color);
+}
+
+*[border-after-color]{
+    border-right-color:attr(border-after-color);
+}
+
+*[border-left-color]{
+    border-left-color:attr(border-left-color);
+}
+
+*[border-right-color]{
+    border-right-color:attr(border-right-color);
+}
+
+/*Border width*/
+*[border-width]{
+    border-width:attr(border-width);
+}
+
+*[border-top-width] {
+    border-top-width:attr(border-top-width);
+}
+
+*[border-bottom-width] {
+    border-bottom-width:attr(border-bottom-width);
+}
+
+*[border-before-width] {
+    border-left-width:attr(border-before-width);
+}
+
+*[border-after-width] {
+    border-right-width:attr(border-after-width);
+}
+
+*[border-left-width]{
+    border-left-width:attr(border-left-width);
+}
+
+*[border-right-width]{
+    border-right-width:attr(border-right-width);
+}
+
+/*Border style*/
+*[border-style]{
+    border-style:attr(border-style);
+}
+
+*[border-top-style]{
+    border-top-style:attr(border-top-style);
+}
+
+*[border-bottom-style]{
+    border-bottom-style:attr(border-bottom-style);
+}
+
+*[border-before-style]{
+    border-left-style:attr(border-before-style);
+}
+
+*[border-after-style]{
+    border-right-style:attr(border-after-style);
+}
+
+*[border-left-style]{
+    border-left-style:attr(border-left-style);
+}
+
+*[border-right-style]{
+    border-right-style:attr(border-right-style);
+}
+
+
+/*Border shorthands*/
+*[border-left]{
+    border-left:attr(border-left);
+}
+
+*[border-right]{
+   border-right:attr(border-right);
+}
+
+*[border-top]{
+  border-top:attr(border-top);
+}
+
+*[border-bottom]{
+  border-bottom:attr(border-bottom);
+}
+
+*[border]{
+  border:attr(border);
+}
+
+
+/*Padding*/
+*[padding]{
+    padding:attr(padding);
+}
+
+*[padding-top]{
+    padding-top:attr(padding-top);
+}
+
+*[padding-bottom]{
+    padding-bottom:attr(padding-bottom);
+}
+
+*[padding-before]{
+    padding-left:attr(padding-before);
+}
+
+*[padding-after]{
+    padding-right:attr(padding-after);
+}
+
+*[padding-left]{
+    padding-left:attr(padding-left);
+}
+
+*[padding-right]{
+    padding-right:attr(padding-right);
+}
+
+/*------------------*/
+*[baseline-shift]{
+    vertical-align:attr(baseline-shift);
+}
+
+/*Table*/
+
+table{
+  display:table;
+}
+
+table-body {
+  display:table-row-group;
+}
+
+/* 
+    A table header consisting of one or more rows 
+*/
+table-header {
+  display: table-header-group;
+}
+
+
+/*
+    Table row.
+*/
+table-row{
+    display:table-row;
+}
+
+/*
+    Table cell.
+*/
+table-cell{
+    display:table-cell;     
+}
+
+external-graphic{
+    content: oxy_url(oxy_replace(oxy_replace(attr(src, url), "url(", ""), ")", ""));
+}
+
+bookmark-tree{
+    display:block;
+     margin-left:2em;
+}
+
+bookmark-tree:before{
+    content: "Table of contents";
+    font-size:x-large;
+    font-weight:bold;
+}
+
+bookmark{
+    display:block;
+}
+
+bookmark-title{
+    display:list-item;
+     font-size:large;
+    font-weight:400;
+}
+
+/**Indent**/
+*[start-indent]{
+    text-indent:attr(start-indent);
+}
+
+*[end-indent]{
+    text-indent:attr(end-indent);
+}
+
+/**Foot node**/
+
+footnote, footnote-body{
+    display:block;
+}
+
+/*Width*/
+
+*[width]{
+    width:attr(width);
+}
+
+*[content-width]{
+    width:attr(content-width);
+}
+
+/*Height*/
+
+*[height]{
+    height:attr(height);
+}
+
+*[content-height]{
+    height:attr(content-height);
+}
+
+/*Space preserve*/
+* [white-space-collapse=false],
+* [white-space-treatment=preserve],
+* [linefeed-treatment=preserve]{
+    white-space:pre;
+}
+
+/*Link*/
+basic-link{
+    display:inline;
+    color: navy;
+    text-decoration: underline;
+    background-color:inherit;
+}
+
+basic-link:before{
+   content:url('img/link.png');
+}
+
+basic-link[external-destination]:before{
+  link:oxy_url(oxy_replace(oxy_replace(attr(external-destination), "url(", ""), ")", ""));
+}
+
+basic-link[internal-destination]:before{
+  link:"#" attr(internal-destination);
+}

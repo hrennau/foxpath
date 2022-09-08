@@ -1,0 +1,359 @@
+@import "library.less";
+@import "actions/actions.css";
+@namespace oxy url('http://www.oxygenxml.com/extensions/author');
+
+/* Add on demand actions for main content structure +/- [X] [Y] [Z] */
+body > p,
+body > ul,
+body > ol,
+body > simpletable,
+body > dl,
+body > fig,
+body > pre,
+body > object,
+section,
+body:empty {
+    .actions-after({
+        .action('x.paragraph');
+        .actionSeparator(" ");
+        .action('x.unorderedList');
+        .actionSeparator(" ");
+        .action('x.orderedList');
+        .actionSeparator(" ");
+        .action('x.insert.table');
+        .actionSeparator();
+        .action('x.section');
+        .actionSeparator(" ");
+        .actionGroup('x.pre, x.dl, x.fig, x.object');
+    });
+}
+
+body:not(:empty){
+    .actions-before({
+        .action('x.paragraph');
+        .actionSeparator(" ");
+        .action('x.unorderedList');
+        .actionSeparator(" ");
+        .action('x.orderedList');
+        .actionSeparator(" ");
+        .action('x.insert.table');
+        .actionSeparator();
+        .action('x.section');
+        .actionSeparator(" ");
+        .actionGroup('x.pre, x.dl, x.fig, x.object');
+    });
+}
+
+ol:empty,
+ul:empty,
+dl:empty,
+li:last-child,
+dlentry:last-child{
+   .addActions({
+       .action('listitem');
+   });
+}
+simpletable{
+   .addActions({
+       .action('insert.table.row.below');
+       .actionSeparator(" ");
+       .action('insert.table.column.after');
+   });
+}
+
+
+fig{
+   .addActions({
+        .action('title');
+        .actionSeparator(" ");
+        .action('desc');
+        .actionSeparator(" ");
+        .action('insert.image2');
+        .actionSeparator(" ");
+        .action('insert.cross.reference2');
+   });
+}
+
+fig > * {
+    display:block;
+    margin-top:0.5em;
+}
+
+image:not([href]):not([keyref]){
+    .placeholder("Image");
+}
+image {
+    .editableInline();
+    max-width:95%;
+}
+
+image:empty:-oxy-edit {
+   .addActions({
+       .inlineAction('<alt/>', 'Alternate Text', 'Insert alternate text');
+   }, 4);
+}
+
+image:-oxy-edit:after(5) {
+    text-decoration : none;
+    .urlChooser("  URL:", "href");
+    .textfield( "  Width:", "width");
+    .textfield( "  Height:", "height");
+    .combobox( "  Keyref:", "keyref");
+}
+image:-oxy-edit {
+    display:block;
+    -oxy-placeholder-content:"";
+}
+
+object{
+   .addActions({
+        .action('desc');
+   });
+}
+
+object > * {
+    margin-top:0.5em;
+}
+object:empty {
+   .addActions({
+        .inlineAction('<param name=""/>', 'Parameter', 'Insert parameter');
+        .actionSeparator(" ");
+        .action('desc');
+   });
+}
+object > desc:only-child {
+   .addActions({
+        .inlineActionAfter('<param name=""/>', 'Parameter', 'Insert parameter');
+   });
+}
+
+
+param {
+    display:block;
+    margin-left:1em;
+}
+param:last-child {
+   .addActions({
+       .action('listitem');
+   });   
+}
+param:last-child:empty {
+    -oxy-show-placeholder: default;
+}
+param:before{
+    content:""!important;
+}
+
+param:not([name]):not([value]){
+    .placeholder("Parameter");
+}
+param[name='']:not([value]){
+    .placeholder("Parameter");
+}
+
+param[name]:not([name='']):before(20) {
+    content: attr(name) " = ";
+}
+param[value]:before(19) {
+    content: " '" attr(value) "' ";
+}
+param                 {.editable();}
+param                 {.deleteAction();}
+
+param:-oxy-edit:after(5) {
+    text-decoration : none;
+    .textfield("  Name:", "name");
+    .textfield("  Value:", "value");
+}
+
+/* hints */
+/*topic           {.important-hint();}*/
+topic > title   {.hint();}
+shortdesc       {.hint();.markSection("Short Description");}
+prolog          {.hint();.markSection("Prolog Information");}
+section         {.hint();.markSection("Section");}
+fig             {.hint();}
+object          {.hint();}
+simpletable     {.hint();}
+dl              {.hint();}
+body            {.hint();.markSection("Content");}
+
+
+
+/* placeholders */
+topic               {.placeholder("Topic");}
+body                {.placeholder("Content");}
+title               {.placeholder("Title");}
+section > title     {.placeholder("Section Title");}
+shortdesc           {.placeholder("Short Description");}
+ul                  {.placeholder("Unordered List");}
+ol                  {.placeholder("Ordered List");}
+li                  {.placeholder("Item");}
+dl                  {.placeholder("Definition List");}
+dlentry             {.placeholder("Entry");}
+dt                  {.placeholder("Term");}
+dd                  {.placeholder("Description");}
+p                   {.placeholder("Paragraph");}
+pre                 {.placeholder("Preformated Text");}
+prolog              {.placeholder("Prolog Information");}
+section             {.placeholder("Section");}
+fig                 {.placeholder("Figure");}
+stentry             {.placeholder("Cell");}
+/* links */
+xref:not([href]):not([keyref]) {
+    .placeholder-warning("You need to set href or keyref attributes!");
+}
+
+
+/* info button */ 
+simpletable:before(5000){
+    width:100%;
+}
+
+
+
+
+/* Better handling for ordered lists numbering using absolute positions */
+ol > li {
+    position:relative;
+    margin-left:2.5em!important;
+    -oxy-show-placeholder:always;
+}
+ol > li:before {
+    display:block!important;
+    width:2em;
+    position:absolute;
+    left:-2em;
+    top:0;
+}
+/*****/
+
+/* prolog data element in-place editing */
+prolog {
+    border-color:#CCCCCC!important;
+    border-width:1px!important;
+    padding:0.2em;
+}
+
+prolog:empty {
+   .addActions({
+       .inlineAction('<data/>', 'Data', 'Insert data');
+   });
+}
+data:last-child {
+   .addActions({
+       .action('listitem');
+   });   
+}
+data:last-child:empty {
+    -oxy-show-placeholder: default;
+}
+
+
+data:before{
+    content:""!important;
+}
+
+data:not([name]):not([value]):not([keyref]){
+    .placeholder("Data");
+}
+data[name]:before(20) {
+    content: attr(name) " = ";
+}
+data[value]:before(19) {
+    content: " '" attr(value) "' ";
+}
+data[keyref]:before(18) {
+    link : oxy_concat("" , attr(keyref , keyref)) ;
+    content:  "[" attr(keyref) "] " ;
+    text-decoration-line : underline ;
+}
+data[keyref]:empty{
+    content:"";
+}
+data                 {.editable();}
+data                 {.deleteAction();}
+
+data:-oxy-edit:after(5) {
+    text-decoration : none;
+    .textfield("  Name:", "name");
+    .textfield("  Value:", "value");
+    .combobox( "  Keyref:", "keyref");
+}
+
+/* make links editable */
+
+xref {.editableInline();}
+xref:after(5) {
+    
+}
+xref:-oxy-edit:after(5) {
+    text-decoration : none;
+    .textfield("  URL:", "href");
+    .combobox( "  Format:", "format");
+    .combobox( "  Scope:", "scope");
+    .combobox( "  Keyref:", "keyref");
+}
+
+.sectionSeparator(@layer:10000) {
+    &:before(@{layer}) {
+        display:block;
+        font-size:2rem;
+        text-align:center;
+        content: " . . . ";
+        color:gray;
+    }
+}
+
+section {
+    .sectionSeparator();
+    -oxy-foldable:false!important;
+}
+
+@media oxygen AND (platform:"webapp") {
+    title {
+        letter-spacing:2px;
+    }
+    shortdesc {
+        letter-spacing:1px;
+    }
+}
+
+section > title {
+    font-size:1.2em;
+}
+
+shortdesc:before {
+  content: ""!important;
+}
+shortdesc {
+    padding-top:0.5em;
+    margin-top:1em!important;
+    padding-bottom:0.5em;
+    margin-bottom:1em!important;
+    margin-left:2em!important;
+    margin-right:2em!important;
+    padding-right:1em;
+    padding-left:1em;
+}
+
+prolog {
+    border-radius:8px;
+}
+
+body > * {
+
+}
+section > * {
+
+    padding-top:0.5em;
+    padding-bottom:0.5em;
+}
+
+ul, ol {
+    padding-top:0.5em;
+}
+
+li:first-child {
+    margin-top:0.5em;
+}

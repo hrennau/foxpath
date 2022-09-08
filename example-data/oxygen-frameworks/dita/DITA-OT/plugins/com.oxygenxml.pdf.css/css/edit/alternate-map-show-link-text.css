@@ -1,0 +1,27 @@
+/**
+ * For topicrefs show the tile of the referred topic with fallback to the href attribute.
+ */
+ 
+*[class~="map/topicref"]:before(1030) {
+  content: oxy_getSomeText(oxy_link-text(attr(href)), 150, true) " ";
+  font-weight: bold;
+}
+/* Hide the name of the elements, but not for specializations of the topicref. */
+*[class$=" map/topicref "]:before(1050) {
+  content: none !important;
+}
+/* Hide the href or the navtitle attribute shown in -map-basic.css */
+*[class~="map/topicref"][href]:before(1020),
+*[class~="map/topicref"][navtitle]:before(1020) {
+  display: none !important;
+}
+
+@media oxygen and (platform: webapp) {
+  *[class~="map/map"][title]:not(:-oxy-show-topic-titles):before(5) {
+    display: block;
+    content: oxy_button(actionID, "show.topic.titles");
+  }
+  *[class~="map/map"]:-oxy-show-topic-titles *[class~="map/topicref"][href]:before(15) {
+    content: oxy_label(text, oxy_getSomeText(oxy_link-text(), 150, true));
+  }
+}

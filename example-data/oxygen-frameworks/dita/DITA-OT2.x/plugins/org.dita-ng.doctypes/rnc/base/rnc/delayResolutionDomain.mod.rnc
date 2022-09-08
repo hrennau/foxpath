@@ -1,0 +1,94 @@
+# ============================================================= 
+# MODULE:    DITA Delayed Resolution Domain - RNC              
+# VERSION:   1.2                                                
+# DATE:      October 2010                                       
+# =============================================================
+
+# Refer to the latest version of this file by the following URI:
+# urn:dita-ng:dita:rnc:delayResolutionDomain.mod.rnc
+# To refer to this specific version, you may use this value:
+# urn:dita-ng:dita:rnc:delayResolutionDomain.mod.rnc:1.2
+
+# ============================================================= 
+# SYSTEM:     Darwin Information Typing Architecture (DITA)     
+# PURPOSE:    Define elements and specialization attributes
+#             for Delayed Resolution Domain             
+# ORIGINAL CREATION DATE:  
+# September 2010                                                
+# (C) Copyright Syncro Soft 2010-2011                                
+# All Rights Reserved.                                          
+# =============================================================
+
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+# Define the domain values of this module
+domains-atts-value |= "(topic delay-d)"
+# Define domain extension patterns
+delay-d-keywords = exportanchors.element
+# Extend the patterns with the domain contribution
+keywords |= delay-d-keywords
+# Define patterns
+exportanchors = exportanchors.element
+anchorid = anchorid.element
+anchorkey = anchorkey.element
+# Define elements content and attributes
+
+# LONG NAME: Export Anchor List
+exportanchors.content = (anchorid | anchorkey)*
+exportanchors.attributes = univ-atts
+
+## The <exportanchors> element is used to delay conref resolution within DITA
+##       documents. This allows you to process or display DITA content in a way that will resolve only
+##       some of the conref values in that content, while remaining values are left for later
+##       resolution. The element contains a list of IDs or keys that should not be resolved during the
+##       initial preparation of the content for display; those IDs and keys will be preserved after
+##       that preparation, as will the conref relationship itself.
+exportanchors.element =
+  element exportanchors { exportanchors.attlist, exportanchors.content }
+exportanchors.attlist &= exportanchors.attributes
+# LONG NAME: Anchor ID
+anchorid.content = empty
+anchorid.attributes =
+  attribute keyref { text }?,
+  attribute id { xsd:NMTOKEN },
+  conref-atts,
+  select-atts,
+  localization-atts,
+  attribute outputclass { text }?
+
+## The <anchorid> element allows an author to define a conref target that will
+##       be resolved dynamically when rendered for an end user of the content. This element is useful
+##       when doing an initial process of the DITA content prior to final rendering of the content; it
+##       causes specified IDs to be preserved after that process, and conref relationships that reuse
+##       the element will not be resolved during the initial process.
+anchorid.element =
+  element anchorid { anchorid.attlist, anchorid.content }
+anchorid.attlist &= anchorid.attributes
+# LONG NAME: Anchor Key
+anchorkey.content = empty
+anchorkey.attributes =
+  attribute keyref { text },
+  univ-atts,
+  attribute outputclass { text }?
+
+## The <anchorkey> element allows an author to define a conref target that will
+##       be resolved dynamically when rendered for an end user of the content. This element is useful
+##       when doing an initial process of the DITA content prior to final rendering of the content; it
+##       allows specified keys to be preserved after that process, and conref relationships which use
+##       that key will not be resolved during that initial process. 
+anchorkey.element =
+  element anchorkey { anchorkey.attlist, anchorkey.content }
+anchorkey.attlist &= anchorkey.attributes
+# Specialization attributes. Global attributes and class defaults
+exportanchors.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/keywords delay-d/exportanchors " ]
+  attribute class { text }?
+anchorid.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/keyword delay-d/anchorid " ]
+  attribute class { text }?
+anchorkey.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/keyword delay-d/anchorkey " ]
+  attribute class { text }?

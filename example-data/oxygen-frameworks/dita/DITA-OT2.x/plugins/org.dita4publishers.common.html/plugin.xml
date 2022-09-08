@@ -1,0 +1,42 @@
+<plugin id="org.dita4publishers.common.html">
+  <!-- This plugin provides common XSLT imports and
+       supporting code used by all D4P HTML transformation
+       type extensions.
+
+       In particular, it centralizes imports of library modules
+       so that a given module is imported exactly once.
+  -->
+  <extension-point id="d4p.common.html.param" behavior="org.dita.dost.platform.InsertAction"/>
+
+  <require plugin="org.dita-community.common.xslt"/>
+
+  <feature extension="package.support.name" value="Eliot Kimber"/>
+  <feature extension="package.support.email" value="ekimber@contrext.com"/>
+  <feature extension="d4p.common.html.param" value="parameters.xml" type="file" />
+  <feature extension="dita.xsl.strings" value="strings/strings.xml" type="file"/>
+
+  <!-- New way of specifying metadata with parameters contributed by the transtype:
+        https://github.com/dita-ot/dita-ot/issues/1757
+   -->
+  <transtype name="d4pCommons" abstract="true" extends="base-html">
+    <param name="title.only.topic.class.spec"
+      desc="Specifies the @class attribute value to use for title-only topics generated from topicheads."
+      type="string">
+      <val default="true">- topic/topic </val>
+    </param>
+    <param name="title.only.topic.title.class.spec"
+      desc="Specifies the @class attribute value to use for title-only topics generated from topicheads."
+      type="string">
+      <val default="true">- topic/topic </val>
+    </param>
+    <param name="html2.file.organization.strategy"
+      desc="Names the output file organization strategy to use for generated files.
+      One of the pre-defined strategies or a user-implemented name.
+      If the strategy name is not recognized (that is, not handled by the base code or an extension) then the default strategy is applied.
+      The default is dependent on the specific transformation type. For HTML2 the default is &quot;as-authored&quot;. For EPUB it is &quot;single-dir&quot;."
+      type="string">
+      <val>as-authored</val>
+      <val>single-dir</val>
+    </param>
+  </transtype>
+</plugin>

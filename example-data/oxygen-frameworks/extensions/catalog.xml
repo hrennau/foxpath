@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <!-- Add-ons descriptor schema -->
+    <uri name="http://www.oxygenxml.com/ns/extension/extensions.xsd" uri="extensions.xsd"/>
+    <uri name="http://www.oxygenxml.com/ns/extension" uri="extensions.xsd"/>
+    
+    <!-- Configuration based schema manager filter descriptor schema -->
+    <uri name="http://www.oxygenxml.com/ns/ccfilter/config/ccConfigSchemaFilter.xsd" uri="ccConfigSchemaFilter.xsd"/>
+    <uri name="http://www.oxygenxml.com/ns/ccfilter/config" uri="ccConfigSchemaFilter.xsd"/>
+
+    <!-- Schematron for additional checks. -->
+    <uri name="http://www.oxygenxml.com/ns/ccfilter/config/ccConfigSchemaFilter.sch" uri="ccConfigSchemaFilter.sch"/>
+    
+    <!-- Configuration based schema manager style guide filter descriptor schema -->
+    <uri name="http://www.oxygenxml.com/ns/ccfilter/annotations/ccAnnotationsSchemaFilter.xsd" uri="ccAnnotationsSchemaFilter.xsd"/>
+    <uri name="http://www.oxygenxml.com/ns/ccfilter/annotations" uri="ccAnnotationsSchemaFilter.xsd"/>
+    
+    <!-- Map Plugin Public ID to DTD -->
+    <public publicId="-//Oxygen Plugin" uri="../../plugins/plugin.dtd"/>
+</catalog>

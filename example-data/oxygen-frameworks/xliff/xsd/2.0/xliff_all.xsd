@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:import schemaLocation="xliff_core_2.0.xsd" namespace="urn:oasis:names:tc:xliff:document:2.0"/>
+    <xs:import schemaLocation="modules/change_tracking.xsd" namespace="urn:oasis:names:tc:xliff:changetracking:2.0"/>
+    <xs:import schemaLocation="modules/fs.xsd" namespace="urn:oasis:names:tc:xliff:fs:2.0"/>
+    <xs:import schemaLocation="modules/glossary.xsd" namespace="urn:oasis:names:tc:xliff:glossary:2.0"/>
+    <xs:import schemaLocation="modules/matches.xsd" namespace="urn:oasis:names:tc:xliff:matches:2.0"/>
+    <xs:import schemaLocation="modules/metadata.xsd" namespace="urn:oasis:names:tc:xliff:metadata:2.0"/>
+    <xs:import schemaLocation="modules/resource_data.xsd" namespace="urn:oasis:names:tc:xliff:resourcedata:2.0"/>
+    <xs:import schemaLocation="modules/size_restriction.xsd" namespace="urn:oasis:names:tc:xliff:sizerestriction:2.0"/>
+</xs:schema>

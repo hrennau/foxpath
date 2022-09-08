@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    
+    <contentModel parent="topic">
+        <!-- 
+            (title,shortdesc?,prolog?,body)
+        -->
+        <element name="title" occurs="1"/>
+        <element name="shortdesc" longName="Short Description" occurs="?"/>
+        <element name="prolog" occurs="?"/>
+        <element name="body" occurs="1"/>
+    </contentModel>    
+</actions>

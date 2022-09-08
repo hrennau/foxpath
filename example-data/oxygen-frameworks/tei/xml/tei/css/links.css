@@ -1,0 +1,27 @@
+@namespace teip5 "http://www.tei-c.org/ns/1.0";
+
+/*TEI P5 version - value of 'target' and 'targets' attributes are of type anyURI */
+teip5|ref[target]:before, teip5|ptr[target]:before {
+  /* Keep just the first ID */
+  link: oxy_replace(attr(target), "(\\S+)(\\s*)(.*)$", "$1", true);
+  content: url(img/link.png);
+}
+
+teip5|link[targets]:before {
+  /* Keep just the first ID */
+  link: oxy_replace(attr(targets), "(\\S+)(\\s*)(.*)$", "$1", true);
+  content: url(img/link.png);
+}
+
+/*TEI P4 version - value of 'target' and 'targets' attributes are of type IDREFS*/
+*[target]:before {
+  /* Keep just the first ID */
+  link: "#" oxy_replace(attr(target), "(\\S+)(\\s*)(.*)$", "$1", true);
+  content: url(img/link.png);
+}
+
+*[targets]:before {
+  /* Keep just the first ID */
+  link: "#" oxy_replace(attr(targets), "(\\S+)(\\s*)(.*)$", "$1", true);
+  content: url(img/link.png);
+}

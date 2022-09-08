@@ -1,0 +1,193 @@
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+
+@media oxygen-dark-theme, oxygen-high-contrast-black{
+
+    *:before,
+    *,
+    *:after{
+        color:inherit !important;
+        background-color: inherit !important;
+        border-color: inherit !important;
+    }
+	
+    oxy|comment{
+        color:#3DB39B !important;
+        background-color:transparent !important;
+    }
+
+    oxy|reference,
+    oxy|entity{
+        background-color:transparent !important;
+    }
+	
+    a,
+    table > caption,
+    table > info > title,
+    table > title{
+        color:#0050F0 !important;
+    }
+
+    applet:before,
+    object:before,
+    applet > param:before,
+    object > param:before,
+    basefont{
+        color: #CCCCCC !important;
+    }
+
+    applet,
+    object{
+    	color: #179C32 !important;
+        border:1px solid white !important;
+    }
+
+
+    blockquote:before,
+    blockquote:after,
+    iframe:before,
+    map > area:before,
+    optgroup:before,
+    option:after,
+    q:before,
+    q:after{
+        color:#EEEEEE !important;
+    }
+
+    link,
+    style,
+    script{
+        color:#59ACFF !important;
+        border:none !important;
+    }
+
+    table:before! > col,
+    table:before! > colgroup{
+        content:oxy_button(actionID, 'table.expand.colspec', transparent, true, color, #59ACFF, fontInherit, true, showText, true) !important;
+        color:#59ACFF !important;
+    }
+
+    table:-oxy-visible-colspecs:before{
+        content:oxy_button(actionID, 'table.collapse.colspec', transparent, true, color, #59ACFF, fontInherit, true, showText, true) !important;
+    }
+
+    datalist > option:after,
+    a[href]:before,
+    link[href]:before{
+        color:#59ACFF !important;
+    }
+
+    input{
+        color:#0050F0 !important;
+    }
+
+    input[type = submit],
+    input[type = button]{
+        background-color:silver !important;
+        color:black !important;
+    }
+
+    legend{
+        color:#B512B2 !important;
+    }
+
+    map{
+        color:#009999 !important;
+    }
+
+    noscript{
+        color:#179C32 !important;
+    }
+
+    title{
+        color:#0050F0 !important;
+        border-bottom:2px solid #59ACFF !important;
+    }
+
+    fieldset{
+        border:1px solid #59ACFF !important;
+    }
+
+    table,
+    entry,
+    td{
+        border-color:#383838 !important;
+    }
+
+
+    table[border]{
+        border-color:#CCCCCC !important;
+    }
+
+    table[frame],
+    th{
+        border-color:white !important;
+    }
+
+    th,
+    thead{
+        background-color:#383838 !important;
+        color:white !important;
+    }
+
+    table[border][rules = cols] > tr > td,
+    table[border][rules = cols] > tr > th,
+    table[border][rules = cols] > tbody > tr > td,
+    table[border][rules = cols] > tbody > tr > th,
+    table[border][rules = cols] > thead > tr > td,
+    table[border][rules = cols] > thead > tr > th,
+    table[border][rules = cols] > tfoot > tr > td,
+    table[border][rules = cols] > tfoot > tr > th{
+        border-left:1px solid white !important;
+        border-right:1px solid white !important;
+    }
+
+    table[border][rules = rows] > tr > td,
+    table[border][rules = rows] > tr > th,
+    table[border][rules = rows] > tbody > tr > td,
+    table[border][rules = rows] > tbody > tr > th,
+    table[border][rules = rows] > thead > tr > td,
+    table[border][rules = rows] > thead > tr > th,
+    table[border][rules = rows] > tfoot > tr > td,
+    table[border][rules = rows] > tfoot > tr > th{
+        border-top:1px solid white !important;
+        border-bottom:1px solid white !important;
+    }
+
+    table[border][rules = all] > tr > td,
+    table[border][rules = all] > tr > th,
+    table[border][rules = all] > tbody > tr > td,
+    table[border][rules = all] > tbody > tr > th,
+    table[border][rules = all] > thead > tr > td,
+    table[border][rules = all] > thead > tr > th,
+    table[border][rules = all] > tfoot > tr > td,
+    table[border][rules = all] > tfoot > tr > th{
+        border:1px solid white !important;
+    }
+
+    table[border][rules = none] > tr > td,
+    table[border][rules = none] > tr > th,
+    table[border][rules = none] > tbody > tr > td,
+    table[border][rules = none] > tbody > tr > th,
+    table[border][rules = none] > thead > tr > td,
+    table[border][rules = none] > thead > tr > th,
+    table[border][rules = none] > tfoot > tr > td,
+    table[border][rules = none] > tfoot > tr > th{
+        border:1px solid #383838 !important;
+    }
+
+    head{
+        border:solid silver 1pt !important;
+    }
+
+    hr{
+        border-top:1px inset white !important;
+    }
+
+    title{
+        border-bottom:2px solid #2860ED !important;
+    }
+    
+progress {
+    border-color: #009999 !important;
+}
+}

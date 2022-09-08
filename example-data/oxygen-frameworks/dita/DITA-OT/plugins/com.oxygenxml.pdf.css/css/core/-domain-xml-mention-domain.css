@@ -1,0 +1,172 @@
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * XML mention domain
+ * 
+ * DITA-1.3/langRef/containers/xml-mention-domain.html#xml-mention-domain
+ * 
+ * Use the XML-mention domain elements for mentions of 
+ * named XML constructs, including elements, attributes, 
+ * entities, processing instructions, and document-type 
+ * declaration components. 
+ * ==================================================
+ * ==================================================
+ * 
+ */
+ 
+ 
+/* ====================================
+ *
+ * <numcharref>
+ * 
+ * Use the <numcharref> element to identify mentions of 
+ * XML numeric character references, for example, "&#10;" 
+ * or "&#x0a;". This element enables more precise semantic 
+ * searching of the DITA source; it also enables distinct 
+ * output formatting. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/keyword markup-d/markupname
+ */
+*[class~='xml-d/numcharref']:before {
+  content: "&#";
+}
+*[class~='xml-d/numcharref']:after {
+  content: ";";
+}
+ 
+/* ====================================
+ *
+ * <parameterentity>
+ * 
+ * Use the <parameterentity> element to identify mentions 
+ * of parameter entities, for example, "%keyword.content;". 
+ * This element enables more precise semantic searching of 
+ * the DITA source; it also enables distinct formatting, such 
+ * as adding the percentage sign (%) or trailing 
+ * semi-colon (;) delimiters to the parameter entity name.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/keyword markup-d/markupname
+ */
+*[class~='xml-d/parameterentity']:before{
+  content:"%";
+} 
+*[class~='xml-d/parameterentity']:after{
+  content:";";
+} 
+ 
+ 
+/* ====================================
+ *
+ * <textentity>
+ * 
+ * Use the <textentity> element to identify mentions of 
+ * XML text entities, for example, "&xml-d-att;". This 
+ * element enables more precise semantic searching of 
+ * the DITA source; it also enables distinct formatting, 
+ * such as adding an ampersand (&) as a leading character 
+ * and a semi-colon (;) as a trailing character. 
+ * The content of the <textentity> element should be the 
+ * entity name without the ampersand and semi-colon 
+ * delimiters. This element is part of the XML mention domain.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/keyword markup-d/markupname
+ */
+*[class~='xml-d/textentity']:before{
+  content:"&";
+} 
+*[class~='xml-d/textentity']:after{
+  content:";";
+} 
+
+
+/* ====================================
+ *
+ * <xmlatt>
+ * 
+ * Use the <xmlatt> element to identify mentions of XML 
+ * attributes, for example, @audience. This element 
+ * enables more precise semantic searching of the DITA 
+ * source; it also enables distinct formatting, such 
+ * as preceding the name of the attribute with a commercial 
+ * at (@) sign. The content of the <xmlatt> element should 
+ * be the attribute name without commercial at or equals 
+ * (=) characters. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/keyword markup-d/markupname
+ */
+*[class~='xml-d/xmlatt']:before{
+  content:"@";
+} 
+
+
+/* ====================================
+ *
+ * <xmlelement>
+ * 
+ * Use the <xmlelement> element to identify mentions of 
+ * XML element types. This element enables more precise 
+ * semantic searching of the DITA source; it also enables 
+ * distinct formatting, such as surrounding the name of 
+ * the element with angle brackets. The content of the 
+ * <xmlelement> element should be the element type name 
+ * without leading or trailing angle brackets. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/keyword markup-d/markupname
+ */
+*[class~='xml-d/xmlelement']:before{
+  content:"<";
+} 
+*[class~='xml-d/xmlelement']:after{
+  content:">";
+}
+
+
+/* ====================================
+ *
+ * <xmlnsname>
+ * 
+ * Use the <xmlnsname> element to identify mentions of 
+ * namespace names, for example, 
+ * "http://dita.oasis-open.org/architecture/2005/". 
+ * This element enables more precise semantic searching 
+ * of the DITA source; it also enables distinct formatting.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/keyword markup-d/markupname
+ */
+*[class~='xml-d/xmlnsname'] {
+}
+
+
+/* ====================================
+ *
+ * <xmlpi>
+ * 
+ * Use the <xmlpi> element to identify mentions of 
+ * processing instruction names., for example "
+ * <?piname pi value?>"). This element enables more 
+ * precise semantic searching of the DITA source; it 
+ * also enables distinct formatting. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/keyword markup-d/markupname
+ */
+*[class~='xml-d/xmlpi']:before{
+  content:"<?";
+} 
+*[class~='xml-d/xmlpi']:after{
+  content:"?>";
+}

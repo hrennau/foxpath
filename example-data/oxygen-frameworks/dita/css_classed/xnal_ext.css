@@ -1,0 +1,15 @@
+/* extensible Name and Address Language */
+
+*[class~="xnal-d/authorinformation"]:before,
+*[class~="xnal-d/personinfo"]:before,
+*[class~="xnal-d/organizationinfo"]:before,
+*[class~="xnal-d/namedetails"]:before,
+*[class~="xnal-d/personname"]:before,
+*[class~="xnal-d/organizationnamedetails"]:before,
+*[class~="xnal-d/addressdetails"]:before,
+*[class~="xnal-d/contactnumbers"]:before,
+*[class~="xnal-d/emailaddresses"]:before,
+*[class~="xnal-d/urls"]:before {
+    content: oxy_capitalize(oxy_local-name());
+    display:inline;
+}

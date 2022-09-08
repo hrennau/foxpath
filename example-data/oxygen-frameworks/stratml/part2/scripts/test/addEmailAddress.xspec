@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description  xmlns:x = "http://www.jenitennison.com/xslt/xspec" stylesheet="../addEmailAddress.xsl">
+  
+  <x:scenario
+    label="Test adding EmailAddress inside an empty Submitter">
+    <x:context>
+      <Submitter>        
+      </Submitter>
+    </x:context>
+    <x:expect label="A new EmailAddress should be added">
+      <Submitter>
+        <EmailAddress>${caret}</EmailAddress>
+      </Submitter>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Test adding EmailAddress inside a Submitter">
+    <x:context>
+      <Submitter>
+        <FirstName>...</FirstName>
+        <LastName>...</LastName>
+      </Submitter>
+    </x:context>
+    <x:expect label="A new EmailAddress should be added at the end">
+      <Submitter>
+        <FirstName>...</FirstName>
+        <LastName>...</LastName>
+        <EmailAddress>${caret}</EmailAddress>
+      </Submitter>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Test the content of a new EmailAddress element">
+    <x:call template="addElement"/>
+    <x:expect label="A new EmailAddress">
+      <EmailAddress>${caret}</EmailAddress>
+    </x:expect>
+  </x:scenario>
+</x:description>

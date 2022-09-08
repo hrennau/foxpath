@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="dita2kindle" default="dita2kindle">
+  <!-- NOTE: This build file depends on targets defined in the epub transtype -->
+  
+	<!-- Global properties that affect the base Toolkit processing go before the target elem: -->
+  
+  <condition property="kindlegen.executable" value="kindlegen">
+    <not><isset property="kindlegen.executable"/></not>
+  </condition>
+  <property name="kindlegen.executable" value="${kindlegen.executable}"/>
+  <property name="kindlegenArgs" value=""/>
+  
+  <target xmlns:dita="http://dita-ot.sourceforge.net" name="dita2kindle" unless="noMap">
+
+    <antcall target="dita2epub">
+      <param name="args.xsl" value="${dita.dir}/plugins/org.dita4publishers.kindle/xsl/map2kindleImpl.xsl"/>
+      <param name="d4p.epubtype" value="epub3"/> <!-- currently generating epub3, might need
+        to change to epub2, but kindlegen is supposed to take an input of epub3 just fine -->
+      <param name="d4p.include.kindle.css" value="true"/> <!-- this will copy the currently empty
+        kindleExtensions.css file -->
+    </antcall>
+    
+    <antcall target="kindlegen"/>
+    
+  </target> 
+  
+  <target name="kindlegen">
+    <!-- I am not sure why we need to get the args.input etc. again. That is I am not sure why
+      the dita.map.filename.root property is not available. Something about ant order of operations
+      that I am not getting. -->
+    
+    <basename property="base.filename.for.kindlegen" file="${args.input}" suffix=".ditamap"/>
+    
+    <echo message="+ [DEBUG] kindlegen.executable property = '${kindlegen.executable}'"/>
+    <property name="epub.result.filename" value="${base.filename.for.kindlegen}.epub"/>
+    <property name="kindle.result.filename" value="${base.filename.for.kindlegen}.mobi"/>
+    <exec executable="${kindlegen.executable}" resultproperty="resultCode" failonerror="false">
+      <arg file="${output.dir}${file.separator}${epub.result.filename}"/>
+      <arg line="-o ${kindle.result.filename}"/>
+      <arg line="${kindlegenArgs}"/>
+    </exec>
+    <echo message="After kindlegen, result code is '${resultCode}'"/>
+    
+    <!-- We could delete the epub file here but it is useful to have because a mobi file cannot
+      be easily decompressed like an epub file can. So if a change needs to be made, then the epub
+      file can be modified and kindlegen ran manually. It might be better to delete unless the 
+      debug param is true, which is what is done in the org.example.d4p.pdf2-multipass -->
+    
+    <echo message="Result Kindle file is ${output.dir}${file.separator}${kindle.result.filename}"/>
+  </target>
+  
+</project>

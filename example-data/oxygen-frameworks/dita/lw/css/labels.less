@@ -1,0 +1,66 @@
+.label(@label, @top:-0.5rem, @right:-1.2rem, @layer:100001) {
+    &:before(@{layer}) {
+        font-family:arial, helvetica, sans-serif;
+        display:block;
+        position:absolute;
+        content:@label;
+        font-size:0.5rem;
+        top:@top;
+        text-align:right;
+        right:@right;
+        color:#CCCCCC;
+        border-bottom:1px solid #EEEEEE;
+        border-right:1px solid #EEEEEE;
+        padding-right:4px;
+        width:5rem;
+        letter-spacing:0;
+        border-radius:4px;
+        font-weight:bold;
+    }
+    &:before(@{layer}):hover {
+        color:#5555AA;
+        font-weight:bold;
+        background-color:#FAFAFA;
+        border-bottom:1px solid #CCCCCC;
+        border-right:1px solid #CCCCCC;
+    }
+    & {
+        position:relative;
+    }
+}
+
+
+.br{
+    &:hover {
+        outline:1px solid #EEEEEE;
+        -moz-outline-radius:4px;
+    }
+    &:focus-within {
+        outline:1px solid #EEEEFF;
+    }
+}
+
+
+body>p, section>p       {.label('paragraph');.br();}
+prolog                  {.label('prolog information', -0.8rem, -0.2rem);}
+section>title           {.label('title');.br();}
+shortdesc               {.label('short description', -0.6rem, -2rem);.br();}
+body                    {.label('content');}
+section                 {.label('section', -0.6rem);}
+body>pre, section>pre   {.label('preformated text', -0.7rem, -1.5rem);.br();}
+fig                     {.label('figure');.br();}
+body>dl, section>dl     {.label('definition list');.br();}
+body>ol, section>ol     {.label('ordered list');.br();}
+body>ul, section>ul     {.label('unordered list');.br();}
+body>object, section>object {.label('external object');.br();}
+topic > title           {.label('title', -0.8rem , 0);.br();}
+
+object {
+    display:block;
+}
+body > * {
+    margin-top:1em!important;
+}
+section > * {
+    margin-top:1em!important;
+}

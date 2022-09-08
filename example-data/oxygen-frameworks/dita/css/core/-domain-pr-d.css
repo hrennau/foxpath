@@ -1,0 +1,520 @@
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * Programming elements
+ * 
+ * http://docs.oasis-open.org/dita/v1.2/os/spec/common/pr-d.html#progd
+ * 
+ * The programming domain elements are used to define 
+ * the syntax and to give examples of programming 
+ * languages.
+ * ==================================================
+ * ==================================================
+ * 
+ * TODO - dan - check the Prince output. 
+ */
+/*
+ * Mixins. 
+ */
+/* ====================================
+ *
+ * <apiname>
+ * 
+ * The <reference> element defines a top-level container for a 
+ * reference topic. Reference topics document programming 
+ * constructs or facts about a product. Examples of reference 
+ * topics include (but are not limited to) product specifications, 
+ * environmental specifications, equipment lists, parts lists, 
+ * required tools, language elements, class descriptions, 
+ * commands, functions, and API information. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/keyword pr-d/apiname 
+ */
+*[class~="pr-d/apiname"] {
+  /* -monospace- >>> */
+  font-family: monospace;
+  font-size: 0.9em;
+}
+/* ====================================
+ *
+ * <codeblock>
+ * 
+ * The <codeblock> element represents lines of program 
+ * code. Like the <pre> element, line endings and spaces 
+ * inside the element must be preserved, and the content 
+ * is typically rendered in a monospaced font.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/pre
+ */
+*[class~="pr-d/codeblock"] {
+  /**/
+}
+/* ====================================
+ *
+ * <coderef>
+ * 
+ * The <coderef> element references an external file that 
+ * contains literal code. When evaluated, the <coderef> 
+ * element should present the content of the file.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/xref
+ */
+@media oxygen {
+  *[class~="pr-d/coderef"][class]:before,
+  *[class~="pr-d/coderef"][class]:after,
+  *[class~="pr-d/coderef"][class] {
+    text-decoration:none;
+    color:inherit;
+    content:"";
+  }
+  
+  *[class~="pr-d/coderef"][class] {
+    display:block;
+  }
+  
+  /*Add a newline after the open reference icon */
+  coderef > oxy|reference:before,
+  coderef > oxy|reference {
+    display:block!important;
+  }
+}
+/* ====================================
+ *
+ * <codeph>
+ * 
+ * The code phrase (<codeph>) element represents a snippet 
+ * of code within the main flow of text. The code phrase is 
+ * displayed in a monospaced font for emphasis. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph
+ */
+*[class~="pr-d/codeph"] {
+  /* -monospace- >>> */
+  font-family: monospace;
+  font-size: 0.9em;
+}
+/* ====================================
+ *
+ * <option>
+ * 
+ * The <option> element describes an option that can be 
+ * used to modify a command (or something else, like a 
+ * configuration). 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/keyword
+ */
+*[class~="pr-d/option"] {
+  font-weight: bold;
+}
+/* ====================================
+ *
+ * <parmname>
+ * 
+ * When referencing the name of an application programming 
+ * interface parameter within the text flow of your topic, 
+ * use the parameter name (<parmname>) element to mark up 
+ * the parameter. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/keyword
+ */
+*[class~="pr-d/parmname"] {
+  font-weight: bold;
+}
+/* ====================================
+ *
+ * <parml>
+ * 
+ * The parameter list (<parml>) element contains a list of 
+ * terms and definitions that describes the parameters in 
+ * an application programming interface. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/dl
+ */
+*[class~="pr-d/parml"] {
+  /**/
+}
+/* ====================================
+ *
+ * <pt>
+ * 
+ * A parameter term, within a parameter list entry, is 
+ * enclosed by the <pt> element.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/dt
+ */
+*[class~="pr-d/pt"] {
+  /**/
+}
+/* ====================================
+ *
+ * <pd>
+ * 
+ * A parameter definition, within a parameter list entry, 
+ * is enclosed by the <pd> element. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/dd
+ */
+*[class~="pr-d/pd"] {
+  /**/
+}
+/* ====================================
+ *
+ * <plentry>
+ * 
+ * The parameter list entry element (<plentry>) 
+ * contains one or more parameter terms and 
+ * definitions (pt and pd).
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/dlentry
+ */
+*[class~="pr-d/plentry"] {
+  /**/
+}
+/* ====================================
+ *
+ * <synph>
+ * 
+ * The syntax phrase (<synph>) element is a 
+ * container for syntax definition elements. 
+ * It is used when a complete syntax diagram 
+ * is not needed, but some of the syntax 
+ * elements, such as kwd, oper, delim, are 
+ * used within the text flow of the topic content.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/dlentry
+ */
+*[class~="pr-d/synph"] {
+  /**/
+}
+/* ====================================
+ *
+ * <syntaxdiagram>
+ * 
+ * The syntax diagram (<syntaxdiagram>) element is the 
+ * main container for all the syntax elements that make 
+ * up a syntax definition. The syntax diagram represents 
+ * the syntax of a statement from a computer language 
+ * or a command, function call, or programming language 
+ * statement. Traditionally, the syntax diagram is formatted 
+ * with "railroad tracks" that connect the units of the syntax 
+ * together, but this presentation may differ 
+ * depending on the output media.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/fig
+ */
+*[class~="pr-d/syntaxdiagram"] {
+  /*See -colors.css */
+}
+*[class~="pr-d/syntaxdiagram"] > *[class~="topic/title"] {
+  font-style: normal;
+}
+/* ====================================
+ *
+ * <groupseq>
+ * 
+ * The <groupseq> element is part of the subset 
+ * of elements that define syntax diagrams in 
+ * DITA. A group is a logical set of pieces of 
+ * syntax that go together.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/figgroup
+ */
+*[class~="pr-d/groupseq"] {
+   display:inline;
+}
+/* ====================================
+ *
+ * <groupchoice>
+ * 
+ * The <groupchoice> element is part of the subset 
+ * of elements that define syntax diagrams in DITA. 
+ * A group is a logical set of pieces of syntax 
+ * that go together.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/figgroup
+ */
+*[class~="pr-d/groupchoice"] {
+  display:inline; 
+}
+*[class~="pr-d/groupchoice"]:before {
+  content: "{ ";
+}
+*[class~="pr-d/groupchoice"]:after {
+  content: "} ";
+}
+/* ====================================
+ *
+ * <groupcomp>
+ * 
+ * The <groupcomp> element is part of the subset of 
+ * elements that define syntax diagrams in DITA. A 
+ * group is a logical set of pieces of syntax that 
+ * go together. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/figgroup
+ */
+*[class~="pr-d/groupcomp"] {
+  /**/
+}
+/* ====================================
+ *
+ * <fragment>
+ * 
+ * Within a syntax definition, a <fragment> is a 
+ * labeled subpart of the syntax. The <fragment> 
+ * element allows breaking out logical chunks of 
+ * a large syntax diagram into named fragments.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/figgroup
+ */
+*[class~="pr-d/fragment"] {
+  /**/
+}
+/* ====================================
+ *
+ * <fragref>
+ * 
+ * The fragment reference (<fragref>) element provides 
+ * a logical reference to a syntax definition fragment 
+ * so that you can reference a syntax fragment multiple 
+ * times, or pull a large section of syntax out of 
+ * line for easier reading.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/xref
+ */
+*[class~="pr-d/fragref"][href] {
+  link: attr(href);
+  -ah-link: attr(href);
+  
+}
+/* ====================================
+ *
+ * <synblk>
+ * 
+ * The syntax block (<synblk>) element organizes 
+ * small pieces of a syntax definition into a 
+ * larger piece. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/figgroup 
+ */
+*[class~="pr-d/synblk"] {
+  /**/
+}
+/* ====================================
+ *
+ * <synnote>
+ * 
+ * The syntax note (<synnote>) element contains a note 
+ * (similar to a footnote) within a syntax definition 
+ * group or fragment. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/fn
+ * 
+ * TODO - dan - check the Prince output. 
+ */
+*[class~="pr-d/synnote"] {
+  /**/
+}
+/* ====================================
+ *
+ * <synnoteref>
+ * 
+ * The syntax note (<synnoteref>) reference 
+ * element references a syntax note element 
+ * (<synnote>) that has already been defined 
+ * elsewhere in the syntax diagram.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/xref 
+ * 
+ */
+*[class~="pr-d/synnoteref"]{
+    font-style:italic;
+}
+
+@media oxygen AND (platform:"eclipse") {
+  *[class~="pr-d/synnoteref"]{
+    font-style:normal;
+  }
+}
+/* ====================================
+ *
+ * <kwd>
+ * 
+ * The <kwd> element defines a keyword 
+ * within a syntax diagram.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/keyword  
+ * 
+ */
+*[class~="pr-d/kwd"] {
+  font-weight: bold;
+  /* -monospace- >>> */
+  font-family: monospace;
+  font-size: 0.9em;
+}
+*[class~="pr-d/kwd"]:before {
+  content: " ";
+}
+*[class~="pr-d/kwd"]:first-child:before {
+  content: none;
+}
+/* ====================================
+ *
+ * <var>
+ * 
+ * The <kwd> element defines a keyword 
+ * within a syntax diagram.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph  
+ * 
+ */
+*[class~="pr-d/var"] {
+  font-style: italic;
+}
+*[class~="pr-d/var"]:before {
+  content: " ";
+}
+*[class~="pr-d/var"]:first-child:before {
+  content: none;
+}
+/* ====================================
+ *
+ * <oper>
+ * 
+ * The operator (<oper>) element defines 
+ * an operator within a syntax definition. 
+ * Typical operators are equals (=), 
+ * plus (+) or multiply (*).
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph  
+ * 
+ */
+*[class~="pr-d/oper"] {
+  /**/
+}
+*[class~="pr-d/oper"]:before {
+  content: " ";
+}
+*[class~="pr-d/oper"]:first-child:before {
+  content: none;
+}
+/* ====================================
+ *
+ * <delim>
+ * 
+ * Within a syntax diagram, the delimiter 
+ * (<delim>) element defines a character 
+ * marking the beginning or end of a section 
+ * or part of the complete syntax.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph  
+ * 
+ */
+*[class~="pr-d/delim"] {
+  /**/
+}
+*[class~="pr-d/delim"]:before {
+  content: " ";
+}
+*[class~="pr-d/delim"]:first-child:before {
+  content: none;
+}
+/* ====================================
+ *
+ * <sep>
+ * 
+ * The separator (<sep>) element defines a 
+ * separator character that is inline with 
+ * the content of a syntax diagram.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph  
+ * 
+ */
+*[class~="pr-d/sep"] {
+  /**/
+}
+*[class~="pr-d/sep"]:before {
+  content: " ";
+}
+*[class~="pr-d/sep"]:first-child:before {
+  content: none;
+}
+/* ====================================
+ *
+ * <repsep>
+ * 
+ * The repeat separator (<repsep>) element 
+ * in a syntax diagram defines a group of 
+ * syntax elements that can (or should) be 
+ * repeated. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph  
+ * 
+ */
+*[class~="pr-d/repsep"] {
+  /**/
+}
+/*
+    The character must be used between 
+    repetitions of the syntax elements.
+*/
+*[class~="pr-d/repsep"]:before {
+  content: "(";
+}
+*[class~="pr-d/repsep"]:after {
+  content: ")";
+}

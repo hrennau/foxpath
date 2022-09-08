@@ -1,0 +1,542 @@
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * Task requirements domain
+ * 
+ * http://docs.oasis-open.org/dita/v1.2/os/spec/common/mitask-d.html
+ * 
+ * The task requirements domain contains elements for 
+ * use in describing tasks that involve machines or 
+ * other pieces of hardware.
+ * ==================================================
+ * ==================================================
+ * 
+ */
+/*
+ * Mixins.
+ */
+/* ====================================
+ *
+ * <bookmap>
+ * 
+ * The <bookmap> element is a map specialization 
+ * used to describe the relationships among a 
+ * set of DITA topics intended to be configured 
+ * as a traditional book. Bookmaps consist of 
+ * references to topics organized as book content. 
+ * The topic references therefore are labeled 
+ * according to the book components they point to, 
+ * such as booktitle, frontmatter, chapter, 
+ * and appendix.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/map  
+ */
+*[class~="bookmap/bookmap"] {
+  display: block;
+}
+/* ====================================
+ *
+ * <booktitle>
+ * 
+ * The <booktitle> element contains the title 
+ * information for a book, including the library 
+ * title, main title, subtitle, and other 
+ * titles (as required). 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/title  
+ */
+*[class~="bookmap/booktitle"] {
+  display: block;
+  text-align: center;
+  padding-bottom: 1em;
+  border-bottom: 2pt solid !important;
+}
+@media print {
+*[class~="bookmap/booktitle"] {
+  border-bottom: none !important;
+}    
+}
+/* 
+ * All the booktitle children are blocks. Otherwise 
+ * the title becomes very hard to read.
+ */
+*[class~="bookmap/booktitle"] > *{
+    display:block;
+}
+
+
+/* ====================================
+ *
+ * <booklibrary>
+ * 
+ * The <booklibrary> element contains the 
+ * library information for a book. Library 
+ * entries contain information about the 
+ * series, library, or collection of 
+ * documents to which the book belongs. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph  
+ */
+*[class~="bookmap/booklibrary"] {
+  font-size:smaller;
+}
+/* ====================================
+ *
+ * <mainbooktitle>
+ * 
+ * The <mainbooktitle> element contains the 
+ * primary title information for a book.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph  
+ */
+*[class~="bookmap/mainbooktitle"] {
+  display: block;
+}
+
+/* ====================================
+ *
+ * <booktitlealt>
+ * 
+ * The <booktitlealt> element contains the 
+ * alternative title, subtitle, or short title 
+ * for a book. It may be specialized into a 
+ * specific element for those or other purposes.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + topic/ph  
+ */
+*[class~="bookmap/booktitlealt"] {
+  display: block;
+  font-size:smaller;
+  font-style:italic;
+}
+
+@media oxygen AND (platform:"eclipse") {
+  *[class~="bookmap/booktitlealt"] {
+    font-style:normal;
+  }
+}
+
+/* ====================================
+ *
+ * <abbrevlist>
+ * 
+ * The <abbrevlist> element references a 
+ * list of abbreviations. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+*[class~="bookmap/abbrevlist"] {
+  /*TODO - dan - should have an icon, as the <chapter> has, also in the DMM.*/
+}
+/* ====================================
+ *
+ * <amendments>
+ * 
+ * The <amendments> element references a list 
+ * of amendments or updates to the book.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+*[class~="bookmap/amendments"] {
+  /*TODO - dan - should have an icon, as the <chapter> has, also in the DMM.*/
+}
+/* ====================================
+ *
+ * <appendices>
+ * 
+ * The <appendices> element is an optional 
+ * wrapper for <appendix> elements within a bookmap. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+*[class~="bookmap/appendices"] {
+  /*TODO - dan - should have an icon, as the <chapter> has, also in the DMM.*/
+}
+/* ====================================
+ *
+ * <backmatter>
+ * 
+ * The <appendix> element references a 
+ * topic as a appendix within a book. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+@media oxygen {
+  *[class~="bookmap/appendix"]:before(1100) {
+    content: url("../../img/appendix.png");
+  }
+}
+/* ====================================
+ *
+ * <backmatter>
+ * 
+ * The <backmatter> element contains the 
+ * material that follows the main body 
+ * of a document and any appendices. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+@media oxygen {
+ *[class~="bookmap/backmatter"] {
+   border-top: 2pt solid;
+   margin-top: 0.5em;
+   padding-top: 0.5em;
+ }
+
+ *[class~="bookmap/backmatter"]:before(1100) {
+    content: url("../../img/DitaBackmatterRef16.gif");
+  }
+}
+/* ====================================
+ *
+ * <frontmatter>
+ * 
+ * The <frontmatter> element contains the material 
+ * that precedes the main body of a document. It 
+ * may include items such as an abstract, a preface, 
+ * and various types of book lists such as a 
+ * <toc>, <tablelist>, or <figurelist>. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+@media oxygen {
+  *[class~="bookmap/frontmatter"] {
+    border-bottom: 2pt solid;
+    margin-bottom: 0.5em;
+    padding-bottom: 0.5em;
+  }
+  *[class~="bookmap/frontmatter"]:before(1100) {
+    content: url("../../img/DitaFrontmatterRef16.gif");
+  }
+}
+/* ====================================
+ *
+ * <bibliolist>
+ * 
+ * The <bibliolist> element references a 
+ * topic containing a list of bibliographic 
+ * entries within the book. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+*[class~="bookmap/bibliolist"] {
+  /*TODO - dan - should have an icon, as the <chapter> has, also in the DMM.*/
+}
+/* ====================================
+ *
+ * <bookabstract>
+ * 
+ * The <bookabstract> element references a 
+ * topic used within a bookmap as a brief 
+ * summary of book content, generally output 
+ * as part of the book's frontmatter. It is 
+ * used to help the reader quickly evaluate 
+ * the book's purpose.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+*[class~="bookmap/bookabstract"] {
+  /*TODO - dan - should have an icon, as the <chapter> has, also in the DMM.*/
+}
+/* ====================================
+ *
+ * <booklist>
+ * 
+ * The <booklist> element is a general purpose 
+ * element, designed for use in specializations, 
+ * that references a topic or map containing 
+ * a list of items within the book. For example, 
+ * it could be used to reference a topic that 
+ * contains a list of authors for the book. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+/* ====================================
+ *
+ * <booklists>
+ * 
+ * The <booklists> element references lists 
+ * of various kinds within the book. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+@media oxygen {
+  *[class~="bookmap/booklists"]:before(1100) {
+    content: url("../../img/DitaBookLists16.png");
+  }
+}
+/* ====================================
+ *
+ * <booktitlealt>
+ * 
+ * The <booklists> element references lists 
+ * of various kinds within the book. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+/* ====================================
+ *
+ * <chapter>
+ * 
+ * The <chapter> element references a topic 
+ * or map as a chapter within a book.  
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+@media oxygen {
+  *[class~="bookmap/chapter"]:before(1100) {
+    content: url("../../img/chapter.png");
+  }
+  *[class~="bookmap/chapter"]:before(1040) {
+    content: " " counter(chapter) "   ";
+  }
+  *[class~="bookmap/chapter"][toc="no"]:before(1040) {
+    content: none;
+  }
+  /*There are two conditions in order to increase the rule specificity.
+  From the alterntate stylesheets, one can hide all the topicref the 
+  element names, but we want chapter to still be visible.*/
+  *[class~="bookmap/chapter"][class~="bookmap/chapter"]:before(1050) {
+    content: oxy_capitalize(oxy_local-name()) " " !important;
+  }
+  *[class~="bookmap/chapter"] {
+    counter-increment: chapter;
+  }
+  *[class~="bookmap/chapter"][toc="no"] {
+    counter-increment: none;
+  }
+}
+/* ====================================
+ *
+ * <colophon>
+ * 
+ * The <colophon> element references a topic 
+ * describing how this document was created. 
+ * In publishing, a colophon describes details 
+ * of the production of a book. This information 
+ * generally includes the typefaces used, and 
+ * often the names of their designers; the paper, 
+ * ink and details of the binding materials 
+ * and methods may also receive mention.   
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+*[class~="bookmap/colophon"] {
+  /*TODO - dan - should have an icon, as the <chapter> has, also in the DMM.*/
+}
+/* ====================================
+ *
+ * <dedication>
+ * 
+ * The <dedication> element references a topic 
+ * containing a dedication for the book, such 
+ * as to a person or group.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+*[class~="bookmap/dedication"] {
+  /*TODO - dan - should have an icon, as the <chapter> has, also in the DMM.*/
+}
+/* ====================================
+ *
+ * <draftinfo>
+ * 
+ * The <draftintro> element references a topic 
+ * used as an introduction to the draft of this book.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+*[class~="bookmap/draftintro"] {
+  /*TODO - dan - should have an icon, as the <chapter> has, also in the DMM.*/
+}
+/* ====================================
+ *
+ * <figurelist>
+ * 
+ * The <figurelist> element references a topic 
+ * containing a list of figures in the book. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+@media oxygen {
+  *[class~="bookmap/figurelist"]:before(1100) {
+    content: url("../../img/DitaFigureList16.png");
+  }
+}
+/* ====================================
+ *
+ * <glossarylist>
+ * 
+ * The <glossarylist> element references a list 
+ * of glossary entries within the book.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+@media oxygen {
+  *[class~="bookmap/glossarylist"]:before(1100) {
+    content: url("../../img/DitaGlossaryList16.png");
+  }
+}
+/* ====================================
+ *
+ * <indexlist>
+ * 
+ * The <indexlist> element indicates to the processing 
+ * software that the author wants an index at the 
+ * particular location.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+ @media oxygen {
+  *[class~="bookmap/indexlist"]:before(1100) {
+    content: url("../../img/DitaIndex16.png");
+  }
+}
+/* ====================================
+ *
+ * <notices>
+ * 
+ * The <notices> element references a topic 
+ * containing special notice information, 
+ * for example, legal notices about supplementary 
+ * copyrights and trademarks associated with the book.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+@media oxygen {
+  *[class~="bookmap/notices"]:before(1100) {
+    content: url("../../img/DitaNotices16.png");
+  }
+}
+/* ====================================
+ *
+ * <part>
+ * 
+ * The <part> element references a part topic 
+ * or a map that references part topics for 
+ * the book. A new part is started. Use <part> 
+ * to divide a document's chapters into logical 
+ * groupings. For example, in a document that 
+ * contains both guide and reference information, 
+ * you can define two parts, one containing the 
+ * guide information and the other containing the 
+ * reference information. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+@media oxygen {
+  *[class~="bookmap/part"]:before(1100) {
+    content: url("../../img/part.png");
+  }
+}
+/* ====================================
+ *
+ * <preface>
+ * 
+ * The <preface> element references a topic or 
+ * map containing introductory information 
+ * about a book, such as the purpose and 
+ * structure of the document. 
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+@media oxygen {
+  *[class~="bookmap/preface"]:before(1100) {
+    content: url("../../img/DitaPreface16.png");
+  }
+}
+/* ====================================
+ *
+ * <tablelist>
+ * 
+ * The <tablelist> element references a 
+ * topic that contains a list of tables within the book. 
+ * If no href attribute is specified on the 
+ * <tablelist> element, an external processor may 
+ * generate a list of tables at this location.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+@media oxygen {
+  *[class~="bookmap/tablelist"]:before(1100) {
+    content: url("../../img/DitaTableList16.png");
+  }
+}
+/* ====================================
+ *
+ * <toc>
+ * 
+ * The <toc> element indicates to the processing 
+ * software that the author wants a table of 
+ * contents generated at the particular location. 
+ * If no href attribute is specified on the 
+ * <toc> element, an external processor may 
+ * generate table of contents at this location. 
+ * If the href attribute references a topic or map, 
+ * that topic or map should contain a manually 
+ * created table of contents.
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     + map/topicref  
+ */
+@media oxygen {
+  *[class~="bookmap/toc"]:before(1100) {
+    content: url("../../img/DitaToc16.png");
+  }
+}

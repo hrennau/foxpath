@@ -1,0 +1,51 @@
+@import "dita.css";
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+
+@font-face {
+    font-family:"NothingYouCouldDo";
+    font-style:normal;
+    src:url("../fonts/NothingYouCouldDo.ttf");
+}
+
+/*
+ * Plain content and topcirefs in the map.
+ */
+:root{
+    font-family: "trebuchet ms", "Liberation Serif", serif;
+    line-height: 1.2;
+}
+
+/*
+ * Topic and Map Titles.
+ */
+*[class ~= "map/map"][title]:before,
+*[class ~= "map/map"] > *[class ~= "topic/title"],
+*[class ~= "topic/topic"] > *[class ~= "topic/title"]{
+    font-family: 'NothingYouCouldDo', serif;
+    color:#444;
+    padding-left: 0.5em;
+    font-size: 2.5em !important
+}
+
+
+@media oxygen AND (min-width:25cm) AND (platform:standalone),
+    oxygen AND (min-width:25cm) AND (platform:eclipse) {
+    /* A background color */
+    oxy|document{
+        background-color:#D8D6CA;
+        border:0;
+    }
+    /* And a background image */
+    :root {
+        padding-top:2.5em;
+        padding-bottom:2em;
+        background-image:url("../img/arc.fw.png");
+        background-repeat:repeat-y;
+        background-position:top left;
+        border:0 !important;
+        padding-left: 80px !important;
+        background-color:#FFFFFF;
+    }
+}
+
+

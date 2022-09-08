@@ -1,0 +1,38 @@
+/*
+=========================
+  Utility elements. [ut-d]  
+=========================
+*/
+*[class~="ut-d/imagemap"]{
+    display:block;
+    border:1pt solid gray;
+    padding:3pt;
+}
+
+*[class~="ut-d/area"]{
+    display:block;
+    margin-left:2em;
+}
+
+*[class~="ut-d/shape"],
+*[class~="ut-d/coords"]{
+    display:inline;
+}
+
+*[class~="ut-d/shape"]:after,
+*[class~="ut-d/coords"]:after{
+    content:" ";
+}
+
+*[class~="ut-d/shape"]:before{
+    color:#444444;
+    background-color:inherit;
+    content:"Shape: ";
+    font-weight:bold;
+}
+*[class~="ut-d/coords"]:before{
+    color:#444444;
+    background-color:inherit;
+    content:"Coords: ";
+    font-weight:bold;
+}

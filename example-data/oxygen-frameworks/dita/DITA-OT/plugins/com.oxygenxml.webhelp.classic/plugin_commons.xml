@@ -1,0 +1,135 @@
+<feature extension="package.support.name" value="Oxygen XML Editor Support"/>
+<feature extension="package.support.email" value="support@oxygenxml.com"/>
+<feature extension="package.version" value="19.1"/>
+
+<feature extension="dita.conductor.transtype.check" value="webhelp" type="txt"/>
+<feature extension="dita.conductor.transtype.check" value="webhelp-mobile" type="txt"/>
+<feature extension="dita.conductor.transtype.check" value="webhelp-feedback" type="txt"/>
+<feature extension="dita.conductor.transtype.check" value="webhelp-feedback-mobile" type="txt"/>
+
+<feature extension="depend.preprocess.move-meta-entries.pre" value="add-links"/>
+<feature extension="dita.conductor.target.relative" value="integrator.xml" type="file"/>
+
+<feature extension="dita.conductor.lib.import" file="lib/ant-contrib-1.0b3.jar" type="file"/>
+<feature extension="dita.xsl.strings" file="oxygen-webhelp/resources/localization/strings.xml"/>
+<extension-point id="com.oxygenxml.classic.main.target.dependencies" name="Custom dependencies"/>
+
+<!--
+    XSLT extension point for the stylesheet that creates an HTML page for each topic when using 
+    the Webhelp transformation.    
+  -->
+<extension-point id="com.oxygenxml.webhelp.classic.xsl.dita2webhelp" 
+    name="XSLT extension point for the stylesheet that creates an HTML page for each topic"/>
+
+<!-- 
+    Extension point to pass parameters to the XSLT transformation that creates an HTML page for each topic
+-->
+<extension-point id="com.oxygenxml.webhelp.classic.xsl.dita2webhelp.param" 
+    name="Extension point to pass parameters to the XSLT transformation that creates an HTML page for each topic"/>
+
+<!--
+    XSLT extension point for the stylesheet that creates the main HTML page for 
+    the Webhelp transformation.
+  -->
+<extension-point id="com.oxygenxml.webhelp.classic.xsl.createMainFiles" 
+    name="XSLT extension point for the stylesheet that creates the main HTML page"/>
+
+<!-- 
+    Extension point to pass parameters to the XSLT transformation that creates the main HTML page
+-->
+<extension-point id="com.oxygenxml.webhelp.classic.xsl.createMainFiles.param" 
+    name="Extension point to pass parameters to the XSLT transformation that creates the main HTML page"/>
+
+<!--
+    XSLT extension point for the stylesheet that creates the toc.xml file.
+  -->
+<extension-point id="com.oxygenxml.webhelp.classic.xsl.createTocXML" 
+    name="XSLT extension point for the stylesheet that creates the toc.xml file."/>
+
+<!-- 
+    Extension point to pass parameters to the XSLT transformation that creates the toc.xml file.
+-->
+<extension-point id="com.oxygenxml.webhelp.classic.xsl.createTocXML.param" 
+    name="Extension point to pass parameters to the XSLT transformation that creates the 'toc.xml' file."/>
+
+<transtype name="webhelp" extends="webhelpCommons" desc="WebHelp Classic">
+    <param name="webhelp.logo.image"
+        desc="The URL of a remote file or the file path of a local file that contains the logo image that will be added in the header area."
+        type="uri"/>
+    <param name="webhelp.logo.image.target.url"
+        desc="The URL of the link that will be opened when the user clicks the logo image."
+        type="string"/>
+    <param name="webhelp.search.ranking"
+        desc="If this parameter is set to false, then the 5-star rating mechanism is no longer included in the search results that are displayed on the Search tab (default setting is true)."
+        type="enum">
+        <val default="true">true</val>
+        <val>false</val>
+    </param>
+    <param name="webhelp.footer.include" desc="Include footer in each Webhelp page" type="enum">
+        <val default="true"
+            desc="If the &quot;webhelp.footer.file&quot; parameter has a value, the content of that file is used as footer. 
+            If &quot;webhelp.footer.file&quot; has no value, the default Oxygen footer is inserted in each Webhelp page."
+            >yes</val>
+        <val desc="No footer is added to the Webhelp pages.">no</val>
+    </param>
+    <param name="webhelp.footer.file"
+        desc="Specifies the location of a well-formed XHTML file that contains your custom footer for the document body. 
+        Corresponds to the WEBHELP_FOOTER_FILE parameter in XSLT. The fragment must be well-formed XHTML, with a single root element. Common practice is to place all content into a &lt;div&gt;."
+        type="file"/>
+
+    <param name="webhelp.head.script"
+        desc="Specifies the URL of a well-formed XHTML document whose content will be copied into the &lt;head&gt; element of your output HTML documents."
+        type="uri"/>    
+    <param name="webhelp.body.script"
+        desc="Specifies the URL of a well-formed XHTML document whose content will be copied into the &lt;body&gt; element of your output HTML documents."
+        type="uri"/> 
+    
+    <!-- List of deprecated parameters -->
+    <param name="args.hdf" desc="DEPRECATED: Use webhelp.head.script instead." type="file"/>
+    <param name="args.hdr" desc="DEPRECATED: Use webhelp.body.script instead." type="file"/>
+    <param name="custom.rate.page.url"
+        desc="The URL of a remote PHP or CGI script where the publisher of the WebHelp output will receive the user ratings."
+        type="string"/>
+    
+    <param name="webhelp.copyright"
+        desc="The copyright note that will be added in the footer of the Table of Contents frame 
+        (the left side frame of the WebHelp output)."
+        type="string"/>
+</transtype>
+
+
+<transtype name="webhelp-feedback" extends="webhelp" desc="WebHelp Classic with Feedback">
+    <param name="webhelp.product.id"
+        desc="Specifies an identifier of the current documentation project. This is needed when multiple WebHelp systems are deployed on the same server.
+        For example, &quot;mobile-phone-user-guide&quot; or &quot;hvac-installation-guide&quot;"
+        type="string"/>
+    <param name="webhelp.product.version"
+        desc="Specifies the documentation version number (for example, 1.0, 2.5, etc.). New user comments are bound to this version. Multiple documentation versions can be deployed on the same server."
+        type="string"/>
+</transtype>
+
+<transtype name="webhelp-mobile" extends="webhelpCommons" desc="WebHelp Classic Mobile (Deprecated)">
+    <param name="webhelp.footer.include" desc="Include footer in each Webhelp page" type="enum">
+        <val default="true"
+            desc="If the &quot;webhelp.footer.file&quot; parameter has a value, the content of that file is used as footer. 
+            If &quot;webhelp.footer.file&quot; has no value, the default Oxygen footer is inserted in each Webhelp page."
+            >yes</val>
+        <val desc="No footer is added to the Webhelp pages.">no</val>
+    </param>
+    <param name="webhelp.footer.file"
+        desc="Specifies the location of a well-formed XHTML file that contains your custom footer for the document body. 
+        Corresponds to the WEBHELP_FOOTER_FILE parameter in XSLT. The fragment must be well-formed XHTML, with a single root element. Common practice is to place all content into a &lt;div&gt;."
+        type="file"/>    
+</transtype>
+
+<transtype name="webhelp-feedback-mobile" extends="webhelp-feedback" desc="WebHelp Classic Mobile with Feedback" abstract="true"/>
+
+<template file="xsl/dita/desktop/dita2webhelp_template.xsl"/>
+<template file="xsl/dita/desktop/createMainFiles_template.xsl"/>
+
+<template file="xsl/dita/mobile/dita2webhelp_template.xsl"/>
+<template file="xsl/dita/mobile/createMainFiles_template.xsl"/>
+
+<template file="xsl/dita/tocDita_template.xsl"/>
+
+<template file="build_dita_template.xml"/>

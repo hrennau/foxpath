@@ -1,0 +1,655 @@
+# ============================================================= 
+# MODULE:    DITA Learning Domain - RNC              
+# VERSION:   1.2                                                
+# DATE:      November 2010                                       
+# =============================================================
+
+# Refer to the latest version of this file by the following URI:
+# urn:dita-ng:dita:rnc:learningDomain.mod.rnc
+# To refer to this specific version, you may use this value:
+# urn:dita-ng:dita:rnc:learningDomain.mod.rnc:1.2
+
+# ============================================================= 
+# SYSTEM:     Darwin Information Typing Architecture (DITA)     
+# PURPOSE:    Define elements and specialization attributes for 
+#             Learning Domain
+# ORIGINAL CREATION DATE:  
+# September 2010                                                
+# (C) Copyright Syncro Soft 2010-2011                                
+# All Rights Reserved.                                          
+# =============================================================
+
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+# Define the domain values of this module
+domains-atts-value |= "(topic learningInteractionBase-d learning-d)"
+learning-d-note = lcInstructornote.element
+note |= learning-d-note
+# The following elements are specializations of lcInteractionBase, 
+# which is a specialization of fig. So, they are available as 
+# replacements for each of those elements.
+learning-d-fig =
+  lcTrueFalse.element
+  | lcSingleSelect.element
+  | lcMultipleSelect.element
+  | lcSequencing.element
+  | lcMatching.element
+  | lcHotspot.element
+  | lcOpenQuestion.element
+fig |= learning-d-fig
+learning-d-lcInteractionBase =
+  lcTrueFalse.element
+  | lcSingleSelect.element
+  | lcMultipleSelect.element
+  | lcSequencing.element
+  | lcMatching.element
+  | lcHotspot.element
+  | lcOpenQuestion.element
+lcInteractionBase |= learning-d-lcInteractionBase
+# Define patterns
+lcQuestion = lcQuestion.element
+lcOpenAnswer = lcOpenAnswer.element
+lcAnswerOptionGroup = lcAnswerOptionGroup.element
+lcAsset = lcAsset.element
+lcFeedbackCorrect = lcFeedbackCorrect.element
+lcFeedbackIncorrect = lcFeedbackIncorrect.element
+lcAnswerOption = lcAnswerOption.element
+lcAnswerContent = lcAnswerContent.element
+lcSequenceOptionGroup = lcSequenceOptionGroup.element
+lcSequenceOption = lcSequenceOption.element
+lcSequence = lcSequence.element
+lcMatchTable = lcMatchTable.element
+lcMatchingHeader = lcMatchingHeader.element
+lcMatchingPair = lcMatchingPair.element
+lcItem = lcItem.element
+lcMatchingItem = lcMatchingItem.element
+lcMatchingItemFeedback = lcMatchingItemFeedback.element
+lcHotspotMap = lcHotspotMap.element
+lcArea = lcArea.element
+lcAreaShape = lcAreaShape.element
+lcAreaCoords = lcAreaCoords.element
+lcCorrectResponse = lcCorrectResponse.element
+lcFeedback = lcFeedback.element
+# Define elements content and attributes
+lcInstructornote.content = note.cnt*
+lcInstructornote.attributes =
+  attribute spectitle { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+# doc:Use the <lcInstructornote> element to provide information or notes you want to provide to the course instructor. These notes can be condionalized out of content you intend to deliver to the learner.
+lcInstructornote.element =
+  element lcInstructornote {
+    lcInstructornote.attlist, lcInstructornote.content
+  }
+lcInstructornote.attlist &= lcInstructornote.attributes
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - INTERACTION DEFINITIONS
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+lcTrueFalse.content =
+  title?,
+  lcQuestion,
+  lcAsset?,
+  lcAnswerOptionGroup,
+  lcFeedbackIncorrect?,
+  lcFeedbackCorrect?,
+  data*
+lcTrueFalse.attributes =
+  attribute id { xsd:NMTOKEN },
+  conref-atts,
+  select-atts,
+  localization-atts,
+  attribute outputclass { text }?
+# doc:A lcTrueFalse interaction presents the learner with two choices, one correct, the other incorrect, often presented as true/false or yes/no responses.
+lcTrueFalse.element =
+  element lcTrueFalse { lcTrueFalse.attlist, lcTrueFalse.content }
+lcTrueFalse.attlist &= lcTrueFalse.attributes
+lcSingleSelect.content =
+  title?,
+  lcQuestion,
+  lcAsset?,
+  lcAnswerOptionGroup,
+  lcFeedbackIncorrect?,
+  lcFeedbackCorrect?,
+  data*
+lcSingleSelect.attributes =
+  attribute id { xsd:NMTOKEN },
+  conref-atts,
+  select-atts,
+  localization-atts,
+  attribute outputclass { text }?
+# doc:An lcSingleSelect interaction presents three or more choices, only one of which is correct.
+lcSingleSelect.element =
+  element lcSingleSelect {
+    lcSingleSelect.attlist, lcSingleSelect.content
+  }
+lcSingleSelect.attlist &= lcSingleSelect.attributes
+lcMultipleSelect.content =
+  title?,
+  lcQuestion,
+  lcAsset?,
+  lcAnswerOptionGroup,
+  lcFeedbackIncorrect?,
+  lcFeedbackCorrect?,
+  data*
+lcMultipleSelect.attributes =
+  attribute id { xsd:NMTOKEN },
+  conref-atts,
+  select-atts,
+  localization-atts,
+  attribute outputclass { text }?
+# doc:In an lcMultipleSelect interaction, the learner must indicate two or more correct answers from a list of choices.
+lcMultipleSelect.element =
+  element lcMultipleSelect {
+    lcMultipleSelect.attlist, lcMultipleSelect.content
+  }
+lcMultipleSelect.attlist &= lcMultipleSelect.attributes
+lcSequencing.content =
+  title?,
+  lcQuestion,
+  lcAsset?,
+  lcSequenceOptionGroup,
+  lcFeedbackIncorrect?,
+  lcFeedbackCorrect?,
+  data*
+lcSequencing.attributes =
+  attribute id { xsd:NMTOKEN },
+  conref-atts,
+  select-atts,
+  localization-atts,
+  attribute outputclass { text }?
+# doc:An lcSequencing interaction asks the learner to arrange a list of choices into a predefined order, such as small to large.
+lcSequencing.element =
+  element lcSequencing { lcSequencing.attlist, lcSequencing.content }
+lcSequencing.attlist &= lcSequencing.attributes
+lcMatching.content =
+  title?,
+  lcQuestion,
+  lcAsset?,
+  lcMatchTable,
+  lcFeedbackIncorrect?,
+  lcFeedbackCorrect?,
+  data*
+lcMatching.attributes =
+  attribute id { xsd:NMTOKEN },
+  conref-atts,
+  select-atts,
+  localization-atts,
+  attribute outputclass { text }?
+# doc:In an lcMatching interaction, the learner identifies the correct choice that matches another choice.
+lcMatching.element =
+  element lcMatching { lcMatching.attlist, lcMatching.content }
+lcMatching.attlist &= lcMatching.attributes
+lcHotspot.content =
+  title?,
+  lcQuestion,
+  lcHotspotMap,
+  lcFeedbackIncorrect?,
+  lcFeedbackCorrect?,
+  data*
+lcHotspot.attributes =
+  attribute id { xsd:NMTOKEN },
+  conref-atts,
+  select-atts,
+  localization-atts,
+  attribute outputclass { text }?
+# doc:In a lcHotspot interaction, the learner clicks on a region of the screen to indicate a choice.
+lcHotspot.element =
+  element lcHotspot { lcHotspot.attlist, lcHotspot.content }
+lcHotspot.attlist &= lcHotspot.attributes
+lcOpenQuestion.content =
+  title?,
+  lcQuestion,
+  lcAsset?,
+  lcOpenAnswer?,
+  lcFeedbackIncorrect?,
+  lcFeedbackCorrect?,
+  data*
+lcOpenQuestion.attributes =
+  attribute id { xsd:NMTOKEN },
+  conref-atts,
+  select-atts,
+  localization-atts,
+  attribute outputclass { text }?
+# doc:Use <lcOpenQuestion> to pose an open-ended question in an assessment interaction.
+lcOpenQuestion.element =
+  element lcOpenQuestion {
+    lcOpenQuestion.attlist, lcOpenQuestion.content
+  }
+lcOpenQuestion.attlist &= lcOpenQuestion.attributes
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - OPTION DEFINITIONS
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+lcQuestion.content = ph.cnt*
+lcQuestion.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:Use the <lcQuestion> element in an interaction to ask the question.
+lcQuestion.element =
+  element lcQuestion { lcQuestion.attlist, lcQuestion.content }
+lcQuestion.attlist &= lcQuestion.attributes
+lcOpenAnswer.content = ph.cnt*
+lcOpenAnswer.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:Use >lcOpenAnswer< to provide a suggested answer for an >lcOpenQuestion< interaction.
+lcOpenAnswer.element =
+  element lcOpenAnswer { lcOpenAnswer.attlist, lcOpenAnswer.content }
+lcOpenAnswer.attlist &= lcOpenAnswer.attributes
+lcAnswerOptionGroup.content = lcAnswerOption+
+lcAnswerOptionGroup.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <lcAnswerOptionGroup> element provides a container for the options for a true-false, single-select, or multiple-select assessment interaction.
+lcAnswerOptionGroup.element =
+  element lcAnswerOptionGroup {
+    lcAnswerOptionGroup.attlist, lcAnswerOptionGroup.content
+  }
+lcAnswerOptionGroup.attlist &= lcAnswerOptionGroup.attributes
+lcSequenceOptionGroup.content = lcSequenceOption+
+lcSequenceOptionGroup.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <lcSequenceOptionGroup> element provides the options for an assessment sequence interaction.
+lcSequenceOptionGroup.element =
+  element lcSequenceOptionGroup {
+    lcSequenceOptionGroup.attlist, lcSequenceOptionGroup.content
+  }
+lcSequenceOptionGroup.attlist &= lcSequenceOptionGroup.attributes
+lcAsset.content = (imagemap | image | object)*
+lcAsset.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <lcAsset> element in an assessment interaction provides the images or other graphic assets to support the interaction.
+lcAsset.element = element lcAsset { lcAsset.attlist, lcAsset.content }
+lcAsset.attlist &= lcAsset.attributes
+lcSequenceOption.content = lcAnswerContent, lcSequence
+lcSequenceOption.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <lcSequenceOption> element in an assessment interaction provides the contents of an item in a sequence interaction.
+lcSequenceOption.element =
+  element lcSequenceOption {
+    lcSequenceOption.attlist, lcSequenceOption.content
+  }
+lcSequenceOption.attlist &= lcSequenceOption.attributes
+lcFeedback.content = ph.cnt*
+lcFeedback.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <lcFeedback> element in an assessment interaction provides information to the learner about a correct or incorrect response.
+lcFeedback.element =
+  element lcFeedback { lcFeedback.attlist, lcFeedback.content }
+lcFeedback.attlist &= lcFeedback.attributes
+lcFeedbackCorrect.content = ph.cnt*
+lcFeedbackCorrect.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <lcFeedbackCorrect> element in an assessment interaction provides feedback to the learner about a correct response.
+lcFeedbackCorrect.element =
+  element lcFeedbackCorrect {
+    lcFeedbackCorrect.attlist, lcFeedbackCorrect.content
+  }
+lcFeedbackCorrect.attlist &= lcFeedbackCorrect.attributes
+lcFeedbackIncorrect.content = ph.cnt*
+lcFeedbackIncorrect.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <lcFeedbackIncorrect> element in an assessment interaction provides feedback about incorrect response.
+lcFeedbackIncorrect.element =
+  element lcFeedbackIncorrect {
+    lcFeedbackIncorrect.attlist, lcFeedbackIncorrect.content
+  }
+lcFeedbackIncorrect.attlist &= lcFeedbackIncorrect.attributes
+lcAnswerOption.content =
+  lcAnswerContent, lcCorrectResponse?, lcFeedback?
+lcAnswerOption.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <lcAnswerOption> element in an assessment interaction provides the content and feedback for a question option, and can indicate the correct option.
+lcAnswerOption.element =
+  element lcAnswerOption {
+    lcAnswerOption.attlist, lcAnswerOption.content
+  }
+lcAnswerOption.attlist &= lcAnswerOption.attributes
+lcAnswerContent.content = ph.cnt*
+lcAnswerContent.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <lcAnswerContent> element in a learning assessment interaction provides the content for an answer option, which the learner can select as correct or incorrect.
+lcAnswerContent.element =
+  element lcAnswerContent {
+    lcAnswerContent.attlist, lcAnswerContent.content
+  }
+lcAnswerContent.attlist &= lcAnswerContent.attributes
+lcMatchTable.content = lcMatchingHeader?, lcMatchingPair+
+lcMatchTable.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <lcMatchTable> element in an assessment interaction provides a format for matching items.
+lcMatchTable.element =
+  element lcMatchTable { lcMatchTable.attlist, lcMatchTable.content }
+lcMatchTable.attlist &= lcMatchTable.attributes
+lcMatchingHeader.content = lcItem, lcMatchingItem
+lcMatchingHeader.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <lcMatchingHeader> element in an assessment interaction provides column headings for items to present in a matching table.
+lcMatchingHeader.element =
+  element lcMatchingHeader {
+    lcMatchingHeader.attlist, lcMatchingHeader.content
+  }
+lcMatchingHeader.attlist &= lcMatchingHeader.attributes
+lcMatchingPair.content = lcItem, lcMatchingItem, lcMatchingItemFeedback?
+lcMatchingPair.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <lcMatchingPair> element in an assessment interaction provides a table row with the pair of items that comprise a correct match in a matching interaction.
+lcMatchingPair.element =
+  element lcMatchingPair {
+    lcMatchingPair.attlist, lcMatchingPair.content
+  }
+lcMatchingPair.attlist &= lcMatchingPair.attributes
+lcItem.content = ph.cnt*
+lcItem.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <lcItem> element in an assessment interaction provides the content for an item that matches the match item in a match table.
+lcItem.element = element lcItem { lcItem.attlist, lcItem.content }
+lcItem.attlist &= lcItem.attributes
+lcMatchingItem.content = ph.cnt*
+lcMatchingItem.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <lcMatchingItem> element in an assessment interaction provides the content for the matching side of a matching pair of items in a match table interaction.
+lcMatchingItem.element =
+  element lcMatchingItem {
+    lcMatchingItem.attlist, lcMatchingItem.content
+  }
+lcMatchingItem.attlist &= lcMatchingItem.attributes
+lcMatchingItemFeedback.content =
+  (lcFeedback | lcFeedbackCorrect | lcFeedbackIncorrect)*
+lcMatchingItemFeedback.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+lcMatchingItemFeedback.element =
+  element lcMatchingItemFeedback {
+    lcMatchingItemFeedback.attlist, lcMatchingItemFeedback.content
+  }
+lcMatchingItemFeedback.attlist &= lcMatchingItemFeedback.attributes
+lcHotspotMap.content = image, lcArea+
+lcHotspotMap.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:A lcHotspotMap interaction lets you designate an action area or region over an image, allowing a click in that region to get scored as correct or incorrect in respoinse to an interaction question.
+lcHotspotMap.element =
+  element lcHotspotMap { lcHotspotMap.attlist, lcHotspotMap.content }
+lcHotspotMap.attlist &= lcHotspotMap.attributes
+lcArea.content =
+  lcAreaShape, lcAreaCoords, xref?, lcCorrectResponse?, lcFeedback?
+lcArea.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:A lcArea defines an area of a hotspot image that contains a correct or incorrect choice in a hotspot assessment interaction.
+lcArea.element = element lcArea { lcArea.attlist, lcArea.content }
+lcArea.attlist &= lcArea.attributes
+# LONG NAME: Shape of the Hotspot
+lcAreaShape.content = (text | \text)*
+lcAreaShape.attributes =
+  attribute keyref { text }?,
+  univ-atts-translate-no,
+  attribute outputclass { text }?
+lcAreaShape.element =
+  element lcAreaShape { lcAreaShape.attlist, lcAreaShape.content }
+lcAreaShape.attlist &= lcAreaShape.attributes
+# LONG NAME: Coordinates of the Hotspot
+lcAreaCoords.content = words.cnt*
+lcAreaCoords.attributes =
+  attribute keyref { text }?,
+  univ-atts-translate-no,
+  attribute outputclass { text }?
+lcAreaCoords.element =
+  element lcAreaCoords { lcAreaCoords.attlist, lcAreaCoords.content }
+lcAreaCoords.attlist &= lcAreaCoords.attributes
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - CHOICE DEFINITIONS
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+lcCorrectResponse.content = empty
+lcCorrectResponse.attributes =
+  [ a:defaultValue = "lcCorrectResponse" ] attribute name { text }?,
+  [ a:defaultValue = "lcCorrectResponse" ] attribute value { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <lcCorrectResponse> element in an assessment interaction indicates a correct response.
+lcCorrectResponse.element =
+  element lcCorrectResponse {
+    lcCorrectResponse.attlist, lcCorrectResponse.content
+  }
+lcCorrectResponse.attlist &= lcCorrectResponse.attributes
+lcSequence.content = empty
+lcSequence.attributes =
+  [ a:defaultValue = "lcSequence" ] attribute name { text }?,
+  attribute value { text },
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <lcSequence> element in an assessment interaction provides the position of a sequence option in a sequence.
+lcSequence.element =
+  element lcSequence { lcSequence.attlist, lcSequence.content }
+lcSequence.attlist &= lcSequence.attributes
+# Specialization attributes. Global attributes and class defaults
+lcInstructornote.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/note learningInteractionBase-d/note learning-d/lcInstructornote "
+  ]
+  attribute class { text }?
+lcTrueFalse.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/fig learningInteractionBase-d/lcInteractionBase learning-d/lcTrueFalse "
+  ]
+  attribute class { text }?
+lcSingleSelect.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/fig learningInteractionBase-d/lcInteractionBase learning-d/lcSingleSelect "
+  ]
+  attribute class { text }?
+lcMultipleSelect.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/fig learningInteractionBase-d/lcInteractionBase learning-d/lcMultipleSelect "
+  ]
+  attribute class { text }?
+lcSequencing.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/fig learningInteractionBase-d/lcInteractionBase learning-d/lcSequencing "
+  ]
+  attribute class { text }?
+lcMatching.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/fig learningInteractionBase-d/lcInteractionBase learning-d/lcMatching "
+  ]
+  attribute class { text }?
+lcHotspot.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/fig learningInteractionBase-d/lcInteractionBase learning-d/lcHotspot "
+  ]
+  attribute class { text }?
+lcOpenQuestion.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/fig learningInteractionBase-d/lcInteractionBase learning-d/lcOpenQuestion "
+  ]
+  attribute class { text }?
+lcQuestion.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/p learningInteractionBase-d/lcQuestionBase learning-d/lcQuestion "
+  ]
+  attribute class { text }?
+lcOpenAnswer.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/p learningInteractionBase-d/p learning-d/lcOpenAnswer "
+  ]
+  attribute class { text }?
+lcAsset.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/p learningInteractionBase-d/p learning-d/lcAsset "
+  ]
+  attribute class { text }?
+lcFeedback.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/p learningInteractionBase-d/p learning-d/lcFeedback "
+  ]
+  attribute class { text }?
+lcFeedbackCorrect.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/p learningInteractionBase-d/p learning-d/lcFeedbackCorrect "
+  ]
+  attribute class { text }?
+lcFeedbackIncorrect.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/p learningInteractionBase-d/p learning-d/lcFeedbackIncorrect "
+  ]
+  attribute class { text }?
+lcAnswerOption.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/li learningInteractionBase-d/li learning-d/lcAnswerOption "
+  ]
+  attribute class { text }?
+lcAnswerOptionGroup.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/ul learningInteractionBase-d/ul learning-d/lcAnswerOptionGroup "
+  ]
+  attribute class { text }?
+lcAnswerContent.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/p learningInteractionBase-d/p learning-d/lcAnswerContent "
+  ]
+  attribute class { text }?
+lcMatchTable.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/simpletable learningInteractionBase-d/simpletable learning-d/lcMatchTable "
+  ]
+  attribute class { text }?
+lcMatchingHeader.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/sthead learningInteractionBase-d/sthead learning-d/lcMatchingHeader "
+  ]
+  attribute class { text }?
+lcMatchingPair.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/strow learningInteractionBase-d/strow learning-d/lcMatchingPair "
+  ]
+  attribute class { text }?
+lcItem.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/stentry learningInteractionBase-d/stentry learning-d/lcItem "
+  ]
+  attribute class { text }?
+lcMatchingItem.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/stentry learningInteractionBase-d/stentry learning-d/lcMatchingItem "
+  ]
+  attribute class { text }?
+lcMatchingItemFeedback.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/stentry learningInteractionBase-d/stentry learning-d/lcMatchingItemFeedback "
+  ]
+  attribute class { text }?
+lcSequenceOptionGroup.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/ol learningInteractionBase-d/ol learning-d/lcSequenceOptionGroup "
+  ]
+  attribute class { text }?
+lcSequenceOption.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/li learningInteractionBase-d/li learning-d/lcSequenceOption "
+  ]
+  attribute class { text }?
+lcSequence.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/data learningInteractionBase-d/data learning-d/lcSequence "
+  ]
+  attribute class { text }?
+lcCorrectResponse.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/data learningInteractionBase-d/data learning-d/lcCorrectResponse "
+  ]
+  attribute class { text }?
+lcHotspotMap.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/fig learningInteractionBase-d/figgroup learning-d/lcHotspotMap "
+  ]
+  attribute class { text }?
+lcArea.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/figgroup learningInteractionBase-d/figgroup learning-d/lcArea "
+  ]
+  attribute class { text }?
+lcAreaShape.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/keyword learningInteractionBase-d/keyword learning-d/lcAreaShape "
+  ]
+  attribute class { text }?
+lcAreaCoords.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/ph learningInteractionBase-d/ph learning-d/lcAreaCoords "
+  ]
+  attribute class { text }?

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description  xmlns:x = "http://www.jenitennison.com/xslt/xspec" stylesheet="../addFirstName.xsl">
+  
+  <x:scenario label="Test adding FirstName as the first child">
+    <x:context>
+      <Submitter>
+        <Somethinhg>X</Somethinhg>
+      </Submitter>
+    </x:context>
+    <x:expect label="FirstName added as the first child of Submitter">
+      <Submitter>
+        <FirstName>${caret}</FirstName>
+        <Somethinhg>X</Somethinhg>
+      </Submitter>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario label="Test adding FirstName after Identifier">
+    <x:context>
+      <Submitter>
+        <Identifier>X</Identifier>
+      </Submitter>
+    </x:context>
+    <x:expect label="New FirstName added after Identifier">
+      <Submitter>
+        <Identifier>X</Identifier>
+        <FirstName>${caret}</FirstName>
+      </Submitter>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario label="Test the content of a new FirstName element">
+    <x:call template="addElement"/>
+    <x:expect label="New FirstName element containing the caret">
+      <FirstName>${caret}</FirstName>
+    </x:expect>
+  </x:scenario>
+</x:description>

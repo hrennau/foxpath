@@ -1,0 +1,18 @@
+@import "dita.css";
+
+/*
+ * Topic and Map Titles.
+ */
+*[class ~= "map/map"][title]:before,
+*[class ~= "map/map"] > *[class ~= "topic/title"],
+*[class ~= "topic/topic"] > *[class ~= "topic/title"]{
+   font-family: "Trebuchet MS", serif;
+}
+
+/*
+ * Plain content and topcirefs in the map.
+ */
+:root{
+   font-family: "Calibri", "UnDotum", serif;
+}
+

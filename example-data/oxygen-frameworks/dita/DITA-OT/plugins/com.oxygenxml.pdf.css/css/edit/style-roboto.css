@@ -1,0 +1,26 @@
+@import "dita.css";
+
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+
+@font-face {
+    font-family:"roboto";
+    font-style:normal;
+    src:url("../fonts/RobotoCondensed-Regular.ttf");
+}
+
+/*
+ * Plain content and topcirefs in the map.
+ */
+:root{
+    font-family: "roboto", serif;
+}
+
+/*
+ * Topic and Map Titles.
+ */
+*[class ~= "map/map"][title]:before,
+*[class ~= "map/map"] > *[class ~= "topic/title"],
+*[class ~= "topic/topic"] > *[class ~= "topic/title"]{
+    color:#444;
+}
+

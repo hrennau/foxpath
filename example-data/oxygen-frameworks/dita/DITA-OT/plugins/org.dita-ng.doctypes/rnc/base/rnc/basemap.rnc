@@ -1,0 +1,49 @@
+# ============================================================= 
+# MODULE:    DITA Base MAP RNC (only base domains)
+# VERSION:   1.2
+# DATE:      October 2010
+# =============================================================
+
+# Refer to the latest version of this file by the following URI:
+# urn:dita-ng:dita:rnc:basemap.rnc
+# To refer to this specific version, you may use this value:
+# urn:dita-ng:dita:rnc:basemap.rnc:1.2
+
+# ============================================================= 
+# SYSTEM:     Darwin Information Typing Architecture (DITA)
+# PURPOSE:    Relax NG schema to describe DITA maps
+# ORIGINAL CREATION DATE:
+# September 2010
+# (C) Copyright Syncro Soft 2010-2011
+# All Rights Reserved.
+# =============================================================
+
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+# Define the root elements
+start = map.element
+# The DITA domains attribute
+domains-atts &=
+  [
+    a:defaultValue =
+      "(topic delay-d) (topic indexing-d) (map mapgroup-d)         (topic hi-d) (topic ut-d) (topic hazard-d)"
+  ]
+  attribute domains { text }?
+# Include modules
+include "map.mod.rnc"
+include "delayResolutionDomain.mod.rnc"
+include "indexingDomain.mod.rnc"
+include "mapGroup.mod.rnc"
+include "highlightDomain.mod.rnc"
+include "utilitiesDomain.mod.rnc"
+include "hazardstatementDomain.mod.rnc"
+# Define the any pattern to exclude elements with ID attributes
+# from the wildcard and refer them expliceitely
+any =
+  (map.element
+   | anchor.element
+   | element * - (map | anchor) {
+       attribute * { text }*,
+       any
+     }
+   | text)*

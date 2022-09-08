@@ -1,0 +1,676 @@
+/**
+ * Add editing controls for StratML Part 2.
+ * 
+ * Copyright (C) 2012	Syncro Soft SRL (oXygen XML Editor).
+ * 
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *  
+ * - Redistributions of source code must retain the above copyright notices, 
+ *   this list of conditions and the following disclaimer. 
+ * - Redistributions in binary form must reproduce the above copyright notice, 
+ *   this list of conditions and the following disclaimer in the documentation 
+ *   and/or other materials provided with the distribution. 
+ * - The name of the author may not be used to endorse or promote products 
+ *   derived from this software without specific prior written permission. 
+ *  
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR 
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES 
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN 
+ * NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED 
+ * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ *
+ * Revision history:
+ * October 12, 2013 - George Bina: 
+ *   - Initial version of the CSS stylesheet
+ * 
+ */
+
+@import "stratmlEnhanced.css";
+
+@namespace oxy url('http://www.oxygenxml.com/extensions/author');
+
+PerformancePlanOrReport:before {
+  content: 
+  oxy_label(      
+      text, 'Click on ', 
+      styles, 'font-size: .5em; color:#AAAAAA;'
+    )
+     oxy_button(
+      actionID, 'publish',
+      transparent, true,
+      color, green
+    )
+    oxy_label(      
+      text, ' to covert this document to HTML', 
+      styles, 'font-size: .5em; color:#AAAAAA;'
+    )
+    "\A"
+    
+    oxy_label(      
+      text, 'Click on the value to select the document type: ', 
+      styles, 'font-size: .5em; color:#AAAAAA;'
+    )
+    "\A"
+    oxy_popup(
+            edit, "@Type",
+            values, "Strategic_Plan, Performance_Plan, Performance_Report",
+            labels, "Strategic Plan, Performance Plan, Performance Report",
+            selectionMode, "single",
+            fontInherit, true
+    )
+    "\A"
+    oxy_buttonGroup(
+            label, '[+...]',
+            transparent, true,
+            actionIDs, "add.name, add.description, add.other.information, add.strategic.plan.core, add.administrative.information, add.submitter",
+            actionStyle, "text"
+            color, green)
+    oxy_label(      
+      text, '← Click for available actions ', 
+      styles, 'font-size: .5em; color:#AAAAAA;'
+    )
+    !important
+    ;
+}
+
+PerformancePlanOrReport:after {
+  content: 
+    oxy_buttonGroup(
+            label, '[+...]',
+            transparent, true,
+            actionIDs, "add.name, add.description, add.other.information, add.strategic.plan.core, add.administrative.information, add.submitter",
+            actionStyle, "text"
+            color, green)
+    oxy_label(      
+      text, '← Click for available actions ', 
+      styles, 'font-size: .8em; font-weight:bold; color:#AAAAAA;'
+    );    
+}
+
+StrategicPlanCore:before {
+  content:
+    "Strategic Plan Core "
+    oxy_buttonGroup(
+            label, '[+...]',
+            transparent, true,
+            actionIDs, "add.organization, add.vision, add.mission, add.value, add.goal",
+            actionStyle, "text"
+            color, green) 
+  ;
+}
+StrategicPlanCore:after{
+  content:
+    oxy_buttonGroup(
+            label, '[+...]',
+            transparent, true,
+            actionIDs, "add.organization, add.vision, add.mission, add.value, add.goal",
+            actionStyle, "text"
+            color, green) 
+     " Strategic Plan Core"
+  ;
+}
+
+Organization:hover:before {
+  content:
+    "Organization "
+    oxy_buttonGroup(
+            label, '[+...]',
+            transparent, true,
+            actionIDs, "add.name, add.acronym, add.identifier, add.description, add.stakeholder",
+            actionStyle, "text"
+            color, green) 
+            
+    " Use ["
+    oxy_button(
+      actionID, 'delete',
+      transparent, true,
+      color, red
+    )
+    "] to delete this organization"
+  ;
+}
+
+Organization:after {
+  display:block;
+  content: " ";
+}
+Organization:hover:after {
+  display:block;
+  content: "Use ["
+    oxy_button(
+      actionID, 'delete',
+      transparent, true,
+      color, red
+    )
+    "] to delete this organization or use " 
+    oxy_button(
+      actionID, 'add.organization',
+      transparent, true,
+      color, green
+    ) " to add another organization";
+  color:gray;
+}
+
+Role:after,
+Vision:after,
+Mission:after {
+  display:block;
+  content: " ";
+}
+
+Role:hover:after,
+Vision:hover:after,
+Mission:hover:after {
+  display:block;
+  content: "Use ["
+    oxy_button(
+      actionID, 'delete',
+      transparent, true,
+      color, red
+    )
+    "] to delete this " oxy_local-name();
+  color:gray;
+}
+
+Value:after {
+  display:block;
+  content:" ";
+}
+
+Value:hover:after {
+  display:block;
+  content: "Use ["
+    oxy_button(
+      actionID, 'delete',
+      transparent, true,
+      color, red
+    )
+    "] to delete this value or use " 
+    oxy_button(
+      actionID, 'add.value',
+      transparent, true,
+      color, green
+    ) " to add another value";
+  color:gray;
+}
+
+PerformanceIndicator:before {
+  content : "Performance indicator "
+    oxy_buttonGroup(
+            label, '[+...]',
+            transparent, true,
+            actionIDs, "add.sequence.indicator, add.measurement.dimension, \
+            add.unit.of.measurement, add.identifier, add.relationship, \
+            add.measurement.instance, add.other.information",
+            actionStyle, "text"
+            color, green)     
+    "\A    " 
+    oxy_label(text, "Value chain stage", width, 15em, styles, 'font-weight:normal')
+    oxy_combobox(edit, '@ValueChainStage', columns, 20)
+    "\A    "
+    oxy_label(text, "Performance indicator type", width, 15em, styles, 'font-weight:normal')
+    oxy_combobox(edit, '@PerformanceIndicatorType', columns, 20);
+}
+
+PerformanceIndicator:after {
+  display:block;
+  content: " ";
+}
+PerformanceIndicator:hover:after {
+  display:block;
+  content: "Use ["
+    oxy_button(
+      actionID, 'delete',
+      transparent, true,
+      color, red
+    )
+    "] to delete this performance indicator or use " 
+    oxy_button(
+      actionID, 'add.performance.indicator',
+      transparent, true,
+      color, green
+    ) " to add another performance indicator";
+  color:gray;
+}
+
+
+
+Relationship:before {
+  content: 
+    "Relationship "
+    oxy_buttonGroup(
+            label, '[+...]',
+            transparent, true,
+            actionIDs, "add.identifier, add.name, add.description",
+            actionStyle, "text"
+            color, green)     
+    "\A    " 
+    oxy_label(text, "Relationship type", width, 15em, styles, 'font-weight:normal')
+    oxy_combobox(edit, '@RelationshipType', columns, 20)
+  ;
+}
+
+MeasurementInstance:before {
+  content:
+    "Measurement Instance "
+    oxy_button(actionID,  'add.target.result', transparent, true, color, green)
+    oxy_button(actionID,  'add.actual.result', transparent, true, color, green) 
+  ;
+}
+
+MeasurementInstance:after {
+  display:block;
+  content: "Use ["
+    oxy_button(
+      actionID, 'delete',
+      transparent, true,
+      color, red
+    )
+    "] to delete this measurement instance or use " 
+    oxy_button(
+      actionID, 'add.measurement.instance',
+      transparent, true,
+      color, green
+    ) " to add another measurement instance";
+  color:gray;
+}
+
+
+TargetResult:before {
+  content : "Target Result "
+    oxy_buttonGroup(
+            label, '[+...]',
+            transparent, true,
+            actionIDs, "add.description, add.number.of.units, add.start.date, add.end.date",
+            actionStyle, "text"
+            color, green)         
+    ;
+}
+
+TargetResult:after {
+  display:block;
+  content: "Use ["
+    oxy_button(
+      actionID, 'delete',
+      transparent, true,
+      color, red
+    )
+    "] to delete this target result or use " 
+    oxy_button(
+      actionID, 'add.target.result',
+      transparent, true,
+      color, green
+    ) " to add another target result";
+  color:gray;
+}
+
+
+ActualResult:before {
+  content : "Actual Result "
+    oxy_buttonGroup(
+            label, '[+...]',
+            transparent, true,
+            actionIDs, "add.description, add.number.of.units, add.start.date, add.end.date",
+            actionStyle, "text"
+            color, green)         
+    ;
+}
+
+ActualResult:after {
+  display:block;
+  content: "Use ["
+    oxy_button(
+      actionID, 'delete',
+      transparent, true,
+      color, red
+    )
+    "] to delete this actual result or use " 
+    oxy_button(
+      actionID, 'add.actual.result',
+      transparent, true,
+      color, green
+    ) " to add another actual result";
+  color:gray;
+}
+
+
+
+StartDate:before{
+  content: oxy_label(
+      text, 'Start date:',
+      width, 8em
+    );
+}
+
+EndDate:before{
+  content: oxy_label(
+      text, 'End date:',
+      width, 8em
+    );
+}
+
+
+StartDate, EndDate,
+StartDate:empty, EndDate:empty {
+  content:oxy_datePicker(edit, "#text", format, "yyyy-MM-dd", columns, 16);
+  visibility:-oxy-collapse-text;
+}
+
+Stakeholder:hover:before {
+  content : "Stakeholder "
+    oxy_button(actionID,  'add.name', transparent, true, color, green)
+    oxy_button(actionID,  'add.description', transparent, true, color, green)
+    oxy_button(actionID,  'add.role', transparent, true, color, green)
+    ;
+}
+
+Stakeholder:after {
+  display:block;
+  content : " ";
+}
+Stakeholder:hover:after {
+  display:block;
+  content: "Use ["
+    oxy_button(
+      actionID, 'delete',
+      transparent, true,
+      color, red
+    )
+    "] to delete this stakeholder or use " 
+    oxy_button(
+      actionID, 'add.stakeholder',
+      transparent, true,
+      color, green
+    ) " to add another stakeholder";
+  color:gray;
+}
+
+Role:before {
+  content : "Role "
+    oxy_button(actionID,  'add.name', transparent, true, color, green)
+    oxy_button(actionID,  'add.description', transparent, true, color, green)
+    oxy_button(actionID,  'add.role.type', transparent, true, color, green)
+    ;
+}
+
+
+
+RoleType {
+  content:oxy_combobox(edit, "#text", columns, 20);
+  visibility:-oxy-collapse-text;
+}
+
+
+/* Delete after element */
+
+
+Vision:hover:before {
+  content : "Vision "
+    oxy_button(actionID,  'add.description', transparent, true, color, green)
+    oxy_button(actionID,  'add.identifier', transparent, true, color, green)
+    ;
+}
+
+Mission:hover:before {
+  content : "Mission "
+    oxy_button(actionID,  'add.description', transparent, true, color, green)
+    oxy_button(actionID,  'add.identifier', transparent, true, color, green)
+    ;
+}
+
+Value:hover:before {
+  content : "Value "
+    oxy_button(actionID,  'add.name', transparent, true, color, green)
+    oxy_button(actionID,  'add.description', transparent, true, color, green)
+    ;
+}
+
+
+
+
+Goal:hover:before {
+  content:
+    "Goal " counter(goal_count, decimal) " "
+    oxy_buttonGroup(
+            label, '[+...]',
+            transparent, true,
+            actionIDs, "add.name, add.description, add.identifier, add.sequence.indicator, add.stakeholder, add.other.information, add.objective",
+            actionStyle, "text"
+            color, green) 
+            
+    " Use ["
+    oxy_button(
+      actionID, 'delete',
+      transparent, true,
+      color, red
+    )
+    "] to delete this goal"
+  ;
+}
+
+Goal:after {
+  display:block;
+  content: " "
+}
+
+Goal:hover:after {
+  display:block;
+  content: "Use ["
+    oxy_button(
+      actionID, 'delete',
+      transparent, true,
+      color, red
+    )
+    "] or [" 
+    oxy_button(
+      actionID, 'clear',
+      transparent, true,
+      color, red
+    )
+    "] to delete/clear this goal or use " 
+    oxy_button(
+      actionID, 'add.goal',
+      transparent, true,
+      color, green
+    ) " to add another goal";
+  color:gray;
+}
+
+
+Objective:hover:before {
+  content : 
+    'Objective ' counter(goal_count, decimal) 
+    '.' counter(objective_count, decimal)
+    " "              
+    oxy_buttonGroup(
+            label, '[+...]',
+            transparent, true,
+            actionIDs, "add.name, add.description, add.identifier, add.sequence.indicator, add.stakeholder, add.other.information, add.performance.indicator",
+            actionStyle, "text"
+            color, green) 
+            ;
+}
+
+Objective:after {
+  display:block;
+  content : " ";
+}
+
+Objective:hover:after {
+  display:block;
+  content: "Use ["
+    oxy_button(
+      actionID, 'delete',
+      transparent, true,
+      color, red
+    )
+    "] to delete this objective or use " 
+    oxy_button(
+      actionID, 'add.objective',
+      transparent, true,
+      color, green
+    ) " to add another objective";
+  color:gray;
+}
+
+
+/* Administrative information and Summiter */
+
+AdministrativeInformation:hover:before {
+  content : "Administrative information "
+    oxy_button(actionID,  oxy_xpath("if (*:Identifier) then 'noop' else 'add.identifier'"), transparent, true, color, green)
+    oxy_button(actionID,  oxy_xpath("if (*:StartDate) then 'noop' else 'add.start.date'"), transparent, true, color, green)
+    oxy_button(actionID,  oxy_xpath("if (*:EndDate) then 'noop' else 'add.end.date'"), transparent, true, color, green)
+    oxy_button(actionID,  oxy_xpath("if (*:PublicationDate) then 'noop' else 'add.publication.date'"), transparent, true, color, green)
+    oxy_button(actionID,  oxy_xpath("if (*:Source) then 'noop' else 'add.source'"), transparent, true, color, green);
+}
+
+AdministrativeInformation > Identifier:before {
+  content: oxy_label(text, 'Identifier:', width, 8em);
+}
+AdministrativeInformation > StartDate:before {
+  content: oxy_label(text, 'Start date:', width, 8em);
+}
+AdministrativeInformation > EndDate:before {
+  content: oxy_label(text, 'End date:', width, 8em);
+}
+AdministrativeInformation > PublicationDate:before {
+  content: oxy_label(text, 'Publication date:', width, 8em);
+}
+AdministrativeInformation > Source:before {
+  content: oxy_label(text, 'Source:', width, 8em);
+}
+
+AdministrativeInformation > StartDate,
+AdministrativeInformation > EndDate,
+AdministrativeInformation > PublicationDate
+{
+  content:oxy_datePicker(edit, "#text", format, "yyyy-MM-dd", columns, 16);
+  visibility:-oxy-collapse-text;
+}
+AdministrativeInformation > Identifier,
+AdministrativeInformation > Source {
+  visibility : -oxy-collapse-text;
+  content : oxy_textfield(edit, "#text", columns, 40);
+}
+
+Submitter:hover:before {
+  content : "Submitter "
+    oxy_button(actionID,  oxy_xpath("if (*:Identifier) then 'noop' else 'add.identifier'"), transparent, true, color, green)
+    oxy_button(actionID,  oxy_xpath("if (*:FirstName) then 'noop' else 'add.first.name'"), transparent, true, color, green)
+    oxy_button(actionID,  oxy_xpath("if (*:LastName) then 'noop' else 'add.last.name'"), transparent, true, color, green)
+    oxy_button(actionID,  oxy_xpath("if (*:PhoneNumber) then 'noop' else 'add.phone.number'"), transparent, true, color, green)
+    oxy_button(actionID,  oxy_xpath("if (*:EmailAddress) then 'noop' else 'add.email.address'"), transparent, true, color, green)
+    ;
+}
+
+Submitter > Identifier:before {
+  content: oxy_label(text, 'Identifier:', width, 8em);
+}
+Submitter > FirstName:before {
+  content: oxy_label(text, 'First name:', width, 8em);
+}
+Submitter > LastName:before {
+  content: oxy_label(text, 'Last name:', width, 8em);
+}
+Submitter > PhoneNumber:before {
+  content: oxy_label(text, 'Phone number:', width, 8em); 
+}
+Submitter > EmailAddress:before {
+  content: oxy_label(text, 'Email address:', width, 8em);
+}
+
+Submitter > *,
+Submitter > *:empty {
+  visibility : -oxy-collapse-text;
+  content : oxy_textfield(edit, "#text", columns, 40); 
+}
+
+/************************************************************/
+/* Label styles: colors and font */
+/************************************************************/
+AdministrativeInformation > *:before,
+Submitter > *:before { 
+  color:black;
+  font-weight: normal;
+}
+
+
+
+
+/************************************************************/
+/* Common actions */
+/************************************************************/
+
+Submitter:after,
+AdministrativeInformation:after {
+  color:gray;
+  content: " ";
+}
+
+/* Delete this container element */
+Submitter:hover:after,
+AdministrativeInformation:hover:after {
+  color:gray;
+  content: "Use ["
+    oxy_button(
+      actionID, 'delete',
+      transparent, true,
+      color, red
+    )
+    "] to delete this " 
+    oxy_local-name();
+}
+
+/* Inline delete */
+AdministrativeInformation > *:hover:after,
+Submitter > *:hover:after,
+Identifier:hover:after,
+StartDate:hover:after,
+EndDate:hover:after,
+RoleType:hover:after {
+  content: 
+  "  ["
+    oxy_button(
+      actionID, 'delete',
+      transparent, true,
+      color, red
+    )
+    "]";
+}
+
+/* Inline clear and delete */
+Description:hover:after,
+OtherInformation:hover:after,
+Acronym:hover:after,
+SequenceIndicator:hover:after,
+MeasurementDimension:hover:after,
+UnitOfMeasurement:hover:after,
+NumberOfUnits:hover:after
+{
+  content:
+    "  ["
+    oxy_button(
+      actionID, 'clear',
+      transparent, true,
+      color, red
+    )
+    "]"
+    " ["
+    oxy_button(
+      actionID, 'delete',
+      transparent, true,
+      color, red
+    )
+    "]"
+}
+
+
+
+

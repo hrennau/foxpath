@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="adjustCopyTo-preprocess">
+
+  <!-- ==========================================
+       DITA Community Preprocessing Enhancements
+
+       Extends the base DITA OT preprocessing pipeline
+       by adding a process to adjust the @copy-to
+       values to ensure unique topics or control
+       deliverable-specific anchor IDs (e.g., HTML filenames).
+       ========================================== -->
+
+  <target name="dc-adjust-copy-to"
+    depends="dc-adjust-copy-to-check"
+    unless="preprocess.dc-adjust-copy-to.skip"
+    description="Adjust copy-to attributes in resolved map">
+
+    <echo>* </echo>
+    <echo>* Starting dc-adjust-copy-to...</echo>
+    <echo>* </echo>
+
+    <dirname property="mappull.workdir"
+      file="${dita.temp.dir}/${user.input.file}"
+    />
+
+    <condition
+      property="dita.preprocess.reloadstylesheet.adjust-copy-to"
+      value="${dita.preprocess.reloadstylesheet}">
+      <not><isset property="dita.preprocess.reloadstylesheet.adjust-copy-to"></isset></not>
+    </condition>
+
+    <!-- NOTE: This process also generates two job XML files, one with just the new source-to-copy-to
+               mappings resulting from the adjustment and one that is the original job.xml updated
+               to reflect the adjusted source-to-copy-to mappings.
+
+               The changes-only job.xml is copyToChangesJob.xml
+
+               The updated job.xml is updatedJob.xml
+
+      -->
+    <property name="job.xml.dir"  location="${dita.temp.dir}"/>
+    <makeurl  property="job.xml.dir.url" file="${job.xml.dir}"/>
+
+    <property name="copyToChangesJob.xml" value="copyToChangesJob.xml"/>
+    <property name="updatedJob.xml" value="updatedJob.xml"/>
+    <property name="updatedKeydefs.xml" value="updatedKeydefs.xml"/>
+
+    <copy overwrite="true" tofile="${job.xml.dir}/job-original.xml"
+      file="${job.xml.dir}/.job.xml"
+    />
+
+    <xslt taskname="adjust-copy-to"
+      basedir="${dita.temp.dir}"
+      destdir="${dita.temp.dir}"
+      includesfile="${dita.temp.dir}/${user.input.file.listfile}"
+      extension=".ditamap.copy-to"
+      classpathref="dost.class.path"
+      reloadstylesheet="${dita.preprocess.reloadstylesheet.adjust-copy-to}"
+      style="${dita.plugin.org.dita-community.adjust-copy-to.dir}/xsl/adjustCopyTo.xsl">
+      <param name="DITAEXT" expression="${dita.ext}" if="dita.ext"></param>
+      <param name="TRANSTYPE" expression="${transtype}"/>
+      <param name="job.xml.dir.url" expression="${job.xml.dir.url}"/><!-- URL of directory containing .job.xml file -->
+      <param name="copyToChangesJob.filename" expression="${copyToChangesJob.xml}"/>
+      <param name="updatedJob.filename" expression="${updatedJob.xml}"/>
+      <param name="updatedKeydefs.filename" expression="${updatedKeydefs.xml}"/>
+      <param name="use-nav-keys"
+             expression="${dc.adjust-copy-to.use-nav-keys}"
+             if="dc.adjust-copy-to.use-nav-keys"
+      />
+      <param name="override-existing-copy-to"
+             expression="${dc.adjust-copy-to.override-existing-copy-to}"
+             if="dc.adjust-copy-to.override-existing-copy-to"
+      />
+      <param name="expand-reltable-refs"
+             expression="${dc.adjust-copy-to.expand-reltable-refs}"
+             if="dc.adjust-copy-to.expand-reltable-refs"
+      />
+      <param name="debug"
+             expression="${dc.adjust-copy-to.debug}"
+             if="dc.adjust-copy-to.debug"
+      />
+      <xmlcatalog refid="dita.catalog"></xmlcatalog>
+    </xslt>
+
+
+    <!-- NOTE: The debug-filter process copies the original
+         source map into the temp directory, so we have to
+         restore the augmented map after rerunning debug-filter
+         (which is what does the copy-to processing)
+      -->
+    <!-- Do preprocessing for any new source-to-copy-to mappings:
+
+      -->
+    <copy overwrite="true" tofile="${dita.temp.dir}/keydef-orig.xml"
+      file="${dita.temp.dir}/keydef.xml"
+    />
+
+    <copy overwrite="true" tofile="${job.xml.dir}/.job.xml"
+      file="${job.xml.dir}/${copyToChangesJob.xml}"
+    />
+    <!-- FIXME: I'm not sure which of these we actually need to update, so
+                doing all of them.
+      -->
+    <echo>* </echo>
+    <echo>* Regenerating job-helper lists...</echo>
+    <echo>* </echo>
+
+    <job-helper file="outditafiles.list" property="outditafileslist"></job-helper>
+    <job-helper file="fullditamapandtopic.list" property="fullditamapandtopiclist"></job-helper>
+    <job-helper file="fullditatopic.list" property="fullditatopiclist"></job-helper>
+    <job-helper file="fullditamap.list" property="fullditamaplist"></job-helper>
+    <job-helper file="hrefditatopic.list" property="hrefditatopiclist"></job-helper>
+    <job-helper file="conref.list" property="conreflist"></job-helper>
+    <job-helper file="image.list" property="imagelist"></job-helper>
+    <job-helper file="flagimage.list" property="flagimagelist"></job-helper>
+    <job-helper file="html.list" property="htmllist"></job-helper>
+    <job-helper file="hreftargets.list" property="hreftargetslist"></job-helper>
+    <job-helper file="canditopics.list" property="canditopicslist"></job-helper>
+    <job-helper file="skipchunk.list" property="skipchunklist"></job-helper>
+    <job-helper file="subjectscheme.list" property="subjectschemelist"></job-helper>
+    <job-helper file="conreftargets.list" property="conreftargetslist"></job-helper>
+    <job-helper file="copytosource.list" property="copytosourcelist"></job-helper>
+    <job-helper file="subtargets.list" property="subtargetslist"></job-helper>
+    <job-helper file="conrefpush.list" property="conrefpushlist"></job-helper>
+    <job-helper file="keyref.list" property="keyreflist"></job-helper>
+    <job-helper file="coderef.list" property="codereflist"></job-helper>
+    <job-helper file="resourceonly.list" property="resourceonlylist"></job-helper>
+    <property name="outditafilesfile" value="outditafiles.list"></property>
+    <property name="fullditamapandtopicfile" value="fullditamapandtopic.list"></property>
+    <property name="fullditatopicfile" value="fullditatopic.list"></property>
+    <property name="fullditamapfile" value="fullditamap.list"></property>
+    <property name="hrefditatopicfile" value="hrefditatopic.list"></property>
+    <property name="conreffile" value="conref.list"></property>
+    <property name="imagefile" value="image.list"></property>
+    <property name="flagimagefile" value="flagimage.list"></property>
+    <property name="htmlfile" value="html.list"></property>
+    <property name="hreftargetsfile" value="hreftargets.list"></property>
+    <property name="canditopicsfile" value="canditopics.list"></property>
+    <property name="skipchunkfile" value="skipchunk.list"></property>
+    <property name="subjectschemefile" value="subjectscheme.list"></property>
+    <property name="conreftargetsfile" value="conreftargets.list"></property>
+    <property name="copytosourcefile" value="copytosource.list"></property>
+    <property name="subtargetsfile" value="subtargets.list"></property>
+    <property name="conrefpushfile" value="conrefpush.list"></property>
+    <property name="keyreffile" value="keyref.list"></property>
+    <property name="codereffile" value="coderef.list"></property>
+    <property name="resourceonlyfile" value="resourceonly.list"></property>
+
+    <echo>* </echo>
+    <echo>* Applying preprocessing to adjusted copy-to files...</echo>
+    <echo>* </echo>
+
+    <!-- Now do the processing -->
+    <antcall target="adjust-copy-to.preprocess-new-copy-tos"/>
+
+    <echo>* </echo>
+    <echo>* Updating full .job.xml file...</echo>
+    <echo>* </echo>
+    <!-- Update the full .job.xml file to reflect the adjusted copy-to
+         mapping.
+
+      -->
+    <copy overwrite="true" tofile="${job.xml.dir}/.job.xml"
+      file="${job.xml.dir}/${updatedJob.xml}"
+    />
+    <!-- Regenerate all the lists. -->
+    <job-helper file="outditafiles.list" property="outditafileslist"></job-helper>
+    <job-helper file="fullditamapandtopic.list" property="fullditamapandtopiclist"></job-helper>
+    <job-helper file="fullditatopic.list" property="fullditatopiclist"></job-helper>
+    <job-helper file="fullditamap.list" property="fullditamaplist"></job-helper>
+    <job-helper file="hrefditatopic.list" property="hrefditatopiclist"></job-helper>
+    <job-helper file="conref.list" property="conreflist"></job-helper>
+    <job-helper file="image.list" property="imagelist"></job-helper>
+    <job-helper file="flagimage.list" property="flagimagelist"></job-helper>
+    <job-helper file="html.list" property="htmllist"></job-helper>
+    <job-helper file="hreftargets.list" property="hreftargetslist"></job-helper>
+    <job-helper file="canditopics.list" property="canditopicslist"></job-helper>
+    <job-helper file="skipchunk.list" property="skipchunklist"></job-helper>
+    <job-helper file="subjectscheme.list" property="subjectschemelist"></job-helper>
+    <job-helper file="conreftargets.list" property="conreftargetslist"></job-helper>
+    <job-helper file="copytosource.list" property="copytosourcelist"></job-helper>
+    <job-helper file="subtargets.list" property="subtargetslist"></job-helper>
+    <job-helper file="conrefpush.list" property="conrefpushlist"></job-helper>
+    <job-helper file="keyref.list" property="keyreflist"></job-helper>
+    <job-helper file="coderef.list" property="codereflist"></job-helper>
+    <job-helper file="resourceonly.list" property="resourceonlylist"></job-helper>
+    <property name="outditafilesfile" value="outditafiles.list"></property>
+    <property name="fullditamapandtopicfile" value="fullditamapandtopic.list"></property>
+    <property name="fullditatopicfile" value="fullditatopic.list"></property>
+    <property name="fullditamapfile" value="fullditamap.list"></property>
+    <property name="hrefditatopicfile" value="hrefditatopic.list"></property>
+    <property name="conreffile" value="conref.list"></property>
+    <property name="imagefile" value="image.list"></property>
+    <property name="flagimagefile" value="flagimage.list"></property>
+    <property name="htmlfile" value="html.list"></property>
+    <property name="hreftargetsfile" value="hreftargets.list"></property>
+    <property name="canditopicsfile" value="canditopics.list"></property>
+    <property name="skipchunkfile" value="skipchunk.list"></property>
+    <property name="subjectschemefile" value="subjectscheme.list"></property>
+    <property name="conreftargetsfile" value="conreftargets.list"></property>
+    <property name="copytosourcefile" value="copytosource.list"></property>
+    <property name="subtargetsfile" value="subtargets.list"></property>
+    <property name="conrefpushfile" value="conrefpush.list"></property>
+    <property name="keyreffile" value="keyref.list"></property>
+    <property name="codereffile" value="coderef.list"></property>
+    <property name="resourceonlyfile" value="resourceonly.list"></property>
+
+    <echo>* </echo>
+    <echo>* Updating keydef.xml file...</echo>
+    <echo>* </echo>
+    <copy overwrite="true" tofile="${dita.temp.dir}/keydef.xml"
+      file="${dita.temp.dir}/${updatedKeydefs.xml}"
+    />
+    <echo>* </echo>
+    <echo>* Done with dc-adjust-copy-to.</echo>
+    <echo>* </echo>
+
+  </target>
+
+  <target name="dc-adjust-copy-to-check">
+    <!-- copy-to adjustment is on by default. -->
+    <condition property="preprocess.dc-adjust-copy-to.skip">
+      <isset property="args.dc-adjust-copy-to.skip"></isset>
+    </condition>
+  </target>
+  
+  
+  <target name="dc-adjust-copy-to-restore-adjusted-map">
+    <copy overwrite="true" todir="${dita.temp.dir}">
+      <fileset dir="${dita.temp.dir}" includes="**/*.ditamap.copy-to"/>
+      <mapper type="glob" from="*.ditamap.copy-to" to="*.ditamap"/>
+    </copy>    
+  </target>
+
+  <target name="adjust-copy-to.preprocess-new-copy-tos"
+    depends="debug-filter,
+             dc-adjust-copy-to-restore-adjusted-map,
+             copy-files,
+             conrefpush,
+             conref,
+             move-meta-entries,
+             keyref,
+             coderef
+             "
+  />
+
+
+</project>

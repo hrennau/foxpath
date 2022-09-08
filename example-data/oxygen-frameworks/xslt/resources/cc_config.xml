@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Allows contributing to the values presented on content completion for element and attribute values.
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.oxygenxml.com/ns/ccfilter/config http://www.oxygenxml.com/ns/ccfilter/config/ccConfigSchemaFilter.xsd"
+    xmlns="http://www.oxygenxml.com/ns/ccfilter/config">
+
+    <!-- 
+        If you do not want the XSLT 3.0 shadow attributes to be shown in the content completion assistant and 
+        attributes view, uncomment the following element:
+        
+        <elementProposals  	rejectAttributes="_*" />
+        
+    -->
+    
+</config>

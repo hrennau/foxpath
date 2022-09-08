@@ -1,0 +1,1188 @@
+# ============================================================= 
+# MODULE:    DITA Bookmap RNC
+# VERSION:   1.2
+# DATE:      October 2010
+# =============================================================
+
+# Refer to the latest version of this file by the following URI:
+# urn:dita-ng:dita:rnc:bookmap.mod.rnc
+# To refer to this specific version, you may use this value:
+# urn:dita-ng:dita:rnc:bookmap.mod.rnc:1.2
+
+# ============================================================= 
+# SYSTEM:     Darwin Information Typing Architecture (DITA)
+# PURPOSE:    Relax NG schema to declare the elements and
+#             specialization attributes for the DITA Book Maps
+# ORIGINAL CREATION DATE:
+# September 2010
+# (C) Copyright Syncro Soft 2010-2011
+# All Rights Reserved.
+# =============================================================
+
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+# Define the domain values of this module
+domains-atts-value |= "(map bookmap)"
+# Define patterns
+abbrevlist = abbrevlist.element
+bookabstract = bookabstract.element
+amendments = amendments.element
+appendices = appendices.element
+appendix = appendix.element
+approved = approved.element
+backmatter = backmatter.element
+bibliolist = bibliolist.element
+bookchangehistory = bookchangehistory.element
+bookevent = bookevent.element
+bookeventtype = bookeventtype.element
+bookid = bookid.element
+booklibrary = booklibrary.element
+booklist = booklist.element
+booklists = booklists.element
+bookmeta = bookmeta.element
+booknumber = booknumber.element
+bookowner = bookowner.element
+bookpartno = bookpartno.element
+bookrestriction = bookrestriction.element
+bookrights = bookrights.element
+booktitle = booktitle.element
+booktitlealt = booktitlealt.element
+chapter = chapter.element
+colophon = colophon.element
+completed = completed.element
+copyrfirst = copyrfirst.element
+copyrlast = copyrlast.element
+day = day.element
+dedication = dedication.element
+draftintro = draftintro.element
+edited = edited.element
+edition = edition.element
+figurelist = figurelist.element
+frontmatter = frontmatter.element
+glossarylist = glossarylist.element
+indexlist = indexlist.element
+isbn = isbn.element
+mainbooktitle = mainbooktitle.element
+maintainer = maintainer.element
+month = month.element
+notices = notices.element
+organization = organization.element
+part = part.element
+person = person.element
+preface = preface.element
+printlocation = printlocation.element
+published = published.element
+publisherinformation = publisherinformation.element
+publishtype = publishtype.element
+reviewed = reviewed.element
+revisionid = revisionid.element
+started = started.element
+summary = summary.element
+tablelist = tablelist.element
+tested = tested.element
+trademarklist = trademarklist.element
+toc = toc.element
+volume = volume.element
+year = year.element
+# COMMON ATTLIST SETS
+chapter-atts =
+  attribute navtitle { text }?,
+  attribute href { text }?,
+  attribute keyref { text }?,
+  attribute keys { text }?,
+  attribute copy-to { text }?,
+  attribute outputclass { text }?,
+  topicref-atts,
+  univ-atts
+# Define elements content and attributes
+
+# LONG NAME: Book Map
+bookmap.content =
+  (title | booktitle)?,
+  bookmeta?,
+  frontmatter?,
+  chapter*,
+  part*,
+  (appendices? | appendix*),
+  backmatter?,
+  reltable*
+bookmap.attributes =
+  attribute id { xsd:ID }?,
+  conref-atts,
+  attribute anchorref { text }?,
+  attribute outputclass { text }?,
+  localization-atts,
+  topicref-atts,
+  select-atts
+bookmap.element =
+  
+  ## The <bookmap> element is a map file used to organize DITA content into a
+  ##         traditional book format. 
+  ##         Category: Bookmap elements
+  element bookmap { bookmap.attlist, bookmap.content }
+bookmap.attlist &= bookmap.attributes, arch-atts, domains-atts
+# LONG NAME: Book Metadata
+bookmeta.content =
+  linktext?,
+  searchtitle?,
+  shortdesc?,
+  author*,
+  source?,
+  publisherinformation*,
+  critdates?,
+  permissions?,
+  metadata*,
+  audience*,
+  category*,
+  keywords*,
+  prodinfo*,
+  othermeta*,
+  resourceid*,
+  bookid?,
+  bookchangehistory*,
+  bookrights*,
+  data*
+bookmeta.attributes =
+  attribute lockmeta { "no" | "yes" | "-dita-use-conref-target" }?,
+  univ-atts
+bookmeta.element =
+  
+  ## The <bookmeta> element contains information about the book that is not
+  ##         considered book content, such as copyright information, author information, and any
+  ##         classifications. 
+  ##         Category: Bookmap elements
+  element bookmeta { bookmeta.attlist, bookmeta.content }
+bookmeta.attlist &= bookmeta.attributes
+# LONG NAME: Front Matter
+frontmatter.content =
+  (bookabstract
+   | booklists
+   | colophon
+   | dedication
+   | draftintro
+   | notices
+   | preface
+   | topicref)*
+frontmatter.attributes =
+  attribute keyref { text }?,
+  attribute query { text }?,
+  attribute outputclass { text }?,
+  topicref-atts,
+  univ-atts
+frontmatter.element =
+  
+  ## The <frontmatter> element contains the material that precedes the main
+  ##         body of a document. It may include items such as an abstract, a preface, and various types
+  ##         of book lists such as a <toc>, <tablelist>, or <figurelist>. 
+  ##         Category: Bookmap elements
+  element frontmatter { frontmatter.attlist, frontmatter.content }
+frontmatter.attlist &= frontmatter.attributes
+# LONG NAME: Back Matter
+backmatter.content =
+  (amendments | booklists | colophon | dedication | notices | topicref)*
+backmatter.attributes =
+  attribute keyref { text }?,
+  attribute query { text }?,
+  attribute outputclass { text }?,
+  topicref-atts,
+  univ-atts
+backmatter.element =
+  
+  ## The <backmatter> element contains the material that follows the main body
+  ##         of a document and any appendixes. It may include items such as a colophon, legal notices,
+  ##         and various types of book lists such as a glossary or an index. 
+  ##         Category: Bookmap elements
+  element backmatter { backmatter.attlist, backmatter.content }
+backmatter.attlist &= backmatter.attributes
+# LONG NAME: Publisher Information
+publisherinformation.content =
+  (person | organization)*, printlocation*, published*, data*
+publisherinformation.attributes =
+  attribute href { text }?,
+  attribute format { text }?,
+  attribute type { text }?,
+  attribute scope {
+    "external" | "local" | "peer" | "-dita-use-conref-target"
+  }?,
+  attribute keyref { text }?,
+  univ-atts
+publisherinformation.element =
+  
+  ## The <publisherinformation> contains information about what group or person
+  ##         published the book, where it was published, and certain details about its publication
+  ##         history. Other publication history information is found in the <bookchangehistory>
+  ##         element. 
+  ##         Category: Bookmap elements
+  element publisherinformation {
+    publisherinformation.attlist, publisherinformation.content
+  }
+publisherinformation.attlist &= publisherinformation.attributes
+# LONG NAME: Person
+person.content = words.cnt*
+person.attributes = data-element-atts
+person.element =
+  
+  ## The <person> element contains information about the name of a person. Note
+  ##         that unlike the <personname> element, the <person> element is not restricted to
+  ##         describing the names of authors. 
+  ##         Category: Bookmap elements
+  element person { person.attlist, person.content }
+person.attlist &= person.attributes
+# LONG NAME: Organization
+organization.content = words.cnt*
+organization.attributes = data-element-atts
+organization.element =
+  
+  ## The <organization> element contains the name of an organization. Note that
+  ##         unlike <organizationname>, the <organization> element is not restricted to usage
+  ##         within <authorinformation>; it does not have to contain the name of an authoring
+  ##         organization. 
+  ##         Category: Bookmap elements
+  element organization { organization.attlist, organization.content }
+organization.attlist &= organization.attributes
+# LONG NAME: Book Change History
+bookchangehistory.content =
+  reviewed*, edited*, tested*, approved*, bookevent*
+bookchangehistory.attributes = data-element-atts
+bookchangehistory.element =
+  
+  ## The <bookchangehistory> element contains information about the history of
+  ##         the book's creation and publishing lifecycle, who wrote, reviewed, edited, and tested the
+  ##         book, and when these events took place. 
+  ##         Category: Bookmap elements
+  element bookchangehistory {
+    bookchangehistory.attlist, bookchangehistory.content
+  }
+bookchangehistory.attlist &= bookchangehistory.attributes
+# LONG NAME: Book ID
+bookid.content =
+  bookpartno*, edition?, isbn?, booknumber?, volume*, maintainer?
+bookid.attributes = data-element-atts
+bookid.element =
+  
+  ## The <bookid> element contains the publisher's identification information
+  ##         for the book, such as part number, edition number and ISBN number. 
+  ##         Category: Bookmap elements
+  element bookid { bookid.attlist, bookid.content }
+bookid.attlist &= bookid.attributes
+# LONG NAME: Summary
+summary.content = words.cnt*
+summary.attributes =
+  attribute keyref { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+summary.element =
+  
+  ## The <summary> element contains a text summary associated with a book event
+  ##         (such as <approved> or <reviewed>) or with the list of copyrights for the book.
+  ##         Category: Bookmap elements
+  element summary { summary.attlist, summary.content }
+summary.attlist &= summary.attributes
+# LONG NAME: Print Location
+printlocation.content = words.cnt*
+printlocation.attributes = data-element-atts
+printlocation.element =
+  
+  ## The <printlocation> element indicates the location where the book was
+  ##         printed. Customarily, the content is restricted to the name of the country. 
+  ##         Category: Bookmap elements
+  element printlocation { printlocation.attlist, printlocation.content }
+printlocation.attlist &= printlocation.attributes
+# LONG NAME: Published
+published.content =
+  (person | organization)*,
+  publishtype?,
+  revisionid?,
+  started?,
+  completed?,
+  summary?,
+  data*
+published.attributes = data-element-atts
+published.element =
+  
+  ## The <published> element contains information about the person or
+  ##         organization publishing the book, the dates when it was started and completed, and any
+  ##         special restrictions associated with it. 
+  ##         Category: Bookmap elements
+  element published { published.attlist, published.content }
+published.attlist &= published.attributes
+# LONG NAME: Publish Type
+publishtype.content = empty
+publishtype.attributes =
+  univ-atts,
+  attribute name { text }?,
+  attribute datatype { text }?,
+  attribute href { text }?,
+  attribute keyref { text }?,
+  attribute format { text }?,
+  attribute type { text }?,
+  attribute scope {
+    "external" | "local" | "peer" | "-dita-use-conref-target"
+  }?,
+  attribute outputclass { text }?,
+  attribute value { text }
+publishtype.element =
+  
+  ## The <publishtype> element indicates whether the book is generally
+  ##         available or is restricted in some way. The value attribute indicates the restrictions.
+  ##         Category: Bookmap elements
+  element publishtype { publishtype.attlist, publishtype.content }
+publishtype.attlist &= publishtype.attributes
+# LONG NAME: Revision ID
+revisionid.content = (text | keyword)*
+revisionid.attributes =
+  attribute keyref { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+revisionid.element =
+  
+  ## The <revisionid> element indicates the revision number or revision ID of
+  ##         the book. The processing implementation determines how the level is displayed. Common
+  ##         methods include using a dash, for example "-01". or a period, such as ".01". 
+  ##         Category: Bookmap elements
+  element revisionid { revisionid.attlist, revisionid.content }
+revisionid.attlist &= revisionid.attributes
+# LONG NAME: Start Date
+started.content =
+  (year, (month, day?)?)
+  | (month, day?, year)
+  | (day, month, year)
+started.attributes =
+  attribute keyref { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+started.element =
+  
+  ## The <started> element indicates a start date for some type of book event,
+  ##         such as a review, editing, or testing. 
+  ##         Category: Bookmap elements
+  element started { started.attlist, started.content }
+started.attlist &= started.attributes
+# LONG NAME: Completion Date
+completed.content =
+  (year, (month, day?)?)
+  | (month, day?, year)
+  | (day, month, year)
+completed.attributes =
+  attribute keyref { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+completed.element =
+  
+  ## The <completed> element indicates a completion date for some type of book
+  ##         event, such as a review, editing, or testing. 
+  ##         Category: Bookmap elements
+  element completed { completed.attlist, completed.content }
+completed.attlist &= completed.attributes
+# LONG NAME: Year
+year.content = (text | keyword)*
+year.attributes =
+  attribute keyref { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+year.element =
+  
+  ## The <year> element denotes a year. 
+  ##         Category: Bookmap elements
+  element year { year.attlist, year.content }
+year.attlist &= year.attributes
+# LONG NAME: Month
+month.content = (text | keyword)*
+month.attributes =
+  attribute keyref { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+month.element =
+  
+  ## The <month> element denotes a month of the year. 
+  ##         Category: Bookmap elements
+  element month { month.attlist, month.content }
+month.attlist &= month.attributes
+# LONG NAME: Day
+day.content = (text | keyword)*
+day.attributes =
+  attribute keyref { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+day.element =
+  
+  ## The <day> element denotes a day of the month. 
+  ##         Category: Bookmap elements
+  element day { day.attlist, day.content }
+day.attlist &= day.attributes
+# LONG NAME: Reviewed
+reviewed.content =
+  (organization | person)*,
+  revisionid?,
+  started?,
+  completed?,
+  summary?,
+  data*
+reviewed.attributes = data-element-atts
+reviewed.element =
+  
+  ## The <reviewed> element contains information about when and by whom the
+  ##         book was reviewed during its publication history. 
+  ##         Category: Bookmap elements
+  element reviewed { reviewed.attlist, reviewed.content }
+reviewed.attlist &= reviewed.attributes
+# LONG NAME: Editeded
+edited.content =
+  (organization | person)*,
+  revisionid?,
+  started?,
+  completed?,
+  summary?,
+  data*
+edited.attributes = data-element-atts
+edited.element =
+  
+  ## The <edited> element contains information about when and by whom the book
+  ##         was edited during its publication history. 
+  ##         Category: Bookmap elements
+  element edited { edited.attlist, edited.content }
+edited.attlist &= edited.attributes
+# LONG NAME: Tested
+tested.content =
+  (organization | person)*,
+  revisionid?,
+  started?,
+  completed?,
+  summary?,
+  data*
+tested.attributes = data-element-atts
+tested.element =
+  
+  ## The <tested> element contains information about when and by whom the book
+  ##         was tested during its publication history. 
+  ##         Category: Bookmap elements
+  element tested { tested.attlist, tested.content }
+tested.attlist &= tested.attributes
+# LONG NAME: Approved
+approved.content =
+  (organization | person)*,
+  revisionid?,
+  started?,
+  completed?,
+  summary?,
+  data*
+approved.attributes = data-element-atts
+approved.element =
+  
+  ## The <approved> element contains information about when and by whom the
+  ##         book was approved during its publication history. 
+  ##         Category: Bookmap elements
+  element approved { approved.attlist, approved.content }
+approved.attlist &= approved.attributes
+# LONG NAME: Book Event
+bookevent.content =
+  bookeventtype?,
+  ((organization | person)*,
+   revisionid?,
+   started?,
+   completed?,
+   summary?,
+   data*)
+bookevent.attributes = data-element-atts
+bookevent.element =
+  
+  ## The <bookevent> element indicates a general event in the publication
+  ##         history of a book. This is an appropriate element for specialization if the current set of
+  ##         specific book event types, that is, review, edit, test or approval, does not meed your
+  ##         needs. 
+  ##         Category: Bookmap elements
+  element bookevent { bookevent.attlist, bookevent.content }
+bookevent.attlist &= bookevent.attributes
+# LONG NAME: Book Event Type
+bookeventtype.content = empty
+bookeventtype.attributes =
+  attribute name { text },
+  attribute datatype { text }?,
+  attribute value { text }?,
+  attribute href { text }?,
+  attribute keyref { text }?,
+  attribute format { text }?,
+  attribute type { text }?,
+  attribute scope {
+    "external" | "local" | "peer" | "-dita-use-conref-target"
+  }?,
+  univ-atts,
+  attribute outputclass { text }?
+bookeventtype.element =
+  
+  ## The <bookeventtype> element indicates the specific nature of a
+  ##         <bookevent>, such as updated, indexed, or deprecated. The required name attribute
+  ##         indicates the event's type. 
+  ##         Category: Bookmap elements
+  element bookeventtype { bookeventtype.attlist, bookeventtype.content }
+bookeventtype.attlist &= bookeventtype.attributes
+# LONG NAME: Book Part Number
+bookpartno.content = words.cnt*
+bookpartno.attributes = data-element-atts
+bookpartno.element =
+  
+  ## The <bookpartno> element contains the book's part number; such as 99F1234.
+  ##         This is generally the number that the publisher uses to identify the book for tracking
+  ##         purposes. 
+  ##         Category: Bookmap elements
+  element bookpartno { bookpartno.attlist, bookpartno.content }
+bookpartno.attlist &= bookpartno.attributes
+# LONG NAME: Edition
+edition.content = (text | keyword)*
+edition.attributes = data-element-atts
+edition.element =
+  
+  ## The <edition> element contains the edition number information, such as
+  ##         First Edition, or Third Edition, used by a publisher to identify a book. 
+  ##         Category: Bookmap elements
+  element edition { edition.attlist, edition.content }
+edition.attlist &= edition.attributes
+# LONG NAME: ISBN Number
+isbn.content = (text | keyword)*
+isbn.attributes = data-element-atts
+isbn.element =
+  
+  ## The <isbn> element contains the book's International Standard Book Number
+  ##         (ISBN). 
+  ##         Category: Bookmap elements
+  element isbn { isbn.attlist, isbn.content }
+isbn.attlist &= isbn.attributes
+# LONG NAME: Book Number
+booknumber.content = words.cnt*
+booknumber.attributes = data-element-atts
+booknumber.element =
+  
+  ## The <booknumber> element contains the book's form number, such as
+  ##         SC21-1920. 
+  ##         Category: Bookmap elements
+  element booknumber { booknumber.attlist, booknumber.content }
+booknumber.attlist &= booknumber.attributes
+# LONG NAME: Volume
+volume.content = (text | keyword)*
+volume.attributes = data-element-atts
+volume.element =
+  
+  ## The <volume> element contains the book's volume number, such as Volume 2.
+  ##         Category: Bookmap elements
+  element volume { volume.attlist, volume.content }
+volume.attlist &= volume.attributes
+# LONG NAME: Maintainer
+maintainer.content = (person | organization)*, data*
+maintainer.attributes = data-element-atts
+maintainer.element =
+  
+  ## The <maintainer> element contains information about who maiintains the
+  ##         document; this can be an organization or a person. 
+  ##         Category: Bookmap elements
+  element maintainer { maintainer.attlist, maintainer.content }
+maintainer.attlist &= maintainer.attributes
+# LONG NAME: Book Rights
+bookrights.content =
+  copyrfirst?, copyrlast?, bookowner, bookrestriction?, summary?
+bookrights.attributes = data-element-atts
+bookrights.element =
+  
+  ## The <bookrights> element contains the information about the legal rights
+  ##         associated with the book, including copyright dates and owners. 
+  ##         Category: Bookmap elements
+  element bookrights { bookrights.attlist, bookrights.content }
+bookrights.attlist &= bookrights.attributes
+# LONG NAME: First Copyright
+copyrfirst.content = year
+copyrfirst.attributes = data-element-atts
+copyrfirst.element =
+  
+  ## The <copyfirst> element contains the first copyright year within a
+  ##         multiyear copyright statement. 
+  ##         Category: Bookmap elements
+  element copyrfirst { copyrfirst.attlist, copyrfirst.content }
+copyrfirst.attlist &= copyrfirst.attributes
+# LONG NAME: Last Copyright
+copyrlast.content = year
+copyrlast.attributes = data-element-atts
+copyrlast.element =
+  
+  ## The <copylast> element contains the last copyright year within a multiyear
+  ##         copyright statement. 
+  ##         Category: Bookmap elements
+  element copyrlast { copyrlast.attlist, copyrlast.content }
+copyrlast.attlist &= copyrlast.attributes
+# LONG NAME: Book Owner
+bookowner.content = (organization | person)*
+bookowner.attributes = data-element-atts
+bookowner.element =
+  
+  ## The <bookowner> element contains the owner of the copyright. 
+  ##         Category: Bookmap elements
+  element bookowner { bookowner.attlist, bookowner.content }
+bookowner.attlist &= bookowner.attributes
+# LONG NAME: Book Restriction
+bookrestriction.content = empty
+bookrestriction.attributes =
+  univ-atts,
+  attribute name { text }?,
+  attribute datatype { text }?,
+  attribute href { text }?,
+  attribute keyref { text }?,
+  attribute format { text }?,
+  attribute type { text }?,
+  attribute scope {
+    "external" | "local" | "peer" | "-dita-use-conref-target"
+  }?,
+  attribute outputclass { text }?,
+  attribute value { text }
+bookrestriction.element =
+  
+  ## The <bookrestriction> element indicates whether the book is classified, or
+  ##         restricted in some way. The value attribute indicates the restrictions; this may be a string
+  ##         like "All Rights Reserved," representing the publisher's copyright restrictions. 
+  ##         Category: Bookmap elements
+  element bookrestriction {
+    bookrestriction.attlist, bookrestriction.content
+  }
+bookrestriction.attlist &= bookrestriction.attributes
+# LONG NAME: Book Title
+booktitle.content = booklibrary?, mainbooktitle, booktitlealt*
+booktitle.attributes =
+  id-atts,
+  localization-atts,
+  attribute base { text }?,
+  base-attribute-extensions,
+  attribute outputclass { text }?
+booktitle.element =
+  
+  ## The <booktitle> element contains the title information for a book. ,
+  ##         including <booklibrary> data, a <maintitle> and subtitle (<titlealt>) as required.
+  ##         Category: Bookmap elements
+  element booktitle { booktitle.attlist, booktitle.content }
+booktitle.attlist &= booktitle.attributes
+# LONG NAME: Library Title
+booklibrary.content = (text | basic.ph.noxref | image)*
+booklibrary.attributes =
+  attribute keyref { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+booklibrary.element =
+  
+  ## The <booklibrary> element contains the library information for a book.
+  ##         Library entries contain information about the series, library, or collection of documents to
+  ##         which the book belongs. 
+  ##         Category: Bookmap elements
+  element booklibrary { booklibrary.attlist, booklibrary.content }
+booklibrary.attlist &= booklibrary.attributes
+# LONG NAME: Main Book Title
+mainbooktitle.content = (text | basic.ph.noxref | image)*
+mainbooktitle.attributes =
+  attribute keyref { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+mainbooktitle.element =
+  
+  ## The <mainbooktitle> element contains the primary title information for a
+  ##         book. 
+  ##         Category: Bookmap elements
+  element mainbooktitle { mainbooktitle.attlist, mainbooktitle.content }
+mainbooktitle.attlist &= mainbooktitle.attributes
+# LONG NAME: Alternate Book Title
+booktitlealt.content = (text | basic.ph.noxref | image)*
+booktitlealt.attributes =
+  attribute keyref { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+booktitlealt.element =
+  
+  ## The <booktitlealt> element contains the alternative title, subtitle, or
+  ##         short title for a book. 
+  ##         Category: Bookmap elements
+  element booktitlealt { booktitlealt.attlist, booktitlealt.content }
+booktitlealt.attlist &= booktitlealt.attributes
+# LONG NAME: Draft Introduction
+draftintro.content = topicmeta?, topicref*
+draftintro.attributes = chapter-atts
+draftintro.element =
+  
+  ## The <draftintro> element references a topic used as an introduction to the
+  ##         draft of this book. 
+  ##         Category: Bookmap elements
+  element draftintro { draftintro.attlist, draftintro.content }
+draftintro.attlist &= draftintro.attributes
+# LONG NAME: Book Abstract
+bookabstract.content = empty
+bookabstract.attributes = chapter-atts
+bookabstract.element =
+  
+  ## The <bookabstract> element references a topic used within a bookmap as a
+  ##         brief summary of book content, generally output as part of the book's front matter. It is
+  ##         used to help the reader quickly evaluate the book's purpose. 
+  ##         Category: Bookmap elements
+  element bookabstract { bookabstract.attlist, bookabstract.content }
+bookabstract.attlist &= bookabstract.attributes
+# LONG NAME: Dedication
+dedication.content = empty
+dedication.attributes = chapter-atts
+dedication.element =
+  
+  ## The <dedication> element references a topic containing a dedication for
+  ##         the book, such as to a person or group. 
+  ##         Category: Bookmap elements
+  element dedication { dedication.attlist, dedication.content }
+dedication.attlist &= dedication.attributes
+# LONG NAME: Preface
+preface.content = topicmeta?, topicref*
+preface.attributes = chapter-atts
+preface.element =
+  
+  ## The <preface> element references introductory information about a book,
+  ##         such as the purpose and structure of the document. 
+  ##         Category: Bookmap elements
+  element preface { preface.attlist, preface.content }
+preface.attlist &= preface.attributes
+# LONG NAME: Chapter
+chapter.content = topicmeta?, topicref*
+chapter.attributes = chapter-atts
+chapter.element =
+  
+  ## The <chapter> element references a topic as a chapter within a book.
+  ##         Category: Bookmap elements
+  element chapter { chapter.attlist, chapter.content }
+chapter.attlist &= chapter.attributes
+# LONG NAME: Part
+part.content = topicmeta?, (chapter | topicref)*
+part.attributes = chapter-atts
+part.element =
+  
+  ## The <part> element references a part topic for the book. A new part is
+  ##         started. Use <part> to divide a document's chapters into logical groupings. For example,
+  ##         in a document that contains both guide and reference information, you can define two parts,
+  ##         one containing the guide information and the other containing the reference information.
+  ##         Category: Bookmap elements
+  element part { part.attlist, part.content }
+part.attlist &= part.attributes
+# LONG NAME: Appendix
+appendix.content = topicmeta?, topicref*
+appendix.attributes = chapter-atts
+appendix.element =
+  
+  ## The <appendix> element references a topic as a appendix within a book.
+  ##         Category: Bookmap elements
+  element appendix { appendix.attlist, appendix.content }
+appendix.attlist &= appendix.attributes
+# LONG NAME: Appendices
+appendices.content = topicmeta?, appendix*
+appendices.attributes = chapter-atts
+appendices.element =
+  
+  ## The <appendices> element is an optional wrapper for <appendix> elements
+  ##         within a bookmap.
+  element appendices { appendices.attlist, appendices.content }
+appendices.attlist &= appendices.attributes
+# LONG NAME: Notices
+notices.content = topicmeta?, topicref*
+notices.attributes = chapter-atts
+notices.element =
+  
+  ## The <notices> element references special notice information, for example,
+  ##         legal notices about supplementary copyrights and trademarks associated with the book. .
+  ##         Category: Bookmap elements
+  element notices { notices.attlist, notices.content }
+notices.attlist &= notices.attributes
+# LONG NAME: Amendments
+amendments.content = empty
+amendments.attributes = chapter-atts
+amendments.element =
+  
+  ## The <amendments> element references a list of amendments or updates to the
+  ##         book. It indicates to the processing software that the author wants an amendments list
+  ##         generated at the particular location. 
+  ##         Category: Bookmap elements
+  element amendments { amendments.attlist, amendments.content }
+amendments.attlist &= amendments.attributes
+# LONG NAME: Colophon
+colophon.content = empty
+colophon.attributes = chapter-atts
+colophon.element =
+  
+  ## The <colophon> element references a topic describing how this document was
+  ##         created. In publishing, a colophon describes details of the production of a book. This
+  ##         information generally includes the typefaces used, and often the names of their designers;
+  ##         the paper, ink and details of the binding materials and methods may also receive mention. In
+  ##         the case of technical books, a colophon may specify the software used to prepare the text
+  ##         and diagrams for publication. 
+  ##         Category: Bookmap elements
+  element colophon { colophon.attlist, colophon.content }
+colophon.attlist &= colophon.attributes
+# LONG NAME: Book Lists
+booklists.content =
+  (abbrevlist
+   | bibliolist
+   | booklist
+   | figurelist
+   | glossarylist
+   | indexlist
+   | tablelist
+   | trademarklist
+   | toc)*
+booklists.attributes =
+  attribute keyref { text }?,
+  topicref-atts,
+  id-atts,
+  select-atts,
+  localization-atts
+booklists.element =
+  
+  ## The <booklists> element references lists of various kinds within the book.
+  ##         For example, it can be used within front matter to reference a <toc>, <tablelist>, and
+  ##         <figurelist>, or within back matter to reference a <glossarylist>, <indexlist>, and
+  ##         <abbrevlist>. It indicates to the processing software that the author wants the lists
+  ##         generated at the <booklists> location. 
+  ##         Category: Bookmap elements
+  element booklists { booklists.attlist, booklists.content }
+booklists.attlist &= booklists.attributes
+# LONG NAME: Table of Contents
+toc.content = empty
+toc.attributes = chapter-atts
+toc.element =
+  
+  ## The <toc> element references the table of contents within the book. It
+  ##         indicates to the processing software that the author wants a table of contents generated at
+  ##         the particular location. 
+  ##         Category: Bookmap elements
+  element toc { toc.attlist, toc.content }
+toc.attlist &= toc.attributes
+# LONG NAME: Figure List
+figurelist.content = empty
+figurelist.attributes = chapter-atts
+figurelist.element =
+  
+  ## The <figurelist> element references a list of figures in the book. It
+  ##         indicates to the processing software that the author wants a list of figures generated at
+  ##         the particular location. 
+  ##         Category: Bookmap elements
+  element figurelist { figurelist.attlist, figurelist.content }
+figurelist.attlist &= figurelist.attributes
+# LONG NAME: Table List
+tablelist.content = empty
+tablelist.attributes = chapter-atts
+tablelist.element =
+  
+  ## The <tablelist> element references a list of tables within the book. It
+  ##         indicates to the processing software that the author wants a list of tables generated at the
+  ##         particular location. 
+  ##         Category: Bookmap elements
+  element tablelist { tablelist.attlist, tablelist.content }
+tablelist.attlist &= tablelist.attributes
+# LONG NAME: Abbreviation List
+abbrevlist.content = empty
+abbrevlist.attributes = chapter-atts
+abbrevlist.element =
+  
+  ## The <abbrevlist> element references a list of abbreviations. It indicates
+  ##         to the processing software that the author wants an abbreviation list generated at the
+  ##         particular location. 
+  ##         Category: Bookmap elements
+  element abbrevlist { abbrevlist.attlist, abbrevlist.content }
+abbrevlist.attlist &= abbrevlist.attributes
+# LONG NAME: Trademark List
+trademarklist.content = empty
+trademarklist.attributes = chapter-atts
+trademarklist.element =
+  
+  ## The <trademarklist> element references a list of trademarks within the
+  ##         book. It indicates to the processing software that the author wants a list of trademarks
+  ##         generated at the particular location. 
+  ##         Category: Bookmap elements
+  element trademarklist { trademarklist.attlist, trademarklist.content }
+trademarklist.attlist &= trademarklist.attributes
+# LONG NAME: Bibliography List
+bibliolist.content = empty
+bibliolist.attributes = chapter-atts
+bibliolist.element =
+  
+  ## The <bibliolist> element references a list of bibliographic entries within
+  ##         the book. It indicates to the processing software that the author wants a bibliography,
+  ##         containing links to related books, articles, published papers, or other types of material,
+  ##         generated at the particular location. 
+  ##         Category: Bookmap elements
+  element bibliolist { bibliolist.attlist, bibliolist.content }
+bibliolist.attlist &= bibliolist.attributes
+# LONG NAME: Glossary List
+glossarylist.content = topicmeta?, topicref*
+glossarylist.attributes = chapter-atts
+glossarylist.element =
+  
+  ## The <glossarylist> element references a list of glossary entries within
+  ##         the book. It indicates to the processing software that the author wants a glossary list
+  ##         generated at the particular location. 
+  ##         Category: Bookmap elements
+  element glossarylist { glossarylist.attlist, glossarylist.content }
+glossarylist.attlist &= glossarylist.attributes
+# LONG NAME: Index List
+indexlist.content = empty
+indexlist.attributes = chapter-atts
+indexlist.element =
+  
+  ## The <indexlist> element lists the index entries in the book. It indicates
+  ##         to the processing software that the author wants an index generated at the particular
+  ##         location. 
+  ##         Category: Bookmap elements
+  element indexlist { indexlist.attlist, indexlist.content }
+indexlist.attlist &= indexlist.attributes
+# LONG NAME: Book List
+booklist.content = empty
+booklist.attributes = chapter-atts
+booklist.element =
+  
+  ## The <booklist> element is a general purpose element, designed for use in
+  ##         specializations, that references a list of particular types of topics within the book. It
+  ##         indicates to the processing software that the author wants that list of topics generated at
+  ##         the particular location. For example, it could be used in a specialization to reference the
+  ##         location of a list of program listings or of authors of topics. 
+  ##         Category: Bookmap elements
+  element booklist { booklist.attlist, booklist.content }
+booklist.attlist &= booklist.attributes
+# Specialization attributes. Global attributes and class defaults
+bookmap.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/map bookmap/bookmap " ]
+  attribute class { text }?
+abbrevlist.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/abbrevlist " ]
+  attribute class { text }?
+amendments.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/amendments " ]
+  attribute class { text }?
+appendices.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/appendices " ]
+  attribute class { text }?
+appendix.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/appendix " ]
+  attribute class { text }?
+approved.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/approved " ]
+  attribute class { text }?
+backmatter.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/backmatter " ]
+  attribute class { text }?
+bibliolist.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/bibliolist " ]
+  attribute class { text }?
+bookabstract.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/bookabstract " ]
+  attribute class { text }?
+bookchangehistory.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/bookchangehistory " ]
+  attribute class { text }?
+bookevent.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/bookevent " ]
+  attribute class { text }?
+bookeventtype.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/bookeventtype " ]
+  attribute class { text }?
+bookid.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/bookid " ]
+  attribute class { text }?
+booklibrary.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/ph bookmap/booklibrary " ]
+  attribute class { text }?
+booklist.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/booklist " ]
+  attribute class { text }?
+booklists.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/booklists " ]
+  attribute class { text }?
+bookmeta.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicmeta bookmap/bookmeta " ]
+  attribute class { text }?
+booknumber.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/booknumber " ]
+  attribute class { text }?
+bookowner.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/bookowner " ]
+  attribute class { text }?
+bookpartno.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/bookpartno " ]
+  attribute class { text }?
+bookrestriction.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/bookrestriction " ]
+  attribute class { text }?
+bookrights.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/bookrights " ]
+  attribute class { text }?
+booktitle.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/title bookmap/booktitle " ]
+  attribute class { text }?
+booktitlealt.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/ph bookmap/booktitlealt " ]
+  attribute class { text }?
+chapter.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/chapter " ]
+  attribute class { text }?
+colophon.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/colophon " ]
+  attribute class { text }?
+completed.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/ph bookmap/completed " ]
+  attribute class { text }?
+copyrfirst.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/copyrfirst " ]
+  attribute class { text }?
+copyrlast.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/copyrlast " ]
+  attribute class { text }?
+day.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/ph bookmap/day " ]
+  attribute class { text }?
+dedication.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/dedication " ]
+  attribute class { text }?
+draftintro.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/draftintro " ]
+  attribute class { text }?
+edited.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/edited " ]
+  attribute class { text }?
+edition.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/edition " ]
+  attribute class { text }?
+figurelist.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/figurelist " ]
+  attribute class { text }?
+frontmatter.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/frontmatter " ]
+  attribute class { text }?
+glossarylist.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/glossarylist " ]
+  attribute class { text }?
+indexlist.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/indexlist " ]
+  attribute class { text }?
+isbn.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/isbn " ]
+  attribute class { text }?
+mainbooktitle.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/ph bookmap/mainbooktitle " ]
+  attribute class { text }?
+maintainer.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/maintainer " ]
+  attribute class { text }?
+month.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/ph bookmap/month " ]
+  attribute class { text }?
+notices.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/notices " ]
+  attribute class { text }?
+organization.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/organization " ]
+  attribute class { text }?
+part.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/part " ]
+  attribute class { text }?
+person.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/person " ]
+  attribute class { text }?
+preface.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/preface " ]
+  attribute class { text }?
+printlocation.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/printlocation " ]
+  attribute class { text }?
+published.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/published " ]
+  attribute class { text }?
+publisherinformation.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/publisher bookmap/publisherinformation " ]
+  attribute class { text }?
+publishtype.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/publishtype " ]
+  attribute class { text }?
+reviewed.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/reviewed " ]
+  attribute class { text }?
+revisionid.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/ph bookmap/revisionid " ]
+  attribute class { text }?
+started.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/ph bookmap/started " ]
+  attribute class { text }?
+summary.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/ph bookmap/summary " ]
+  attribute class { text }?
+tablelist.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/tablelist " ]
+  attribute class { text }?
+tested.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/tested " ]
+  attribute class { text }?
+toc.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/toc " ]
+  attribute class { text }?
+trademarklist.attlist &=
+  global-atts,
+  [ a:defaultValue = "- map/topicref bookmap/trademarklist " ]
+  attribute class { text }?
+volume.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/data bookmap/volume " ]
+  attribute class { text }?
+year.attlist &=
+  global-atts,
+  [ a:defaultValue = "- topic/ph bookmap/year " ]
+  attribute class { text }?
+# ================== End book map =============================

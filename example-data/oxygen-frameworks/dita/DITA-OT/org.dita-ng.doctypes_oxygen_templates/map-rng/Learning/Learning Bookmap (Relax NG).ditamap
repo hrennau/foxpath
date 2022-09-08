@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-model href="urn:dita-ng:dita:rng:learningBookmap.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<bookmap>
+    <booktitle>
+        <mainbooktitle/>
+    </booktitle>
+</bookmap>
+

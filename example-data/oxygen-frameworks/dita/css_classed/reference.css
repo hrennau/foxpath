@@ -1,0 +1,99 @@
+/*
+====================================
+    Reference elements. [reference]
+====================================
+*/
+*[class~="reference/reference"]{
+	display: block;
+	margin: 0.5em 0;
+	padding-left: 0.5em;
+}
+
+/*
+   Reference topics limit the body structure to tables 
+   (both simple and standard), property lists, syntax 
+   sections, and generic sections and examples, in any 
+   sequence or number.
+*/
+*[class~="reference/refbody"]{
+    display:block;
+}
+
+*[class~="reference/reference"] > *[class~="topic/title"]{
+	font-size: 1.8em;
+	border-bottom:1px solid #004477;
+}
+
+*[class~="reference/refbody"] > *[class~="topic/section"] > *[class~="topic/title"]{
+	font-size: 1.4em;
+	border-bottom:1px solid #004477;
+}
+
+/*
+    The section often contains syntax or signature 
+    content (for example, a command-line utility's 
+    calling syntax, or an API's signature).
+*/
+*[class~="reference/refsyn"]{
+    display:block;
+    margin: 1em 0;
+    background-color: #EFEFEF;
+    color:inherit;
+    padding: 2px;   
+}
+
+*[class~="reference/refsyn"]:before {
+  font-weight: bold;
+  display: block;
+  content: "Syntax: ";
+}
+
+*[class~="reference/refsyn"][spectitle]:before {
+  font-weight: bold;
+  display: block;
+  content: attr(spectitle)": ";
+}
+
+/*
+    The <properties> element gives a list of properties 
+    for the subject of the current topic, for example whether 
+    a class is public or protected. Each property can include 
+    the type, value, and a description.
+*/
+*[class~="reference/properties"] {
+    display:table;
+    border-spacing:1px;
+    border:1px solid #EEC0D0;
+    margin:1.33ex 0;
+}
+
+*[class~="reference/prophead"],
+*[class~="reference/property"]{
+    display:table-row;
+}
+
+/*
+    The cells.
+*/
+*[class~="reference/proptypehd"],
+*[class~="reference/proptype"],
+*[class~="reference/propvaluehd"],
+*[class~="reference/propvalue"],
+*[class~="reference/propdeschd"],
+*[class~="reference/propdesc"]{
+    display: table-cell;
+    border: 1px solid #EEC0D0;
+    padding: 5px;
+}
+
+*[class~="reference/prophead"]{
+    font-weight:bold;
+}
+
+*[class~="reference/proptypehd"],
+*[class~="reference/propvaluehd"],
+*[class~="reference/propdeschd"] {
+    color:inherit;
+    background-color: #FFE0E0;
+}
+

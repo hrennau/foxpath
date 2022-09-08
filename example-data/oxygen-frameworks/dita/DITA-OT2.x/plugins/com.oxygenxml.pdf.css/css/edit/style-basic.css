@@ -1,0 +1,13 @@
+@import "dita.css";
+
+/*
+ * No additional styling, just the dita basic rules.
+ */
+ 
+:root {
+    line-height:1.2;
+}
+
+*[class~="topic/title"] {
+    font-family: "Calibri", "UnDotum", sansserif;
+}

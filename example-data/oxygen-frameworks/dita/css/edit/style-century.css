@@ -1,0 +1,20 @@
+@import "dita.css";
+
+/*
+ * Plain content and topcirefs in the map.
+ */
+:root {
+   font-family: "Century Gothic", "Helvetica", serif;
+ }
+
+
+/*
+ * Topic and Map Titles.
+ */
+*[class ~= "map/map"][title]:before,
+*[class ~= "map/map"] > *[class ~= "topic/title"],
+*[class ~= "topic/topic"] > *[class ~= "topic/title"]{
+   font-weight:normal;
+   color: #AA0000;
+}
+

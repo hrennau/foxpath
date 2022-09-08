@@ -1,0 +1,434 @@
+# ============================================================= 
+# MODULE:    DITA Task Requirements Domain - RNC              
+# VERSION:   1.2                                                
+# DATE:      November 2010                                       
+# =============================================================
+
+# Refer to the latest version of this file by the following URI:
+# urn:dita-ng:dita:rnc:taskreqDomain.mod.rnc
+# To refer to this specific version, you may use this value:
+# urn:dita-ng:dita:rnc:taskreqDomain.mod.rnc:1.2
+
+# ============================================================= 
+# SYSTEM:     Darwin Information Typing Architecture (DITA)     
+# PURPOSE:    Define elements and specialization attributes
+#             for the Task Requirements Domain
+# ORIGINAL CREATION DATE:  
+# September 2010                                                
+# (C) Copyright Syncro Soft 2010-2011                                
+# All Rights Reserved.                                          
+# =============================================================
+
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+# Define the domain values of this module
+domains-atts-value |= "(topic task taskreq-d)"
+# Define domain extension patterns
+taskreq-d-prereq = prelreqs.element
+taskreq-d-postreq = closereqs.element
+# Extend the patterns with the domain contribution
+prereq |= taskreq-d-prereq
+postreq |= taskreq-d-postreq
+# Define patterns
+reqconds = reqconds.element
+noconds = noconds.element
+reqcond = reqcond.element
+reqcontp = reqcontp.element
+reqpers = reqpers.element
+personnel = personnel.element
+perscat = perscat.element
+perskill = perskill.element
+esttime = esttime.element
+supequip = supequip.element
+nosupeq = nosupeq.element
+supeqli = supeqli.element
+supequi = supequi.element
+supplies = supplies.element
+nosupply = nosupply.element
+supplyli = supplyli.element
+supply = supply.element
+spares = spares.element
+nospares = nospares.element
+sparesli = sparesli.element
+spare = spare.element
+safety = safety.element
+nosafety = nosafety.element
+safecond = safecond.element
+# Define elements content and attributes
+
+# LONG NAME: Preliminary Requirements
+prelreqs.content =
+  reqconds?, reqpers?, supequip?, supplies?, spares?, safety?
+prelreqs.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The preliminary-requirements (<prelreqs>) section of a task should document things the user needs to know or do before starting the current task. The <prelreqs> element is similar to <prereq> but contains a more descriptive content model then <prereq>.
+prelreqs.element =
+  element prelreqs { prelreqs.attlist, prelreqs.content }
+prelreqs.attlist &= prelreqs.attributes
+# LONG NAME: Closing Requirements
+closereqs.content = reqconds
+closereqs.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The closing-requirements (<closereqs>) element describes steps or tasks that the user should do after the successful completion of the current task. closereqs is similar to postreq but contains a more descriptive content model then postreq and has been developed basically to meet the requirements in the machinery industry.
+closereqs.element =
+  element closereqs { closereqs.attlist, closereqs.content }
+closereqs.attlist &= closereqs.attributes
+# LONG NAME: Required Conditions
+reqconds.content = noconds | (reqcond | reqcontp)+
+reqconds.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The required-conditions (<reqconds>) element contains the description of all required conditions that have to be fulfilled before performing a task.
+reqconds.element =
+  element reqconds { reqconds.attlist, reqconds.content }
+reqconds.attlist &= reqconds.attributes
+# LONG NAME: No Required Conditions
+
+# specialized from li
+noconds.content = empty
+noconds.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The No-Required-Condition (<noconds>) element has to be used when there is no required condition. The information that no condition is required is as important as the information which conditions are required.
+noconds.element = element noconds { noconds.attlist, noconds.content }
+noconds.attlist &= noconds.attributes
+# LONG NAME: Required Condition
+
+# specialized from li
+reqcond.content = listitem.cnt*
+reqcond.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The Required-Condition (<reqcond>) element has to be used to describe the required condition.
+reqcond.element = element reqcond { reqcond.attlist, reqcond.content }
+reqcond.attlist &= reqcond.attributes
+# LONG NAME: Required Condition Technical Publication
+
+# specialized from li
+reqcontp.content = listitem.cnt*
+reqcontp.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The Required-Condition-Technical-Publication (<reqcontp>) element has to be used to list or describe further applicable documents.
+reqcontp.element =
+  element reqcontp { reqcontp.attlist, reqcontp.content }
+reqcontp.attlist &= reqcontp.attributes
+# LONG NAME: Required Persons
+
+# specialized from ol
+reqpers.content = (personnel, (perscat?, perskill?, esttime?)?)+
+reqpers.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The Required-Personnel (<reqpers>) element contains information on the personnel required for the task.
+reqpers.element = element reqpers { reqpers.attlist, reqpers.content }
+reqpers.attlist &= reqpers.attributes
+# LONG NAME: Personnel
+
+# specialized from li
+personnel.content = listitem.cnt*
+personnel.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <personnel> element indicates the number of personnel required for the task.
+personnel.element =
+  element personnel { personnel.attlist, personnel.content }
+personnel.attlist &= personnel.attributes
+# LONG NAME: Personnel Category
+
+# specialized from li
+perscat.content = listitem.cnt*
+perscat.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The Personnel-Category (<perscat>) element contains the required category level of the person.
+perscat.element = element perscat { perscat.attlist, perscat.content }
+perscat.attlist &= perscat.attributes
+# LONG NAME: Personnel Skill Level
+
+# specialized from li
+perskill.content = listitem.cnt*
+perskill.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The Personnel-Skill-Level (<perskill>) element describes the required skill level of the person.
+perskill.element =
+  element perskill { perskill.attlist, perskill.content }
+perskill.attlist &= perskill.attributes
+# LONG NAME: Esttime
+
+# specialized from li
+esttime.content = listitem.cnt*
+esttime.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The Estimated-Time-Spent (<esttime>) element contains information on the estimated time required for a task.
+esttime.element = element esttime { esttime.attlist, esttime.content }
+esttime.attlist &= esttime.attributes
+# LONG NAME: Support Equipment
+
+# specialized from p
+supequip.content = nosupeq | supeqli
+supequip.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The Support-Equipment (<supequip>) element lists any required support equipment for the task, along with optional descriptions.
+supequip.element =
+  element supequip { supequip.attlist, supequip.content }
+supequip.attlist &= supequip.attributes
+# LONG NAME: No Support Equipment
+
+# specialized from data
+nosupeq.content = empty
+nosupeq.attributes = data-element-atts
+# doc:The No-Support-Equipment (<nosupeq>) element has to be used when there is no support equipment required. The information that no support equipment is required is as important as the information which support equipment is required.
+nosupeq.element = element nosupeq { nosupeq.attlist, nosupeq.content }
+nosupeq.attlist &= nosupeq.attributes
+# LONG NAME: Support Equipment List
+
+# specialized from ul
+supeqli.content = supequi+
+supeqli.attributes =
+  attribute compact { "yes" | "no" | "-dita-use-conref-target" }?,
+  attribute spectitle { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The Support-Equipment-List (<supeqli>) element has to be used to list any support equipment required for the task.
+supeqli.element = element supeqli { supeqli.attlist, supeqli.content }
+supeqli.attlist &= supeqli.attributes
+# LONG NAME: Support Equipment Item
+
+# specialized from li
+supequi.content = listitem.cnt*
+supequi.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The Support-Equipment-Item (<supequi>) element describes the support equipment.
+supequi.element = element supequi { supequi.attlist, supequi.content }
+supequi.attlist &= supequi.attributes
+# LONG NAME: Supplies
+
+# specialized from p
+supplies.content = nosupply | supplyli
+supplies.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <supplies> element has to be used to list and maybe to describe any supplies required for the task.
+supplies.element =
+  element supplies { supplies.attlist, supplies.content }
+supplies.attlist &= supplies.attributes
+# LONG NAME: No Supplies
+
+# specialized from data
+nosupply.content = empty
+nosupply.attributes = data-element-atts
+# doc:The No-Supplies (<nosupply>) element has to be used when there are no supplies required. The information that no supplies are required is as important as the information which supplies are is required.
+nosupply.element =
+  element nosupply { nosupply.attlist, nosupply.content }
+nosupply.attlist &= nosupply.attributes
+# LONG NAME: Supply List
+
+# specialized from ul
+supplyli.content = supply+
+supplyli.attributes =
+  attribute compact { "yes" | "no" | "-dita-use-conref-target" }?,
+  attribute spectitle { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The Supply-List (<supplyli>) element has to be used to list any supplies required for the task.
+supplyli.element =
+  element supplyli { supplyli.attlist, supplyli.content }
+supplyli.attlist &= supplyli.attributes
+# LONG NAME: Supply Item
+
+# specialized from li
+supply.content = listitem.cnt*
+supply.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <supply> element describes the supply.
+supply.element = element supply { supply.attlist, supply.content }
+supply.attlist &= supply.attributes
+# LONG NAME: Spares
+
+# specialized from p
+spares.content = nospares | sparesli
+spares.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The <spares> element lists spare parts required for a task, and may include descriptions of those parts.
+spares.element = element spares { spares.attlist, spares.content }
+spares.attlist &= spares.attributes
+# LONG NAME: No Spares
+
+# specialized from data
+nospares.content = empty
+nospares.attributes = data-element-atts
+# doc:The No-Spares (<nospares>) element has to be used when there are no spares required for the task. As the information that no spares are required is as important as the information which spare is required.
+nospares.element =
+  element nospares { nospares.attlist, nospares.content }
+nospares.attlist &= nospares.attributes
+# LONG NAME: Spare List
+
+# specialized from ul
+sparesli.content = spare+
+sparesli.attributes =
+  attribute compact { "yes" | "no" | "-dita-use-conref-target" }?,
+  attribute spectitle { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The Spares-List (<sparesli>) element has to be used to list any spares required for the task.
+sparesli.element =
+  element sparesli { sparesli.attlist, sparesli.content }
+sparesli.attlist &= sparesli.attributes
+# LONG NAME: Spare Item
+
+# specialized from li
+spare.content = listitem.cnt*
+spare.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The spare element describes a spare part required for the task, and may include a description of the part.
+spare.element = element spare { spare.attlist, spare.content }
+spare.attlist &= spare.attributes
+# LONG NAME: Safety Conditions
+
+# specialized from ol
+safety.content = nosafety | safecond+
+safety.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The Safety-Condition (<safety>) element has to be used to list and maybe to describe any safety condition that has to be taken in account for the task.
+safety.element = element safety { safety.attlist, safety.content }
+safety.attlist &= safety.attributes
+# LONG NAME: No Safety Conditions
+
+# specialized from li
+nosafety.content = empty
+nosafety.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The No-Safety-Conditions (<nosafety>) element has to be used to indicate that there are no safety requirements for the task. The information that no safety requirements have to be taken in account is as important as the information which safety conditions has to be considered.
+nosafety.element =
+  element nosafety { nosafety.attlist, nosafety.content }
+nosafety.attlist &= nosafety.attributes
+# LONG NAME: Safety Condition
+
+# specialized from li
+safecond.content = listitem.cnt*
+safecond.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+# doc:The Safety-Conditions (<safecond>) element has to be used if there are safety requirements.
+safecond.element =
+  element safecond { safecond.attlist, safecond.content }
+safecond.attlist &= safecond.attributes
+# Specialization attributes. Global attributes and class defaults
+prelreqs.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/section task/prereq taskreq-d/prelreqs " ]
+  attribute class { text }?
+closereqs.attlist &=
+  global-atts,
+  [
+    a:defaultValue = "+ topic/section task/postreq taskreq-d/closereqs "
+  ]
+  attribute class { text }?
+reqconds.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/ol task/ol taskreq-d/reqconds " ]
+  attribute class { text }?
+noconds.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/li task/li taskreq-d/noconds " ]
+  attribute class { text }?
+reqcond.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/li task/li taskreq-d/reqcond " ]
+  attribute class { text }?
+reqcontp.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/li task/li taskreq-d/reqcontp " ]
+  attribute class { text }?
+reqpers.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/ol task/ol taskreq-d/reqpers " ]
+  attribute class { text }?
+personnel.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/li task/li taskreq-d/personnel " ]
+  attribute class { text }?
+perscat.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/li task/li taskreq-d/perscat " ]
+  attribute class { text }?
+perskill.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/li task/li taskreq-d/perskill " ]
+  attribute class { text }?
+esttime.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/li task/li taskreq-d/esttime " ]
+  attribute class { text }?
+supequip.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/p task/p taskreq-d/supequip " ]
+  attribute class { text }?
+nosupeq.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/data task/data taskreq-d/nosupeq " ]
+  attribute class { text }?
+supeqli.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/ul task/ul taskreq-d/supeqli " ]
+  attribute class { text }?
+supequi.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/li task/li taskreq-d/supequi " ]
+  attribute class { text }?
+supplies.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/p task/p taskreq-d/supplies " ]
+  attribute class { text }?
+nosupply.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/data task/data taskreq-d/nosupply " ]
+  attribute class { text }?
+supplyli.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/ul task/ul taskreq-d/supplyli " ]
+  attribute class { text }?
+supply.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/li task/li taskreq-d/supply " ]
+  attribute class { text }?
+spares.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/p task/p taskreq-d/spares " ]
+  attribute class { text }?
+nospares.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/data task/data taskreq-d/nospares " ]
+  attribute class { text }?
+sparesli.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/ul task/ul taskreq-d/sparesli " ]
+  attribute class { text }?
+spare.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/li task/li taskreq-d/spare " ]
+  attribute class { text }?
+safety.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/ol task/ol taskreq-d/safety " ]
+  attribute class { text }?
+nosafety.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/li task/li taskreq-d/nosafety " ]
+  attribute class { text }?
+safecond.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/li task/li taskreq-d/safecond " ]
+  attribute class { text }?

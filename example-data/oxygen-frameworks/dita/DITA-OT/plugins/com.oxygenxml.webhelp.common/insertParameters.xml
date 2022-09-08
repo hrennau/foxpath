@@ -1,0 +1,11 @@
+<!--
+    
+Oxygen WebHelp Plugin
+Copyright (c) 1998-2017 Syncro Soft SRL, Romania.  All rights reserved.
+
+-->
+
+<dummy>
+  <!--EXM-21177 Default language for HTML, automatically added by integrator-->
+  <param name="DEFAULTLANG" expression="${args.default.language}" if="args.default.language"/>
+</dummy>

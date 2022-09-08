@@ -1,0 +1,196 @@
+/* DITA bookmap elements */
+
+@import "xnal.css";
+
+@import "bookmap_ext.css";
+
+*[class~="bookmap/bookmap"] {
+    display: block;
+}
+
+*[class~="bookmap/bookmap"] > *[class~="topic/title"] {
+    font-size: 1.5em;
+    margin: 0.83ex 0;
+    border-width: 1px;
+    border-style: solid;
+    border-top-color: transparent;
+    border-left-color: transparent;
+    border-right-color: transparent;
+}
+
+*[class~="bookmap/booklibrary"] {
+    display: block;
+    margin: 1.33ex 0;
+}
+
+*[class~="bookmap/mainbooktitle"],
+*[class~="bookmap/booktitlealt"] {
+    display: block;
+    font-weight: bold;
+}
+
+*[class~="bookmap/mainbooktitle"] {
+    font-size: 1.5em;
+    margin: 0.83ex 0;
+}
+
+*[class~="bookmap/booktitlealt"] {
+    margin: 1.33ex 0;
+}
+
+*[class~="bookmap/bookmap"] > *[class~="bookmap/booktitle"],
+*[class~="bookmap/bookmap"] > *[class~="bookmap/frontmatter"],
+*[class~="bookmap/bookmap"] > *[class~="bookmap/backmatter"] {
+    display: block;
+    font-size: medium;
+    font-weight: normal;
+    margin-top: 0;
+    margin-bottom: 1.33ex;
+    border: 1px solid gray;
+    padding: 0.5ex;
+}
+
+*[class~="bookmap/bookmap"] > *[class~="bookmap/booktitle"]:before,
+*[class~="bookmap/bookmap"] > *[class~="bookmap/frontmatter"]:before,
+*[class~="bookmap/bookmap"] > *[class~="bookmap/backmatter"]:before {
+    display: inline;
+    color: gray;
+    background-color:inherit;
+    font-size: larger;
+    font-weight: bold;
+    margin-top: 1ex;
+    margin-bottom: 0;
+}
+
+*[class~="bookmap/part"],
+*[class~="bookmap/chapter"],
+*[class~="bookmap/appendix"] {
+    display: block;
+    margin-left: 4ex;
+    margin-top: 0.5ex;
+    margin-bottom: 0.5ex;
+}
+
+*[class~="bookmap/bookmap"] > *[class~="bookmap/part"],
+*[class~="bookmap/bookmap"] > *[class~="bookmap/chapter"],
+*[class~="bookmap/bookmap"] > *[class~="bookmap/appendix"] {
+    margin-left: 0;
+}
+
+*[class~="bookmap/bookmap"]:before,
+*[class~="bookmap/part"]:before,
+*[class~="bookmap/chapter"]:before,
+*[class~="bookmap/appendix"]:before {
+    display: inline;
+    color: #333333;
+    background-color:inherit;
+}
+
+*[class~="bookmap/frontmatter"] > *[class~="mapgroup-d/topicgroup"],
+*[class~="bookmap/frontmatter"] > *[class~="mapgroup-d/topichead"],
+*[class~="bookmap/frontmatter"] > *[class~="map/topicref"],
+*[class~="bookmap/backmatter"] > *[class~="mapgroup-d/topicgroup"],
+*[class~="bookmap/backmatter"] > *[class~="mapgroup-d/topichead"],
+*[class~="bookmap/backmatter"] > *[class~="map/topicref"] {
+    margin-left: 0;
+}
+
+*[class~="bookmap/booklists"] {
+    display: block;
+    margin: 0;
+}
+
+*[class~="bookmap/toc"],
+*[class~="bookmap/figurelist"],
+*[class~="bookmap/tablelist"],
+*[class~="bookmap/abbrevlist"],
+*[class~="bookmap/trademarklist"],
+*[class~="bookmap/bibliolist"],
+*[class~="bookmap/indexlist"],
+*[class~="bookmap/booklist"] {
+    display: block;
+    margin: 0.5ex 0;
+}
+
+*[class~="bookmap/glossarylist"],
+*[class~="bookmap/notices"],
+*[class~="bookmap/dedication"],
+*[class~="bookmap/colophon"],
+*[class~="bookmap/amendments"],
+*[class~="bookmap/bookabstract"],
+*[class~="bookmap/draftintro"],
+*[class~="bookmap/preface"] {
+    display: block;
+    margin: 0.5ex 0;
+}
+
+*[class~="bookmap/glossarylist"]:before,
+*[class~="bookmap/notices"]:before,
+*[class~="bookmap/dedication"]:before,
+*[class~="bookmap/colophon"]:before,
+*[class~="bookmap/amendments"]:before,
+*[class~="bookmap/bookabstract"]:before,
+*[class~="bookmap/draftintro"]:before,
+*[class~="bookmap/preface"]:before {
+    display: inline;
+    color: #333333;
+     background-color:inherit;
+}
+
+/* 
+ * Metadata
+ */
+
+/* bookmap ---------------------------------------------------------------- */
+
+*[class~="bookmap/bookmeta"] {
+    display: block;
+    background-color: #FFFFCC;
+    color:inherit;
+    border: 1px solid #808000;
+    padding: 2px;
+    margin-left: 20px;
+    margin-top: 1.33ex;
+    margin-bottom: 1.33ex; 
+}
+
+*[class~="bookmap/publisherinformation"],
+*[class~="bookmap/person"],
+*[class~="bookmap/organization"],
+*[class~="bookmap/printlocation"],
+*[class~="bookmap/published"],
+*[class~="bookmap/publishtype"],
+*[class~="bookmap/revisionid"],
+*[class~="bookmap/started"],
+*[class~="bookmap/year"],
+*[class~="bookmap/month"],
+*[class~="bookmap/day"],
+*[class~="bookmap/completed"],
+*[class~="bookmap/bookid"],
+*[class~="bookmap/bookpartno"],
+*[class~="bookmap/edition"],
+*[class~="bookmap/isbn"],
+*[class~="bookmap/booknumber"],
+*[class~="bookmap/volume"],
+*[class~="bookmap/maintainer"],
+*[class~="bookmap/bookchangehistory"],
+*[class~="bookmap/reviewed"],
+*[class~="bookmap/edited"],
+*[class~="bookmap/tested"],
+*[class~="bookmap/approved"],
+*[class~="bookmap/bookevent"],
+*[class~="bookmap/bookeventtype"],
+*[class~="bookmap/bookrights"],
+*[class~="bookmap/copyrfirst"],
+*[class~="bookmap/copyrlast"],
+*[class~="bookmap/bookowner"],
+*[class~="bookmap/bookrestriction"],
+*[class~="bookmap/summary"] {
+    display: block;
+    margin-left: 1ex;
+    margin-top: 1ex;
+    margin-bottom: 1ex; 
+    border-width: 0;
+    border-style: none;
+    padding: 0;
+}

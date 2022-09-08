@@ -1,0 +1,30 @@
+@namespace xi "http://www.w3.org/2001/XInclude";
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+/*
+    Foldable elements
+*/
+set,
+book,
+part,
+reference,
+chapter,
+preface,
+article,
+sect1,
+sect2,
+sect3,
+sect4,
+section,
+appendix,
+figure,
+example,
+table,
+xi|include{
+    -oxy-foldable:true;
+    -oxy-not-foldable-child: info, title;
+}
+
+:root,
+oxy|reference{
+    -oxy-foldable:false;
+}

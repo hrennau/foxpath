@@ -1,0 +1,147 @@
+@import "-table-html-cals.css";
+
+/*
+=================================
+    Modify the HTML defaults to reflect
+    the structure of the CALS table.
+    The master file is in the DITA framework.
+=================================
+*/
+
+/* Because the tgroup below is having the display: table, the table element 
+containing the element tgroup loses its display, becoming a block.*/
+*[class~="topic/table"],
+informaltable{
+  /*See -colors.css */
+  border-color:#EEEEEE;
+  border-style:solid;
+  border-width:2px;
+  padding:2px;
+}
+
+/*
+  A wrapper for the main content of a table, or part of a table
+ */
+*[class~="topic/tgroup"] {
+  display:table;
+  border-style:solid;
+  border-width:1px;  
+}
+
+
+/* 
+  Mechanism for toggling on/off the visibility of the colspecs. 
+ */
+ @media oxygen {
+    *[class~="topic/colspec"], spanspec{
+        display:none;    
+    }
+    *[class~="topic/tgroup"]:-oxy-visible-colspecs *[class~="topic/colspec"], 
+    *[class~="topic/tgroup"]:-oxy-visible-colspecs spanspec{
+        display:block;
+    }
+    *[class~="topic/tgroup"]:before! > *[class~="topic/colspec"]{ 
+        display:block;
+        content:oxy_button(actionID, 'table.expand.colspec', transparent, true, color, navy, fontInherit, true, showText, true, enableInReadOnlyContext, true);
+        text-align:left;
+        font-family: sansserif, verdana, helvetica;
+        font-size: 0.75em;
+        padding-bottom: 0.2em;
+    }
+    *[class~="topic/tgroup"]:-oxy-visible-colspecs:before{
+        content:oxy_button(actionID, 'table.collapse.colspec', transparent, true, color, navy, fontInherit, true, showText, true, enableInReadOnlyContext, true);		
+    }
+}
+/*Different foreground color for button*/
+@media oxygen-high-contrast-black, oxygen-dark-theme{
+    *[class~="topic/tgroup"]:before! > *[class~="topic/colspec"]{
+         content:oxy_button(actionID, 'table.expand.colspec', transparent, true, color, white, fontInherit, true, showText, true, enableInReadOnlyContext, true);
+    }
+    *[class~="topic/tgroup"]:-oxy-visible-colspecs:before{
+    content:oxy_button(actionID, 'table.collapse.colspec', transparent, true, color, white, fontInherit, true, showText, true, enableInReadOnlyContext, true);		
+    }
+}
+
+@media oxygen {
+    col, colgroup {
+    	display:block;
+    }
+}
+
+@media print {
+ /*
+  * Use the width set on the colspec "style" attribute.
+  * For this we have to mark the  topic/colspec as table-column.
+  */
+ *[class~="topic/colspec"], col {
+     display:table-column;
+ }
+ colgroup {
+     display:table-column-group;
+ }
+}
+
+/*
+ * The frame is displayed on tgroup
+ */
+*[class~="topic/table"][frame] {
+    border-style:none;
+}
+
+/* 
+   If no frame attribute value is set, use a 1px border. This is similar to the PDF output.
+*/
+*[class~="topic/table"][frame] > *[class~="topic/tgroup"] {
+	border-style:none;
+}
+
+
+*[class~="topic/table"][frame = 'above'] > *[class~="topic/tgroup"],
+*[class~="topic/table"][frame = 'top'] > *[class~="topic/tgroup"] {
+    border-top-style:solid;
+    border-top-width:1px;
+}
+
+*[class~="topic/table"][frame = 'below'] > *[class~="topic/tgroup"],
+*[class~="topic/table"][frame = 'bottom'] > *[class~="topic/tgroup"] {
+    border-bottom-style:solid;
+    border-bottom-width:1px;
+}
+
+*[class~="topic/table"][frame = 'rhs'] > *[class~="topic/tgroup"],
+informaltable[frame = 'rhs'] > *[class~="topic/tgroup"] {
+    border-right-style:solid;
+    border-right-width:1px;
+}
+
+*[class~="topic/table"][frame = 'lhs'] > *[class~="topic/tgroup"],
+informaltable[frame = 'lhs'] > *[class~="topic/tgroup"] {
+    border-left-style:solid;
+    border-left-width:1px;
+}
+
+*[class~="topic/table"][frame = 'vsides'] > *[class~="topic/tgroup"],
+*[class~="topic/table"][frame = 'sides'] > *[class~="topic/tgroup"] {
+    border-left-style:solid;
+    border-left-width:1px;
+    
+    border-right-style:solid;
+    border-right-width:1px;
+}
+
+*[class~="topic/table"][frame = 'hsides'] > *[class~="topic/tgroup"],
+*[class~="topic/table"][frame = 'topbot'] > *[class~="topic/tgroup"] {
+
+    border-top-style:solid;
+    border-top-width:1px;
+    
+    border-bottom-style:solid;
+    border-bottom-width:1px;
+}
+
+*[class~="topic/table"][frame = 'box'] > *[class~="topic/tgroup"],
+*[class~="topic/table"][frame = 'border'] > *[class~="topic/tgroup"],
+*[class~="topic/table"][frame = 'all'] > *[class~="topic/tgroup"] {
+    border-style:solid;
+    border-width:1px;
+}

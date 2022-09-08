@@ -1,0 +1,82 @@
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+
+* {display:block;}
+
+xliff[srcLang][trgLang]:before(8) {
+    display:block;
+    font-size:1.1em;
+    text-align:left;
+    padding:0.4em;
+    margin:1.2em;
+    background-color:#EEEEEE;
+    content : 
+        "Translate from " 
+        oxy_textfield(edit, '@srcLang', columns, 5) " to " 
+        oxy_textfield(edit, '@trgLang', columns, 5);
+}
+
+
+file {margin:1em;}
+
+skeleton {
+    display:none;
+}
+oxy|comment {
+    display:none!important;
+}
+
+unit{
+    /*border:1px solid blue;*/
+    margin:0.5em;
+    padding:0.5em;
+}
+
+/*source:before{
+    content:"Source: ";
+    display:block;
+    color:gray;
+    background-color:white;
+}*/
+
+source {
+    background-color:#FFFAD5;
+    margin:0.5em;
+}
+
+
+source:empty:after{
+    content:"No content";
+}
+
+source:after{
+    content:"to: ";
+    display:block;
+    color:gray;
+    background-color:white;
+    
+}
+
+target {
+    background-color:#DFFFAF;
+    margin:0.5em;
+    padding:0.2em;
+    border:1px solid green;
+}
+
+/*Authors do not edit these nodes*/
+source, note{
+    -oxy-editable:false;
+}
+
+segment ph {
+    -oxy-display-tags:none;
+    border:1px solid gray;
+}
+segment ph:before {
+    content: " [" "ph: " attr(id) "] ";
+}
+
+segment {
+pc, ph, cp, sc, ec, mrk, sm, em {
+    display:inline;
+}}

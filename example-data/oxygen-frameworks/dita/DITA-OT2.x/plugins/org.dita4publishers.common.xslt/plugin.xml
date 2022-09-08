@@ -1,0 +1,12 @@
+<plugin id="org.dita4publishers.common.xslt">
+  <!-- This plugin provides shared XSLT components that are used
+       by reference from other plugins. It provides no
+       transtypes nor does it extend any other plugins.
+    -->
+  
+    <require plugin="org.dita-community.common.xslt"/>
+
+  <feature extension="package.support.name" value="Eliot Kimber"/>
+  <feature extension="package.support.email" value="ekimber@contrext.com"/>
+
+</plugin>

@@ -1,0 +1,228 @@
+/*
+===============================
+    Programming elements. [pr-d]
+===============================
+*/
+*[class~="pr-d/apiname"],
+*[class~="pr-d/parmname"],
+*[class~="pr-d/codeph"]{
+    font-style:normal;
+    font-family:monospace;
+    font-size:0.9em;
+}
+
+*[class~="pr-d/codeblock"]{
+    /* Inherit from topic/pre */
+    display:block;    
+}
+
+*[class~="pr-d/codeph"]{
+    display:inline;
+}
+
+*[class~="pr-d/option"]{
+    display:inline;
+    font-weight:bold;
+}
+
+
+*[class~="pr-d/parmname"]{
+    font-style:italic;
+}
+
+/*
+    The parameter list (<parml>) element contains 
+    a list of terms and definitions that describes 
+    the parameters in an application programming interface.
+*/
+*[class~="pr-d/paraml"]{
+    display:block;
+    margin-left:1em;
+    margin-top:0.8em;
+    margin-bottom:0.8em;
+}
+
+*[class~="pr-d/plentry"]{
+    display:block;
+    margin:0.3em 0;
+}
+
+*[class~="pr-d/pt"] {
+    display:block;
+    font-weight:bold;
+}
+
+*[class~="pr-d/pd"] {
+    display:block;
+    margin-left: 2em;
+}
+
+/*
+======================
+    Syntax.
+======================
+*/
+
+/*
+    The syntax diagram (<syntaxdiagram>) 
+    element is the main container for all 
+    the syntax elements that make up a 
+    syntax definition. 
+*/
+
+*[class~="pr-d/syntaxdiagram"] {
+    display: block;
+}
+
+*[class~="pr-d/syntaxdiagram"] > *[class~="topic/title"]:before  {
+    content:none;
+}
+
+
+/*
+    The syntax block (<synblk>) element 
+    organizes small pieces of a syntax 
+    definition into a larger piece. 
+*/
+*[class~="pr-d/synblk"],
+*[class~="pr-d/groupseq"],
+*[class~="pr-d/groupchoice"],
+*[class~="pr-d/groupcomp"],
+*[class~="pr-d/synnote"],
+*[class~="pr-d/synnoteref"],
+*[class~="pr-d/fragref"],
+*[class~="pr-d/fragment"]{
+    display:block;
+}
+
+*[class~="pr-d/syntaxdiagram"]:before {
+    /*content: "Syntax Diagram: ";*/
+}
+*[class~="pr-d/synblk"]:before {
+    /*content: "Syntax Block: ";*/
+}
+
+*[class~="pr-d/groupseq"]:before {
+    /*content: "Group Sequence: ";*/
+}
+
+*[class~="pr-d/groupchoice"]:before {
+    content: "{ ";
+}
+*[class~="pr-d/groupchoice"]:after {
+    content: "} ";
+}
+
+*[class~="pr-d/groupcomp"]:before {
+    /*content: "Group Composite: ";*/
+}
+
+*[class~="pr-d/fragment"]:before {
+    /*content: "Fragment: ";*/
+}
+*[class~="pr-d/fragref"]:before {
+    content: url("../img/link.png") " Fragment reference: ";
+}
+
+*[class~="pr-d/synnoteref"]:before {
+    content: url("../img/link.png") " Syntax Note Reference:";
+}
+*[class~="pr-d/synnote"]:before {
+    /*content: "Syntax Note: ";*/
+}
+
+*[class~="pr-d/syntaxdiagram"]:before,
+*[class~="pr-d/synblk"]:before,
+*[class~="pr-d/groupseq"]:before,
+*[class~="pr-d/groupchoice"]:before,
+*[class~="pr-d/groupcomp"]:before,
+*[class~="pr-d/fragment"]:before,
+*[class~="pr-d/synnote"]:before,
+*[class~="pr-d/fragref"]:before,
+*[class~="pr-d/synnoteref"]:before {
+    font-weight: bold;
+    color: #444444;
+    background-color:inherit;
+}
+
+*[class~="pr-d/fragref"] {
+    color: navy;
+    background-color: inherit;
+    text-decoration: underline;
+}
+
+*[class~="pr-d/fragref"]:after,
+*[class~="pr-d/synnoteref"]:after {
+    content: "[" attr(href) "]";
+    font-size: small;
+    color: gray;
+    background-color:inherit;
+}
+
+/*
+    The character must be used between 
+    repetitions of the syntax elements.
+*/
+*[class~="pr-d/repsep"]:before{
+    content: "(";
+}
+*[class~="pr-d/repsep"]:after {
+    content: ")";
+}
+
+/*
+    Operators, keywords, variables, delimiters and separators.
+*/
+*[class~="pr-d/sep"]{
+    display:inline;
+    color:#333399;
+    background-color:inherit;
+}
+
+*[class~="pr-d/kwd"]{
+    display:inline;
+    font-weight:bold;
+    color:#000033;
+    background-color:inherit;
+}
+
+*[class~="pr-d/var"]{
+    display:inline;
+    font-style:italic;    
+}
+
+*[class~="pr-d/oper"]{
+    display:inline;
+    color:#339933;
+    background-color:inherit;
+}
+
+*[class~="pr-d/delim"]{
+    display:inline;
+    color:#993333;
+    background-color:inherit;
+}
+
+
+/*
+    Places some spaces between the syntax inlines.
+*/
+*[class~="pr-d/sep"]:before,
+*[class~="pr-d/kwd"]:before,
+*[class~="pr-d/var"]:before,
+*[class~="pr-d/oper"]:before,
+*[class~="pr-d/delim"]:before{
+    content: " ";
+}
+
+*[class~="pr-d/sep"]:first-child:before,
+*[class~="pr-d/kwd"]:first-child:before,
+*[class~="pr-d/var"]:first-child:before,
+*[class~="pr-d/oper"]:first-child:before,
+*[class~="pr-d/delim"]:first-child:before{
+    content: "";
+}
+
+*[class~="pr-d/synph"]{
+    display:inline;
+}

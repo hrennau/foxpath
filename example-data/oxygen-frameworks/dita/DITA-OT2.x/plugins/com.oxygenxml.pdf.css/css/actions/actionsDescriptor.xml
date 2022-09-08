@@ -1,0 +1,1018 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <contentModel parent="titlealts">
+        <!-- (navtitle?, searchtitle?) -->
+        <element name="navtitle" longName="Navigation Title" occurs="?"/>
+        <element name="searchtitle" longName="Search Title" occurs="?"/>
+    </contentModel>
+    <contentModel parent="prolog">
+        <!--
+            ((author)*,
+            (source)?,
+            (publisher)?,
+            (copyright)*,
+            (critdates)?,
+            (permissions)?,
+            (metadata)*,
+            (resourceid)*,
+            (data|data-about|foreign|unknown)*)   
+        -->
+        <element name="author" occurs="*"/>
+        <element name="source" occurs="?"/>
+        <element name="publisher" occurs="?"/>
+        <element name="copyright" occurs="*">
+            <fragment><![CDATA[
+                <copyright>
+                    <copyryear year=""/>
+                    <copyrholder/>
+                </copyright>
+            ]]></fragment>
+        </element>   
+        <element name="critdates" longName="Critical Dates" occurs="?"/>
+        <element name="permissions" occurs="?" empty="yes">
+            <fragment><![CDATA[<permissions view=""/>]]></fragment>
+        </element>   
+        <element name="metadata" occurs="*"/>
+        <element name="resourceid" longName="Resource Identifier" occurs="*" empty="yes">
+            <fragment><![CDATA[<resourceid id=""/>]]></fragment>
+        </element>   
+        <choice occurs="*">
+            <element name="data" occurs="1"/>
+            <element name="data-about" occurs="1">
+                <fragment><![CDATA[
+                    <data-about>
+                        <data>${caret}</data>
+                    </data-about>
+                ]]></fragment>
+            </element>
+            <element name="foreign" occurs="1">
+                <description>Insert foreign content</description>
+            </element>
+            <element name="unknown" occurs="1">
+                <description>Insert unknown content</description>
+            </element>
+        </choice>
+    </contentModel>
+    <contentModel parent="copyright">
+        <!-- ((copyryear)+, (copyrholder)) -->
+        <element name="copyryear" longName="Copyright Year" occurs="+" empty="yes">
+            <fragment><![CDATA[<copyryear year=""/>]]></fragment>
+        </element>
+        <element name="copyrholder" longName="Copyright Holder" occurs="1"/>
+    </contentModel>
+    <contentModel parent="critdates">
+        <!-- ((created)?, (revised)*) -->
+        <element name="created" longName="Creation Date" occurs="?" empty="yes">
+            <fragment><![CDATA[<created date=""/>]]></fragment>
+        </element>
+        <element name="revised" longName="Revision Date" occurs="*" empty="yes">
+            <fragment><![CDATA[<revised modified=""/>]]></fragment>
+        </element>
+    </contentModel>
+    <contentModel parent="metadata">
+        <!--
+            ((audience)*,
+            (category)*,
+            (keywords)*,
+            (prodinfo)*,
+            (othermeta)*,
+            (data|data-about|foreign|unknown)*)   
+        -->
+        <element name="audience" occurs="*" empty="yes"/>
+        <element name="category" occurs="*"/>
+        <element name="keywords" occurs="*"/>
+        <element name="prodinfo" longName="Product Information" occurs="*">
+            <fragment><![CDATA[
+                <prodinfo>
+                    <prodname>${caret}</prodname>
+                    <vrmlist>
+                        <vrm version=""/>
+                    </vrmlist>
+                </prodinfo>
+            ]]></fragment>
+        </element>   
+        <element name="othermeta" longName="Other Metadata" occurs="*">
+            <fragment><![CDATA[<othermeta name="" content=""/>]]></fragment>
+        </element>   
+        <choice occurs="*">
+            <element name="data" occurs="1"/>
+            <element name="data-about" longName="Data About" occurs="1">
+                <fragment><![CDATA[
+                    <data-about>
+                        <data>${caret}</data>
+                    </data-about>
+                ]]></fragment>
+            </element>
+            <element name="foreign" occurs="1">
+                <description>Insert foreign content</description>
+            </element>
+            <element name="unknown" occurs="1">
+                <description>Insert unknown content</description>
+            </element>
+        </choice>
+    </contentModel>
+    <contentModel parent="keywords">
+        <!-- (indexterm|keyword|apiname|option|parmname|cmdname|msgnum|varname|wintitle)* -->
+        <choice occurs="*">
+            <element name="indexterm" longName="Index Term" occurs="1"/>
+            <element name="keyword" occurs="1"/>
+            <element name="apiname" longName="API Name" occurs="1">
+                <description>Insert API name</description>
+            </element>
+            <element name="option" occurs="1"/>
+            <element name="parmname" longName="Parameter Name" occurs="1"/>
+            <element name="cmdname" longName="Command Name" occurs="1"/>
+            <element name="msgnum" longName="Message Number" occurs="1"/>
+            <element name="varname" longName="Variable Name" occurs="1"/>
+            <element name="wintitle" longName="Window Title" occurs="1"/>
+        </choice>
+    </contentModel>
+    <contentModel parent="prodinfo">
+        <!--  
+            ((prodname),
+            (vrmlist),
+            (brand|component|featnum|platform|prognum|series)*)      
+        -->
+        <element name="prodname" longName="Product Name" occurs="1"/>
+        <element name="vrmlist" longName="VRM List" occurs="1">
+            <description>Insert version, release, modification information.</description>
+            <fragment><![CDATA[<vrmlist><vrm version=""/></vrmlist>]]></fragment>
+        </element>
+        <choice occurs="*">
+            <element name="brand" occurs="1">
+                <description>Insert product brand</description>
+            </element>
+            <element name="component" occurs="1"/>
+            <element name="featnum" longName="Feature Number" occurs="1"/>
+            <element name="platform" occurs="1"/>
+            <element name="prognum" longName="Program Number" occurs="1"/>
+            <element name="series" occurs="1"/>
+        </choice>
+    </contentModel>
+    <contentModel parent="vrmlist">
+        <element name="vrm" longName="Version Release Modification" occurs="+" empty="yes">
+            <fragment><![CDATA[<vrm version=""/>]]></fragment>
+        </element>
+    </contentModel>
+    <contentModel parent="related-links">
+        <!-- (link|linklist|linkpool)* -->
+        <choice occurs="*">
+            <element name="link" occurs="1" placeholderFilter=":not([href]):not([keyref])"/>
+            <element name="linklist" longName="Link List" occurs="1"/>
+            <element name="linkpool" longName="Link Pool" occurs="1"/>
+        </choice>
+    </contentModel>
+    <contentModel parent="linklist">
+        <!-- 
+            ((title)?,
+            (desc)?,
+            (linklist|link)*,
+            (linkinfo)?) 
+        -->
+        <element name="title" occurs="?"/>
+        <element name="desc" longName="Description" occurs="?"/>
+        <choice occurs="*">
+            <element name="link" occurs="1" placeholderFilter=":not([href]):not([keyref])"/>
+            <element name="linklist" longName="Link List" occurs="1"/>
+        </choice>
+        <element name="linkinfo" longName="Link Information" occurs="?"/>
+    </contentModel>
+    <contentModel parent="linkpool">
+        <!-- (linkpool|link)* -->
+        <choice occurs="*">
+            <element name="link" occurs="1" placeholderFilter=":not([href]):not([keyref])"/>
+            <element name="linkpool" longName="Link Pool" occurs="1"/>
+        </choice>
+    </contentModel>
+
+    <contentModel parent="link">
+        <!-- ((linktext)?,(desc)?) -->
+        <element name="linktext" occurs="?"/>
+        <element name="desc" occurs="?"/>
+    </contentModel>
+
+    <contentModel parent="dl">
+        <!-- ((dlhead)?,(dlentry)+) -->
+        <element name="dlhead" occurs="?" longName="Definition List Head"/>
+        <element name="dlentry" occurs="+" longName="Definition List Entry">
+            <fragment><![CDATA[
+                <dlentry>
+                    <dt>${caret}</dt>
+                    <dd/>
+                </dlentry>
+            ]]></fragment>            
+        </element>
+    </contentModel>
+    <contentModel parent="dlhead">
+        <!-- ((dthd)?,(ddhd)?) -->
+        <element name="dthd" longName="Definition Term Header" occurs="?"/>
+        <element name="ddhd" longName="Definition Description Header" occurs="?"/>
+    </contentModel>
+    <contentModel parent="dlentry">
+        <!-- ((dt)+,(dd)+) -->
+        <element name="dt" longName="Definition Term" occurs="+"/>
+        <element name="dd" longName="Definition Description" occurs="+"/>
+    </contentModel>
+
+    <contentModel parent="parml">
+        <element name="plentry" occurs="+" longName="Parameter List Entry">
+            <fragment><![CDATA[
+                <plentry>
+                    <pt>${caret}</pt>
+                    <pd></pd>
+                </plentry>
+            ]]></fragment>
+        </element>
+    </contentModel>
+    <contentModel parent="plentry">
+        <!-- ((pt)+,(pd)+) -->
+        <element name="pt" longName="Parameter Term" occurs="+"/>
+        <element name="pd" longName="Parameter Definition" occurs="+"/>
+    </contentModel>
+    
+
+
+    <contentModel parent="ol">
+        <element name="li" occurs="+" longName="List Item"/>
+    </contentModel>
+    <contentModel parent="ul">
+        <element name="li" occurs="+" longName="List Item"/>
+    </contentModel>
+    <contentModel parent="sl">
+        <element name="sli" occurs="+" longName="Simple List Item"/>
+    </contentModel>
+
+    <!-- root task -->
+    <contentModel parent="task" filter=":root">
+        <!--
+            ((title),
+            (titlealts)?,
+            (abstract|shortdesc)?,
+            (prolog)?,
+            (taskbody)?,
+            (related-links)?,
+            (task)*)   
+        -->
+        <element name="title" occurs="1"/>
+        <element name="titlealts" longName="Title Alternatives" occurs="?"/>
+        <choice occurs="?">
+            <element name="shortdesc" longName="Short Description" occurs="1"/>
+            <element name="abstract" occurs="1"/>
+        </choice>
+        <element name="prolog" occurs="?"/>
+        <element name="taskbody" longName="Task Body" occurs="?">
+            <fragment><![CDATA[
+                <taskbody>
+                    <steps>
+                        <step>
+                            <cmd>${caret}</cmd>
+                        </step>
+                    </steps>
+                </taskbody>
+            ]]></fragment>
+        </element>
+        <element name="related-links" occurs="?"/>
+        <element name="task" occurs="*">
+            <description>Insert nested task</description>
+            <fragment><![CDATA[
+                <task>
+                    <title>${caret}</title>
+                </task>
+            ]]></fragment>
+        </element>
+    </contentModel>
+    
+    <!-- task within task -->
+    <contentModel parent="task" prefilter="task > ">
+        <!--
+            ((title),
+            (titlealts)?,
+            (abstract|shortdesc)?,
+            (prolog)?,
+            (taskbody)?,
+            (related-links)?,
+            (task)*)   
+        -->
+        <element name="title" occurs="1"/>
+        <element name="titlealts" longName="Title Alternatives" occurs="?"/>
+        <choice occurs="?">
+            <element name="shortdesc" longName="Short Description" occurs="1"/>
+            <element name="abstract" occurs="1"/>
+        </choice>
+        <element name="prolog" occurs="?"/>
+        <element name="taskbody" longName="Task Body" occurs="?">
+            <fragment><![CDATA[
+                <taskbody>
+                    <steps>
+                        <step>
+                            <cmd>${caret}</cmd>
+                        </step>
+                    </steps>
+                </taskbody>
+            ]]></fragment>
+        </element>
+        <element name="related-links" occurs="?"/>
+        <element name="task" occurs="*">
+            <description>Insert nested task</description>
+            <fragment><![CDATA[
+                <task>
+                    <title>${caret}</title>
+                </task>
+            ]]></fragment>
+        </element>
+    </contentModel>
+    
+    <!-- task within troubleshooting -->
+    <contentModel parent="task" prefilter="troubleshooting > ">
+        <!--
+            ((title),
+            (titlealts)?,
+            (abstract|shortdesc)?,
+            (prolog)?,
+            (taskbody)?,
+            (related-links)?,
+        -->
+        <element name="title" occurs="1"/>
+        <element name="titlealts" longName="Title Alternatives" occurs="?"/>
+        <choice occurs="?">
+            <element name="shortdesc" longName="Short Description" occurs="1"/>
+            <element name="abstract" occurs="1"/>
+        </choice>
+        <element name="prolog" occurs="?"/>
+        <element name="taskbody" longName="Task Body" occurs="?">
+            <fragment><![CDATA[
+                <taskbody>
+                    <steps>
+                        <step>
+                            <cmd>${caret}</cmd>
+                        </step>
+                    </steps>
+                </taskbody>
+            ]]></fragment>
+        </element>
+        <element name="related-links" occurs="?"/>
+    </contentModel>
+    
+    <!-- General task -->
+    <!-- @domains does not contain a constraint '-c', nor a specialization 'task+' -->
+    <contentModel parent="taskbody" prefilter="task:not([domains*='-c)']):not([domains*='task+)']) > ">
+        <!-- 
+            (((prereq)|(context)|(section))*,
+            ((steps|steps-unordered|steps-informal))?,
+            (result)?,
+            (example)*,
+            (postreq)*)
+        -->
+        <choice occurs="*">
+            <element name="prereq" longName="Pre-requisites" occurs="?"/>
+            <element name="context" occurs="1">
+                <description>Insert context information for this task</description>
+            </element>
+            <element name="section" occurs="1">
+                <fragment><![CDATA[
+                    <section>
+                        <title>${caret}</title>
+                        <p></p>
+                    </section>
+                ]]></fragment>
+            </element>
+        </choice>
+        <choice occurs="?">
+            <element name="steps" occurs="1">
+                <fragment><![CDATA[
+                    <steps>
+                        <step>
+                            <cmd>${caret}</cmd>
+                        </step>
+                    </steps>
+                ]]></fragment>
+            </element>
+            <element name="steps-unordered" occurs="1">
+                <fragment><![CDATA[
+                    <steps-unordered>
+                        <step>
+                            <cmd>${caret}</cmd>
+                        </step>
+                    </steps-unordered>
+                ]]></fragment>
+            </element>
+            <element name="steps-informal" occurs="1"/>
+        </choice>
+        <element name="result" occurs="?">
+            <description>Insert result information for this task</description>
+        </element>
+        <element name="example" occurs="*"/>
+        <element name="postreq" longName="Post-requisites" occurs="*"/>
+    </contentModel>
+    <!-- Strict task -->
+    <contentModel parent="taskbody" prefilter="task[domains*='(topic task strictTaskbody-c)'] > ">
+        <!-- 
+            ((prereq)?,
+            (context)?,
+            (steps|steps-unordered)?,
+            (result)?,
+            (example)?,
+            (postreq)?) 
+        -->
+        <element name="prereq" longName="Pre-requisites" occurs="?"/>
+        <element name="context" occurs="?">
+            <description>Insert context information for this task</description>
+        </element>
+        <choice occurs="?">
+            <element name="steps" occurs="1">
+                <fragment><![CDATA[
+                    <steps>
+                        <step>
+                            <cmd>${caret}</cmd>
+                        </step>
+                    </steps>
+                ]]></fragment>
+            </element>
+            <element name="steps-unordered" occurs="1">
+                <fragment><![CDATA[
+                    <steps-unordered>
+                        <step>
+                            <cmd>${caret}</cmd>
+                        </step>
+                    </steps-unordered>
+                ]]></fragment>
+            </element>
+        </choice>
+        <element name="result" occurs="?">
+            <description>Insert result information for this task</description>
+        </element>
+        <element name="example" occurs="?"/>
+        <element name="postreq" longName="Post-requisites" occurs="?"/>
+    </contentModel>
+    <!-- Machine industry -->
+    <contentModel parent="taskbody" prefilter="task[domains~='(topic task+taskreq-d machineryTaskbody-c)'] > ">
+        <!--
+            (((prelreqs)|(context)|(section))*,
+            ((steps|steps-unordered|steps-informal))?,
+            (result)?,
+            (example)*,
+            (closereqs)?)
+        -->
+        <choice occurs="*">
+            <element name="prelreqs" longName="Preliminary Requisites" occurs="1"/>
+            <element name="context" occurs="1">
+                <description>Insert context information for this task</description>
+            </element>
+            <element name="section" occurs="1">
+                <fragment><![CDATA[
+                    <section>
+                        <title>${caret}</title>
+                        <p></p>
+                    </section>
+                ]]></fragment>
+            </element>
+        </choice>
+        <choice occurs="?">
+            <element name="steps" occurs="1">
+                <fragment><![CDATA[
+                    <steps>
+                        <step>
+                            <cmd>${caret}</cmd>
+                        </step>
+                    </steps>
+                ]]></fragment>
+            </element>
+            <element name="steps-unordered" occurs="1">
+                <fragment><![CDATA[
+                    <steps-unordered>
+                        <step>
+                            <cmd>${caret}</cmd>
+                        </step>
+                    </steps-unordered>
+                ]]></fragment>
+            </element>
+            <element name="steps-informal" occurs="1"/>
+        </choice>
+        <element name="result" occurs="?">
+            <description>Insert result information for this task</description>
+        </element>
+        <element name="example" occurs="*"/>
+        <element name="closereqs" longName="Closing Requisites" occurs="?">
+            <fragment><![CDATA[
+                <closereqs>
+                    <reqconds>
+                        <reqcond>${caret}</reqcond>
+                    </reqconds>
+                </closereqs>
+            ]]></fragment>
+        </element>        
+    </contentModel>
+    
+    <contentModel parent="prelreqs">
+        <!-- 
+            ((reqconds)?,
+            (reqpers)?,
+            (supequip)?,
+            (supplies)?,
+            (spares)?,
+            (safety)?)
+        -->
+        <element name="reqconds" longName="Required Conditions" occurs="?">
+            <fragment><![CDATA[<reqconds><reqcond>${caret}</reqcond></reqconds>]]></fragment>
+        </element>
+        <element name="reqpers" longName="Required Personnel" occurs="?">
+            <fragment><![CDATA[<reqpers><personnel>${caret}</personnel></reqpers>]]></fragment>
+        </element>
+        <element name="supequip" longName="Support Equipment" occurs="?">
+            <fragment><![CDATA[<supequip><supeqli><supequi>${caret}</supequi></supeqli></supequip>]]></fragment>
+        </element>
+        <element name="supplies" occurs="?">
+            <fragment><![CDATA[<supplies><supplyli><supply>${caret}</supply></supplyli></supplies>]]></fragment>
+        </element>
+        <element name="spares" occurs="?">
+            <fragment><![CDATA[<spares><sparesli><spare>${caret}</spare></sparesli></spares>]]></fragment>
+        </element>
+        <element name="safety" occurs="?">
+            <description>Insert safety information</description>
+            <fragment><![CDATA[<safety><safecond>${caret}</safecond></safety>]]></fragment>
+        </element>
+    </contentModel>
+    
+    <contentModel parent="reqpers" repeat="+">
+        <!-- ((personnel),((perscat)?,(perskill)?,(esttime)?)?)+ -->
+        <element name="personnel" occurs="1">
+            <description>Insert personnel information</description>
+        </element>
+        
+        <element name="perscat" longName="Category" occurs="?"/>
+        <element name="perskill" longName="Skill Level" occurs="?"/>
+        <element name="esttime" longName="Time Estimate" occurs="?"/>
+    </contentModel>
+
+    <contentModel parent="reqconds" filter=":empty">
+        <!-- ((noconds)!!! |((reqcond)|(reqcontp))+) -->
+        <choice>
+            <element name="noconds" longName="No Conditions" occurs="1" empty="yes"/>
+            <element name="reqcond" longName="Required Condition" occurs="?"/>
+            <element name="reqcontp" longName="Required Condition Technical Publication" occurs="?"/>
+        </choice>
+    </contentModel>
+    <contentModel parent="reqconds">
+        <!-- ((noconds)!!! |((reqcond)|(reqcontp))+) -->
+        <choice occurs="+">
+            <element name="reqcond" longName="Required Condition" occurs="?"/>
+            <element name="reqcontp" longName="Required Condition Technical Publication" occurs="?"/>
+        </choice>
+    </contentModel>
+
+    <contentModel parent="supequip">
+        <!-- ((nosupeq)|(supeqli)) -->
+        <choice occurs="?">
+            <element name="nosupeq" longName="No Support Equipment" occurs="?" empty="yes"/>
+            <element name="supeqli" longName="Support Equipment List" occurs="?">
+                <fragment><![CDATA[<supeqli><supequi>${caret}</supequi></supeqli>]]></fragment>
+            </element>
+        </choice>
+    </contentModel>
+    <contentModel parent="supeqli">
+        <element name="supequi" longName="Support Equipment" occurs="+">
+            <description>Insert support equipment item</description>
+        </element>
+    </contentModel>
+    
+    <contentModel parent="supplies">
+        <!-- ((nosupply)|(supplyli)) -->
+        <choice occurs="?">
+            <element name="nosupply" longName="No Supply" occurs="?" empty="yes"/>
+            <element name="supplyli" longName="Supply List" occurs="?">
+                <fragment><![CDATA[<supplyli><supply>${caret}</supply></supplyli>]]></fragment>
+            </element>
+        </choice>
+    </contentModel>
+    <contentModel parent="supplyli">
+        <element name="supply" occurs="+">
+            <description>Insert supply item</description>
+        </element>
+    </contentModel>
+    
+    <contentModel parent="spares">
+        <!-- ((nospares)|(sparesli)) -->
+        <choice occurs="?">
+            <element name="nospares" longName="No Spares" occurs="?" empty="yes"/>
+            <element name="sparesli" longName="Spares List" occurs="?">
+                <fragment><![CDATA[<sparesli><spare>${caret}</spare></sparesli>]]></fragment>
+            </element>
+        </choice>
+    </contentModel>
+    <contentModel parent="sparesli">
+        <element name="spare" occurs="+">
+            <description>Insert spare item</description>
+        </element>
+    </contentModel>
+    
+    <contentModel parent="safety" filter=":empty">
+        <!-- ((nosafety)|(safecond)+) -->
+        <choice>
+            <element name="nosafety" longName="No Safety Information" occurs="1" empty="yes"/>
+            <element name="safecond" longName="Safety Condition" occurs="+"/>
+        </choice>
+    </contentModel>
+    <contentModel parent="safety">
+        <!-- ((nosafety)!!!|(safecond)+) -->
+        <element name="safecond" longName="Safety Condition" occurs="+"/>
+    </contentModel>
+
+    <contentModel parent="closereqs">
+        <element name="reqconds" longName="Required Conditions" occurs="1">
+            <description>Insert required conditions</description>
+            <fragment><![CDATA[<reqconds><reqcond>${caret}</reqcond></reqconds>]]></fragment>
+        </element>
+    </contentModel>
+    
+    
+    <!--  STEPS  -->
+    <contentModel parent="steps" repeat="+">
+        <!--((stepsection)?,(step))+-->
+        <element name="stepsection" longName="Step Section" occurs="?"/>
+        <element name="step" occurs="+">
+            <fragment><![CDATA[
+                <step>
+                    <cmd>${caret}</cmd>
+                </step>
+            ]]></fragment>
+        </element>
+    </contentModel>
+    
+    <contentModel parent="substeps">
+        <!--(substep)+-->
+        <element name="substep" occurs="+">
+            <fragment><![CDATA[
+                <substep>
+                    <cmd>${caret}</cmd>
+                </substep>
+            ]]></fragment>
+        </element>
+    </contentModel>
+    
+    <contentModel parent="step">
+        <!-- 
+            ((note|hazardstatement)*,
+            cmd,
+            (choices|choicetable|info|itemgroup|stepxmp|substeps|tutorialinfo)*,
+            (stepresult)?) 
+        -->
+        <choice occurs="*">
+            <element name="note" occurs="1"/>
+            <element name="hazardstatement" longName="Hazard Statement" occurs="1">
+                <fragment><![CDATA[
+                    <hazardstatement>
+                        <messagepanel>
+                            <typeofhazard>${caret}</typeofhazard>
+                            <howtoavoid></howtoavoid>
+                        </messagepanel>
+                    </hazardstatement>
+                ]]></fragment>
+            </element>
+        </choice>
+        <element name="cmd" longName="Command" occurs="1"/>
+        <choice occurs="*">
+            <!-- (choices|choicetable|info|itemgroup|stepxmp|substeps|tutorialinfo)*, -->
+            <element name="choices" occurs="1">
+                <description>Insert a list of choices</description>
+                <fragment><![CDATA[
+                    <choices>
+                        <choice>${caret}</choice>
+                    </choices>
+                ]]></fragment>
+            </element>
+            <element name="choicetable" longName="Choice Table" occurs="1" table="yes">
+                <fragment><![CDATA[
+                    <choicetable frame="all" relcolwidth="1.0* 1.0*">
+                        <chhead>
+                            <choptionhd/>
+                            <chdeschd/>
+                        </chhead>
+                        <chrow>
+                            <choption/>
+                            <chdesc/>
+                        </chrow>
+                        <chrow>
+                            <choption/>
+                            <chdesc/>
+                        </chrow>
+                            <chrow>
+                                <choption/>
+                                <chdesc/>
+                            </chrow>
+                       </choicetable>
+                 ]]></fragment>
+            </element>
+            <element name="info" longName="Information" occurs="1"/>
+            <element name="stepxmp" longName="Step Example" occurs="1"/>
+            <element name="substeps" occurs="1">
+                <fragment><![CDATA[
+                    <substeps>
+                        <substep>
+                            <cmd>${caret}</cmd>
+                        </substep>
+                    </substeps>
+                ]]></fragment>
+            </element>
+            <element name="tutorialinfo" longName="Tutorial Information" occurs="1"/>
+        </choice>
+        <element name="stepresult" longName="Step Result" occurs="?"/>
+    </contentModel>
+    
+    <contentModel parent="substep">
+        <!-- 
+            ((note|hazardstatement)*,
+            cmd,
+            (info|itemgroup|stepxmp|tutorialinfo)*,
+            (stepresult)?) -->
+        <choice occurs="*">
+            <element name="note" occurs="1">
+            </element>
+            <element name="hazardstatement" longName="Hazard Statement" occurs="1">
+                <fragment><![CDATA[
+                    <hazardstatement>
+                        <messagepanel>
+                            <typeofhazard>${caret}</typeofhazard>
+                            <howtoavoid></howtoavoid>
+                        </messagepanel>
+                    </hazardstatement>
+                ]]></fragment>
+            </element>
+        </choice>
+        <element name="cmd" longName="Command" occurs="1"/>
+        <choice occurs="*">
+            <element name="info" occurs="1">
+                <description>Insert information</description>
+            </element>
+            <element name="stepxmp" longName="Step Example" occurs="1"/>
+            <element name="tutorialinfo" longName="Tutorial Information" occurs="1"/>
+        </choice>
+        <element name="stepresult" longName="Step Result" occurs="?"/>
+    </contentModel>
+    
+    <contentModel parent="choices">
+        <element name="choice" occurs="+"/>
+    </contentModel>
+    
+    <contentModel parent="hazardstatement">
+        <!--((messagepanel)+,(hazardsymbol)*)-->
+        <element name="messagepanel" longName="Message Panel" occurs="+">
+            <description>Insert message panel information</description>
+            <fragment><![CDATA[
+                <messagepanel>
+                    <typeofhazard>${caret}</typeofhazard>
+                    <howtoavoid/>
+                </messagepanel>
+            ]]></fragment>
+        </element>
+        <element name="hazardsymbol" longName="Hazard Symbol" occurs="*">
+            <fragment><![CDATA[<hazardsymbol href="">${caret}</hazardsymbol>]]></fragment>
+        </element>
+    </contentModel>
+    
+    <contentModel parent="messagepanel">
+        <!-- ((typeofhazard),(consequence)*,(howtoavoid)+) -->
+        <element name="typeofhazard" longName="Type of Hazard" occurs="1"/>
+        <element name="consequence" occurs="*"/>
+        <element name="howtoavoid" longName="How to Avoid" occurs="+">
+            <description>Insert information on how to avoid this hazzard</description>
+        </element>
+    </contentModel>
+    
+    <contentModel parent="topic">
+        <!-- 
+            ((title),
+            (titlealts)?,
+            (abstract|shortdesc)?,
+            (prolog)?,
+            (body)?,
+            (related-links)?,
+            (topic)*) 
+        -->
+        <element name="title" occurs="1"/>
+        <element name="titlealts" longName="Title Alternatives" occurs="?"/>
+        <choice occurs="?">
+            <element name="shortdesc" longName="Short Description" occurs="1"/>
+            <element name="abstract" occurs="1"/>
+        </choice>
+        <element name="prolog" occurs="?"/>
+        <element name="body" occurs="?"/>
+        <element name="related-links" occurs="?"/>
+        <element name="topic" occurs="*">
+            <description>Insert nested topic</description>
+            <fragment><![CDATA[
+                <topic>
+                    <title>${caret}</title>
+                </topic>
+            ]]></fragment>
+        </element>
+    </contentModel>
+    
+    <contentModel parent="concept">
+        <!-- 
+            ((title),
+            (titlealts)?,
+            (abstract|shortdesc)?,
+            (prolog)?,
+            (conbody)?,
+            (related-links)?,
+            (concept)*) 
+        -->
+        <element name="title" occurs="1"/>
+        <element name="titlealts" longName="Title Alternatives" occurs="?"/>
+        <choice occurs="?">
+            <element name="shortdesc" longName="Short Description" occurs="1"/>
+            <element name="abstract" occurs="1"/>
+        </choice>
+        <element name="prolog" occurs="?"/>
+        <element name="conbody" longName="Concept Body" occurs="?"/>
+        <element name="related-links" occurs="?"/>
+        <element name="concept" occurs="*">
+            <description>Insert nested concept</description>
+            <fragment><![CDATA[
+                <concept>
+                    <title>${caret}</title>
+                </concept>
+            ]]></fragment>
+        </element>
+    </contentModel>
+
+    <contentModel parent="reference">
+        <!--
+            ((title),
+            (titlealts)?,
+            (abstract|shortdesc)?,
+            (prolog)?,
+            (refbody)?,
+            (related-links)?,
+            (reference)*)
+        -->
+        <element name="title" occurs="1"/>
+        <element name="titlealts" longName="Title Alternatives" occurs="?"/>
+        <choice occurs="?">
+            <element name="shortdesc" longName="Short Description" occurs="1"/>
+            <element name="abstract" occurs="1"/>
+        </choice>
+        <element name="prolog" occurs="?"/>
+        <element name="refbody" longName="Reference Body" occurs="?"/>
+        <element name="related-links" occurs="?"/>
+        <element name="reference" occurs="*">
+            <description>Insert nested concept</description>
+            <fragment><![CDATA[
+                <reference>
+                    <title>${caret}</title>
+                    </reference>
+                ]]></fragment>
+        </element>
+    </contentModel>
+    
+    <contentModel parent="glossgroup">        
+        <!-- 
+            ((title),
+            (prolog)?,
+            (glossgroup|glossentry)*) 
+        -->
+        <element name="title" occurs="1"/>
+        <element name="prolog" occurs="?"/>
+        <choice occurs="*">
+            <element name="glossgroup" longName="Glossary Group" occurs="1">
+                <fragment><![CDATA[
+                    <glossgroup>
+                        <title>${caret}</title>
+                    </glossgroup>]]></fragment>
+            </element>
+            <element name="glossentry" longName="Glossary Entry" occurs="1">
+                <fragment><![CDATA[
+                    <glossentry>
+                        <glossterm>${caret}</glossterm>
+                        <glossdef/>
+                    </glossentry>]]></fragment>
+            </element>
+        </choice>
+    </contentModel>
+    <contentModel parent="glossentry">
+        <!-- 
+            ((glossterm),(glossdef)?,(prolog)?,(glossBody)?,(related-links)?,(no-topic-nesting)*) -->
+        <element name="glossterm" longName="Term" occurs="1"/>
+        <element name="glossdef" longName="Definition" occurs="?"/>
+        <element name="prolog" occurs="?"/>
+        <element name="glossBody" longName="Glossary Body" occurs="?"/>
+        <element name="related-links" occurs="?"/>
+    </contentModel>
+    <contentModel parent="glossBody">
+        <!-- 
+            ((glossPartOfSpeech)?,
+            (glossStatus)?,
+            (glossProperty)*,
+            (glossSurfaceForm)?,
+            (glossUsage)?,
+            (glossScopeNote)?,
+            (glossSymbol)*,
+            (note|hazardstatement)*,
+            (glossAlt)*)
+        -->
+        <element name="glossPartOfSpeech" longName="Part Of Speech" occurs="?"/>
+        <element name="glossStatus" longName="Status" occurs="?"/>
+        <element name="glossProperty" longName="Property" occurs="*">
+            <description>Insert property information</description>
+        </element>
+        <element name="glossSurfaceForm" longName="Surface Form" occurs="?"/>
+        <element name="glossUsage" longName="Usage" occurs="?">
+            <description>Insert usage information</description>
+        </element>
+        <element name="glossScopeNote" longName="Scope Note" occurs="?"/>
+        <element name="glossSymbol" longName="Symbol" occurs="*">
+            <fragment><![CDATA[<glossSymbol href="">${caret}</glossSymbol>]]></fragment>
+        </element>
+        <choice occurs="*">
+            <element name="note" occurs="1"/>
+            <element name="hazardstatement" longName="Hazard Statement" occurs="1">
+                <fragment><![CDATA[
+                    <hazardstatement>
+                        <messagepanel>
+                            <typeofhazard>${caret}</typeofhazard>
+                            <howtoavoid></howtoavoid>
+                        </messagepanel>
+                    </hazardstatement>
+                ]]></fragment>
+            </element>
+        </choice>
+        <element name="glossAlt" longName="Alternative Term" occurs="*"/>
+    </contentModel>
+
+    <contentModel parent="troubleshooting">
+        <!--
+            ((title),
+            (titlealts)?,
+            (abstract|shortdesc)?,
+            (prolog)?,
+            (troublebody)?,
+            (related-links)?,
+            (task)*)   
+        -->
+        <element name="title" occurs="1"/>
+        <element name="titlealts" longName="Title Alternatives" occurs="?"/>
+        <choice occurs="?">
+            <element name="shortdesc" longName="Short Description" occurs="1"/>
+            <element name="abstract" occurs="1"/>
+        </choice>
+        <element name="prolog" occurs="?"/>
+        <element name="troublebody" longName="Troubleshooting Body" occurs="?">
+            <fragment><![CDATA[
+                <troublebody>
+                    <troubleSolution>
+                            ${caret}
+                    </troubleSolution>
+                </troublebody>
+            ]]></fragment>
+        </element>
+        <element name="related-links" occurs="?"/>
+        <element name="task" occurs="*">
+            <description>Insert nested task</description>
+            <fragment><![CDATA[
+                <task>
+                    <title>${caret}</title>
+                </task>
+            ]]></fragment>
+        </element>
+    </contentModel>
+    <contentModel parent="troublebody">
+        <!-- ((condition)?,(troubleSolution)+)? -->
+        <element name="condition" occurs="?"/>
+        <element name="troubleSolution" occurs="+"/>
+    </contentModel>
+    <contentModel parent="troubleSolution">
+        <!-- ((cause)*,(remedy)*) -->
+        <element name="cause" occurs="*"/>
+        <element name="remedy" occurs="*"/>
+    </contentModel>
+    <contentModel parent="remedy">
+        <!-- 
+            ((title)?,
+            (responsibleParty)?,
+            (steps|steps-unordered|steps-informal))?
+        -->
+        <element name="title" occurs="?"/>
+        <element name="responsibleParty" occurs="?"/>
+        <choice occurs="1">
+            <element name="steps" occurs="1">
+                <fragment><![CDATA[
+                    <steps>
+                        <step>
+                            <cmd>${caret}</cmd>
+                        </step>
+                    </steps>
+                ]]></fragment>
+            </element>
+            <element name="steps-unordered" occurs="1">
+                <fragment><![CDATA[
+                    <steps-unordered>
+                        <step>
+                            <cmd>${caret}</cmd>
+                        </step>
+                    </steps-unordered>
+                ]]></fragment>
+            </element>
+            <element name="steps-informal" occurs="1"/>
+        </choice>
+    </contentModel>
+</actions>

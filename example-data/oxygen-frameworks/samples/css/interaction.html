@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>A sample for interacting with the Oxygen Workspace.</title>
+
+        <script type="text/javascript" src="interaction.js"></script>
+
+    </head>
+    <body>
+        <div>
+            <p>Clicking the below button will increment the @counter attribute which is rendered
+                above the form control.</p>
+            <button class="increment.btn" onclick="increment()">Increment counter</button>
+        </div>
+        <div>
+            <p>This form control can also insert content and structure.</p>
+            <button onclick="addPara()">Add a new paragraph</button>
+        </div>
+        <div>
+            <p>Have a look at the HTML rendered inside the form control: <button
+                    onclick="openHTMLInOxygen()">Open HTML file</button></p>
+
+        </div>
+        <div>
+            <p>The interaction is possible because the Javascript has access to Oxygen's API:
+                    <button onclick="openJSInOxygen()">Open Javascript file</button></p>
+        </div>
+    </body>
+</html>

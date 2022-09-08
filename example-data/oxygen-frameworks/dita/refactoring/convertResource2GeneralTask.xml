@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Descriptor for the 'Insert element' operation.     
+-->
+<refactoringOperationDescriptor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.oxygenxml.com/ns/xmlRefactoring" id="dita.convert.resource.to.generalTask"
+    name="${i18n(xr_dita_convert_resource_to_general_task)}">
+    <description>${i18n(xr_dita_convert_resource_to_general_task_description)}</description>
+    <script type="XSLT" href="dita-files-conversion-stylesheets/convert-resource-to-general-task-entrypoint.xsl"/>
+    <category>DITA</category>
+</refactoringOperationDescriptor>

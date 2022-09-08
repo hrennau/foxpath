@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ============================================================= 
+  MODULE:    DITA DITAVAL RNG             
+  VERSION:   1.2                                                
+  DATE:      October 2010                                       
+  ============================================================= -->
+<!--
+  Refer to the latest version of this file by the following URI:
+  urn:dita-ng:dita:rng:ditaval.rng
+  To refer to this specific version, you may use this value:
+  urn:dita-ng:dita:rng:ditaval.rng:1.2
+-->
+<!-- ============================================================= 
+  SYSTEM:     Darwin Information Typing Architecture (DITA)     
+  PURPOSE:    Relax NG schema to describe to describe DITAVAL 
+              resources          
+  ORIGINAL CREATION DATE:                                       
+  September 2010                                                
+  (C) Copyright Syncro Soft 2010-2011                                
+  All Rights Reserved.                                          
+  ============================================================= -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0">
+  <start>
+    <ref name="val"/>
+  </start>
+
+  <define name="val">
+    <element name="val">
+      <ref name="attlist.val"/>
+      <optional>
+        <ref name="style-conflict"/>
+      </optional>
+      <zeroOrMore>
+        <choice>
+          <ref name="prop"/>
+          <ref name="revprop"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.val" combine="interleave">
+    <empty/>
+  </define>
+
+  <define name="style-conflict">
+    <element name="style-conflict">
+      <ref name="attlist.style-conflict"/>
+      <empty/>
+    </element>
+  </define>
+  <define name="attlist.style-conflict" combine="interleave">
+    <optional>
+      <attribute name="foreground-conflict-color"/>
+    </optional>
+    <optional>
+      <attribute name="background-conflict-color"/>
+    </optional>
+  </define>
+
+  <define name="prop">
+    <element name="prop">
+      <ref name="attlist.prop"/>
+      <optional>
+        <ref name="startflag"/>
+      </optional>
+      <optional>
+        <ref name="endflag"/>
+      </optional>
+    </element>
+  </define>
+  <define name="attlist.prop" combine="interleave">
+    <optional>
+      <attribute name="att"/>
+    </optional>
+    <optional>
+      <attribute name="val"/>
+    </optional>
+    <attribute name="action">
+      <choice>
+        <value>flag</value>
+        <value>include</value>
+        <value>exclude</value>
+        <value>passthrough</value>
+      </choice>
+    </attribute>
+    <optional>
+      <attribute name="color"/>
+    </optional>
+    <optional>
+      <attribute name="backcolor"/>
+    </optional>
+    <optional>
+      <attribute name="style">
+        <choice>
+          <value>underline</value>
+          <value>double-underline</value>
+          <value>italics</value>
+          <value>overline</value>
+          <value>bold</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="startflag">
+    <element name="startflag">
+      <ref name="attlist.startflag"/>
+      <optional>
+        <ref name="alt-text"/>
+      </optional>
+    </element>
+  </define>
+  <define name="attlist.startflag" combine="interleave">
+    <optional>
+      <attribute name="imageref"/>
+    </optional>
+  </define>
+
+  <define name="endflag">
+    <element name="endflag">
+      <ref name="attlist.endflag"/>
+      <optional>
+        <ref name="alt-text"/>
+      </optional>
+    </element>
+  </define>
+  <define name="attlist.endflag" combine="interleave">
+    <optional>
+      <attribute name="imageref"/>
+    </optional>
+  </define>
+  
+  <define name="alt-text">
+    <element name="alt-text">
+      <ref name="attlist.alt-text"/>
+      <text/>
+    </element>
+  </define>
+  <define name="attlist.alt-text" combine="interleave">
+    <empty/>
+  </define>
+  
+  <!--
+    The style attribute should be a color value (either a name, or a SRGB value).
+    See below for the supported color names (taken from the XHTML DTD).
+  -->
+  <define name="revprop">
+    <element name="revprop">
+      <ref name="attlist.revprop"/>
+      <optional>
+        <ref name="startflag"/>
+      </optional>
+      <optional>
+        <ref name="endflag"/>
+      </optional>
+    </element>
+  </define>
+  <define name="attlist.revprop" combine="interleave">
+    <optional>
+      <attribute name="val"/>
+    </optional>
+    <attribute name="action">
+      <choice>
+        <value>include</value>
+        <value>passthrough</value>
+        <value>flag</value>
+      </choice>
+    </attribute>
+    <optional>
+      <attribute name="changebar"/>
+    </optional>
+    <optional>
+      <attribute name="color"/>
+    </optional>
+    <optional>
+      <attribute name="backcolor"/>
+    </optional>
+    <optional>
+      <attribute name="style">
+        <choice>
+          <value>underline</value>
+          <value>double-underline</value>
+          <value>italics</value>
+          <value>overline</value>
+          <value>bold</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+</grammar>
+<!--
+
+There are 16 widely known color names with their sRGB values:
+  
+  black  = #000000    green  = #008000
+  silver = #C0C0C0    lime   = #00FF00
+  gray   = #808080    olive  = #808000
+  white  = #FFFFFF    yellow = #FFFF00
+  maroon = #800000    navy   = #000080
+  red    = #FF0000    blue   = #0000FF
+  purple = #800080    teal   = #008080
+  fuchsia= #FF00FF    aqua   = #00FFFF
+-->

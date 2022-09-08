@@ -1,0 +1,55 @@
+# ============================================================= 
+# MODULE:    DITA Learning Summary - RNC              
+# VERSION:   1.2                                                
+# DATE:      November 2010                                       
+# =============================================================
+
+# Refer to the latest version of this file by the following URI:
+# urn:dita-ng:dita:rnc:learningSummary.rnc
+# To refer to this specific version, you may use this value:
+# urn:dita-ng:dita:rnc:learningSummary.rnc:1.2
+
+# ============================================================= 
+# SYSTEM:     Darwin Information Typing Architecture (DITA)     
+# PURPOSE:    RNC to describe DITA Learning Summary
+# ORIGINAL CREATION DATE:  
+# September 2010                                                
+# (C) Copyright Syncro Soft 2010-2011                                
+# All Rights Reserved.                                          
+# =============================================================
+
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+# Define the root elements
+start = learningSummary.element
+# The DITA domains attribute
+domains-atts &=
+  [
+    a:defaultValue =
+      "(topic learningBase+learningInteractionBase-d)          (topic learningInteractionBase-d) (topic learningInteractionBase-d learning-d)         (topic learningmeta-d)         (topic learningBase learningSummary)         (topic hi-d) (topic ut-d) (topic indexing-d)"
+  ]
+  attribute domains { text }?
+# Redefine the infotype entity to exclude 
+# other topic types and disallow nesting
+
+# Redefine the infotype entity to exclude other topic types and disallow nesting
+learningSummary-info-types = no-topic-nesting.element
+# Include modules
+include "../../base/rnc/topic.mod.rnc"
+include "learningBase.mod.rnc"
+include "learningSummary.mod.rnc"
+include "../../base/rnc/highlightDomain.mod.rnc"
+include "../../base/rnc/utilitiesDomain.mod.rnc"
+include "../../base/rnc/indexingDomain.mod.rnc"
+include "learningInteractionBaseDomain.mod.rnc"
+include "learningDomain.mod.rnc"
+include "learningMetadataDomain.mod.rnc"
+# Define the any pattern to exclude elements with ID attributes
+# from the wildcard and refer them expliceitely
+any =
+  (learningSummary.element
+   | element * - learningSummary {
+       attribute * { text }*,
+       any
+     }
+   | text)*

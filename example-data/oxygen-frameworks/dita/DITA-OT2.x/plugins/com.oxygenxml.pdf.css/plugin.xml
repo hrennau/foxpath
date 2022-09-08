@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="dita-ot/plugin.rnc" type="application/relax-ng-compact-syntax"?>
+<plugin id="com.oxygenxml.pdf.css">
+  <!-- extensions -->
+  <feature extension="dita.conductor.transtype.check" value="pdf-css" type="text"/>
+  <feature extension="dita.conductor.target.relative" value="integrator.xml" type="file"/>
+  <feature extension="dita.transtype.print" value="pdf-css"/>  
+  <transtype name="pdf-css" extends="base" desc="PDF (CSS Formatter - Experimental)">
+
+    <param name="css.processor.path.prince" type="file"
+      desc="Path to the Prince executable file (eg: &quot;c:\path\to\prince.exe&quot; on Windows) which should be run to produce the PDF"/>
+
+    <param name="css.processor.path.antenna-house" type="file"
+      desc="Path to the Antenna House executable file (eg: &quot;c:\path\to\AHFCmd.exe&quot; on Windows) which should be run to produce the PDF"/>
+
+    <param name="css.processor.type" type="enum"
+      desc="Choose the formatting processor.">
+      <val default="true">prince</val>
+      <val>antenna-house</val>
+      <val>chemistry</val>
+     </param>
+    
+    <param name="dita.css.list" type="file"
+      desc="You can use this to specify a list of CSS URLs to be used by the PDF processor. The files must have URL syntax and be separated using semicolons. If the value is empty, then the DITA topics/maps CSS files (currently selected from the oXygen [Styles] dropdown) are used."
+    /> 
+
+    <param name="args.css" type="file"
+      desc="You can use this to specify a list of CSS URLs to be used in addition to the dita.css.list parameter. The files must have URL syntax and be separated using semicolons."
+    /> 
+    
+    <param name="show.changes.and.comments" 
+      type="enum"
+      desc="When set on 'yes', the user comments, colored highlights and trackchanges are shown in the output.">
+      <val default="true">no</val>
+      <val>yes</val>
+    </param>
+
+  </transtype>
+</plugin>

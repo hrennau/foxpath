@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description  xmlns:x = "http://www.jenitennison.com/xslt/xspec" stylesheet="../addGoal.xsl">
+  
+  <x:scenario label="Test adding Goal as the first child">
+    <x:context>
+      <StrategicPlanCore>
+      </StrategicPlanCore>
+    </x:context>
+    <x:expect label="New Goal element">
+      <StrategicPlanCore>
+        <Goal>
+          <Name>${caret}</Name>
+          <Description></Description>
+        </Goal>
+      </StrategicPlanCore>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario label="Test adding Goal">
+    <x:context>
+      <StrategicPlanCore>
+        <Mission>
+          <Description>test</Description>
+          <Identifier>id123</Identifier>
+        </Mission>
+      </StrategicPlanCore>
+    </x:context>
+    <x:expect label="New Goal element">
+      <StrategicPlanCore>
+        <Mission>
+          <Description>test</Description>
+          <Identifier>id123</Identifier>
+        </Mission>
+        <Goal>
+          <Name>${caret}</Name>
+          <Description></Description>
+        </Goal>
+      </StrategicPlanCore>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario label="Clone current Goal">
+    <x:context>
+      <Goal>
+        <Name>X</Name>
+        <Description>Y</Description>
+      </Goal>
+    </x:context>
+    <x:expect label="New Goal added">
+      <Goal>
+        <Name>${caret}</Name>
+        <Description></Description>
+      </Goal>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario label="Test the content of a new Goal element">
+    <x:call template="addElement"/>
+    <x:expect label="New Goal element with the Name element containing the caret">
+      <Goal>
+        <Name>${caret}</Name>
+        <Description></Description>
+      </Goal>
+    </x:expect>
+  </x:scenario>
+</x:description>

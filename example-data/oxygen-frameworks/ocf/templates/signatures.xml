@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<signatures xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+        <SignedInfo>
+            <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+            <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#dsa-sha1"/>
+            <Reference URI="#Manifest1">
+                <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                <DigestValue>j6lwx3rvEPO0vKtMup4NbeVu8nk=</DigestValue>
+            </Reference>
+        </SignedInfo>
+        <SignatureValue>MC0C</SignatureValue>
+        <KeyInfo>
+            <KeyValue>
+                <DSAKeyValue>
+                    <P>MC0C</P>
+                    <Q>MC0C</Q>
+                    <G>MC0C</G>
+                    <Y>MC0C</Y>
+                </DSAKeyValue>
+            </KeyValue>
+        </KeyInfo>
+        <Object>
+            <Manifest Id="Manifest1">
+                <Reference URI="OEBFPS/book.xml">
+                    <Transforms>
+                        <Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                    </Transforms>
+                    <DigestMethod Algorithm=""></DigestMethod>
+                    <DigestValue></DigestValue>
+                </Reference>
+                <Reference URI="OEBFPS/images/cover.jpeg">
+                    <DigestMethod Algorithm=""></DigestMethod>
+                    <DigestValue></DigestValue>
+                </Reference>
+            </Manifest>
+        </Object>
+    </Signature>
+</signatures>

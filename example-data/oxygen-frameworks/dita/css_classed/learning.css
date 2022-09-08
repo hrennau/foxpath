@@ -1,0 +1,9 @@
+/*
+ * Llearning specialization elements which are not a figure.
+ */
+*[class~="learning-d/lcMultipleSelect"] > *[class~="topic/title"]:before,
+*[class~="learningPlan/lcGapItem"] > *[class~="topic/title"]:before{
+    content: "";
+}
+
+

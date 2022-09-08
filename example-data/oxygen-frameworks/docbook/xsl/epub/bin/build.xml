@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="dist" name="ANTProject">
+  <!--
+    Convert DocBook documents into ePUB files.
+    
+    ePUBis defined by the IDPF at www.idpf.org and is made of 3 standards:
+    - Open Publication Structure (OPS)
+    - Open Packaging Format (OPF) 
+    - Open Container Format (OCF)
+  -->
+  <!--Needed to create an unique name for the profiled XML file-->
+  <tstamp/>
+  <!-- Path to Docbook XML file. -->
+  <property name="xmlFile" value=""/>
+  
+  <!-- Stylesheet for META-INF/container.xml, OPF and NCX output files. -->
+  <property name="stylesheetFile" value="../docbook.xsl"/>
+  
+  <!-- Stylesheet to fix image src attribute in HTML files.  -->
+  <property name="imagesStylesheetFile" value="../images.xsl"/>
+  
+  <!-- Stylesheet to add images in content.opf files. -->
+  <property name="removeOldImagesStylesheetFile" value="../removeImagesContentOpf.xsl"/>
+  
+  <!-- Stylesheet to add images in content.opf files. -->
+  <property name="addNewImagesStylesheetFile" value="../addImagesContentOpf.xsl"/>
+
+  <!-- Stylesheet to remove any doctype from NCX and container files. -->
+  <property name="copy" value="../copy.xsl"/>
+  
+
+  <!-- Path where the output ePUB file will be saved. -->
+  <property name="outputFile" value=""/>
+  
+  <dirname property="xmlFileDir" file="${xmlFile}"/>
+  <dirname property="outputDir" file="${outputFile}"/>
+  <property name="metadir" value="${outputDir}/META-INF/"/>
+  <property name="oebpsdir" value="${outputDir}/"/>
+  <property name="outputTempDir" value="${outputDir}/../temp"/>
+  
+  <path id="classpath">
+    <pathelement path="${java.class.path}"/>
+  </path>
+  
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+  
+  <target name="dist">
+    <!-- Recreate output directory -->
+    <delete dir="${outputDir}"/>
+    <mkdir dir="${outputDir}"/>
+    <!-- Temporary files. -->
+    <property name="xincluded-profiled.xml" value="${xmlFileDir}/xincluded-profiled${TSTAMP}.xml"/>
+    <property name="dummy.xml" value="${outputDir}/dummy.xml"/>
+    <!-- Copy the mime type file-->
+    <copy file="mimetype" todir="${outputDir}" overwrite="true"/>
+    <xslt in="${xmlFile}" out="${xincluded-profiled.xml}" style="../../profiling/profile.xsl"
+      classpath="classpath">
+      <!--OXYGEN PATCH for EXM-19733-->
+      <xmlcatalog>
+        <catalogpath>
+          <pathelement location="../../../catalog.xml"/>
+        </catalogpath>
+      </xmlcatalog>
+      <sysproperty key="org.apache.xerces.xni.parser.XMLParserConfiguration"
+        value="org.apache.xerces.parsers.XIncludeParserConfiguration"/>
+      <param name="profile.arch" expression="${profile.arch}" if="profile.arch"/>
+      <param name="profile.audience" expression="${profile.audience}" if="profile.audience"/>
+      <param name="profile.condition" expression="${profile.condition}" if="profile.condition"/>
+      <param name="profile.conformance" expression="${profile.conformance}" if="profile.conformance"/>
+      <param name="profile.lang" expression="${profile.lang}" if="profile.lang"/>
+      <param name="profile.os" expression="${profile.os}" if="profile.os"/>
+      <param name="profile.revision" expression="${profile.revision}" if="profile.revision"/>
+      <param name="profile.revisionflag" expression="${profile.revisionflag}" if="profile.revisionflag"/>
+      <param name="profile.role" expression="${profile.role}" if="profile.role"/>
+      <param name="profile.security" expression="${profile.security}" if="profile.security"/>
+      <param name="profile.status" expression="${profile.status}" if="profile.status"/>
+      <param name="profile.userlevel" expression="${profile.userlevel}" if="profile.userlevel"/>
+      <param name="profile.vendor" expression="${profile.vendor}" if="profile.vendor"/>
+      <param name="profile.wordsize" expression="${profile.wordsize}" if="profile.wordsize"/>
+      <param name="profile.attribute" expression="${profile.attribute}" if="profile.attribute"/>
+      <param name="profile.value" expression="${profile.value}" if="profile.value"/>
+    </xslt>
+    <!-- The transformation for EPUB output. -->
+    <xslt style="${stylesheetFile}" in="${xincluded-profiled.xml}" out="${dummy.xml}" classpath="classpath">
+      <sysproperty key="org.apache.xerces.xni.parser.XMLParserConfiguration"
+        value="org.apache.xerces.parsers.XIncludeParserConfiguration"/>
+      <xmlcatalog>
+        <catalogpath>
+          <pathelement location="../../../catalog.xml"/>
+        </catalogpath>
+      </xmlcatalog>
+      <param name="base.dir" expression="${oebpsdir}"/>
+      <param name="epub.metainf.dir" expression="${metadir}"/>
+      <param name="epub.oebps.dir" expression="${oebpsdir}"/>
+      <param name="epub.opf.fileref" expression="content.opf"/>
+      <param name="xml.dir" expression="${xmlFileDir}"/>
+      <param name="chunker.output.encoding" expression="${chunker.output.encoding}" if="chunker.output.encoding"/>
+      <param name="chunk.quietly" expression="${chunk.quietly}" if="chunk.quietly"/>
+      <param name="inputDir" expression="${xmlFileDir}"/>
+      <param name="outputDir" expression="${outputDir}"/>
+      <param name="html.stylesheet" expression="${html.stylesheet}" if="html.stylesheet"/>
+      <param name="keep.relative.image.uris" expression="0"/>
+      <param name="admon.graphics" expression="${admon.graphics}" if="admon.graphics"/>
+      <param name="admon.graphics.path" expression="${admon.graphics.path}" if="admon.graphics.path"/>
+      <param name="admon.graphics.extension" expression="${admon.graphics.extension}" if="admon.graphics.extension"/>
+      <param name="callout.graphics.path" expression="${callout.graphics.path}" if="callout.graphics.path"/>
+    </xslt>
+    <!-- Remove the not necessary output files. -->
+    <delete file="${dummy.xml}"/>
+    <delete file="${xincluded-profiled.xml}"/>
+    
+      <replaceregexp  
+          file="${outputDir}/content.opf"
+          match="&lt;!DOCTYPE(.+)&quot;http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd&quot;>"
+          replace=""
+          flags="s"
+          encoding="UTF-8"/>
+      
+    <mkdir dir="${outputTempDir}"/>
+    <!-- Remove old images from content.opf. -->
+    <xslt style="${removeOldImagesStylesheetFile}" in="${outputDir}/content.opf" out="${outputTempDir}/content.opf" classpath="classpath">
+      <xmlcatalog>
+        <catalogpath>
+          <pathelement location="../../../../xhtml11/dtd/xhtmlcatalog.xml"/>
+        </catalogpath>
+      </xmlcatalog>
+    </xslt>
+    <copy file="${outputTempDir}/content.opf" tofile="${outputDir}/content.opf" overwrite="true"/>
+    <!-- Add new images from content.opf. -->
+    <foreach target="images" param="inputFile">
+      <path>
+        <fileset dir="${outputDir}">
+          <include name="**/*.html"/>
+        </fileset>
+      </path>
+    </foreach>
+    <copy todir="${outputDir}" overwrite="true">
+      <fileset dir="${outputTempDir}">
+        <include name="**/*.html"/>
+      </fileset>
+    </copy>
+    <delete dir="${outputTempDir}"/>
+    
+    <!-- Remove wrong DOCTYPE -->
+    <xslt style="${copy}" in="${outputDir}/toc.ncx" out="${outputTempDir}/toc.ncx" classpath="classpath">
+      <xmlcatalog>
+        <catalogpath>
+          <pathelement location="../../../../xhtml11/dtd/xhtmlcatalog.xml"/>
+        </catalogpath>
+      </xmlcatalog>
+    </xslt>
+    <copy file="${outputTempDir}/toc.ncx" tofile="${outputDir}/toc.ncx" overwrite="true"/>
+    <!-- Remove wrong DOCTYPE -->
+    <xslt style="${copy}" in="${outputDir}/META-INF/container.xml" out="${outputTempDir}/container.xml" classpath="classpath">
+      <xmlcatalog>
+        <catalogpath>
+          <pathelement location="../../../../xhtml11/dtd/xhtmlcatalog.xml"/>
+        </catalogpath>
+      </xmlcatalog>
+    </xslt>
+    <copy file="${outputTempDir}/container.xml" tofile="${outputDir}/META-INF/container.xml" overwrite="true"/>
+      
+    <antversion property="ant.1.9.or.higher" atleast="1.9"/>
+    <antcall target="buildZip_ant_1.9"/>
+    <antcall target="buildZip"/>
+  </target>
+    
+  <target name="buildZip_ant_1.9" if="ant.1.9.or.higher">
+      <!-- ZIP the EPUB file, keep the mimetype uncompressed. -->
+      <zip destfile="${outputFile}" basedir="${outputDir}" 
+          encoding="UTF-8" compress="true"
+          includes="META-INF/container.xml,toc.ncx, content.opf,container.opf, 
+                  **/*.html,**/*.HTML,
+                  **/*.css,**/*.CSS,
+                  **/*.jpg,**/*.jpeg,**/*.gif,**/*.png,**/*.svg,**/*.JPG,**/*.JPEG,**/*.GIF,**/*.PNG,**/*.SVG,
+                  **/*.mml, **/*.MML, **/*.mathml, **/*.MATHML, 
+                  **/*.avi, **/*.AVI, **/*.mp4, **/*.MP4, **/*.wvm, **/*.WVM, 
+                  **/*.m4v, **/*.M4V, **/*.webm, **/*.WEBM, **/*.divx, **/*.DIVX"
+          zip64mode="never"/>
+      <zip destfile="${outputFile}" basedir="${outputDir}" encoding="UTF-8" includes="mimetype" 
+          update="true" keepcompression="true" compress="false"
+          zip64mode="never"/>
+  </target>
+  
+  <target name="buildZip" unless="ant.1.9.or.higher">
+        <!-- ZIP the EPUB file, keep the mimetype uncompressed. -->
+        <zip destfile="${outputFile}" basedir="${outputDir}" 
+            encoding="UTF-8" compress="true"
+            includes="META-INF/container.xml,toc.ncx, content.opf,container.opf, 
+                    **/*.html,**/*.HTML,
+                    **/*.css,**/*.CSS,
+                    **/*.jpg,**/*.jpeg,**/*.gif,**/*.png,**/*.svg,**/*.JPG,**/*.JPEG,**/*.GIF,**/*.PNG,**/*.SVG,
+                    **/*.mml, **/*.MML, **/*.mathml, **/*.MATHML, 
+                    **/*.avi, **/*.AVI, **/*.mp4, **/*.MP4, **/*.wvm, **/*.WVM, 
+                    **/*.m4v, **/*.M4V, **/*.webm, **/*.WEBM, **/*.divx, **/*.DIVX"/>
+        <zip destfile="${outputFile}" basedir="${outputDir}" encoding="UTF-8" includes="mimetype" 
+            update="true" keepcompression="true" compress="false"/>
+  </target>
+    
+  <target name="images">
+    <basename file="${inputFile}" property="fileName"/>
+    <xslt style="${imagesStylesheetFile}" in="${inputFile}" out="${outputTempDir}/${fileName}" classpath="classpath">
+      <xmlcatalog>
+        <catalogpath>
+          <pathelement location="../../../../xhtml11/dtd/xhtmlcatalog.xml"/>
+        </catalogpath>
+      </xmlcatalog>
+      <param name="inputDir" expression="${xmlFileDir}"/>
+      <param name="outputDir" expression="${outputDir}"/>
+      <param name="imagesDir" expression="images"/>
+    </xslt>
+    <xslt style="${addNewImagesStylesheetFile}" in="${outputDir}/content.opf" out="${outputTempDir}/content.opf" classpath="classpath">
+      <xmlcatalog>
+        <catalogpath>
+          <pathelement location="../../../../xhtml11/dtd/xhtmlcatalog.xml"/>
+        </catalogpath>
+      </xmlcatalog>
+      <param name="inputFile" expression="${outputTempDir}/${fileName}"/>
+    </xslt>
+    <copy file="${outputTempDir}/content.opf" tofile="${outputDir}/content.opf" overwrite="true"/>
+  </target>
+</project>

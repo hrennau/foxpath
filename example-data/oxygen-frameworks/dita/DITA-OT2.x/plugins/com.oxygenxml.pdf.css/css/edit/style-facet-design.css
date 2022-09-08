@@ -1,0 +1,36 @@
+@import "dita.css";
+
+
+/*
+ * Plain content and topcirefs in the map.
+ */
+:root{
+   font-family: "Trebuchet MS", "Liberation Serif", serif;
+}
+
+/*
+ * Topic and Map Titles.
+ */
+*[class ~= "map/map"][title]:before,
+*[class ~= "map/map"] > *[class ~= "topic/title"],
+*[class ~= "topic/topic"] > *[class ~= "topic/title"]{
+   color: #000066;
+   border-bottom: 1pt solid;
+}
+*[class ~= "topic/topic"] > *[class ~= "topic/topic"] > *[class ~= "topic/title"] {
+   border-bottom: none;
+}
+
+
+@media oxygen AND (min-width:25cm) AND (platform:standalone),
+    oxygen AND (min-width:25cm) AND (platform:eclipse) {
+
+    /* When the size is large, put a border around the 'page' */
+    :root{
+       border: 2pt solid #666699;
+       border-top:1pt;
+       border-left:1pt;
+    }
+}
+
+

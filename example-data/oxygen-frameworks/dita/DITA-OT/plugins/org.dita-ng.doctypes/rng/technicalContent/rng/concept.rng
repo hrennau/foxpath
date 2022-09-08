@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="../../../checkShell.sch" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<!-- ============================================================= 
+  MODULE:    DITA Concept RNG
+  VERSION:   1.2
+  DATE:      October 2010
+  ============================================================= -->
+<!--
+  Refer to the latest version of this file by the following URI:
+  urn:dita-ng:dita:rng:concept.rng
+  To refer to this specific version, you may use this value:
+  urn:dita-ng:dita:rng:concept.rng:1.2
+-->
+<!-- ============================================================= 
+  SYSTEM:     Darwin Information Typing Architecture (DITA)
+  PURPOSE:    Relax NG schema to describe DITA Concepts
+  ORIGINAL CREATION DATE:
+  September 2010
+  (C) Copyright Syncro Soft 2010-2011
+  All Rights Reserved.
+  ============================================================= -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+  xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">
+  <!-- Define the root elements -->
+  <start>
+    <ref name="concept.element"/>
+  </start>
+  
+  <!-- The DITA domains attribute -->
+  <define name="domains-atts" combine="interleave">
+    <optional>
+      <attribute name="domains" 
+        a:defaultValue="(topic concept) (topic hi-d) (topic ut-d) 
+        (topic indexing-d) (topic hazard-d) (topic abbrev-d) 
+        (topic ui-d) (topic pr-d) (topic sw-d)"/>
+    </optional>    
+  </define>
+  
+  <!-- Include modules -->
+  <include href="../../base/rng/topic.mod.rng"/>
+  <include href="concept.mod.rng">
+    <!--
+      Redefine the infotype to exclude 
+      other topic types
+    -->
+    <define name="concept-info-types">
+      <ref name="concept.element"/>
+    </define>
+  </include>
+  <include href="../../base/rng/highlightDomain.mod.rng"/>
+  <include href="../../base/rng/utilitiesDomain.mod.rng"/>
+  <include href="../../base/rng/indexingDomain.mod.rng"/>
+  <include href="../../base/rng/hazardstatementDomain.mod.rng"/>
+  <include href="abbreviateDomain.mod.rng"/>
+  <include href="uiDomain.mod.rng"/>
+  <include href="programmingDomain.mod.rng"/>
+  <include href="softwareDomain.mod.rng"/>
+
+  <!-- Define the any pattern to exclude elements with ID attributes
+    from the wildcard and refer them expliceitely  -->
+  <define name="any">
+    <zeroOrMore>
+      <choice>
+        <ref name="concept.element"/>
+        <element>
+          <anyName>
+            <except>
+              <name>concept</name>
+            </except>
+          </anyName>
+          <zeroOrMore>
+            <attribute>
+              <anyName/>
+            </attribute>
+          </zeroOrMore>
+          <ref name="any"/>
+        </element>
+        <text/>
+      </choice>
+    </zeroOrMore>
+  </define>
+</grammar>

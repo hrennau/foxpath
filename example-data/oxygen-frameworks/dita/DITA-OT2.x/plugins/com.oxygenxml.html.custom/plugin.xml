@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="com.oxygenxml.html.custom">
+  <feature extension="package.support.name" value="Oxygen XML Editor Support"/>
+  <feature extension="package.support.email" value="support@oxygenxml.com"/>
+  <feature extension="package.version" value="18.0"/>
+  <feature extension="dita.xsl.xhtml" value="custom.xsl" type="file"/>
+  <feature extension="depend.preprocess.pre" value="com.oxygenxml.cleanOutput" type="text"/>
+  <feature extension="dita.conductor.target.relative" file="conductor.xml"/>
+</plugin>

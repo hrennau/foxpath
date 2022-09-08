@@ -1,0 +1,405 @@
+# ============================================================= 
+# MODULE:    DITA Learning Metadata Domain - RNC              
+# VERSION:   1.2                                                
+# DATE:      November 2010                                       
+# =============================================================
+
+# Refer to the latest version of this file by the following URI:
+# urn:dita-ng:dita:rnc:learningMetadataDomain.mod.rnc
+# To refer to this specific version, you may use this value:
+# urn:dita-ng:dita:rnc:learningMetadataDomain.mod.rnc:1.2
+
+# ============================================================= 
+# SYSTEM:     Darwin Information Typing Architecture (DITA)     
+# PURPOSE:    Define elements and specialization attributes for 
+#             Learning Metadata Domain
+# ORIGINAL CREATION DATE:  
+# September 2010                                                
+# (C) Copyright Syncro Soft 2010-2011                                
+# All Rights Reserved.                                          
+# =============================================================
+
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+# Define the domain values of this module
+domains-atts-value |= "(topic learningmeta-d)"
+learningmeta-d-metadata = lcLom.element
+metadata |= learningmeta-d-metadata
+# Define patterns
+lomStructure = lomStructure.element
+lomCoverage = lomCoverage.element
+lomAggregationLevel = lomAggregationLevel.element
+lomTechRequirement = lomTechRequirement.element
+lomInstallationRemarks = lomInstallationRemarks.element
+lomOtherPlatformRequirements = lomOtherPlatformRequirements.element
+lomInteractivityType = lomInteractivityType.element
+lomLearningResourceType = lomLearningResourceType.element
+lomInteractivityLevel = lomInteractivityLevel.element
+lomSemanticDensity = lomSemanticDensity.element
+lomIntendedUserRole = lomIntendedUserRole.element
+lomContext = lomContext.element
+lomTypicalAgeRange = lomTypicalAgeRange.element
+lomDifficulty = lomDifficulty.element
+lomTypicalLearningTime = lomTypicalLearningTime.element
+lcLom.content =
+  (lomStructure?,
+   lomCoverage?,
+   lomAggregationLevel?,
+   lomTechRequirement?,
+   lomInstallationRemarks?,
+   lomOtherPlatformRequirements?,
+   lomInteractivityType?,
+   lomLearningResourceType?,
+   lomInteractivityLevel?,
+   lomSemanticDensity?,
+   lomIntendedUserRole?,
+   lomContext?,
+   lomTypicalAgeRange?,
+   lomDifficulty?,
+   lomTypicalLearningTime?),
+  data*
+lcLom.attributes =
+  univ-atts,
+  attribute mapkeyref { text }?
+# doc:The <lcLom> provides a set of specialized data elements to use to specify metadata in the learning topics and learning map domain.
+lcLom.element = element lcLom { lcLom.attlist, lcLom.content }
+lcLom.attlist &= lcLom.attributes
+lomStructure.content = text*
+lomStructure.attributes =
+  [ a:defaultValue = "lomStructure" ] attribute name { text }?,
+  [ a:defaultValue = "" ] attribute datatype { text }?,
+  univ-atts,
+  attribute value {
+    "atomic"
+    | "collection"
+    | "networked"
+    | "hierarchical"
+    | "linear"
+    | "-dita-use-conref-target"
+  }
+# doc:The <lomStructure> provides learning metadata about the underlying organizational structure of the resource.
+lomStructure.element =
+  element lomStructure { lomStructure.attlist, lomStructure.content }
+lomStructure.attlist &= lomStructure.attributes
+# IMS LOM metadata
+lomCoverage.content = text*
+lomCoverage.attributes =
+  [ a:defaultValue = "lomCoverage" ] attribute name { text }?,
+  [ a:defaultValue = "" ] attribute datatype { text }?,
+  univ-atts,
+  [ a:defaultValue = "" ] attribute value { text }?
+# doc:The <lomCoverage> provides learning metadata about the temporal or spatial characteristics of the content, such as historical context.
+lomCoverage.element =
+  element lomCoverage { lomCoverage.attlist, lomCoverage.content }
+lomCoverage.attlist &= lomCoverage.attributes
+lomAggregationLevel.content = text*
+lomAggregationLevel.attributes =
+  [ a:defaultValue = "lomAggregationLevel" ] attribute name { text }?,
+  [ a:defaultValue = "" ] attribute datatype { text }?,
+  univ-atts,
+  attribute outputclass { text }?,
+  attribute value { "1" | "2" | "3" | "4" | "-dita-use-conref-target" }
+# doc:The <lomAggregationLevel> describes the functional size of the learning resource.
+lomAggregationLevel.element =
+  element lomAggregationLevel {
+    lomAggregationLevel.attlist, lomAggregationLevel.content
+  }
+lomAggregationLevel.attlist &= lomAggregationLevel.attributes
+lomTechRequirement.content = text*
+lomTechRequirement.attributes =
+  [ a:defaultValue = "lomTechRequirement" ] attribute name { text }?,
+  [ a:defaultValue = "" ] attribute datatype { text }?,
+  univ-atts,
+  attribute outputclass { text }?,
+  attribute value {
+    "pc-dos"
+    | "ms-windows"
+    | "macos"
+    | "unix"
+    | "multi-os"
+    | "none"
+    | "any"
+    | "netscapecommunicator"
+    | "ms-internetexplorer"
+    | "opera"
+    | "amaya"
+    | "-dita-use-conref-target"
+  }
+# doc:The <lomTechRequirement> provides learning metadata about the operating system(s) under which the learning resource can run.
+lomTechRequirement.element =
+  element lomTechRequirement {
+    lomTechRequirement.attlist, lomTechRequirement.content
+  }
+lomTechRequirement.attlist &= lomTechRequirement.attributes
+lomInstallationRemarks.content = text*
+lomInstallationRemarks.attributes =
+  [ a:defaultValue = "lomInstallationRemarks" ]
+  attribute name { text }?,
+  [ a:defaultValue = "" ] attribute datatype { text }?,
+  univ-atts,
+  [ a:defaultValue = "" ] attribute value { text }?
+# doc:The <lomInstallationRemarks> provides learning metadata about how to install and needed resources.
+lomInstallationRemarks.element =
+  element lomInstallationRemarks {
+    lomInstallationRemarks.attlist, lomInstallationRemarks.content
+  }
+lomInstallationRemarks.attlist &= lomInstallationRemarks.attributes
+lomOtherPlatformRequirements.content = text*
+lomOtherPlatformRequirements.attributes =
+  [ a:defaultValue = "lomOtherPlatformRequirements" ]
+  attribute name { text }?,
+  [ a:defaultValue = "" ] attribute datatype { text }?,
+  univ-atts,
+  [ a:defaultValue = "" ] attribute value { text }?
+# doc:The <lomOtherPlatformRequirements> provides learning metadata information about other software and hardware requirements.
+lomOtherPlatformRequirements.element =
+  element lomOtherPlatformRequirements {
+    lomOtherPlatformRequirements.attlist,
+    lomOtherPlatformRequirements.content
+  }
+lomOtherPlatformRequirements.attlist &=
+  lomOtherPlatformRequirements.attributes
+lomInteractivityType.content = text*
+lomInteractivityType.attributes =
+  [ a:defaultValue = "lomInteractivityType" ] attribute name { text }?,
+  [ a:defaultValue = "" ] attribute datatype { text }?,
+  univ-atts,
+  attribute value {
+    "active" | "expositive" | "mixed" | "-dita-use-conref-target"
+  }
+# doc:The <lomInteractivityType> provides learning metadata about the the type of interactivity supported by the resource.
+lomInteractivityType.element =
+  element lomInteractivityType {
+    lomInteractivityType.attlist, lomInteractivityType.content
+  }
+lomInteractivityType.attlist &= lomInteractivityType.attributes
+lomLearningResourceType.content = text*
+lomLearningResourceType.attributes =
+  [ a:defaultValue = "lomLearningResourceType" ]
+  attribute name { text }?,
+  [ a:defaultValue = "" ] attribute datatype { text }?,
+  univ-atts,
+  attribute value {
+    "exercise"
+    | "simulation"
+    | "questionnaire"
+    | "diagram"
+    | "figure"
+    | "graph"
+    | "index"
+    | "slide"
+    | "table"
+    | "narrativetext"
+    | "exam"
+    | "experiment"
+    | "problemstatement"
+    | "selfassessment"
+    | "lecture"
+    | "-dita-use-conref-target"
+  }
+# doc:The <lomLearningResourceType> provides learning metadata about the specific kind of resource used, most dominant kind first.
+lomLearningResourceType.element =
+  element lomLearningResourceType {
+    lomLearningResourceType.attlist, lomLearningResourceType.content
+  }
+lomLearningResourceType.attlist &= lomLearningResourceType.attributes
+lomInteractivityLevel.content = text*
+lomInteractivityLevel.attributes =
+  [ a:defaultValue = "lomInteractivityLevel" ] attribute name { text }?,
+  [ a:defaultValue = "" ] attribute datatype { text }?,
+  univ-atts,
+  attribute value {
+    "verylow"
+    | "low"
+    | "medium"
+    | "high"
+    | "veryhigh"
+    | "-dita-use-conref-target"
+  }
+# doc:The <lomInteractivityLevel> provides learning metadata about the level of interactivity between an end user and the learning object.
+lomInteractivityLevel.element =
+  element lomInteractivityLevel {
+    lomInteractivityLevel.attlist, lomInteractivityLevel.content
+  }
+lomInteractivityLevel.attlist &= lomInteractivityLevel.attributes
+lomSemanticDensity.content = text*
+lomSemanticDensity.attributes =
+  [ a:defaultValue = "lomSemanticDensity" ] attribute name { text }?,
+  [ a:defaultValue = "" ] attribute datatype { text }?,
+  univ-atts,
+  attribute value {
+    "verylow"
+    | "low"
+    | "medium"
+    | "high"
+    | "veryhigh"
+    | "-dita-use-conref-target"
+  }
+# doc:The <lomSemanticDensity> provides learning metadata about a subjective measure of the learning object's usefulness as compared to its size or duration.
+lomSemanticDensity.element =
+  element lomSemanticDensity {
+    lomSemanticDensity.attlist, lomSemanticDensity.content
+  }
+lomSemanticDensity.attlist &= lomSemanticDensity.attributes
+lomIntendedUserRole.content = text*
+lomIntendedUserRole.attributes =
+  [ a:defaultValue = "lomIntendedUserRole" ] attribute name { text }?,
+  [ a:defaultValue = "" ] attribute datatype { text }?,
+  univ-atts,
+  attribute value {
+    "teacher"
+    | "author"
+    | "learner"
+    | "manager"
+    | "-dita-use-conref-target"
+  }
+# doc:The <lomIntendedUserRole> provides learning metadata about the normal user of the resource, most dominant first.
+lomIntendedUserRole.element =
+  element lomIntendedUserRole {
+    lomIntendedUserRole.attlist, lomIntendedUserRole.content
+  }
+lomIntendedUserRole.attlist &= lomIntendedUserRole.attributes
+lomContext.content = text*
+lomContext.attributes =
+  [ a:defaultValue = "lomContext" ] attribute name { text }?,
+  [ a:defaultValue = "" ] attribute datatype { text }?,
+  univ-atts,
+  attribute value {
+    "school"
+    | "highereducation"
+    | "training"
+    | "other"
+    | "-dita-use-conref-target"
+  }
+# doc:The <lomContext> provides learning metadata about the typical learning environment where use of learning object is intended to take place.
+lomContext.element =
+  element lomContext { lomContext.attlist, lomContext.content }
+lomContext.attlist &= lomContext.attributes
+lomTypicalAgeRange.content = text*
+lomTypicalAgeRange.attributes =
+  [ a:defaultValue = "lomTypicalAgeRange" ] attribute name { text }?,
+  [ a:defaultValue = "" ] attribute datatype { text }?,
+  univ-atts,
+  attribute value { text }
+# doc:The <lomTypicalAgeRange> provides learning metadata about the age of the typical intended user.
+lomTypicalAgeRange.element =
+  element lomTypicalAgeRange {
+    lomTypicalAgeRange.attlist, lomTypicalAgeRange.content
+  }
+lomTypicalAgeRange.attlist &= lomTypicalAgeRange.attributes
+lomDifficulty.content = text*
+lomDifficulty.attributes =
+  [ a:defaultValue = "lomDifficulty" ] attribute name { text }?,
+  [ a:defaultValue = "" ] attribute datatype { text }?,
+  univ-atts,
+  attribute value {
+    "veryeasy"
+    | "easy"
+    | "medium"
+    | "difficult"
+    | "verydifficult"
+    | "-dita-use-conref-target"
+  }
+# doc:The <lomDifficulty> provides learning metadata about how hard it is to work through the resource for the typical target audience.
+lomDifficulty.element =
+  element lomDifficulty { lomDifficulty.attlist, lomDifficulty.content }
+lomDifficulty.attlist &= lomDifficulty.attributes
+lomTypicalLearningTime.content = text*
+lomTypicalLearningTime.attributes =
+  [ a:defaultValue = "lomTypicalLearningTime" ]
+  attribute name { text }?,
+  [ a:defaultValue = "" ] attribute datatype { text }?,
+  univ-atts,
+  [ a:defaultValue = "" ] attribute value { text }?
+# doc:The <lomTypicalLearningTime> provides learning metadata about the approximate or typical time it takes to work with the resource.
+lomTypicalLearningTime.element =
+  element lomTypicalLearningTime {
+    lomTypicalLearningTime.attlist, lomTypicalLearningTime.content
+  }
+lomTypicalLearningTime.attlist &= lomTypicalLearningTime.attributes
+# SPECIALIZATION ATTRIBUTE DECLARATIONS
+lcLom.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/metadata learningmeta-d/lcLom " ]
+  attribute class { text }?
+lomCoverage.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/data learningmeta-d/lomCoverage " ]
+  attribute class { text }?
+lomStructure.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/data learningmeta-d/lomStructure " ]
+  attribute class { text }?
+lomAggregationLevel.attlist &=
+  global-atts,
+  [
+    a:defaultValue = "+ topic/data learningmeta-d/lomAggregationLevel "
+  ]
+  attribute class { text }?
+lomTechRequirement.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/data learningmeta-d/lomTechRequirement " ]
+  attribute class { text }?
+lomInstallationRemarks.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/data learningmeta-d/lomInstallationRemarks "
+  ]
+  attribute class { text }?
+lomOtherPlatformRequirements.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/data learningmeta-d/lomOtherPlatformRequirements "
+  ]
+  attribute class { text }?
+lomInteractivityType.attlist &=
+  global-atts,
+  [
+    a:defaultValue = "+ topic/data learningmeta-d/lomInteractivityType "
+  ]
+  attribute class { text }?
+lomLearningResourceType.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/data learningmeta-d/lomLearningResourceType "
+  ]
+  attribute class { text }?
+lomInteractivityLevel.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/data learningmeta-d/lomInteractivityLevel "
+  ]
+  attribute class { text }?
+lomSemanticDensity.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/data learningmeta-d/lomSemanticDensity " ]
+  attribute class { text }?
+lomIntendedUserRole.attlist &=
+  global-atts,
+  [
+    a:defaultValue = "+ topic/data learningmeta-d/lomIntendedUserRole "
+  ]
+  attribute class { text }?
+lomContext.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/data learningmeta-d/lomContext " ]
+  attribute class { text }?
+lomTypicalAgeRange.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/data learningmeta-d/lomTypicalAgeRange " ]
+  attribute class { text }?
+lomDifficulty.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/data learningmeta-d/lomDifficulty " ]
+  attribute class { text }?
+lomTypicalLearningTime.attlist &=
+  global-atts,
+  [
+    a:defaultValue =
+      "+ topic/data learningmeta-d/lomTypicalLearningTime "
+  ]
+  attribute class { text }?

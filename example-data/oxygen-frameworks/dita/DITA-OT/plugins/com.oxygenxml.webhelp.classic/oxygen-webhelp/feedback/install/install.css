@@ -1,0 +1,276 @@
+/*
+    
+Oxygen WebHelp Plugin
+Copyright (c) 1998-2017 Syncro Soft SRL, Romania.  All rights reserved.
+
+*/
+
+body {
+    font-family: arial, helvetica, verdana, "Lucida Grande", "Hiragino Kaku Gothic ProN", "Hiragino Kaku Gothic Pro", Meiryo, sans-serif;
+    font-size: 14px;
+    line-height: 19px;
+}
+
+h1{font-size: 2.2em}
+
+
+#logo, .topictitle1 {
+    margin: auto auto 35px;
+    font-size: 1.7em;
+    color: #444;
+    width: 83%;
+    position: relative;
+    left: 1%;
+}
+
+.topictitle1 {
+    margin-top: 30px;
+    margin-bottom: 0
+}
+
+#logo{margin-top: 0.7em}
+
+#logo img, .topictitle1 img {
+    width: 170px;
+}
+
+.titProduct {
+    font-weight: bold;
+}
+
+#form {
+    width: 10%;
+    position: relative;
+    left: 45%;
+    float: left;
+}
+
+img {
+    vertical-align: middle;
+}
+
+div.title {
+    font-size: medium;
+    font-style: normal;
+    font-weight: bold;
+    padding: 5px 2px 5px 2px;
+}
+
+div.desc {
+    color: #444;
+    font-size: 1.1em;
+    font-style: normal;
+    /*font-weight:bold;*/
+    padding: 5px 2px 5px 2px;
+    line-height: 1.6em;
+}
+
+input, select {
+    padding-left: 4px;
+    line-height: 22px;
+    margin: 3px;
+}
+
+select, input[type=text], input[type=password], select[name=timeZone], select[name=bindType] {
+    font-style: normal;
+}
+
+.checkbox{
+    margin-left: 0.5em;
+}
+
+input[readonly=readonly] {
+    background-color: #f9f9f9;
+}
+
+div.panel, .taskbody {
+    border-radius: 14px;
+    border: 1px solid #dfe4e9;
+    padding: 1.5em;
+    box-shadow: none;
+}
+
+div.panel table {
+    width: 100%;
+}
+
+div.panel td:first-child {
+    font-weight: 600;
+    width: 60%;
+}
+
+div.panel .settingDesc {
+    font-weight: normal;
+    font-size: 0.9em;
+    color: #666;
+    line-height: 1.5em
+}
+
+div.panel td {
+    height: 5em;
+    padding: .5em;
+}
+
+div.panel .col2 td {
+    height: 2.8em;
+    padding: .5em
+}
+
+div.panel td:last-child {
+    font-style: italic;
+    font-size: 0.9em;
+    padding-left: 7px;
+}
+
+div.panel .col2 td:last-child {
+    font-style: normal;
+    font-size: 1em;
+}
+
+.panel tr{
+    border-top: 1px solid #dfe4e9;
+}
+
+.panel .glyphicon-ok{
+    color: #7db403;
+}
+
+div.panel tr:hover td {
+    background-color: #f0f6fe;
+}
+
+tbody.disabled, div.panel .disabled tr:hover td {
+    background-color: #f3f3f3;
+}
+
+
+div.success {
+    color: #198d19;
+    font-weight: bold;
+    font-size: 1.2em;
+    line-height: 1.8em;
+}
+
+div.error {
+    color: red;
+    font-weight: bold;
+}
+
+table.col2 td:first-child {
+    width: 38%
+}
+
+/* *** installation.html *** */
+
+h1.topictitle1 {
+    font-size: 2em;
+    padding: 15px 0 15px 0;
+}
+
+.taskbody h2 {
+    padding-top: 10px;
+    color: #444;
+}
+
+ol {
+    line-height: 2em;
+}
+
+li.step .cmd {
+    font-weight: bold;
+    color: #333
+}
+
+li.substep .cmd {
+    font-weight: normal;
+}
+
+strong.b {
+}
+
+span.code {
+    padding: 20px;
+    font-family: Courier, Osaka-mono, "MS Gothic", monospace;
+    font-size: 12px;
+    display: block;
+    background-color: #fefefe;
+    border: 1px solid #ddd;
+    margin: 10px;
+    line-height: 18px;
+}
+
+.bld {
+    color: #336699;
+    font-weight: bold;
+}
+
+ol ol ol {
+    list-style: circle;
+}
+
+ol a {
+    color: #275078;
+    text-decoration: none
+}
+
+div.removeInfo {
+    font-size: medium;
+    font-weight: bold;
+    color: #d13b3b;
+    margin: 10px 0;
+}
+
+div#preload {
+    display: inline-block;
+    height: 18px;
+    vertical-align: top;
+    margin-left: 20px;
+}
+
+div#preload img {
+    height: 12px;
+
+}
+
+/* LDAP */
+#ldapAdminUser td:hover {
+    background-color: transparent;
+}
+
+#ldapUsers thead td, #ldapUsers thead td:hover {
+    background-color: #EEC;
+    font-size: 1.1em;
+}
+
+#ldapUsers {
+    max-height: 250px;
+    overflow-y: auto;
+    float: left;
+    font-style: normal;
+    margin: auto auto auto 3%;
+    border: 1px solid #E2E2E2;
+}
+
+#ldapUsers td:first-child {
+    width: 50px;
+}
+
+#ldapUsers td:nth-child(2) {
+    width: 250px;
+}
+
+#ldapUsers td:nth-child(3) {
+    width: 250px;
+}
+
+#ldapUsers table, #ldapUsers td {
+    /*width: auto;*/
+}
+
+#ldapUsers tbody tr:hover td {
+    background-color: #E6F7FF;
+}
+
+#ldapUsers, #ldapUsers:hover, #ldapUsers tbody td {
+    background-color: #F9FEFF;
+}

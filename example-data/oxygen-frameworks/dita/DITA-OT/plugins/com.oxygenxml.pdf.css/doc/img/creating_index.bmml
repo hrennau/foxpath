@@ -1,0 +1,113 @@
+<mockup version="1.0" skin="sketch" measuredW="1059" measuredH="405" mockupW="592" mockupH="330">
+  <controls>
+    <control controlID="8" controlTypeID="com.balsamiq.mockups::FieldSet" x="467" y="75" w="223" h="330" measuredW="200" measuredH="170" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Flowers_MERGED.xml</text>
+      </controlProperties>
+    </control>
+    <control controlID="22" controlTypeID="com.balsamiq.mockups::Arrow" x="702" y="213" w="128" h="21" measuredW="150" measuredH="100" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <direction>bottom</direction>
+        <leftArrow>false</leftArrow>
+      </controlProperties>
+    </control>
+    <control controlID="23" controlTypeID="com.balsamiq.mockups::Button" x="489" y="108" w="175" h="30" measuredW="52" measuredH="27" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>TOC</text>
+      </controlProperties>
+    </control>
+    <control controlID="24" controlTypeID="__group__" x="489" y="160" w="187" h="139" measuredW="187" measuredH="139" zOrder="1" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::Label" x="0" y="0" w="-1" h="-1" measuredW="32" measuredH="21" zOrder="0" locked="false" isInGroup="24">
+          <controlProperties>
+            <text>Title</text>
+          </controlProperties>
+        </control>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Label" x="20" y="20" w="-1" h="-1" measuredW="67" measuredH="21" zOrder="1" locked="false" isInGroup="24">
+          <controlProperties>
+            <text>Topic%20Title</text>
+          </controlProperties>
+        </control>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::Paragraph" x="20" y="41" w="140" h="18" measuredW="200" measuredH="140" zOrder="2" locked="false" isInGroup="24">
+          <controlProperties>
+            <text>The%20text%20of%20the%20topic..</text>
+          </controlProperties>
+        </control>
+        <control controlID="3" controlTypeID="com.balsamiq.mockups::Label" x="47" y="60" w="-1" h="-1" measuredW="67" measuredH="21" zOrder="3" locked="false" isInGroup="24">
+          <controlProperties>
+            <text>Topic%20Title</text>
+          </controlProperties>
+        </control>
+        <control controlID="4" controlTypeID="com.balsamiq.mockups::Paragraph" x="47" y="81" w="140" h="18" measuredW="200" measuredH="140" zOrder="4" locked="false" isInGroup="24">
+          <controlProperties>
+            <text>The%20text%20of%20the%20topic..</text>
+          </controlProperties>
+        </control>
+        <control controlID="5" controlTypeID="com.balsamiq.mockups::Label" x="20" y="100" w="-1" h="-1" measuredW="63" measuredH="21" zOrder="5" locked="false" isInGroup="24">
+          <controlProperties>
+            <text>Task%20Title</text>
+          </controlProperties>
+        </control>
+        <control controlID="6" controlTypeID="com.balsamiq.mockups::Paragraph" x="20" y="121" w="140" h="18" measuredW="200" measuredH="140" zOrder="6" locked="false" isInGroup="24">
+          <controlProperties>
+            <text>Step%201%2C%202%203</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+    <control controlID="25" controlTypeID="com.balsamiq.mockups::FieldSet" x="836" y="75" w="223" h="330" measuredW="200" measuredH="170" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>stage1a.xml</text>
+      </controlProperties>
+    </control>
+    <control controlID="26" controlTypeID="__group__" x="858" y="160" w="187" h="139" measuredW="187" measuredH="139" zOrder="5" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::Label" x="0" y="0" w="-1" h="-1" measuredW="32" measuredH="21" zOrder="0" locked="false" isInGroup="26">
+          <controlProperties>
+            <text>Title</text>
+          </controlProperties>
+        </control>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Label" x="20" y="20" w="-1" h="-1" measuredW="67" measuredH="21" zOrder="1" locked="false" isInGroup="26">
+          <controlProperties>
+            <text>Topic%20Title</text>
+          </controlProperties>
+        </control>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::Paragraph" x="20" y="41" w="140" h="18" measuredW="200" measuredH="140" zOrder="2" locked="false" isInGroup="26">
+          <controlProperties>
+            <text>The%20text%20of%20the%20topic..</text>
+          </controlProperties>
+        </control>
+        <control controlID="3" controlTypeID="com.balsamiq.mockups::Label" x="47" y="60" w="-1" h="-1" measuredW="67" measuredH="21" zOrder="3" locked="false" isInGroup="26">
+          <controlProperties>
+            <text>Topic%20Title</text>
+          </controlProperties>
+        </control>
+        <control controlID="4" controlTypeID="com.balsamiq.mockups::Paragraph" x="47" y="81" w="140" h="18" measuredW="200" measuredH="140" zOrder="4" locked="false" isInGroup="26">
+          <controlProperties>
+            <text>The%20text%20of%20the%20topic..</text>
+          </controlProperties>
+        </control>
+        <control controlID="5" controlTypeID="com.balsamiq.mockups::Label" x="20" y="100" w="-1" h="-1" measuredW="63" measuredH="21" zOrder="5" locked="false" isInGroup="26">
+          <controlProperties>
+            <text>Task%20Title</text>
+          </controlProperties>
+        </control>
+        <control controlID="6" controlTypeID="com.balsamiq.mockups::Paragraph" x="20" y="121" w="140" h="18" measuredW="200" measuredH="140" zOrder="6" locked="false" isInGroup="26">
+          <controlProperties>
+            <text>Step%201%2C%202%203</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+    <control controlID="27" controlTypeID="com.balsamiq.mockups::Button" x="858" y="108" w="175" h="30" measuredW="52" measuredH="27" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>TOC</text>
+      </controlProperties>
+    </control>
+    <control controlID="28" controlTypeID="com.balsamiq.mockups::Button" x="858" y="320" w="175" h="30" measuredW="62" measuredH="27" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>INDEX</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

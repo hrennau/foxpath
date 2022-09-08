@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="com.oxygenxml.media">
+  <feature extension="package.support.name" value="Oxygen XML Editor Support"/>
+  <feature extension="package.support.email" value="support@oxygenxml.com"/>
+  <feature extension="package.version" value="18.1"/>
+  <feature extension="dita.xsl.xhtml" value="xhtmlMedia.xsl" type="file"/>
+  <feature extension="dita.xsl.xslfo" value="pdfMedia.xsl" type="file"/>
+  <feature extension="depend.preprocess.copy-files.pre" value="copyMediaAudioAndVideo" type="text"/>
+  <feature extension="dita.conductor.target.relative" file="conductor.xml"/>
+  <feature extension="dita.conductor.xhtml.param" value="insertParameters.xml" type="file"/>
+</plugin>

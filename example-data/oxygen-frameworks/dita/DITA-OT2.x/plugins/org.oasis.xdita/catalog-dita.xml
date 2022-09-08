@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog"
+         prefer="public">
+
+  <public publicId="-//OASIS//DTD XDITA Topic//EN" uri="dtd/topic.dtd"/>
+  <public publicId="-//OASIS//DTD XDITA Map//EN" uri="dtd/map.dtd"/>
+
+  <public publicId="-//OASIS//ELEMENTS XDITA Topic//EN" uri="dtd/topic.mod"/>
+  <public publicId="-//OASIS//ELEMENTS XDITA Map//EN" uri="dtd/map.mod"/>
+
+  <public publicId="-//OASIS//ELEMENTS XDITA Highlight Domain//EN" uri="dtd/highlightDomain.mod"/>
+
+<!--Oxygen patch, add mappings for deprecated public IDs-->
+  <public publicId="-//OASIS//DTD LW DITA Topic//EN" uri="dtd/topic.dtd"/>
+  <public publicId="-//OASIS//DTD LW DITA Map//EN" uri="dtd/map.dtd"/>
+
+  <public publicId="-//OASIS//ELEMENTS LW DITA Topic//EN" uri="dtd/topic.mod"/>
+  <public publicId="-//OASIS//ELEMENTS LW DITA Map//EN" uri="dtd/map.mod"/>
+
+  <public publicId="-//OASIS//ELEMENTS LW DITA Highlight Domain//EN" uri="dtd/highlightDomain.mod"/>
+
+</catalog>

@@ -1,0 +1,37 @@
+/*
+ * =====================================================
+ * 
+ * Defines the backmatter and frontmatter pages aspect.
+ * 
+ * It matches the XSL created <front-matter/>  or <back-matter/> element.
+ * 
+ * =====================================================
+ */
+
+@media print {
+
+    front-matter,
+    back-matter {
+        page: matter-page;
+    }
+    
+    /* Put the sections on a separate page. */
+    front-matter > *[class ~= "topic/topic"], 
+    back-matter > *[class ~= "topic/topic"]{
+      page-break-before: always;
+    }
+
+
+    @page matter-page {
+        @top-left-corner    {          content:none }
+        @top-left           {          content:none }
+        @top-center         {          content:none }
+        @top-right          {          content:none }
+        @top-right-corner   {          content:none }
+        @bottom-left-corner {          content:none }
+        @bottom-left        {          content:none }
+        @bottom-center      {          content:none }
+        @bottom-right       {          content:none }
+        @bottom-right-corner{          content:none }
+    }
+}

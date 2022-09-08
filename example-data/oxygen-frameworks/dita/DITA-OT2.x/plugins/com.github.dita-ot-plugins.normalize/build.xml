@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="com.github.dita-ot-plugins.normalize">
+
+  <target name="dita2normalize"
+          depends="build-init,
+                   preprocess">
+    <pipeline message="Normalize files" taskname="normalize">
+      <xslt basedir="${dita.temp.dir}" destdir="${output.dir}"
+            style="${dita.plugin.com.github.dita-ot-plugins.normalize.dir}/xsl/normalize.xsl">
+        <includesfile name="${dita.temp.dir}/${fullditamapandtopicfile}"/>
+        <excludesfile name="${dita.temp.dir}/${resourceonlyfile}" if="resourceonlyfile"/>
+        <xmlcatalog refid="dita.catalog"/>
+      </xslt>
+    </pipeline>
+  </target>
+
+</project>

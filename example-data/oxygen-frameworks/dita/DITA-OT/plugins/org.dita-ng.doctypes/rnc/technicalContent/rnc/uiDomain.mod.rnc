@@ -1,0 +1,147 @@
+# ============================================================= 
+# MODULE:    DITA User Interface Domain - RNC              
+# VERSION:   1.2                                                
+# DATE:      November 2010                                       
+# =============================================================
+
+# Refer to the latest version of this file by the following URI:
+# urn:dita-ng:dita:rnc:uiDomain.mod.rnc
+# To refer to this specific version, you may use this value:
+# urn:dita-ng:dita:rnc:uiDomain.mod.rnc:1.2
+
+# ============================================================= 
+# SYSTEM:     Darwin Information Typing Architecture (DITA)     
+# PURPOSE:    Define elements and specialization attributes
+#             for the User Interface Domain           
+# ORIGINAL CREATION DATE:  
+# September 2010                                                
+# (C) Copyright Syncro Soft 2010-2011                                
+# All Rights Reserved.                                          
+# =============================================================
+
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+# Define the domain values of this module
+domains-atts-value |= "(topic ui-d)"
+# Define domain extension patterns
+ui-d-keyword = wintitle.element
+ui-d-ph = menucascade.element | uicontrol.element
+ui-d-pre = screen.element
+# Extend the patterns with the domain contribution
+keyword |= ui-d-keyword
+ph |= ui-d-ph
+pre |= ui-d-pre
+# Define patterns
+uicontrol = uicontrol.element
+wintitle = wintitle.element
+menucascade = menucascade.element
+shortcut = shortcut.element
+screen = screen.element
+# Define elements content and attributes
+
+# LONG NAME: User Interface Control
+uicontrol.content = (words.cnt | image | shortcut)*
+uicontrol.attributes =
+  attribute keyref { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+uicontrol.element =
+  
+  ## The user interface control (<uicontrol>) element is used to mark up names
+  ##         of buttons, entry fields, menu items, or other objects that allow the user to control the
+  ##         interface. Use the <uicontrol> element inside a <menucascade> element to identify a
+  ##         sequence of menu choices in a nested menu, such as File New. This element is part of the
+  ##         DITA user interface domain, a special set of DITA elements designed to document user
+  ##         interface tasks, concepts and reference information. 
+  ##         Category: User interface elements
+  element uicontrol { uicontrol.attlist, uicontrol.content }
+uicontrol.attlist &= uicontrol.attributes
+# LONG NAME: Window Title
+wintitle.content = (text | \text)*
+wintitle.attributes =
+  attribute keyref { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+wintitle.element =
+  
+  ## The window title <wintitle> element can be used to mark up names of
+  ##         windows or dialogs, or other user interface elements at the same level of grouping,
+  ##         including wizard titles, wizard page titles, and window pane titles. This element is part of
+  ##         the DITA user interface domain, a special set of DITA elements designed to document user
+  ##         interface tasks, concepts and reference information. 
+  ##         Category: User interface elements
+  element wintitle { wintitle.attlist, wintitle.content }
+wintitle.attlist &= wintitle.attributes
+# LONG NAME: Menu Cascade
+menucascade.content = uicontrol+
+menucascade.attributes =
+  attribute keyref { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+menucascade.element =
+  
+  ## The <menucascade> element is used to document a series of menu choices.
+  ##         The <menucascade> element contains one or more user interface control (<uicontrol>)
+  ##         elements, for example: Start > Programs > Accessories > Notepad. If there is more than one
+  ##         <uicontrol> element, the formatter shows connecting characters between the menu items to
+  ##         represent the menu cascade. This element is part of the DITA user interface domain, a
+  ##         special set of DITA elements designed to document user interface tasks, concepts and
+  ##         reference information. 
+  ##         Category: User interface elements
+  element menucascade { menucascade.attlist, menucascade.content }
+menucascade.attlist &= menucascade.attributes
+# LONG NAME: Short Cut
+shortcut.content = (text | \text)*
+shortcut.attributes =
+  attribute keyref { text }?,
+  univ-atts,
+  attribute outputclass { text }?
+shortcut.element =
+  
+  ## The <shortcut> element identifies a keyboard shortcut for a menu or window
+  ##         action. This element is part of the DITA user interface domain, a special set of DITA
+  ##         elements designed to document user interface tasks, concepts and reference information.
+  ##         Category: User interface elements
+  element shortcut { shortcut.attlist, shortcut.content }
+shortcut.attlist &= shortcut.attributes
+# LONG NAME: Text Screen Capture
+screen.content =
+  (text
+   | basic.ph.notm
+   | data.elements.incl
+   | foreign.unknown.incl
+   | txt.incl)*
+screen.attributes =
+  display-atts,
+  attribute spectitle { text }?,
+  [ a:defaultValue = "preserve" ] attribute xml:space { "preserve" }?,
+  univ-atts,
+  attribute outputclass { text }?
+screen.element =
+  
+  ## The <screen> element contains or refers to a textual representation of a
+  ##         computer screen or user interface panel (window). 
+  ##         Category: User interface elements
+  element screen { screen.attlist, screen.content }
+screen.attlist &= screen.attributes
+# Specialization attributes. Global attributes and class defaults
+menucascade.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/ph ui-d/menucascade " ]
+  attribute class { text }?
+screen.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/pre ui-d/screen " ]
+  attribute class { text }?
+shortcut.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/keyword ui-d/shortcut " ]
+  attribute class { text }?
+uicontrol.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/ph ui-d/uicontrol " ]
+  attribute class { text }?
+wintitle.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/keyword ui-d/wintitle " ]
+  attribute class { text }?

@@ -1,0 +1,139 @@
+# ============================================================= 
+# MODULE:    DITA Highlight Domain - RNC              
+# VERSION:   1.2                                                
+# DATE:      October 2010                                       
+# =============================================================
+
+# Refer to the latest version of this file by the following URI:
+# urn:dita-ng:dita:rnc:highlightDomain.mod.rnc
+# To refer to this specific version, you may use this value:
+# urn:dita-ng:dita:rnc:highlightDomain.mod.rnc:1.2
+
+# ============================================================= 
+# SYSTEM:     Darwin Information Typing Architecture (DITA)     
+# PURPOSE:    Define elements and specialization attributes
+#             for Highlight Domain             
+# ORIGINAL CREATION DATE:  
+# September 2010                                                
+# (C) Copyright Syncro Soft 2010-2011                                
+# All Rights Reserved.                                          
+# =============================================================
+
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+# Define the domain values of this module
+domains-atts-value |= "(topic hi-d)"
+# Define domain extension patterns
+hi-d-ph =
+  b.element
+  | i.element
+  | sup.element
+  | sub.element
+  | tt.element
+  | u.element
+# Extend the patterns with the domain contribution
+ph |= hi-d-ph
+# Define elements content and attributes
+
+# LONG NAME: Bold
+b.content =
+  (text | basic.ph | data.elements.incl | foreign.unknown.incl)*
+b.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+b.element =
+  
+  ## The bold (<b>) element is used to apply bold highlighting to the content
+  ##         of the element. Use this element only when there is not some other more proper element. For
+  ##         example, for specific items such as GUI controls, use the <uicontrol> element. This
+  ##         element is part of the DITA highlighting domain. 
+  ##         Category: Typographic elements
+  element b { b.attlist, b.content }
+b.attlist &= b.attributes
+# LONG NAME: Underlined
+u.content =
+  (text | basic.ph | data.elements.incl | foreign.unknown.incl)*
+u.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+u.element =
+  
+  ## The underline (<u>) element is used to apply underline highlighting to the
+  ##         content of the element. 
+  ##         Category: Typographic elements
+  element u { u.attlist, u.content }
+u.attlist &= u.attributes
+# LONG NAME: Italic
+i.content =
+  (text | basic.ph | data.elements.incl | foreign.unknown.incl)*
+i.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+i.element =
+  
+  ## The italic (<i>) element is used to apply italic highlighting to the
+  ##         content of the element. 
+  ##         Category: Typographic elements
+  element i { i.attlist, i.content }
+i.attlist &= i.attributes
+# LONG NAME: Teletype (monospaced)
+tt.content =
+  (text | basic.ph | data.elements.incl | foreign.unknown.incl)*
+tt.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+tt.element =
+  
+  ##  The teletype (<tt>) element is used to apply monospaced highlighting to
+  ##         the content of the element. 
+  ##         Category: Typographic elements 
+  element tt { tt.attlist, tt.content }
+tt.attlist &= tt.attributes
+# LONG NAME: Superscript
+sup.content =
+  (text | basic.ph | data.elements.incl | foreign.unknown.incl)*
+sup.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+sup.element =
+  
+  ## The superscript (<sup>) element indicates that text should be
+  ##         superscripted, or vertically raised in relationship to the surrounding text. Superscripts
+  ##         are usually a smaller font than the surrounding text. Use this element only when there is
+  ##         not some other more proper tag. This element is part of the DITA highlighting domain.
+  ##         Category: Typographic elements
+  element sup { sup.attlist, sup.content }
+sup.attlist &= sup.attributes
+# LONG NAME: Subscript
+sub.content =
+  (text | basic.ph | data.elements.incl | foreign.unknown.incl)*
+sub.attributes =
+  univ-atts,
+  attribute outputclass { text }?
+sub.element =
+  
+  ## A subscript (<sub>) indicates that text should be subscripted, or placed
+  ##         lower in relationship to the surrounding text. Subscripted text is often a smaller font than
+  ##         the surrounding text. Formatting may vary depending on your output process. This element is
+  ##         part of the DITA highlighting domain. Category: Typographic elements
+  element sub { sub.attlist, sub.content }
+sub.attlist &= sub.attributes
+# Specialization attributes. Global attributes and class defaults
+b.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/ph hi-d/b " ] attribute class { text }?
+i.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/ph hi-d/i " ] attribute class { text }?
+sub.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/ph hi-d/sub " ] attribute class { text }?
+sup.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/ph hi-d/sup " ] attribute class { text }?
+tt.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/ph hi-d/tt " ] attribute class { text }?
+u.attlist &=
+  global-atts,
+  [ a:defaultValue = "+ topic/ph hi-d/u " ] attribute class { text }?

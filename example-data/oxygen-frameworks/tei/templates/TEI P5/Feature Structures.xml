@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/isofs.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/isofs.rng" type="application/xml"
+	schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<fLib xmlns="http://www.tei-c.org/ns/1.0">
+          
+          <f name="xxx">A feature may have untyped content</f>
+          <f name="yyy">
+      <string>or typed</string>
+   </f>
+          <f name="complexfeature">
+                    <fs>
+                              <f name="good1">
+            <string>a complex feature</string>
+         </f>
+                              <f name="good2">
+            <symbol value="doubleplusungood"/>
+                              </f>
+                    </fs>
+          </f>
+</fLib>

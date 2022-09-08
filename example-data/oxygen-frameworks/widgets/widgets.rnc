@@ -1,0 +1,107 @@
+default namespace widgets = "http://www.w3.org/ns/widgets"
+namespace its = "http://www.w3.org/2005/11/its"
+namespace local = ""
+
+extension = ( attr.allowed | anyElement )*
+anyElement = ( element * - widgets:* { any } | text )*
+any = ( attribute * { text } | anyElement )*
+
+attr.allowed = attribute * - (local:* | xml:lang | its:dir) { text }
+attr.xmllang = attribute xml:lang { xsd:language }
+attr.itsdir = attribute its:dir { "ltr" | "rtl" | "lro" | "rlo" }
+
+data.positiveNumber = xsd:string { pattern="[1-9]\d*" }
+data.boolean = ( string "true" | string "false" )
+
+start = elem.widget
+
+elem.widget = element widget {
+  attr.xmllang?,
+  attribute id { xsd:anyURI }?,
+  attribute version { text }?,
+  attribute height { data.positiveNumber }?,
+  attribute width { data.positiveNumber }?,
+  attribute viewmodes {
+    list {
+      ( "application"
+      | "floating"
+      | "fullscreen"
+      | "mini"
+      | "all" )*
+    }
+  }?,
+  ( elem.name*
+  & elem.description*
+  & elem.icon*
+  & elem.author?
+  & elem.license*
+  & elem.content?
+  & elem.feature*
+  & elem.preference*
+  & extension )
+}
+
+elem.name = element name {
+  attr.xmllang?,
+  attr.itsdir?,
+  attribute short { text }?,
+  extension
+}
+
+elem.description = element description {
+  attr.xmllang?,
+  attr.itsdir?,
+  extension
+}
+
+elem.icon = element icon {
+  attr.allowed*,
+  attribute src { xsd:anyURI },
+  attribute height { data.positiveNumber }?,
+  attribute width { data.positiveNumber }?,
+  empty
+}
+
+elem.author = element author {
+  attr.xmllang?,
+  attr.itsdir?,
+  attribute href { xsd:anyURI }?,
+  attribute email { xsd:string { pattern=".+@.+" } }?,
+  extension
+}
+
+elem.license = element license {
+  attr.xmllang?,
+  attr.itsdir?,
+  attribute href { xsd:anyURI }?,
+  extension
+}
+
+elem.content = element content {
+  attr.allowed*,
+  attribute src { xsd:anyURI },
+  attribute type { text }?,
+  attribute charset { text }?,
+  empty
+}
+
+elem.feature = element feature {
+  attribute name { xsd:anyURI },
+  attribute required { data.boolean }?,
+  ( elem.param?
+  & extension )
+}
+
+elem.param = element param {
+  attribute name { text },
+  attribute value { text },
+  extension
+}
+
+elem.preference = element preference {
+  attr.xmllang?,
+  attribute name { text },
+  attribute value { text }?,
+  attribute readonly { data.boolean }?,
+  extension
+}

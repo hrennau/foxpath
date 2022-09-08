@@ -1,0 +1,12 @@
+@import "schema.css";
+@namespace xs url('http://www.w3.org/2001/XMLSchema');
+
+xs|appinfo *:before
+ {
+    content : '<' oxy_name() oxy_attributes()'>';
+    font-weight:normal;
+}
+xs|appinfo *:after{
+    content : '</' oxy_name() '>';
+    font-weight:normal;
+}

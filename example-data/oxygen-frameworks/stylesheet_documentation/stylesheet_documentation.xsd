@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  Copyright 2001-2011 Syncro Soft SRL. All rights reserved.
+ -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.oxygenxml.com/ns/doc/xsl"
+    xmlns:doc="http://www.oxygenxml.com/ns/doc/xsl">
+    <xs:complexType mixed="true" name="blockContent">
+        <xs:annotation>
+            <xs:documentation>Documentation content.</xs:documentation>
+        </xs:annotation>
+        <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:element ref="doc:p"/>
+            <xs:element ref="doc:pre"/>
+            <xs:element ref="doc:ul"/>
+            <xs:element ref="doc:ref"/>
+            <xs:element ref="doc:a"/>
+            <xs:element ref="doc:inline"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType mixed="true" name="inlineContent">
+        <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:element ref="doc:inline"> </xs:element>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType mixed="true" name="referencesContent">
+        <xs:annotation>
+            <xs:documentation/>
+        </xs:annotation>
+        <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:element ref="doc:inline"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:element name="doc">
+        <xs:annotation>
+            <xs:documentation>Documentation for a stylesheet module or a stylesheet global component.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="doc:desc"/>
+                <xs:element maxOccurs="unbounded" minOccurs="0" ref="doc:param"/>
+                <xs:element minOccurs="0" ref="doc:return"/>
+            </xs:sequence>
+            <xs:attribute default="component" name="scope">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="component"/>
+                        <xs:enumeration value="stylesheet"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="id" type="xs:NCName"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="desc" type="doc:blockContent">
+        <xs:annotation>
+            <xs:documentation>The actual documentation for the component.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="param">
+        <xs:annotation>
+            <xs:documentation>Description of a parameter. Useful for templates and
+                functions.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType mixed="true">
+            <xs:complexContent>
+                <xs:extension base="doc:blockContent">
+                    <xs:attribute name="name" type="xs:QName"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="return" type="doc:blockContent">
+        <xs:annotation>
+            <xs:documentation>Description about the returned result. Useful for
+                functions.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element abstract="true" name="inline" type="doc:inlineContent"/>
+    <xs:element name="b" substitutionGroup="doc:inline" type="doc:styledContent">
+        <xs:annotation>
+            <xs:documentation>Bold style.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="i" substitutionGroup="doc:inline" type="doc:styledContent">
+        <xs:annotation>
+            <xs:documentation>Italic style.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="ref">
+        <xs:annotation>
+            <xs:documentation>Refer to stylesheet components by their name and
+                type.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="doc:inlineContent">
+                    <xs:attribute name="name" type="xs:QName" use="required"/>
+                    <xs:attribute name="type">
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration value="variable"/>
+                                <xs:enumeration value="parameter"/>
+                                <xs:enumeration value="template"/>
+                                <xs:enumeration value="function"/>
+                                <xs:enumeration value="output"/>
+                                <xs:enumeration value="decimal-format"/>
+                                <xs:enumeration value="character-map"/>
+                                <xs:enumeration value="attributes-set"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:attribute>
+                    <xs:anyAttribute namespace="http://www.oxygenxml.com/ns/doc/xsl-internal"
+                        processContents="lax"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="a">
+        <xs:annotation>
+            <xs:documentation>If 'docid' attribute is present it refers another documentation block from the styleheet given by the 'href' attribute or from the current stylesheet if missing. If no 'docid' attribute, a it refers an external resource given by the 'href' attribute.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="doc:inlineContent">
+                    <xs:attribute name="href" type="xs:anyURI"/>
+                    <xs:attribute name="docid" type="xs:NCName"/>
+                    <xs:anyAttribute namespace="http://www.oxygenxml.com/ns/doc/xsl-internal"
+                        processContents="lax"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="p" type="doc:blockContent">
+        <xs:annotation>
+            <xs:documentation>A paragraph.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="pre" type="doc:inlineContent">
+        <xs:annotation>
+            <xs:documentation>A preserve whitespaces block.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="ul">
+        <xs:annotation>
+            <xs:documentation>An itemized list.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence maxOccurs="unbounded">
+                <xs:element ref="doc:li"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="li" type="doc:blockContent"/>
+    <xs:complexType mixed="true" name="styledContent">
+        <xs:complexContent>
+            <xs:extension base="doc:inlineContent">
+                <xs:choice maxOccurs="unbounded" minOccurs="0">
+                    <xs:element ref="doc:ref"/>
+                    <xs:element ref="doc:a"/>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

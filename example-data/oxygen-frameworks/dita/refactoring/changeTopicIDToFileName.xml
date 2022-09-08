@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Change topic ID to file name. 
+-->
+<refactoringOperationDescriptor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.oxygenxml.com/ns/xmlRefactoring" id="changeTopicID2FileName"
+    name="${i18n(xr_convert_dita_topic_id_filename)}">
+    <description>${i18n(xr_convert_dita_topic_id_filename_description)}</description>
+    <script type="XQUERY_UPDATE" href="changeTopicIDToFileName.xq"/>
+    <category>DITA</category>
+</refactoringOperationDescriptor>

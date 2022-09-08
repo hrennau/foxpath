@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+  stylesheet="../addEndDate.xsl">
+  
+  <x:scenario
+    label="Test if EndDate exists inside AdministrativeInformation">
+    <x:context>
+      <AdministrativeInformation>
+        <Something></Something>
+        <EndDate>2012-10-10</EndDate>
+        <SomethingElse></SomethingElse>
+      </AdministrativeInformation>
+    </x:context>
+    <x:expect label="The caret should be placed inside EndDate">
+      <AdministrativeInformation>
+        <Something></Something>
+        <EndDate>2012-10-10${caret}</EndDate>
+        <SomethingElse></SomethingElse>
+      </AdministrativeInformation>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Test if EndDate exists inside TargetResult">
+    <x:context>
+      <TargetResult>
+        <Something></Something>
+        <EndDate>2012-10-10</EndDate>
+        <SomethingElse></SomethingElse>
+      </TargetResult>
+    </x:context>
+    <x:expect label="The caret should be placed inside EndDate">
+      <TargetResult>
+        <Something></Something>
+        <EndDate>2012-10-10${caret}</EndDate>
+        <SomethingElse></SomethingElse>
+      </TargetResult>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Test if EndDate exists inside ActualResult">
+    <x:context>
+      <ActualResult>
+        <Something></Something>
+        <EndDate>2012-10-10</EndDate>
+        <SomethingElse></SomethingElse>
+      </ActualResult>
+    </x:context>
+    <x:expect label="The caret should be placed inside EndDate">
+      <ActualResult>
+        <Something></Something>
+        <EndDate>2012-10-10${caret}</EndDate>
+        <SomethingElse></SomethingElse>
+      </ActualResult>
+    </x:expect>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create EndDate inside AdministrativeInformation">
+    <x:context>
+      <AdministrativeInformation>
+      </AdministrativeInformation>
+    </x:context>    
+    <x:expect test="self::AdministrativeInformation" label="Root should be AdministrativeInformation"/>
+    <x:expect test="*:AdministrativeInformation/*:EndDate = concat(current-date(), '${caret}')" label="EndDate should be the current date"/>      
+    <x:expect test="*:AdministrativeInformation/count(*) = 1" label="There should be only 1 child element"/>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create EndDate inside AdministrativeInformation after Identifier">
+    <x:context>
+      <AdministrativeInformation>
+        <Identifier>test</Identifier>
+        <Something>...</Something>
+      </AdministrativeInformation>
+    </x:context>    
+    <x:expect test="self::AdministrativeInformation" label="Root should be AdministrativeInformation"/>
+    <x:expect test="*:AdministrativeInformation/*[1]/local-name()='Identifier'" label="First element should be Identifier"/>
+    <x:expect test="*:AdministrativeInformation/*[2]/local-name()='EndDate'" label="Second element should be EndDate"/>
+    <x:expect test="*:AdministrativeInformation/*:EndDate = concat(current-date(), '${caret}')" label="EndDate should be the current date"/>      
+    <x:expect test="*:AdministrativeInformation/count(*) = 3" label="There should be only 3 children elements"/>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create EndDate inside AdministrativeInformation after StartDate">
+    <x:context>
+      <AdministrativeInformation>
+        <Identifier>test</Identifier>
+        <StartDate>test</StartDate>
+        <Something>...</Something>
+      </AdministrativeInformation>
+    </x:context>
+    <x:expect test="self::AdministrativeInformation" label="Root should be AdministrativeInformation"/>
+    <x:expect test="*:AdministrativeInformation/*[1]/local-name()='Identifier'" label="First element should be Identifier"/>
+    <x:expect test="*:AdministrativeInformation/*[2]/local-name()='StartDate'" label="Second element should be StartDate"/>
+    <x:expect test="*:AdministrativeInformation/*[3]/local-name()='EndDate'" label="Third element should be EndDate"/>
+    <x:expect test="*:AdministrativeInformation/*:EndDate = concat(current-date(), '${caret}')" label="EndDate should be the current date"/>      
+    <x:expect test="*:AdministrativeInformation/count(*) = 4" label="There should be only 3 children elements"/>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create EndDate inside TargetResult">
+    <x:context>
+      <TargetResult>
+      </TargetResult>
+    </x:context>    
+    <x:expect test="self::TargetResult" label="Root should be TargetResult"/>
+    <x:expect test="*:TargetResult/*:EndDate = concat(current-date(), '${caret}')" label="EndDate should be the current date"/>      
+    <x:expect test="*:TargetResult/count(*) = 1" label="There should be only 1 child element"/>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create EndDate inside TargetResult after Description">
+    <x:context>
+      <TargetResult>
+        <Description>test</Description>
+        <Something>...</Something>
+      </TargetResult>
+    </x:context>    
+    <x:expect test="self::TargetResult" label="Root should be TargetResult"/>
+    <x:expect test="*:TargetResult/*[1]/local-name()='Description'" label="First element should be Description"/>
+    <x:expect test="*:TargetResult/*[2]/local-name()='EndDate'" label="Second element should be EndDate"/>
+    <x:expect test="*:TargetResult/*:EndDate = concat(current-date(), '${caret}')" label="EndDate should be the current date"/>      
+    <x:expect test="*:TargetResult/count(*) = 3" label="There should be only 3 children elements"/>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create EndDate inside TargetResult after NumberOfUnits">
+    <x:context>
+      <TargetResult>
+        <Description>test</Description>
+        <NumberOfUnits>test</NumberOfUnits>
+        <Something>...</Something>
+      </TargetResult>
+    </x:context>
+    <x:expect test="self::TargetResult" label="Root should be TargetResult"/>
+    <x:expect test="*:TargetResult/*[1]/local-name()='Description'" label="First element should be Description"/>
+    <x:expect test="*:TargetResult/*[2]/local-name()='NumberOfUnits'" label="Second element should be NumberOfUnits"/>
+    <x:expect test="*:TargetResult/*[3]/local-name()='EndDate'" label="Third element should be EndDate"/>
+    <x:expect test="*:TargetResult/*:EndDate = concat(current-date(), '${caret}')" label="EndDate should be the current date"/>      
+    <x:expect test="*:TargetResult/count(*) = 4" label="There should be only 3 children elements"/>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create EndDate inside TargetResult after StartDate">
+    <x:context>
+      <TargetResult>
+        <Description>test</Description>
+        <StartDate>test</StartDate>
+        <Something>...</Something>
+      </TargetResult>
+    </x:context>
+    <x:expect test="self::TargetResult" label="Root should be TargetResult"/>
+    <x:expect test="*:TargetResult/*[1]/local-name()='Description'" label="First element should be Description"/>
+    <x:expect test="*:TargetResult/*[2]/local-name()='StartDate'" label="Second element should be StartDate"/>
+    <x:expect test="*:TargetResult/*[3]/local-name()='EndDate'" label="Third element should be EndDate"/>
+    <x:expect test="*:TargetResult/*:EndDate = concat(current-date(), '${caret}')" label="EndDate should be the current date"/>      
+    <x:expect test="*:TargetResult/count(*) = 4" label="There should be only 3 children elements"/>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create EndDate inside ActualResult">
+    <x:context>
+      <ActualResult>
+      </ActualResult>
+    </x:context>    
+    <x:expect test="self::ActualResult" label="Root should be ActualResult"/>
+    <x:expect test="*:ActualResult/*:EndDate = concat(current-date(), '${caret}')" label="EndDate should be the current date"/>      
+    <x:expect test="*:ActualResult/count(*) = 1" label="There should be only 1 child element"/>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create EndDate inside ActualResult after Description">
+    <x:context>
+      <ActualResult>
+        <Description>test</Description>
+        <Something>...</Something>
+      </ActualResult>
+    </x:context>    
+    <x:expect test="self::ActualResult" label="Root should be ActualResult"/>
+    <x:expect test="*:ActualResult/*[1]/local-name()='Description'" label="First element should be Description"/>
+    <x:expect test="*:ActualResult/*[2]/local-name()='EndDate'" label="Second element should be EndDate"/>
+    <x:expect test="*:ActualResult/*:EndDate = concat(current-date(), '${caret}')" label="EndDate should be the current date"/>      
+    <x:expect test="*:ActualResult/count(*) = 3" label="There should be only 3 children elements"/>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create EndDate inside ActualResult after NumberOfUnits">
+    <x:context>
+      <ActualResult>
+        <Description>test</Description>
+        <NumberOfUnits>test</NumberOfUnits>
+        <Something>...</Something>
+      </ActualResult>
+    </x:context>
+    <x:expect test="self::ActualResult" label="Root should be ActualResult"/>
+    <x:expect test="*:ActualResult/*[1]/local-name()='Description'" label="First element should be Description"/>
+    <x:expect test="*:ActualResult/*[2]/local-name()='NumberOfUnits'" label="Second element should be NumberOfUnits"/>
+    <x:expect test="*:ActualResult/*[3]/local-name()='EndDate'" label="Third element should be EndDate"/>
+    <x:expect test="*:ActualResult/*:EndDate = concat(current-date(), '${caret}')" label="EndDate should be the current date"/>      
+    <x:expect test="*:ActualResult/count(*) = 4" label="There should be only 3 children elements"/>
+  </x:scenario>
+  
+  <x:scenario
+    label="Create EndDate inside ActualResult after StartDate">
+    <x:context>
+      <ActualResult>
+        <Description>test</Description>
+        <StartDate>test</StartDate>
+        <Something>...</Something>
+      </ActualResult>
+    </x:context>
+    <x:expect test="self::ActualResult" label="Root should be ActualResult"/>
+    <x:expect test="*:ActualResult/*[1]/local-name()='Description'" label="First element should be Description"/>
+    <x:expect test="*:ActualResult/*[2]/local-name()='StartDate'" label="Second element should be StartDate"/>
+    <x:expect test="*:ActualResult/*[3]/local-name()='EndDate'" label="Third element should be EndDate"/>
+    <x:expect test="*:ActualResult/*:EndDate = concat(current-date(), '${caret}')" label="EndDate should be the current date"/>      
+    <x:expect test="*:ActualResult/count(*) = 4" label="There should be only 3 children elements"/>
+  </x:scenario>
+
+  <x:scenario
+    label="Test the content of a new EndDate element">
+    <x:call template="addElement"/>
+    <x:expect test="/EndDate = concat(current-date(), '${caret}')" label="EndDate should be the current date"/>
+  </x:scenario>
+</x:description>

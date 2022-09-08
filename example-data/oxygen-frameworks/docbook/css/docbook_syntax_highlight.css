@@ -1,0 +1,24 @@
+
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+
+programlisting {
+    visibility:-oxy-collapse-text;
+    background-color: inherit;
+    border:none;
+    margin: 0;
+    padding: 0;
+}
+programlisting > oxy|entity {
+    display: none !important;
+}
+
+programlisting:before {
+    content: oxy_textArea(edit, '#text', fontInherit, true);
+    display:block;
+    margin-left: 0.5em;
+    padding-top: 1em;
+}
+
+programlisting[language]:before {
+    content: oxy_textArea(edit, '#text', contentType, oxy_concat('text/', attr(language)), fontInherit, true);
+}

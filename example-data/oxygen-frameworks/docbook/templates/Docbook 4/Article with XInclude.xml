@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+                         "http://docbook.org/xml/4.5/docbookx.dtd"
+[ <!ENTITY % xinclude SYSTEM "internal/xinclude.mod">
+%xinclude;
+]>
+<article>
+    <title/>
+    <sect1>
+        <title/>
+        <para/>
+    </sect1>
+</article>

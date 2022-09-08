@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.w3.org/2002/06/xframes/" xmlns="http://www.w3.org/2002/06/xframes/" xmlns:xml="http://www.w3.org/XML/1998/namespace" elementFormDefault="qualified">
+
+  <xs:annotation>
+    <xs:documentation xml:lang="en">
+      This is XFrames - an XML application for composing documents together.
+      URI: http://www.w3.org/MarkUp/SCHEMA/xframes-1.xsd
+     
+      Copyright ©2002-2005 W3C (MIT, ERCIM, Keio), All Rights Reserved.
+
+        Editor:   Masayasu Ishikawa (mimasa@w3.org)
+        Revision: $Id: xframes-1.xsd 29242 2006-05-11 14:01:28 +0000 (Thu, 11 May 2006) radu_coravu $
+
+      Permission to use, copy, modify and distribute this XML Schema for
+      XFrames and its accompanying documentation for any purpose and without
+      fee is hereby granted in perpetuity, provided that the above copyright
+      notice and this paragraph appear in all copies. The copyright holders
+      make no representation about the suitability of this XML Schema
+      for any purpose.
+
+      It is provided "as is" without expressed or implied warranty.
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        Get access to the XML namespace
+      </xs:documentation>
+    </xs:annotation>
+  </xs:import>
+
+  <xs:annotation>
+    <xs:documentation xml:lang="en">
+      Datatypes
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:simpleType name="ContentType.datatype">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        media type, as per [RFC2045]
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="MediaDesc.datatype">
+    <xs:annotation>
+      <xs:documentation>
+        A comma-separated list of media descriptors as described by [CSS2].
+        The default is all.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[^,]+(,\s*[^,]+)*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="QName.datatype">
+    <xs:annotation>
+      <xs:documentation>
+        An [XMLNS]-qualified name.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:QName"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="URI.datatype">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        An Internationalized Resource Identifier Reference, as defined
+        by [IRI].
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:anyURI"/>
+  </xs:simpleType>
+
+  <xs:attributeGroup name="Common.attrib">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        Common attributes
+      </xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="class" type="xs:NMTOKENS"/>
+    <xs:attribute ref="xml:id"/>
+    <xs:attribute name="title" type="xs:string"/>
+  </xs:attributeGroup>
+
+  <xs:element name="frames"><xs:annotation><xs:documentation>An XFrames document is a specification for composing several documents, potentially of different types, together in a view. The frames element forms the container for the composed document. The individual sub-documents ('frames') may be composed together in a rectangular space by placing them next to, or above, each other in rows and columns, or they may be displayed as separate movable window-like panes, or as tabbed panes, or in any other suitable manner. The collection of frames in an XFrames document is referred to as a frameset</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" ref="head"/>
+        <xs:choice>
+          <xs:element ref="group"/>
+          <xs:element minOccurs="1" maxOccurs="unbounded" ref="frame"/>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attributeGroup ref="Common.attrib"/>
+      <xs:attribute ref="xml:base"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="head"><xs:annotation><xs:documentation>The HEAD element contains information about the current document,for example the title and the list of keywords that may be used by the search engines.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="title"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="style"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="Common.attrib"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="title"><xs:annotation><xs:documentation>The TITLE element is not considered part of the flow of text. It is displayed as the page header or window title.</xs:documentation></xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="Common.attrib"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="style"><xs:annotation><xs:documentation>The STYLE element allows authors to put style sheet rules in the head of the document. XHTML permits any number of STYLE elements in the HEAD section of a document. Some style sheet implementations may allow a wider variety of rules in the STYLE element than in the style attribute. For example, with CSS, rules may be declared within a STYLE element.</xs:documentation></xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="Common.attrib"/>
+      <xs:attribute name="type" type="ContentType.datatype" use="required"/>
+      <xs:attribute name="media" type="MediaDesc.datatype"/>
+      <xs:attribute name="source" type="URI.datatype"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="group"><xs:annotation><xs:documentation>The group element specifies a series of groups and single frames. The groups and single frames are positioned together according to styling applied to them; in the absence of styling, the compose attribute should be used by the user agent as an indication of how the frames are to be composed.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="1" maxOccurs="unbounded">
+        <xs:element ref="group"/>
+        <xs:element ref="frame"/>
+      </xs:choice>
+      <xs:attributeGroup ref="Common.attrib"/>
+      <xs:attribute name="compose" default="vertical">
+        <xs:simpleType>
+          <xs:union memberTypes="QName.datatype">
+            <xs:simpleType>
+             <xs:restriction base="xs:token">
+               <xs:enumeration value="vertical"/>
+               <xs:enumeration value="horizontal"/>
+               <xs:enumeration value="single"/>
+               <xs:enumeration value="free"/>
+             </xs:restriction>
+           </xs:simpleType>
+          </xs:union>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="frame"><xs:annotation><xs:documentation>The FRAME element defines the contents and appearance of a single frame.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="Common.attrib"/>
+      <xs:attribute name="source" type="URI.datatype"/>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

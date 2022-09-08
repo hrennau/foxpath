@@ -1,0 +1,58 @@
+@media oxygen AND (platform: "webapp") {
+  *[product] {
+    border: 1px solid green;
+  }
+  *[product]:after(1000001) {
+    font-size: 0.75em;
+    content: ' (if product is ' oxy_label(text, oxy_concat("'", oxy_replace(attr(product), ' ', "' or '"), "'"), color, #0000ff) ') ';
+    background-color: #CCFFAA;
+  }
+  *[audience] {
+    border: 1px solid green;
+  }
+  *[audience]:after(1000003) {
+    font-size: 0.75em;
+    content: ' (if audience is ' oxy_label(text, oxy_concat("'", oxy_replace(attr(audience), ' ', "' or '"), "'"), color, #0000ff) ') ';
+    background-color: #CCFFAA;
+  }
+  *[platform] {
+    border: 1px solid green;
+  }
+  *[platform]:after(1000005) {
+    font-size: 0.75em;
+    content: ' (if platform is ' oxy_label(text, oxy_concat("'", oxy_replace(attr(platform), ' ', "' or '"), "'"), color, #0000ff) ') ';
+    background-color: #CCFFAA;
+  }
+  *[deliveryTarget] {
+    border: 1px solid green;
+  }
+  *[deliveryTarget]:after(1000007) {
+    font-size: 0.75em;
+    content: ' (if deliveryTarget is ' oxy_label(text, oxy_concat("'", oxy_replace(attr(deliveryTarget), ' ', "' or '"), "'"), color, #0000ff) ') ';
+    background-color: #CCFFAA;
+  }
+  *[props] {
+    border: 1px solid green;
+  }
+  *[props]:after(1000001) {
+    font-size: 0.75em;
+    content: ' (if props is ' oxy_label(text, oxy_concat("'", oxy_replace(attr(props), ' ', "' or '"), "'"), color, #0000ff) ') ';
+    background-color: #CCFFAA;
+  }
+  *[otherprops] {
+    border: 1px solid green;
+  }
+  *[otherprops]:after(1000011) {
+    font-size: 0.75em;
+    content: ' (if otherprops is ' oxy_label(text, oxy_concat("'", oxy_replace(attr(otherprops), ' ', "' or '"), "'"), color, #0000ff) ') ';
+    background-color: #CCFFAA;
+  }
+  *[rev] {
+    border: 1px solid green;
+  }
+  *[rev]:after(1000013) {
+    font-size: 0.75em;
+    content: ' (if rev is ' oxy_label(text, oxy_concat("'", oxy_replace(attr(rev), ' ', "' or '"), "'"), color, #0000ff) ') ';
+    background-color: #CCFFAA;
+  }
+}

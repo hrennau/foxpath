@@ -1,0 +1,94 @@
+@import '../dita.css';
+
+@import 'pagination-side-notes.css';
+@import 'pagination-foot-notes.css';
+@import 'pagination-front-page.css';
+@import 'pagination-page-size.css';
+@import 'pagination-page-breaks.css';
+@import 'pagination-page-titles-and-numbers.css';
+@import 'pagination-links.css';
+@import 'pagination-toc.css';
+@import 'pagination-index.css';
+@import 'pagination-images.css';
+
+
+/*
+ * Tweaks for the print.
+ */
+@media print {
+    /* 
+    
+    	Font size for the entire map
+    	
+    */
+    *[class ~= "map/map"] {
+        font-size:8pt;
+    }        
+    
+    
+    /* 
+    
+    	Put titles in the left, underlined 
+    	
+    */
+    *[class ~= "topic/topic"] > *[class ~= "topic/title"] {
+        margin-left: -0.2in;
+        border-bottom: 1pt solid black !important;
+        color:black !important;
+    }
+
+    
+    /* 
+    
+    	Use pre-wrap to avoid content bleeding 
+    
+    */
+    *[class~="topic/pre"],
+    *[class~="topic/lines"] {
+        white-space:pre-wrap;
+        font-size:0.7em;
+    }
+    
+    
+    /* 
+    
+    	Make invisible the metadata from the topics. 
+    	
+    */
+    *[class~="topic/metadata"] {
+        display:none;
+    }
+    
+    
+    
+
+	/* 
+	
+		Make invisible the imagemap areas 
+		
+	*/
+    *[class~="ut-d/imagemap"]{
+        border:0pt;
+    }
+    *[class~="ut-d/area"]{
+        display:none;
+    }
+    
+	
+	/*
+	
+		No before for the short description. Let it as a simple paragraph.
+	
+	*/    
+    *[class~="topic/shortdesc"]:before {
+        content:none;
+    }
+
+
+    
+    
+    
+}
+
+
+

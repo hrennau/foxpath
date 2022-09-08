@@ -1,0 +1,78 @@
+/*
+ * ==================================================
+ * ==================================================
+ * 
+ * CSS for DITA v1.2 and 1.3
+ * 
+ * http://docs.oasis-open.org/dita/v1.2/spec/DITA1.2-spec.html
+ * 
+ * The language reference provides information about each 
+ * element in the DITA vocabulary modules. 
+ * 
+ * ==================================================
+ * ==================================================
+ */
+
+@import "-topic.css";
+@import "-conrefs.css";
+
+@import "-concept.css";
+@import "-task.css";
+@import "-reference.css";
+@import "-glossary.css";
+@import "-glossary-related.css";
+@import "-select-atts.css";
+
+@import "-map.css";
+@import "-bookmap.css";
+@import "-subject-scheme-map.css";
+
+@import "-learning-spec-topics.css";
+@import "-learning-spec-map.css";
+@import "-learning-spec-interraction-base.css";
+@import "-learning-common-interraction.css";
+@import "-learning-common-content.css";
+@import "-learning-spec-metadata.css";
+
+@import "-domain-delay-d.css";
+@import "-domain-hazard-d.css";
+@import "-domain-hi-d.css";
+@import "-domain-ut-d.css";
+@import "-domain-pr-d.css";
+@import "-domain-sw-d.css";
+@import "-domain-ui-d.css";
+@import "-domain-xnal.css";
+@import "-domain-taskreq-d.css";
+@import "-domain-troubleshooting.css";
+@import "-domain-markup-d.css";
+@import "-domain-xml-mention-domain.css";
+
+@import "-group-display-atts.css";
+
+@import "-d4p.css";
+
+@import "-colors.css";
+@import "-page.css";
+
+@namespace oxy "http://www.oxygenxml.com/extensions/author";
+
+/* ====================================
+ *
+ * <dita>
+ * 
+ * The <dita> element provides a top-level 
+ * container for multiple topics when you 
+ * create documents using the ditabase 
+ * document type. The <dita> element lets you 
+ * create any sequence of concept, task, and 
+ * reference topics, and the ditabase document 
+ * type lets you nest these topic types 
+ * inside each other.  
+ *  
+ * Inherits styles from parent class:
+ *  
+ *     No inheritence.
+ */
+dita{
+    display:block;
+}

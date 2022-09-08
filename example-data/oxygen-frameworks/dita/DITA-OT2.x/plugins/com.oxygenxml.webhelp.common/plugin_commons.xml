@@ -1,0 +1,90 @@
+<feature extension="dita.conductor.transtype.check" value="webhelpCommons" type="txt"/>
+
+<feature extension="dita.xsl.maplink" value="xsl/dita/maplinkNextPrevFullIteration.xsl" type="file"/>
+
+<feature extension="dita.preprocess.topicpull.param" value="insertParameters.xml" type="file"/>
+<feature extension="dita.conductor.html.param" value="insertParameters.xml" type="file"/>
+<feature extension="dita.conductor.xhtml.param" value="insertParameters.xml" type="file"/>
+
+<transtype name="webhelpCommons" extends="base-html" abstract="true">    
+    <param name="webhelp.custom.resources"
+        desc="The file path to  a directory that contains resources files. All files from this directory will be copied to the root of the WebHelp output."
+        type="dir"/>
+    <param name="webhelp.favicon"
+        desc="The file path of an image used as favicon."
+        type="file"/>
+    <param name="webhelp.google.search.script"
+        desc="Specifies the location of a well-formed XHTML file that contains the Custom Search Engine script from Google.
+        The value must be a file path."
+        type="file"/>
+    <param name="webhelp.google.search.results"
+        desc="Specifies the location of a well-formed XHTML file that contains the Google Custom Search Engine element &quot;gcse:searchresults-only&quot;. The value must be a file path. You can use all supported attributes for this element. It is recommended to set the &quot;linkTarget&quot; attribute value to &quot;frm&quot; for frameless (iframe) versions of WebHelp, or to &quot;contentWin&quot; for frameset versions of WebHelp.
+        The default value for this attribute is &quot;_blank&quot; and the search results will be loaded in a new window.
+        If this parameter is not specified, the following code will be used:
+        &lt;gcse:searchresults-only linkTarget=&quot;frm&quot;&gt;&lt;/gcse:searchresults-only&gt;"
+        type="file"/>
+    <param name="args.hide.parent.link"
+        desc="Enables the display for header links of the following types: Parent Topic,  Next Topic, Previous Topic."
+        type="enum">
+        <val default="true">no</val>
+        <val>yes</val>
+    </param>    
+    <param name="use.stemming"
+        desc="Specifies if stemming is used when searching in WebHelp generated content." type="enum">
+        <val default="true">false</val>
+        <val>true</val>
+    </param>
+    <param name="webhelp.sitemap.priority"
+        desc="The value of the &quot;priority&quot; element in the generated sitemap.xml file. 
+        Possible value is any fractional number between 0.0 (least important priority) and 1.0 (most important priority). For example: 0.3, 0.5, 0.8, etc. 
+        The &quot;priority&quot; element is optional in the sitemap.xml. 
+        If you leave this parameter set to its default empty value, the priority element is not added in sitemap.xml."
+        type="string"/>
+    <param name="webhelp.sitemap.change.frequency"
+        desc="The value of the &quot;changefreq&quot; element in the generated sitemap.xml file. 
+        The &quot;changefreq&quot; element is optional in the sitemap.xml file. 
+        If you leave this parameter set to its default empty value, the changefreq element is not added in sitemap.xml."
+        type="enum">
+        <val default="true"/>
+        <val>always</val>
+        <val>hourly</val>
+        <val>daily</val>
+        <val>weekly</val>
+        <val>monthly</val>
+        <val>yearly</val>
+        <val>never</val>
+    </param>
+    <param name="webhelp.search.japanese.dictionary"
+        desc="File path of the user dictionary that will be used by the Kuromoji indexer for indexing
+        Japanese content in the WebHelp pages."
+        type="string"/>
+    <param name="webhelp.sitemap.base.url"
+        desc="Base URL for all the &quot;loc&quot; elements in the generated sitemap.xml file.
+        The value of a &quot;loc&quot; element is composed of the value of the base URL parameter, followed by the value of the href attributes of the topicref elements (a relative file path).  
+        The &quot;loc&quot; element is mandatory in the sitemap.xml file. If you leave this parameter set to its default empty value, the sitemap.xml file is not generated."
+        type="string"/>
+    <param name="args.default.language"
+        desc="Specifies the language of the UI items displayed (such as labels or buttons) in the WebHelp output."
+        type="string">
+        <val default="true">en-us</val>
+    </param>
+    <param name="webhelp.reload.stylesheet"
+        desc="Set this parameter if you have out of memory problems generating WebHelp. It will increase processing time but
+        decrease the memory footprint."
+        type="enum">
+        <val default="true">false</val>
+        <val>true</val>
+    </param>
+    <param name="webhelp.show.changes.and.comments" 
+        type="enum"
+        desc="When set on 'yes', the user comments, colored highlights and trackchanges are shown in the output.">
+        <val default="true">no</val>
+        <val>yes</val>
+    </param>
+    <param name="webhelp.search.custom.excludes.file"
+        desc="The path of the file that contains name patterns for HTML files that should not be indexed by the WebHelp search engine.
+        Each line of this file is taken to be an exclude pattern. The patterns are considered relative paths, relative to the output directory.
+        '*' matches zero or more characters, '?' matches one character.
+        You can read more about patterns here: https://ant.apache.org/manual/dirtasks.html#patterns"
+        type="file"/>    
+</transtype>

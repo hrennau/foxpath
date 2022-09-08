@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+    targetNamespace="http://www.oxygenxml.com/ns/xmlRefactoring"
+    xmlns:xr="http://www.oxygenxml.com/ns/xmlRefactoring">
+    <xs:element name="refactoringOperationDescriptor">
+        <xs:annotation>
+            <xs:documentation>Describes an XML Refactor operation.</xs:documentation>
+        </xs:annotation>
+
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="description" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation>The operation description. Will be displayed in graphical
+                            interface.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element ref="xr:script"/>
+                <xs:element minOccurs="0" name="category" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation>The operation category. Used in graphical interface to group operations.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element ref="xr:parameters" minOccurs="0"/>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>The operation name. Its value is presented in the user
+                        interface when a user chooses an operation.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="id" use="required">
+                <xs:annotation>
+                    <xs:documentation>An unique identifier for this operation.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:minLength value="1"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="script">
+        <xs:annotation>
+            <xs:documentation>Defines the XSLT or XQuery Update script associated with this operation.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="type" use="required">
+                <xs:annotation>
+                    <xs:documentation>Defines the type of the script.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="XQUERY_UPDATE">
+                            <xs:annotation>
+                                <xs:documentation>Use this type for XQuery Update
+                                    scripts.</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="XSLT">
+                            <xs:annotation>
+                                <xs:documentation>Use this type for XSLT stylesheets.</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="href" use="required">
+                <xs:annotation>
+                    <xs:documentation>The script location.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="parameters">
+        <xs:annotation>
+            <xs:documentation>Contains the list of operation parameters.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence maxOccurs="1">
+                <xs:element minOccurs="1" name="description" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation>The parameters description, displayed in graphical interface when operation is configured.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:choice maxOccurs="unbounded">
+                    <xs:element ref="xr:section">
+                        <xs:annotation>
+                            <xs:documentation>Allows you to group one or more parameters in logical
+                                sections. It does not affect the execution of the operation, it is used
+                                only to group parameters in the graphical interface.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element ref="xr:abstractParameter"/>
+                </xs:choice>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="section">
+        <xs:annotation>
+            <xs:documentation><p>Allows you to group one or more parameters in logical sections.</p>
+                <p>It does not affect the operation execution, it is used only to group parameters
+                    in the graphical interface.</p></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element ref="xr:abstractParameter"/>
+            </xs:choice>
+            <xs:attribute name="label" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation>The section title displayed in the graphical
+                        interface.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="parameter" substitutionGroup="xr:abstractParameter">
+        <xs:annotation>
+            <xs:documentation>Contains information about a parameter such as <b>name</b>,
+                <b>type</b> or <b>description</b>.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="xr:abstractNamedParameterType">
+                    <xs:attribute name="type" use="required">
+                        <xs:annotation>
+                            <xs:documentation>Defines the type of the parameter. Depending it the
+                                application will use a different renderer or editor.</xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration value="TEXT">
+                                    <xs:annotation>
+                                        <xs:documentation>A parameter with simple text
+                                            value.</xs:documentation>
+                                    </xs:annotation>
+                                </xs:enumeration>
+                                <xs:enumeration value="XPATH">
+                                    <xs:annotation>
+                                        <xs:documentation> Use this type for XPath parameters. The
+                                            application will assist the editing of a parameter with this
+                                            type by offering dedicated syntax highlight and content
+                                            completion. </xs:documentation>
+                                    </xs:annotation>
+                                </xs:enumeration>
+                                <xs:enumeration value="NAMESPACE">
+                                    <xs:annotation>
+                                        <xs:documentation>
+                                            <p>Use this type to specify a namespace as parameter value. For
+                                                this type the application will add automatically the value
+                                                &lt;ANY> representing ANY namespace as a possible value.
+                                                This value is also transferred to the XSLT or XQuery
+                                                script.</p>
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:enumeration>
+                                <xs:enumeration value="REG_EXP_FIND">
+                                    <xs:annotation>
+                                        <xs:documentation> Use this type for regular expression parameters.
+                                            The application will assist the editing of this parameter by
+                                            offering dedicated syntax highlight and content completion.
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:enumeration>
+                                <xs:enumeration value="REG_EXP_REPLACE">
+                                    <xs:annotation>
+                                        <xs:documentation> Use this type for regular expression parameters.
+                                            The application will assist the editing of this parameter by
+                                            offering dedicated syntax highlight and content completion.
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:enumeration>
+                                <xs:enumeration value="XML_FRAGMENT">
+                                    <xs:annotation>
+                                        <xs:documentation> Use this type to specify an XML fragment as a
+                                            parameter value. The application will assist the editing of this
+                                            parameter by offering XML syntax highlight and check for
+                                            wellformed. </xs:documentation>
+                                    </xs:annotation>
+                                </xs:enumeration>
+                                <xs:enumeration value="NC_NAME">
+                                    <xs:annotation>
+                                        <xs:documentation>Used to store NCNAME values, for instance the name
+                                            of elements or attributes.</xs:documentation>
+                                    </xs:annotation>
+                                </xs:enumeration>
+                                <xs:enumeration value="BOOLEAN">
+                                    <xs:annotation>
+                                        <xs:documentation>Used for boolean values. In the application it
+                                            will be represented with a check box. The default value is false
+                                            if it is not explicitly specified in parameter 'default_value'.
+                                            The possible values are "true" and "false". </xs:documentation>
+                                    </xs:annotation>
+                                </xs:enumeration>
+                                <xs:enumeration value="TEXT_CHOICE"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:attribute>
+                    <xs:attribute default="false" name="optional" type="xs:boolean" use="optional">
+                        <xs:annotation>
+                            <xs:documentation>Specifies if a parameter is optional or not. If it is optional
+                                then the default value will be used. By default a parameter is
+                                required.</xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="possibleValues">
+        <xs:annotation>
+            <xs:documentation>The list of possible values. You could specify the attribute
+                <code>onlyPossibleValuesAllowed="true"</code> to enforce that only the
+                specified values are allowed. </xs:documentation>
+        </xs:annotation>
+        <xs:complexType mixed="true">
+            <xs:sequence>
+                <xs:element name="value" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>A possible value.</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attribute name="name" type="xs:string" use="required">
+                                    <xs:annotation>
+                                        <xs:documentation>The identifier used to refer this value entry from the XSLT / XQuery Update script.</xs:documentation>
+                                    </xs:annotation>
+                                </xs:attribute>
+                                <xs:attribute name="default" type="xs:boolean">
+                                    <xs:annotation>
+                                        <xs:documentation>Specify is this value represents the default one.</xs:documentation>
+                                    </xs:annotation>
+                                </xs:attribute>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="onlyPossibleValuesAllowed" use="optional" type="xs:boolean"
+                default="false">
+                <xs:annotation>
+                    <xs:documentation>Use this attribute to specify if only defined possible values
+                        are allowed.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+        <xs:unique name="unique_values">
+            <xs:selector xpath="xr:value"/>
+            <xs:field xpath="@name"/>
+        </xs:unique>
+    </xs:element>
+    <xs:element name="elementParameter" substitutionGroup="xr:abstractParameter">
+        <xs:annotation>
+            <xs:documentation>Parameter that should be used to specify the element local name and namespace. The application will assist the user with the list of elements and namespaces collected from current document.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="xr:localName"/>
+                <xs:element ref="xr:namespace"/>
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:ID">
+                <xs:annotation>
+                    <xs:documentation>The parameter ID.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute default="false" name="optional" type="xs:boolean"/>
+            <xs:attribute default="false" name="useCurrentContext" type="xs:boolean"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="attributeParameter" substitutionGroup="xr:abstractParameter">
+        <xs:annotation>
+            <xs:documentation>Parameter that should be used to specify the attribute local name and namespace. The application will assist the user with the list of attributes and namespaces collected from current document.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="xr:localName"/>
+                <xs:element ref="xr:namespace"/>
+            </xs:sequence>
+            <xs:attribute name="dependsOn" type="xs:IDREF" use="optional"/>
+            <xs:attribute default="false" name="optional" type="xs:boolean"/>
+            <xs:attribute default="false" name="useCurrentContext" type="xs:boolean"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="localName" type="xr:nameNamespaceType">
+        <xs:annotation>
+            <xs:documentation>The element/attribute local name parameter.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="namespace" type="xr:nameNamespaceType">
+        <xs:annotation>
+            <xs:documentation>The element/attribute namespace parameter.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:complexType name="nameNamespaceType">
+        <xs:complexContent>
+            <xs:extension base="xr:abstractNamedParameterType">
+                <xs:attribute default="false" name="allowsAny" type="xs:boolean">
+                    <xs:annotation>
+                        <xs:documentation>Specify if 'ANY' can be a possible value of the
+                            parameter.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:element abstract="true" name="abstractParameter"/>
+    <xs:complexType abstract="true" block="" name="abstractNamedParameterType">
+        <xs:complexContent>
+            <xs:extension base="xr:abstractParameterType">
+                <xs:attribute name="name" type="xs:string" use="required">
+                    <xs:annotation>
+                        <xs:documentation>
+                            The parameter name used in the XSLT or XQuery Update script.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType abstract="true" block="" name="abstractParameterType">
+        <xs:all>
+            <xs:element name="description" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>The parameter description displayed in the graphical interface as tooltip.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element ref="xr:possibleValues" minOccurs="0"/>
+        </xs:all>
+        <xs:attribute name="label" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>The parameter name displayed in user
+                    interface.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:element name="elementLocation" substitutionGroup="xr:abstractParameter">
+        <xs:annotation>
+            <xs:documentation>Parameter that can be used to match one or more elements by making use of an XPath expression.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="xr:element"/>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation>The corresponding parameter name from the XSLT or XQuery Update script.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="useCurrentContext" use="optional" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation>
+                        Specifies if the current editing context will be used as a default value for this parameter.
+                        For instance, if the caret position is over an element, its name will be used as the default value. 
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="element" type="xr:elementAttributeType">
+        <xs:annotation>
+            <xs:documentation>Specifies the label and description of the parameter used in the graphical interface.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="attribute" type="xr:elementAttributeType">
+        <xs:annotation>
+            <xs:documentation>Specifies the label and description of the parameter used in the graphical interface.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="attributeLocation" substitutionGroup="xr:abstractParameter">
+        <xs:annotation>
+            <xs:documentation>Parameter that can be used to match one or more attributes by making use of two XPath expressions: one to match the parent element and another the attribute itself.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="xr:element"/>
+                <xs:element ref="xr:attribute"/>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation>The corresponding parameter name from the XSLT or XQuery Update script.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="useCurrentContext" use="optional" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation>
+                        Specifies if the current editing context will be used as a default value for this parameter.
+                        For instance, if the caret position is over an attribute the name of the attribute will be used as the default value. 
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="elementAttributeType">
+        <xs:complexContent>
+            <xs:restriction base="xr:abstractParameterType">
+                <xs:all>
+                    <xs:element name="description" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation>The parameter description displayed in the graphical interface as tooltip.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:all>
+            </xs:restriction>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

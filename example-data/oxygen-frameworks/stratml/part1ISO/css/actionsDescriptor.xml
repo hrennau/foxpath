@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <!-- 
+        (Name, 
+         Description{0-1}, 
+         OtherInformation{0-1}, 
+         StrategicPlanCore, 
+         AdministrativeInformation{0-1}) 
+    -->
+    <contentModel parent="StrategicPlan" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">
+        <element name="Name" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="1"/>
+        <element name="Description" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="OtherInformation" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="StrategicPlanCore" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="1">
+            <fragment><![CDATA[<StrategicPlanCore xmlns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">
+    <Goal>
+      <Name>${caret}</Name>
+      <Description/>
+    </Goal>
+  </StrategicPlanCore>]]></fragment>
+        </element>
+        <element name="AdministrativeInformation" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+    </contentModel>
+    
+    <!-- 
+        (Organization{0-UNBOUNDED}, 
+         Vision{0-1}, 
+         Mission{0-1}, 
+         Value{0-UNBOUNDED}, 
+         Goal{1-UNBOUNDED})
+    
+    -->
+    <contentModel parent="StrategicPlanCore" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">
+        <element name="Organization" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="*"/>
+        <element name="Vision" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="Mission" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="Value" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="*"/>
+        <element name="Goal" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="+">
+            <fragment><![CDATA[<Goal xmlns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">
+      <Name>${caret}</Name>
+      <Description/>
+  </Goal>]]></fragment>
+        </element>
+    </contentModel>
+
+
+    <!-- 
+        (Name, 
+         Description, 
+         Identifier{0-1}, 
+         SequenceIndicator{0-1}, 
+         Stakeholder{0-UNBOUNDED}, 
+         OtherInformation{0-1}, 
+         Objective{0-UNBOUNDED})    
+    -->
+    <contentModel parent="Goal" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">
+        <element name="Name" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="1"/>
+        <element name="Description" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="1"/>
+        <element name="Identifier" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?">
+                <fragment><![CDATA[<Identifier xmlns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">ID-${uuid}${caret}</Identifier>]]></fragment>
+        </element>
+        <element name="SequenceIndicator" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="Stakeholder" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="*">
+            <fragment><![CDATA[<Stakeholder xmlns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">
+      <Name>${caret}</Name>
+  </Stakeholder>]]></fragment>
+        </element>
+        <element name="OtherInformation" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="Objective" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="*">
+            <fragment><![CDATA[<Objective xmlns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">
+      <Name/>
+      <Description/>
+  </Objective>]]></fragment>
+        </element>
+    </contentModel>
+
+    <!-- 
+        (Name{0-1}, 
+         Acronym{0-1}, 
+         Identifier{0-1}, 
+         Description{0-1}, 
+         Stakeholder{0-UNBOUNDED})
+    -->
+    
+    <contentModel parent="Organization" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">
+        <element name="Name" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="Acronym" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="Identifier" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?">
+                <fragment><![CDATA[<Identifier xmlns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">ID-${uuid}${caret}</Identifier>]]></fragment>
+        </element>
+        <element name="Description" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="Stakeholder" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="*">
+            <fragment><![CDATA[<Stakeholder xmlns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">
+      <Name>${caret}</Name>
+  </Stakeholder>]]></fragment>
+        </element>
+    </contentModel>
+
+    <!-- 
+        (Name, 
+        Description{0-1})
+    -->
+    <contentModel parent="Stakeholder" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">
+        <element name="Name" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="1"/>
+        <element name="Description" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+    </contentModel>
+
+    <!-- 
+        (
+         Description{0-1}, 
+         Identifier{0-1})
+    -->
+    <contentModel parent="Vision" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">
+        <element name="Description" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="Identifier" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?">
+                <fragment><![CDATA[<Identifier xmlns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">ID-${uuid}${caret}</Identifier>]]></fragment>
+        </element>
+    </contentModel>
+    
+    <!-- 
+        (
+         Description{0-1}, 
+         Identifier{0-1})
+    -->
+    <contentModel parent="Mission" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">
+        <element name="Description" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="Identifier" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?">
+                <fragment><![CDATA[<Identifier xmlns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">ID-${uuid}${caret}</Identifier>]]></fragment>
+        </element>
+    </contentModel>
+    
+    <!-- 
+        (Name{0-1}, 
+        Description{0-1})
+    -->
+    <contentModel parent="Value" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">
+        <element name="Name" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="Description" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+    </contentModel>
+
+    <!-- 
+        (Name{0-1}, 
+         Description{0-1}, 
+         Identifier{0-1}, 
+         SequenceIndicator{0-1}, 
+         Stakeholder{0-UNBOUNDED}, 
+         OtherInformation{0-1})
+    -->
+    <contentModel parent="Objective" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">
+        <element name="Name" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="Description" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="1"/>
+        <element name="Identifier" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?">
+                <fragment><![CDATA[<Identifier xmlns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">ID-${uuid}${caret}</Identifier>]]></fragment>
+        </element>
+        <element name="SequenceIndicator" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="Stakeholder" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="*">
+            <fragment><![CDATA[<Stakeholder xmlns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">
+      <Name>${caret}</Name>
+  </Stakeholder>]]></fragment>
+        </element>
+        <element name="OtherInformation" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+    </contentModel>
+    
+    <!-- 
+        (StartDate{0-1}, 
+         EndDate{0-1}, 
+         PublicationDate{0-1}, 
+         Source{0-1}, 
+         Submitter{0-1})
+    -->    
+    <contentModel parent="AdministrativeInformation" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">
+        <element name="StartDate" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="EndDate" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="PublicationDate" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="Source" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="Submitter" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+    </contentModel>
+
+    <!-- 
+        (GivenName{0-1}, 
+         Surname{0-1}, 
+         PhoneNumber{0-1}, 
+         EmailAddress{0-1})
+    -->
+    <contentModel parent="Submitter" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core">
+        <element name="GivenName" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="Surname" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="PhoneNumber" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+        <element name="EmailAddress" ns="urn:ISO:std:iso:17469:tech:xsd:stratml_core" occurs="?"/>
+    </contentModel>
+
+</actions>

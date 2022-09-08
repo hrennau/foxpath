@@ -1,0 +1,41 @@
+/*
+=====================================
+    Text formatting elements.  [hi-d]
+=====================================
+*/
+
+*[class~="hi-d/b"], 
+*[class~="hi-d/i"], 
+*[class~="hi-d/tt"], 
+*[class~="hi-d/u"], 
+*[class~="hi-d/sup"], 
+*[class~="hi-d/sub"] {
+  display: inline;
+}
+
+*[class~="hi-d/b"] {
+  font-weight: bold;
+}
+
+*[class~="hi-d/i"] {
+  font-style: italic;
+}
+
+*[class~="hi-d/tt"] {
+  font-family: monospace;
+  font-size:0.9em;
+}
+
+*[class~="hi-d/u"] {
+  text-decoration: underline;
+}
+
+*[class~="hi-d/sup"] {
+  vertical-align: super;
+  font-size: smaller;
+}
+
+*[class~="hi-d/sub"] {
+  vertical-align: sub;
+  font-size: smaller;
+}

@@ -1,0 +1,66 @@
+@media print {
+
+    /* Make invisible the indexterms in the content */ 
+    *[class ~= "topic/topic"] index\.entry {
+        max-width:2px;
+        background-color:transparent;
+        color:transparent;
+        font-size:0px;
+    }
+    
+    
+    /*
+     *
+     * Create the index page.
+     *  
+     */
+    index\.groups {
+        display: block;
+        page: index;
+        counter-reset: index-page 1;
+        columns: 2;
+        column-fill: auto; 
+        page: index; 
+    }
+    @page index {    
+        @top {          content: "Index" }
+        @bottom {       content: counter(index-page, lower-alpha) }
+        @bottom-right { content: none }
+        @bottom-left {  content: none }
+        @top-right {    content: none }
+        @top-left {     content: none }        
+    }    
+    
+    index\.groups index\.group {
+        display:block;
+    }
+
+    index\.groups index\.group label {
+        display:block;
+        font-size:larger;
+        font-weight:bold;
+    }
+ 
+    index\.groups index\.entry {
+        display:block;
+        margin-left:1em;
+    }
+    
+    index\.groups formatted\.value{
+        display:block;
+        margin-left:1em;
+    }
+
+    index\.groups refID:before{
+        content: " ";
+    }
+
+    index\.groups index-link{
+        content: target-counter(attr(href), page) ",";
+        prince-link:attr(href);
+    }    
+
+    index\.groups index-link:last-child{
+        content: target-counter(attr(href), page);
+    }
+}

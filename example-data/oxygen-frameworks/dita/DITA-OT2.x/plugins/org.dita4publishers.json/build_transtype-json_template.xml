@@ -1,0 +1,63 @@
+<project name="dita2json" default="dita2json" xmlns:dita="http://dita-ot.sourceforge.net">
+
+  <!-- test to see where the plugin is located, plugins or demo -->
+  <dirname property="json.dir" file="${ant.file.dita2json}"/>
+  
+  <target name="dita2json"
+    unless="noMap"
+    xmlns:dita="http://dita-ot.sourceforge.net"
+    dita:depends="d4p.map-driven-build-init, build-init, preprocess, json"
+    dita:extension="depends org.dita.dost.platform.InsertDependsAction">
+  </target>
+
+  <target name="json"
+    unless="noMap"
+    depends="dita.map.json"
+  />
+
+  <target name="dita.map.json.init" description="Init properties for json transformation">
+    <property name="out.ext" value=".json" />
+    <echo message="+++ json-specific properties:"/>
+    <echoproperties format="text" regex="^(json)" taskname="echo"/>
+  </target>
+  
+  <target 
+    name="dita.map.json" 
+    depends="dita.map.json.init"
+    description="Generate json components"
+  >
+  
+    <makeurl file="${dita.temp.dir}" property="json.xslt.tempdir"/>
+
+    <property name="map2json.style" location="${json.dir}/xsl/map2json.xsl"/>
+    <property name="args.xhtml.toc" value="index"/>
+
+    <xslt processor="trax"
+      basedir="${dita.temp.dir}"
+      destdir="${output.dir}"
+      includesfile="${dita.temp.dir}${file.separator}${user.input.file.listfile}"
+      classpathref="dost.class.path"
+      style="${map2json.style}"
+      filenameparameter="inputFileNameParam"
+    >
+
+      <param name="OUTEXT" expression="${out.ext}"/><!-- Extension to use for result files, e.g., ".html" -->
+      <param name="outdir" expression="json"/>
+      <param name="topicsOutputDir" expression="${topics.output.dir}"/>
+      <param name="tempdir" expression="${json.xslt.tempdir}"/>
+      <param name="debug" expression="${debug}"/>
+
+      <xmlcatalog refid="dita.catalog"></xmlcatalog>
+
+      <dita:extension id="d4p.json.xslt.param" behavior="org.dita.dost.platform.InsertAction" />
+
+      <mapper type="glob"
+        from="${user.input.file}"
+        to="${args.xhtml.toc}${out.ext}" 
+      />
+
+    </xslt>
+
+  </target>
+
+</project>
