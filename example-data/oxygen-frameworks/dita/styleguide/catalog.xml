@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE catalog PUBLIC "-//OASIS//DTD XML Catalogs V1.1//EN" "http://www.oasis-open.org/committees/entity/release/1.1/catalog.dtd">
-<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
-    <!-- The style guide topics are now accessible on a remote location -->
-    <rewriteURI uriStartString="http://www.oxygenxml.com/dita/styleguide/webhelp-feedback" rewritePrefix="http://www.oxygenxml.com/dita/styleguide/webhelp-feedback"/>
-    <!-- To allow use of absolute URLs to styleguide topics and resolve them to the local location -->
-    <!--Used to map "Browse DITA Style Guide" action to the content completion elements map location-->
-    <rewriteURI uriStartString="http://www.oxygenxml.com/documentation/dita/styleguide/" rewritePrefix="."/>
-</catalog>

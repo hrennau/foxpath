@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE map PUBLIC "-//OASIS//DTD XDITA Map//EN" "map.dtd">
-<map id="map_${id}">
-    <topicmeta>
-        <navtitle/>
-    </topicmeta>
-</map>

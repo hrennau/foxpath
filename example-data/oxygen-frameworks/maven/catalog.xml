@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE catalog PUBLIC "-//OASIS//DTD XML Catalogs V1.1//EN" "http://www.oasis-open.org/committees/entity/release/1.1/catalog.dtd">
-<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
-    <uri name="http://maven.apache.org/xsd/settings-1.0.0.xsd" uri="schemas/settings-1.0.0.xsd"/>
-    <uri name="http://maven.apache.org/xsd/maven-4.0.0.xsd" uri="schemas/maven-4.0.0.xsd"/>
-</catalog>

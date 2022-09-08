@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.opengis.net/kml/2.2"> 
-  <xs:include schemaLocation="ogckml22.xsd"/>
-  <xs:import namespace="http://www.google.com/kml/ext/2.2" schemaLocation="kml22gx.xsd"/>
-</xs:schema>

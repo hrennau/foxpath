@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE catalog PUBLIC "-//OASIS//DTD XML Catalogs V1.1//EN" "http://www.oasis-open.org/committees/entity/release/1.1/catalog.dtd">
-<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
-  <uri name="http://www.aiim.org/documents/StratML_Schemas/PerformancePlanOrReport.xsd" uri="PerformancePlanOrReport.xsd"/>
-  <uri name="http://xml.gov/stratml/references/PerformancePlanOrReport20101215.xsd" uri="PerformancePlanOrReport.xsd"/>
-</catalog>

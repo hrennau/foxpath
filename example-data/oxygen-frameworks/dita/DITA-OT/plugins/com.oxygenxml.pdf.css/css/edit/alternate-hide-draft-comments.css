@@ -1,6 +1,0 @@
-/** 
- * CSS used to hide draft comments.
- */
-*[class ~= "topic/draft-comment"] {
-	display:none;
-}

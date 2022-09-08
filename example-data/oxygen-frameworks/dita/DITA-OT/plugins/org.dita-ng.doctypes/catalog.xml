@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--XML Catalog for DITA-NG Relax NG schemas-->
-<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
-  <nextCatalog catalog="catalog-rng.xml"/>
-  <nextCatalog catalog="catalog-rnc.xml"/>
-</catalog>

@@ -1,9 +1,0 @@
-@import "xhtml.css";
-
-col, colgroup {
-    display: none !important;    
-}
-
-table:before {
-	display: none !important;
-}

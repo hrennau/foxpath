@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project basedir="." name="dc-preprocess-extensions">
-  <!-- 
-       DITA Community Open Toolkit preprocessing extensions. 
-    -->
-  
-   <import file="preprocess-extensions.xml"/>
-</project>
