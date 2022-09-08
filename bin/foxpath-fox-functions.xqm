@@ -1417,6 +1417,23 @@ declare function f:hlistRC($level as xs:integer,
 };
 
 (:~
+ : Indents text items. Parameters specify the size of
+ : indentation (default: 4) and the indentation character
+ : (default: blank).
+ :)
+declare function f:indent($items as item()*, 
+                          $indentString as xs:string?, 
+                          $options as xs:string?)
+        as xs:string* {
+    let $ops := f:getOptions($options, ('skip1'), 'insert')        
+    let $skip1 := $ops = 'skip1'
+    
+    let $prefix := ($indentString, '    ')[1] 
+    let $strings := $items ! string(.)            
+    for $string in $strings return $prefix[not($skip1)] || replace($string, '&#xA;', '&#xA;'||$prefix)
+};
+
+(:~
  : Returns for a given element all namespace bindings as strings
  : prefix=uri. The bindings are ordered by lowercase prefixes,
  : then lowercase URIs.

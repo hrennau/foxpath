@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="indent">
+    <testenviron> In order to try out the examples, start a command shell and move to folder
+        $FOXPATH/examples-functions/indent. </testenviron>
+    <examples>
+        <example tag="Basic use">
+            <description> 
+                Create a list of file names, where each name is followed by indented details.                
+            </description>
+            <code>
+                fox "data/*.xml/(fname(), \\city\indent())" 
+            </code>
+        </example>
+        <example tag="Control the indentation string">
+            <description> 
+                As the preceding example, but use a self-defined indentation string, rather than four blanks.                
+            </description>
+            <code>
+                fox "data/*.xml/(fname(), \\city\indent('  -> '))" 
+            </code>
+        </example>
+        <example tag="Use option skip1">
+            <description>
+                List file contents, indenting all lines except for the first.
+            </description>
+            <code>
+                fox "data/cities.txt/file-content()/indent('  ', 'skip1')"
+            </code>
+        </example>
+    </examples>
+</function-usage>

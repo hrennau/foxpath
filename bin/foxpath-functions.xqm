@@ -737,18 +737,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
                             
        (: function `indent` 
           ===================== :)
-        else if ($fname = 'indent') then
-            let $lines := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $indent := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $indentChar := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+        else if ($fname = ('indent', 'indent-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $text := if ($da) then $arg1 else $context
+            let $indentString := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:indent($text, $indentString, $fnOptions)
             
-            let $indent := 
-                if (empty($indent)) then 4
-                else $indent[. castable as xs:integer] ! xs:integer(.)
-            let $indentChar := ($indentChar ! normalize-space(.) ! substring(., 1, 1), ' ')[1]
-            let $prefix := (for $i in 1 to $indent return $indentChar) => string-join('')            
-            return $lines ! concat($prefix, .)
-
         (: function `in-scope-namespaces` 
            ============================= :)
         else if ($fname eq 'in-scope-namespaces') then
