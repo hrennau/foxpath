@@ -2826,7 +2826,6 @@ declare function f:prettyNode($items as item()*,
     return $nodes ! util:prettyNode(., $ops)
 };
 
-
 (:~
  : Creates a reduced copy of a node. Content nodes selected by the
  : expressions $excludeExprs are removed.
@@ -3631,44 +3630,66 @@ declare function f:writeFiles($files as item()*,
 };
 
 (:~
- : Writes a collection of files into a folder.
+ : Writes documents into files.
  :
- : @param files the file URIs
- : @param dir the folder into which to write
- : @return 0 if no errors were observed, 1 otherwise
+ : @param urisOrNodes document URIs or nodes
+ : @param dir the output folder
+ : @param path the file path of the file to be written
+ : @param nameFrom when deriving the file name, replace 
+ :   this part of the current file name
+ : @param nameTo when deriving the file name, let this
+ :   string replace the file name part specified by
+ :   $nameFrom
+ : @param options options controlling the function behaviour
+ : @param processing options options controlling Foxpath processing
+ : @param extFuncName name of the extension functions called
+ : @return empty sequence
  :)
-declare function f:writeDocs($docs as item()*, 
-                             $dir as xs:string?,
-                             $options as xs:string?,
-                             $processingOptions as map(*)?)
+declare function f:writeDoc($urisOrNodes as item()*, 
+                            $dir as xs:string?,
+                            $name as xs:string?,
+                            $nameExpr as xs:string?,
+                            $nameFrom as xs:string?,
+                            $nameTo as xs:string?,
+                            $options as xs:string?,
+                            $processingOptions as map(*)?,
+                            $extFuncName as xs:string)
         as empty-sequence() {
-    let $ops := f:getOptions($options, ('noindent', 'unbase'), 'write-docs')
+    let $ops := f:getOptions($options, ('noindent', 'unbase'), $extFuncName)
     let $noindent := $ops = 'noindent'
     let $unbase := $ops = 'unbase'
-    for $doc in $docs
-    let $baseUri :=
-        if ($doc instance of node()) then $doc ! base-uri(.)
-        else $doc
-    let $_CHECK := if ($baseUri) then () else error(QName((), 'INVALID_ARG'),
-        'Function write-doc requires documents with a base URI, but '||
-        'received a document without one.')
-    let $fileName := replace($baseUri, '.*/', '')
-    let $dir := ($dir, '.')[1]
-    let $_CREATE := if (file:exists($dir)) then () else file:create-dir($dir) 
-    let $path := $dir||'/'||$fileName
-    let $writeOptions := if ($noindent) then () else map{'indent': 'yes'}
-    let $wdoc :=
-        let $document :=
-            if ($doc instance of node()) then $doc
-            else i:fox-doc($doc, $processingOptions)
-        return
-            if (not($unbase)) then $document
-            else
-                copy $_document := $document
-                modify delete node $_document//@xml:base
-                return $_document
-    return
-        file:write($path, $wdoc, $writeOptions)
+    let $dir := ($dir, '.')[1]    
+    for $uriOrNode in $urisOrNodes
+    let $node :=
+        if ($uriOrNode instance of node()) then $uriOrNode
+        else i:fox-doc($uriOrNode, $processingOptions)    
+    let $fileName :=
+        if ($name) then $name
+        else if ($nameExpr) then $nameExpr ! f:resolveFoxpath($node, ., (), $processingOptions)
+        else 
+            let $baseUri :=
+                if ($uriOrNode instance of node()) then $uriOrNode ! base-uri(.)
+                else $uriOrNode
+            let $_CHECK := if ($baseUri) then () else error(QName((), 'INVALID_ARG'),
+                'Function '||$extFuncName||' requires documents with a base URI, but '||
+                'received a document without one.')                
+            let $previousFileName := replace($baseUri, '.*/', '')
+            return
+                if ($nameFrom) then
+                    let $previousFileName := replace($baseUri, '.*/', '')
+                    return replace($previousFileName, $nameFrom, $nameTo)
+                else $previousFileName
+    let $path := $dir||'/'||$fileName                
+    let $_CREATE := 
+        if ($dir eq '.') then () 
+        else file:create-dir($dir)[not(file:exists($dir))]
+    let $writeOptions := map{'indent': if ($noindent) then 'no' else 'yes'}
+    let $wnode :=
+        if (not($unbase)) then $node else
+            copy $_node := $node
+            modify delete node $_node//@xml:base
+            return $_node
+    return file:write($path, $wnode, $writeOptions)
 };
 
 (:~

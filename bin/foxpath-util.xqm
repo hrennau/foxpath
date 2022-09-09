@@ -706,6 +706,17 @@ declare function f:prettyNode($n as node(), $options as xs:string*)
     return $n_
 };        
 
+declare function f:removeIndent($n as node(), $options as xs:string*)
+        as node()? {
+    copy $n_ := $n
+    modify
+        if ($options = 'weak') then
+            delete nodes $n_//text()[not(matches(., '\S'))][../*][empty(../text()[matches(., '\S')])]
+        else
+            delete nodes $n_//text()[not(matches(., '\S'))][../*]
+    return $n_
+};        
+
 (:~
  : Pads a string on the lefthand side.
  :)

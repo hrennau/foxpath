@@ -1,4 +1,9 @@
 <airports country="Denmark">
+  <cities>
+    <city>Gronholt</city>
+    <city>Krusa-padborg</city>
+  </cities>
+  <ids>611 616</ids>
   <airport id="611" icao="EKGH">
     <name>Grønholt Hillerød Airport</name>
     <city>Gronholt</city>

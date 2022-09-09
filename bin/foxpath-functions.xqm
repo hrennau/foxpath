@@ -1219,7 +1219,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $options := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:prettyNode($doc, $options)
-            
+
         (: function `ps.copy` 
            ===================== :)
         else if ($fname eq 'ps.copy') then
@@ -1554,7 +1554,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `write-doc` 
            ==================== :)
-        else if ($fname eq 'write-doc') then
+        else if ($fname eq 'write-doc/old') then
             let $item := $context
             let $fname := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $options := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -1608,15 +1608,54 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:writeFiles($items, $folder, $fileNameExpr, $encoding, $fnOptions, $options)
                 
-        (: function `write-docs` 
-           ===================== :)
-        else if ($fname eq 'write-docs') then
-            let $docs := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
-            let $folder := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
-            let $fnOptions := $call/*[3] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+        (: function `write-doc` 
+           ==================== :)
+        else if ($fname = ('write-doc', 'write-doc-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $arg1 := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $docs := if ($da) then $arg1 else $context        
+            let $folder := $call/*[1 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $fnOptions := $call/*[2 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:writeDocs($docs, $folder, $fnOptions, $options)
+                foxf:writeDoc($docs, $folder, (), (), (), (), $fnOptions, $options, $fname)
                 
+        (: function `write-named-doc` 
+           ========================== :)
+        else if ($fname = ('write-named-doc', 'write-named-doc-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $arg1 := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $docs := if ($da) then $arg1 else $context
+            let $folder := $call/*[2 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $name := $call/*[3 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $fnOptions := $call/*[4 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:writeDoc($docs, $folder, $name, (), (), (), $fnOptions, $options, $fname)
+
+        (: function `write-renamed-doc` 
+           ============================ :)
+        else if ($fname = ('write-renamed-doc', 'write-renamed-doc-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $arg1 := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $docs := if ($da) then $arg1 else $context        
+            let $folder := $call/*[1 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $nameFrom := $call/*[2 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $nameTo := $call/*[3 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $call/*[4 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:writeDoc($docs, $folder, (), (), $nameFrom, $nameTo, $fnOptions, $options, $fname)
+
+        (: function `write-exnamed-doc` 
+           ============================ :)
+        else if ($fname = ('write-exnamed-doc', 'write-exnamed-doc-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $arg1 := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $docs := if ($da) then $arg1 else $context        
+            let $folder := $call/*[1 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $nameExpr := $call/*[2 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $fnOptions := $call/*[3 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:writeDoc($docs, $folder, (), $nameExpr, (), (), $fnOptions, $options, $fname)
+
         (: function `write-json-docs` 
            ========================= :)
         else if ($fname eq 'write-json-docs') then

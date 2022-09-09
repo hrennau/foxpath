@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="write-doc">
+    <testenviron> In order to try out the examples, start a command shell and move to folder
+        $FOXPATH/examples-functions/write-doc. </testenviron>
+    <examples>
+        <example tag="Basic use">
+            <description> 
+                Write selected documents into a folder. The written files are indented. 
+            </description>
+            <code> 
+                fox "airports/airport-*.xml[\*\*]/write-doc('output')" 
+            </code>
+        </example>
+        <example tag="Write documents without indentation">
+            <description> 
+                Write selected documents into a folder, do not indet. 
+            </description>
+            <code> 
+                fox "airports/airport-*.xml[\*\*]/write-doc('output', 'noindent')" 
+            </code>
+        </example>
+        <example tag="Modify documents and write the results.">
+            <description> 
+                Modifies documents and writes the results into a folder 
+            </description>
+            <code> 
+                fox "airports/airport-*.xml[\*\*]/delete-nodes('\\dst, \\source1')/write-doc('output')" 
+            </code>
+        </example>
+        <example tag="Write document fragment.">
+            <description> 
+                Writes a document fragment. The file name of the fragment is the file name of the 
+                containing document. Use functions write-named-doc, write-renamed-doc, 
+                write-exnamed-doc in order to write to a different file name.
+            </description>
+            <code> 
+                fox "airports/airports.xml\*\*[@icao eq 'EFEU']/write-doc('output')" 
+            </code>
+        </example>
+    </examples>
+</function-usage>

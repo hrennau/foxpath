@@ -1,0 +1,23 @@
+<airports country="Denmark">
+  <cities>
+    <city>Kolding</city>
+  </cities>
+  <ids>624</ids>
+  <airport id="624" icao="EKVD">
+    <name>Kolding Vamdrup Airfield</name>
+    <city>Kolding</city>
+    <country>Denmark</country>
+    <geo>
+      <latitude>55.436298</latitude>
+      <longitude>9.33092</longitude>
+      <altitude>143</altitude>
+    </geo>
+    <temporal>
+      <timezone>1</timezone>
+      <tzTimezone>Europe/Copenhagen</tzTimezone>
+      <dst>E</dst>
+    </temporal>
+    <type>airport</type>
+    <source1>OurAirports</source1>
+  </airport>
+</airports>
