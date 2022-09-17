@@ -87,8 +87,8 @@ declare function f:fnContainsText($selections as xs:string+,
  :)
 declare function f:serializeFt($tree as element())
         as xs:string {
-
-    let $options := ($tree ! f:serializeFtOptions(.))[string()] return
+    let $options := ($tree ! f:serializeFtOptions(.))[string()] 
+    return
     
     typeswitch($tree)
     case element(words) return 
@@ -383,7 +383,7 @@ declare function f:parseFtOptions($optionsText as xs:string?,
             else if (starts-with($o, 'occ')) then 
                 map:entry('occurs', 'occurs '||f:parseFtRange(substring($o, 4), ())||' times')
             else if (starts-with($o, 'win')) then 
-                map:entry('window', f:parseFtWindow($o))
+                map:entry('window', 'window '||f:parseFtWindow($o))
             else if (starts-with($o, 'dist')) then 
                 map:entry('distance', 'distance '||f:parseFtRange(substring($o, 5), true()))
             else if (starts-with($o, 'phrase')) then

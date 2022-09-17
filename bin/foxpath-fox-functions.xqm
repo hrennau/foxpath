@@ -111,14 +111,14 @@ declare function f:annotate($value as item()?,
  : @return the augmented document
  :)
 declare function f:insertNodes($items as item()*,
-                               $insertWhereExpr as xs:string,
-                               $insertWhatExpr as xs:string,
+                               $insertWhereExpr as item(),
+                               $insertWhatExpr as item(),
                                $nodeName as xs:string?,
                                $options as xs:string?,
                                $processingOptions as map(*))
         as node()* {
     if (empty($items)) then () else
-    
+
     let $nodes := 
         for $item in $items
         return if ($item instance of node()) then $item else i:fox-doc($item, ())
@@ -133,9 +133,9 @@ declare function f:insertNodes($items as item()*,
     let $resultDoc :=  
         copy $node_ := $node
         modify
-            let $receivingNodes := f:resolveFoxpath($node_, $insertWhereExpr, (), $processingOptions)
+            let $receivingNodes := f:resolveFoxpath($node_, $insertWhereExpr, $processingOptions)
             for $rnode in $receivingNodes
-            let $ivalue := f:resolveFoxpath($rnode, $insertWhatExpr, (), $processingOptions)
+            let $ivalue := f:resolveFoxpath($rnode, $insertWhatExpr, $processingOptions)
             let $inodes :=
                 if (not($nodeName)) then 
                     for $item in $ivalue
@@ -2602,7 +2602,8 @@ declare function f:pathMultiDiff($items as item()*,
     let $options := f:getOptions($options, 
         ('lname', 'jname', 'name', 
          'docs', 'common', 'uncommon', 'details', '~docs', '~common', '~uncommon', '~details',
-         'indexed', 'fname'),
+         'indexed', 'fname',
+         'report-names'),
         $extFuncName)
     let $nameKind := ($options[. = ('lname', 'jname', 'name')][1], 'lname')[1]  
     let $scopeDefault := ('docs', 'common', 'uncommon', 'details')
@@ -2835,7 +2836,7 @@ declare function f:prettyNode($items as item()*,
  : @return a copy of the input doc in which the selected nodes have been removed
  :)
 declare function f:deleteNodes($items as item()*,
-                               $excludeExprs as xs:string*,
+                               $excludeExpr as item(),
                                $options as xs:string?,
                                $processingOptions as map(*))
         as node()* {
@@ -2847,8 +2848,9 @@ declare function f:deleteNodes($items as item()*,
     let $resultDoc :=  
         copy $node_ := $node
         modify (
-            let $delNodes := $excludeExprs !                 
-                f:resolveFoxpath($node_, ., (), $processingOptions)[. instance of node()]
+            let $_DEBUG := trace($excludeExpr, '_EXCLUDE_EXPR: ')
+            let $delNodes := $excludeExpr !                 
+                f:resolveFoxpath($node_, ., $processingOptions)[. instance of node()]
             return 
             if (empty($delNodes))then () else
                 delete nodes $delNodes
@@ -3005,8 +3007,8 @@ declare function f:repeat($string as xs:string?, $count as xs:decimal?)
  : @return the edited input item
  :)
 declare function f:replaceValues($items as item()*,
-                                 $replaceNodesExpr as xs:string,
-                                 $valueExpr as xs:string,
+                                 $replaceNodesExpr as item(),
+                                 $valueExpr as item(),
                                  $options as xs:string?,
                                  $processingOptions as map(*))
         as node()* {
@@ -3019,9 +3021,11 @@ declare function f:replaceValues($items as item()*,
     let $resultDoc :=  
         copy $node_ := $node
         modify (
-            let $replaceNodes := f:resolveFoxpath($node_, $replaceNodesExpr, (), $processingOptions)
+            let $replaceNodes := f:resolveFoxpath($node_, $replaceNodesExpr, $processingOptions)
+            let $_DEBUG := trace($replaceNodesExpr, '_REPLACE_NODES_EXPR: ')
+            let $_DEBUG := trace(count($replaceNodes), '_#REPLACE_NODES: ')
             for $rnode in $replaceNodes
-            let $newValue := f:resolveFoxpath($rnode, $valueExpr, (), $processingOptions)
+            let $newValue := f:resolveFoxpath($rnode, $valueExpr, $processingOptions)
             return replace value of node $rnode with $newValue,
             
             if (not($withBaseUri)) then () else
@@ -3089,6 +3093,30 @@ declare function f:rightValueOnly($leftValue as item()*,
 };
 
 declare function f:resolveFoxpath($context as item(), 
+                                  $exprTextOrTree as item(), 
+                                  $options as map(*))
+        as item()* {
+    (: let $_DEBUG := trace($exprTree, '_EXPRESSION_TREE: ') :)   
+    let $isContextNode := $context instance of node()
+    let $useOptions :=
+        if ($isContextNode) then $options
+        else map:put($options, 'IS_CONTEXT_URI', true())
+    return
+        if ($exprTextOrTree instance of node()) then
+            let $isExprContextNode := not($exprTextOrTree/@isContextURI/xs:boolean(.))
+            return
+                (: If parse context different from current context => parse again :)
+                if ($isContextNode and not($isExprContextNode) 
+                    or not($isContextNode) and $isExprContextNode) then
+                    i:resolveFoxpath($exprTextOrTree/@text, false(), $context, $useOptions, ())                    
+                else
+                    i:resolveFoxpathTree($exprTextOrTree, false(), $context, $useOptions, ())                
+            
+
+        else i:resolveFoxpath($exprTextOrTree, false(), $context, $useOptions, ())
+};
+
+declare function f:resolveFoxpath($context as item(), 
                                   $expr as xs:string?, 
                                   $exprTree as element()?, 
                                   $options as map(*))
@@ -3111,7 +3139,7 @@ declare function f:resolveFoxpath($context as item(),
                                   $vars as map(*)?,
                                   $options as map(*))
         as item()* {
-    let $_DEBUG := trace(map:keys($vars), '_VARS: ')        
+    (: let $_DEBUG := trace(map:keys($vars), '_VARS: ') :)        
     let $useOptions :=
         if ($context instance of node()) then $options
         (: else if ($context?IS_CONTEXT_URI) then $options :)   (: 20200213 - commented out _TO_DO_ must be analyzed :)
@@ -3584,8 +3612,7 @@ declare function f:unescapeJsonName($item as item()) as xs:string {
 declare function f:writeDoc($item as item()*,
                             $filePath as xs:string?,
                             $options as xs:string?)
-        as empty-sequence() {
-    let $_DEBUG := trace($filePath, '_FILEPATH: ')        
+        as empty-sequence() {           
     let $ops := $options ! tokenize(.)        
     let $inputNode :=
         if ($item instance of node()) then $item else i:fox-doc($item, ())
@@ -3655,11 +3682,17 @@ declare function f:writeDoc($urisOrNodes as item()*,
                             $processingOptions as map(*)?,
                             $extFuncName as xs:string)
         as empty-sequence() {
-    let $ops := f:getOptions($options, ('noindent', 'unbase'), $extFuncName)
+    let $ops := f:getOptions($options, ('noindent', 'unbase', 'docbase'), $extFuncName)
     let $noindent := $ops = 'noindent'
     let $unbase := $ops = 'unbase'
-    let $dir := ($dir, '.')[1]    
+    let $docbase := $ops = 'docbase'
     for $uriOrNode in $urisOrNodes
+    let $baseUri :=
+        if ($uriOrNode instance of node()) then $uriOrNode ! base-uri(.)
+        else $uriOrNode
+    let $dir := 
+        let $raw := ($dir, '.')[1] return
+            if (not($docbase)) then $raw else resolve-uri($raw, $baseUri)
     let $node :=
         if ($uriOrNode instance of node()) then $uriOrNode
         else i:fox-doc($uriOrNode, $processingOptions)    
@@ -3667,9 +3700,6 @@ declare function f:writeDoc($urisOrNodes as item()*,
         if ($name) then $name
         else if ($nameExpr) then $nameExpr ! f:resolveFoxpath($node, ., (), $processingOptions)
         else 
-            let $baseUri :=
-                if ($uriOrNode instance of node()) then $uriOrNode ! base-uri(.)
-                else $uriOrNode
             let $_CHECK := if ($baseUri) then () else error(QName((), 'INVALID_ARG'),
                 'Function '||$extFuncName||' requires documents with a base URI, but '||
                 'received a document without one.')                
@@ -3680,9 +3710,8 @@ declare function f:writeDoc($urisOrNodes as item()*,
                     return replace($previousFileName, $nameFrom, $nameTo)
                 else $previousFileName
     let $path := $dir||'/'||$fileName                
-    let $_CREATE := 
-        if ($dir eq '.') then () 
-        else file:create-dir($dir)[not(file:exists($dir))]
+    let $_CREATE := if ($dir eq '.') then () else 
+        file:create-dir($dir)[not(file:exists($dir))]
     let $writeOptions := map{'indent': if ($noindent) then 'no' else 'yes'}
     let $wnode :=
         if (not($unbase)) then $node else

@@ -1625,9 +1625,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0
             let $arg1 := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $docs := if ($da) then $arg1 else $context
-            let $folder := $call/*[2 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $name := $call/*[3 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
-            let $fnOptions := $call/*[4 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $folder := $call/*[1 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $name := $call/*[2 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $fnOptions := $call/*[3 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:writeDoc($docs, $folder, $name, (), (), (), $fnOptions, $options, $fname)
 

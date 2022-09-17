@@ -12,7 +12,7 @@ at  "foxpath-util.xqm";
  : Resolves a foxpath expression. The result is an XDM value.
  :
  : @param foxpath the expression text
- : @return the expression value, which is an XDM value
+ : @return the expression value
  :)
 declare function f:resolveFoxpath($foxpath as xs:string?) as item()* {
     f:resolveFoxpath($foxpath, (), ())
@@ -22,7 +22,7 @@ declare function f:resolveFoxpath($foxpath as xs:string?) as item()* {
  : Resolves a foxpath expression in an URI context. The result is an XDM value.
  :
  : @param foxpath the expression text
- : @return the expression value, which is an XDM value
+ : @return the expression value
  :)
 declare function f:resolveFoxpathInURIContext($foxpath as xs:string?) as item()* {
     f:resolveFoxpath($foxpath, map:entry('IS_CONTEXT_URI', true()), ())
@@ -34,13 +34,14 @@ declare function f:resolveFoxpathInURIContext($foxpath as xs:string?) as item()*
  :
  : @param foxpath the expression text
  : @param options evaluation options
- : @return the expression value, which is an XDM value
+ : @param externalVariableBindings a map providing the names and values of external variables 
+ : @return the expression value
  :)
 declare function f:resolveFoxpath($foxpath as xs:string?, 
                                   $options as map(*)?,
                                   $externalVariableBindings as map(xs:QName, item()*)?) 
         as item()* {
-    f:resolveFoxpath($foxpath, false(), (), (), $options, $externalVariableBindings)
+    f:resolveFoxpath($foxpath, false(), (), $options, $externalVariableBindings)
 };
 
 (:~
@@ -48,66 +49,27 @@ declare function f:resolveFoxpath($foxpath as xs:string?,
  :
  : @param foxpath the expression text
  : @param options evaluation options
- : @return the expression value, which is an XDM value
+ : @param context initial context item
+ : @param externalVariableBindings a map providing the names and values of external variables 
+ : @return the expression value
  :)
 declare function f:resolveFoxpath($foxpath as xs:string?,
                                   $options as map(*)?,
                                   $context as item()?,                                  
                                   $externalVariableBindings as map(xs:QName, item()*)?) 
         as item()* {
-    f:resolveFoxpath($foxpath, false(), $context, (), $options, $externalVariableBindings)
+    f:resolveFoxpath($foxpath, false(), $context, $options, $externalVariableBindings)
 };
 
 (:~
  : Resolves a foxpath expression to a value.
  :
- : @param foxpath the text of a foxpath expression
+ : @param foxpath the expression text
  : @param ebvMode if true, the expression is resolved to its effective 
  :    boolean value, rather than its value
- : @param context if specified, a file system folder used for resolving 
+ : @param context initial context item 
  :    relative path expressions; defaults to the current working directory
- : @param defaultFileName if set, foxpath resolution is extended by the replacement
- :     of any folder URIs in the preliminary result by the URIs of files and 
- :     folders contained by the respective folder and matching the parameter
- :     value interpreted as a glob pattern
- : @return the expression value
- :)
-declare function f:resolveFoxpath($foxpath as xs:string?, 
-                                  $ebvMode as xs:boolean?,
-                                  $context as xs:string?,
-                                  $defaultFileName as xs:string?,
-                                  $options as map(*)?,
-                                  $externalVariableBindings as map(xs:QName, item()*)?)
-        as item()* {
-    if (not($foxpath)) then () else
-    
-    let $value := f:resolveFoxpath($foxpath, $ebvMode, $context, $options, 
-                    $externalVariableBindings)
-    return 
-        if (not($defaultFileName) or $value instance of element(errors)) 
-        then $value 
-        else  
-            (: paths pointing at folders are resolved to the set of 
-               paths pointing to the child files matching the default 
-               file name pattern :)
-            sort(distinct-values(
-                for $path in $value return
-                    if (not(i:fox-is-dir($path, $options))) then $path
-                    else
-                        f:childUriCollection($path, $defaultFileName, (), $options)
-                        ! concat($path, '/', .)
-            ))                        
-};
-
-(:~
- : Resolves a foxpath expression to a value.
- :
- : @param foxpath the text of a foxpath expression
- : @param ebvMode if true, the expression is resolved to its effective 
- :    boolean value, rather than its value
- : @param context if specified, a file system folder used for resolving 
- :    relative path expressions; defaults to the current working directory
- : @param options options controlling the parsing and evaluation of the foxpath expression
+ : @param options evaluation options
  : @param externalVariableBindings a map providing the names and values of external variables
  : @return the expression value
  :)
@@ -120,38 +82,7 @@ declare function f:resolveFoxpath($foxpath as xs:string,
     let $DEBUG := util:trace($foxpath, 'parse.resolve_foxpath', 'INTEXT_RESOLVE_FOXPATH: ')
     let $context := f:editInitialContext($context)
     let $tree := util:trace(i:parseFoxpath($foxpath, $options), 'parse', 'FOXPATH_ELEM: ')
-  
     return f:resolveFoxpathTree($tree, $ebvMode, $context, $options, $externalVariableBindings)
-
-(:    
-    let $errors := $tree/self::errors 
-    return 
-        if ($errors) then $errors
-        else
-            let $useOptions := f:finalizeOptions($options)
-            let $expr := $tree/*[not(self::prolog)]
-            let $vars := f:initVars($tree/prolog, $externalVariableBindings, $context, $useOptions)
-            return
-                f:resolveFoxpathRC($expr, $ebvMode, $context, (), (), $vars, $useOptions)
-:)                
-};
-
-declare function f:resolveFoxpathTree(
-                                  $foxpathTree as element(), 
-                                  $ebvMode as xs:boolean?, 
-                                  $context as item()?,
-                                  $options as map(*)?,
-                                  $externalVariableBindings as map(xs:QName, item()*)?)
-        as item()* {
-    let $errors := $foxpathTree/self::errors 
-    return 
-        if ($errors) then $errors
-        else
-            let $useOptions := f:finalizeOptions($options)
-            let $expr := $foxpathTree/*[not(self::prolog)]
-            let $vars := f:initVars($foxpathTree/prolog, $externalVariableBindings, $context, $useOptions)
-            return
-                f:resolveFoxpathRC($expr, $ebvMode, $context, (), (), $vars, $useOptions)
 };
 
 (: 
@@ -161,12 +92,13 @@ declare function f:resolveFoxpathTree(
  :
  : ===============================================================================
  :)
+ 
 (:~
- : Finalizes the options map, using input option values when supplied, and
- : default values otherwise. Adds to the map also URI trees, if provided.
+ : Finalizes the options map, adding entries related to URI trees and graphs,
+ : if appropriate.
  :
- : @param options parsing options
- : @return the initial parsing context
+ : @param options evaluation options
+ : @return finalized options
  :)
 declare function f:finalizeOptions($options as map(*)?)
         as map(*) {
@@ -174,17 +106,14 @@ declare function f:finalizeOptions($options as map(*)?)
     let $ugraphEndpoints := $options ! map:get(., 'UGRAPH_ENDPOINTS') ! tokenize(normalize-space(.), ' ')    
     
     let $utreeDirs :=
-        for $utreeDir in $utreeDirs
-        return
+        for $utreeDir in $utreeDirs return
             if (starts-with($utreeDir, 'basex://')) then $utreeDir
             else if (starts-with($utreeDir, '/')) then $utreeDir
             else
                 let $baseURI := replace(static-base-uri(), '[^/]+$', '')
-                return
-                    concat($baseURI, $utreeDir)
-    let $uriTrees :=
-        for $utreeDir in $utreeDirs
-        return
+                return concat($baseURI, $utreeDir)
+    let $utrees :=
+        for $utreeDir in $utreeDirs return
             if (starts-with($utreeDir, 'basex://')) then
                 let $db := substring($utreeDir, 9)
                 let $docs := try {db:open($db)/*} catch * {()}
@@ -194,39 +123,25 @@ declare function f:finalizeOptions($options as map(*)?)
                     file:list($utreeDir, false(), 'utree-*') 
                     ! concat($utreeDir, '/', .) ! doc(.)/*
                 } catch * {()}
-(:            
-    let $uriPrefixMap :=
-        map:merge(
-            for $doc in $uriTrees
-            return map:entry($doc/@uriPrefix, $doc/tree/@baseURI)
-        )
-:)        
-    let $uriPrefixes := $uriTrees/@uriPrefix
-    
-    (: let $ugraphUriPrefixes := 'https://github.com/marklogic/' :)
+    let $uriPrefixes := $utrees/@uriPrefix    
     let $ugraphUriPrefixes := 
         if (empty($ugraphEndpoints)) then () else
             f:get-ugraph-uri-prefixes($ugraphEndpoints[1], $options)
-    
-    (: let $DUMMY := trace(count($uriTrees), 'COUNT_URI_TREES #2: ') :)        
     let $map :=
         map{       
             'URI_TREES_DIRS': $utreeDirs,
-            'URI_TREES': $uriTrees,
-            'URI_TREES_BASE_URIS': $uriTrees/tree/@baseURI,
+            'URI_TREES': $utrees,
+            'URI_TREES_BASE_URIS': $utrees/tree/@baseURI,
             'URI_TREES_PREFIXES': $uriPrefixes,
             'UGRAPH_ENDPOINTS': $ugraphEndpoints,
             'UGRAPH_URI_PREFIXES': $ugraphUriPrefixes
         }
-(:  'URI_TREES_PREFIX_TO_BASE_URIS': $uriPrefixMap :)
-    (: let $DUMMY := trace(count(map:get($map, 'URI_TREES')), 'COUNT_URI_TREES_IN_MAP: ') :)
-    return    
-        $map
+    return $map
 };
 
 (:~
  : Initializes the map of variable bindings with the result of evaluating
- : the variable declarations.
+ : the variable declarations contained by the prolog.
  :)
 declare function f:initVars($prolog as element(prolog)?, 
                             $externalVariableBindings as map(xs:QName, item()*)?,
@@ -236,12 +151,8 @@ declare function f:initVars($prolog as element(prolog)?,
     if (empty($prolog)) then () else
     
     let $varDecls := $prolog/varDecls/varDecl
-    return if (not($varDecls)) then () else
-    
-    let $vars := map{}    
-    let $vars := f:bindVars($vars, $varDecls, $externalVariableBindings, $context, $options)
-    return
-        $vars
+    return if (not($varDecls)) then () else 
+        f:bindVars(map{}, $varDecls, $externalVariableBindings, $context, $options)
 };
 
 (:~
@@ -259,63 +170,84 @@ declare function f:bindVars($vars as map(xs:QName, item()*),
                             $options as map(*)?)
         as map(xs:QName, item()*) {
     let $varDecl := head($varDecls)
-    let $tail := tail($varDecls)
-    
-    let $localName := $varDecl/@localName
-    let $namespace := $varDecl/@namespace
-    let $qname := QName($namespace, $localName)
-    let $varName := $qname (: $localName :)
-    let $isExternal := $varDecl/@external
-    
+    let $tail := tail($varDecls)    
+    let $varName := $varDecl/QName(@namespace, @localName)
+    let $seqType := $varDecl/sequenceType    
+    let $isExternal := $varDecl/@external    
+    let $externalNames := $externalVariableBindings ! map:keys(.) 
     let $mapEntry :=
-        if ($isExternal eq 'true') then
-            let $externalVariableBindingNames := 
-                if (empty($externalVariableBindings)) then () else
-                    map:keys($externalVariableBindings)
-            return
-                if ($qname = $externalVariableBindingNames) then
-                    let $valueRaw := $externalVariableBindings($qname)                            
-                    let $value := 
-                        let $seqType := $varDecl/sequenceType
-                        return util:applyFunctionConversionRules($valueRaw, $seqType)
-                    return map:entry($varName, $value)
+        let $valueRaw :=
+            if ($isExternal eq 'true') then
+                if ($varName = $externalNames) then $externalVariableBindings($varName)                            
                 else 
                     let $valueExpr := $varDecl/*[not(self::sequenceType)]
-                    return
-                        if (not($valueExpr)) then
-                            error(QName((), 'MISSING_EXTERNAL_VARIABLE_VALUE'), 
-                                concat('No value supplied for external variables: ', 
-                                $varName))
-                        else
-                            let $valueRaw := f:resolveFoxpathRC($valueExpr, false(), $context, (), (), $vars, $options)                            
-                            let $value := 
-                                let $seqType := $varDecl/sequenceType
-                                return util:applyFunctionConversionRules($valueRaw, $seqType)
-                            return
-                                map:entry($varName, $value)
-        else
-            let $valueExpr := $varDecl/*[not(self::sequenceType)]
-            let $valueRaw := f:resolveFoxpathRC($valueExpr, false(), $context, (), (), $vars, $options)            
-            let $value := 
-                let $seqType := $varDecl/sequenceType
-                return util:applyFunctionConversionRules($valueRaw, $seqType)
-            return
-                map:entry($varName, $value)
-    
+                    return if (not($valueExpr)) then
+                        error(QName((), 'MISSING_EXTERNAL_VARIABLE_VALUE'), concat(
+                          'No value supplied for external variables: ', $varName)) else
+                    f:resolveFoxpathRC($valueExpr, false(), $context, (), (), $vars, $options)                            
+            else
+                let $valueExpr := $varDecl/*[not(self::sequenceType)]
+                return f:resolveFoxpathRC($valueExpr, false(), $context, (), (), $vars, $options)            
+        let $value := util:applyFunctionConversionRules($valueRaw, $seqType)
+        return map:entry($varName, $value)
     let $newVars := map:merge(($vars, $mapEntry))
     return 
         if ($tail) then 
             f:bindVars($newVars, $tail, $externalVariableBindings, $context, $options)
-        else
-            $newVars
+        else $newVars
 };        
 
-(:~
- : Resolves a foxpath, provided as an expression tree.
+
+(: 
+ : ===============================================================================
  :
- : @param n a node of the expression tree
- : @param ebvMode if true, the node must be resolved to its effective boolean value
- : @return the value of the expression tree node
+ :     p e r f o r m    r e s o l v i n g
+ :
+ : ===============================================================================
+ :)
+(:~
+ : Resolves a foxpath expression tree to a value.
+ :
+ : @param foxpathTree the expression tree
+ : @param ebvMode if true, the expression is resolved to its effective 
+ :    boolean value, rather than its value
+ : @param context initial context item 
+ :    relative path expressions; defaults to the current working directory
+ : @param options evaluation options
+ : @param externalVariableBindings a map providing the names and values of external variables
+ : @return the expression value 
+ :)
+declare function f:resolveFoxpathTree(
+                                  $foxpathTree as element(), 
+                                  $ebvMode as xs:boolean?, 
+                                  $context as item()?,
+                                  $options as map(*)?,
+                                  $externalVariableBindings as map(xs:QName, item()*)?)
+        as item()* {
+    let $errors := $foxpathTree/self::errors 
+    return if ($errors) then $errors else
+    
+    let $useOptions := f:finalizeOptions($options)
+    let $expr := $foxpathTree/*[not(self::prolog)]
+    let $vars := f:initVars($foxpathTree/prolog, $externalVariableBindings, $context, $useOptions)
+    return
+        f:resolveFoxpathRC($expr, $ebvMode, $context, (), (), $vars, $useOptions)
+};
+
+(:~
+ : Resolves an expression node from a foxpath expression tree.
+ :
+ : @param n expression node from the expression tree
+ : @param ebvMode if true, the expression is resolved to its effective 
+ :    boolean value, rather than its value
+ : @param context initial context item 
+ :    relative path expressions; defaults to the current working directory
+ : @param position dynamic context - the current position
+ : @param last dynamic context - the context size
+ : @param vars current variable bindings
+ : @param options evaluation options
+ : @param externalVariableBindings a map providing the names and values of external variables
+ : @return the expression value 
  :)
 declare function f:resolveFoxpathRC($n as node(),
                                     $ebvMode as xs:boolean?,
@@ -536,6 +468,7 @@ declare function f:resolveFoxpathRC($n as node(),
         let $value := f:getVarValue($n, $vars, $options)
         return
             if ($ebvMode) then f:getEbv($value) else $value
+    case element(exprItem) return <foxpathTree>{$n/(@*, *)}</foxpathTree>            
     default return
         if ($n/@ignore eq 'true') then () else
         error(QName((), 'NOT_YET_IMPLEMENTED'),

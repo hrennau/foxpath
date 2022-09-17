@@ -2743,7 +2743,14 @@ declare function f:parseArgumentListRC($text as xs:string, $context as map(*))
         if (matches($text, '^\?\s*[,)]')) then (
             <argPlaceholder/>,
             replace($text, '^\?\s*', '')
-        ) else
+        ) else if (matches($text, '^\{')) then 
+            let $exprEtc := $text ! replace(., '^\{\s*', '') ! f:parseSeqExpr(., $context)
+            let $newText := $exprEtc[. instance of xs:anyAtomicType] ! replace(., '^\s*\}', '')
+            let $exprText := substring-before($text, $newText) ! replace(., '^\s*\{\s*|\s*\}\s*', '')
+            let $node := $exprEtc[. instance of node()] ! 
+                <exprItem text="{$exprText}" isContextURI="{$context?IS_CONTEXT_URI}">{.}</exprItem>
+            return ($node, $newText)
+        else
             f:parseExprSingle($text, $context)
     let $exprSingle := $exprSingleEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($exprSingleEtc)        
