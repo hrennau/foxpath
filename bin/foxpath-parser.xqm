@@ -15,11 +15,10 @@ declare variable $f:URI_TREES_DIRS external := 'basex://uri-trees2';
 
 (:~
  : Parses a foxpath expression, creating an expression tree.
- : For all supported parsing options, the default value is
- : assumed.
+ : For all parsing options, the default value is assumed.
  :
  : @param text the expression text
- : @return expression tree representing the expression text
+ : @return expression tree
  :)
 declare function f:parseFoxpath($text as xs:string?)
         as element()+ {
@@ -43,10 +42,8 @@ declare function f:parseFoxpath_noOptimization($text as xs:string?)
  : Some parsing details are controlled by options:
  :
  : IS_CONTEXT_URI 
- : = true() => the top-level expression is evaluated in a mode
- :             which assumes the context item to be a URI; this
- :             implies that a name test without axis is interpreted
- :             as a fox name test, not a node name test.
+ : = true() => when evaluating an expresion, the context item is assumed to be 
+ :             a URI
  : FOXSTEP_SEPERATOR 
  : The character used to seperate fox steps; default: /
  :
@@ -55,19 +52,21 @@ declare function f:parseFoxpath_noOptimization($text as xs:string?)
  :
  : @param text the expression text
  : @param options parsing options
- : @return expression tree representing the expression text
+ : @return expression tree
  :)
 declare function f:parseFoxpath($text as xs:string?, $options as map(*)?)
         as element()+ {    
     let $DEBUG := util:trace($text, 'parse.text.foxpath', 'INTEXT_FOXPATH: ')
     let $context := f:getInitialParsingContext($options)
+    
+    (: 1. Parse prolog :)
     let $prologEtc := f:parseProlog($text, $context)
     let $prolog := $prologEtc[. instance of node()]
     let $errors := util:finalizeFoxpathErrors($prolog/descendant-or-self::error)
-    return
-        if ($errors) then $errors else        
-    let $textAfter := f:extractTextAfter($prologEtc)
+    return if ($errors) then $errors else
     
+    (: 2. Parse sequence expression :)
+    let $textAfter := f:extractTextAfter($prologEtc)    
     let $seqExprEtc := util:trace(f:parseSeqExpr($textAfter, $context) , 'tree', 'PARSED: ')   
     let $textAfter := f:extractTextAfter($seqExprEtc)    
     let $seqExpr := $seqExprEtc[. instance of node()]
@@ -75,28 +74,28 @@ declare function f:parseFoxpath($text as xs:string?, $options as map(*)?)
     return
         if ($errors) then $errors
         else if ($textAfter) then
-            util:finalizeFoxpathErrors(
-                util:createFoxpathError('SYNTAX_ERROR', 
-                    concat('Unexpected text after expression end: ', $textAfter)))                    
+            util:finalizeFoxpathErrors(util:createFoxpathError('SYNTAX_ERROR', 
+              concat('Unexpected text after expression end: ', $textAfter,
+                '; expression text: ', substring($text, 1, 
+                string-length($text) - string-length($textAfter)))))                    
         else
-            let $nsDecls := $prolog/nsDecls
-            let $exprTree := 
-                let $finalized := f:finalizeParseTree($seqExpr, $prolog)
-                return
-                    if (exists($options) and map:get($options, 'SKIP_OPTIMIZATION')) then 
-                        $finalized
-                    else
-                        f:finalizeParseTree_annotateSteps($finalized) !
-                        f:finalizeParseTree_extendFoxRoots(.)
-
-            let $errors := util:finalizeFoxpathErrors($exprTree/descendant-or-self::error)            
-            return
-                if ($errors) then $errors 
-                else
-                    <foxpathTree>{
-                        $prolog,
-                        $exprTree
-                    }</foxpathTree>
+        
+    (: 3. Optimize parse tree :)            
+    let $nsDecls := $prolog/nsDecls
+    let $exprTree := 
+        let $finalized := f:finalizeParseTree($seqExpr, $prolog)
+        return
+            if (exists($options) and map:get($options, 'SKIP_OPTIMIZATION')) then 
+                $finalized
+            else
+                f:finalizeParseTree_annotateSteps($finalized) !
+                f:finalizeParseTree_extendFoxRoots(.)
+                
+    (: 4. Deliver :)                
+    let $errors := util:finalizeFoxpathErrors($exprTree/descendant-or-self::error)            
+    return
+        if ($errors) then $errors else
+            <foxpathTree>{$prolog, $exprTree}</foxpathTree>
 };
 
 (: 
@@ -130,18 +129,6 @@ declare function f:getInitialParsingContext($options as map(*)?)
         
     let $foxstepSeperatorRegex := replace($foxstepSeperator, '(\\)', '\\$1')
     let $nodestepSeperatorRegex := replace($nodestepSeperator, '(\\)', '\\$1')
-    
-(:    
-    let $uriTrees :=
-        if (starts-with($uriTreesDir, 'basex://')) then
-            let $db := trace(substring($uriTreesDir, 9) , 'DB: ')
-            return db:open($db)
-        else
-            try {
-                file:list($uriTreesDir, false(), 'uri-trees-*') ! concat($uriTreesDir, '/', .) ! doc(.)/*
-            } catch * {()}
-    let $DUMMY := trace(count($uriTrees), 'COUNT_URI_TREES: ')
-:)    
     return
         map{'FOXSTEP_SEPERATOR': $foxstepSeperator,
             'FOXSTEP_SEPERATOR_REGEX': $foxstepSeperatorRegex,
@@ -153,7 +140,7 @@ declare function f:getInitialParsingContext($options as map(*)?)
             'URI_TREES_DIRS': $uriTreesDirs
         }
 };
-            (: 'URI_TREES': $uriTrees}:) 
+ 
 (: 
  : ===============================================================================
  :
@@ -167,8 +154,7 @@ declare function f:finalizeParseTree($tree as element(), $prolog as element()?)
     let $nsDecls := $prolog/nsDecls
     let $tree := (: if (not($nsDecls)) then $tree else :) 
         f:finalizeParseTree_namespaces($tree, $prolog)
-    return
-        $tree
+    return $tree
 };
 
 declare function f:finalizeParseTree_namespaces($tree as element(), $prolog as element()?)
