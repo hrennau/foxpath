@@ -2429,7 +2429,8 @@ declare function f:parsePrimaryExpr($text as xs:string, $context as map(*))
     else if (matches($text, '^\.([^./].*)?$', 's')) then f:parseContextItem($text, $context) 
     else if (matches($text, '^function\s*\(', 's')) then f:parseInlineFunctionExpr($text, $context)    
     else if (matches($text, '^\i\c*\s*\(')) then f:parseFunctionCall($text, $context)
-    else if (matches($text, '^\i\c*\s*#\s*\d', 's')) then f:parseNamedFunctionItem($text, $context)   
+    else if (matches($text, '^\i\c*\s*#\s*\d', 's')) then f:parseNamedFunctionItem($text, $context)  
+    else if (matches($text, 'E?\{', 's')) then f:parseContextExpr($text, $context)
     else ()
 };
 
@@ -2489,6 +2490,44 @@ declare function f:parseParenthesizedExpr($text as xs:string, $context as map(*)
             let $textAfterOperator := f:skipOperator($textAfter, ')')
             return
                 ($seqExpr, $textAfterOperator)
+};
+
+(:~
+ : Parses a context expression or a context expression call.
+ :
+ : Syntax: 
+ :     'E'? '{'Expr'}'
+ :     'E'? '{'Expr'}' '(' ')' 
+ :
+ : @param text the text to be parsed
+ : @return a structured representation of the parenthesized expression, followed
+ :    by the remaining unparsed text
+ :)
+declare function f:parseContextExpr($text as xs:string, $context as map(*))
+        as item()+ {
+    let $textAfterOpen := replace($text, '^E?\{\s*', '')
+    let $containedExprEtc :=
+        if (starts-with($textAfterOpen, '}')) then 
+            (<emptySequence/>, f:skipOperator($textAfterOpen, '}'))
+        else f:parseSeqExpr($textAfterOpen, $context)
+    let $containedExpr := $containedExprEtc[. instance of node()]
+    let $textAfter := f:extractTextAfter($containedExprEtc)  
+    return
+        if (not(starts-with($textAfter, '}'))) then
+            util:createFoxpathError('SYNTAX_ERROR', 
+                concat('Unbalanced parentheses: {', $text))
+        else
+            let $contextExpr := <contextExpression>{$containedExpr}</contextExpression>        
+            let $textAfterClose := f:skipOperator($textAfter, '}')
+            let $parentheses := replace($textAfterClose, '^(\(\s*\)).*', '$1')
+            return
+                if ($parentheses ne $textAfterClose or 
+                    matches($parentheses, '^\(\s*\)$'))
+                then (
+                    <contextExpressionCall>{$contextExpr}</contextExpressionCall>,
+                    substring($textAfterClose, 1 + string-length($parentheses))
+                    ! f:extractTextAfter(.)
+               ) else ($contextExpr, $textAfterClose)
 };
 
 (:~

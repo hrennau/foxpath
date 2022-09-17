@@ -454,7 +454,8 @@ declare function f:resolveFoxpathRC($n as node(),
         f:resolveTreatExpr($n, $ebvMode, $context, $position, $last, $vars, $options)
         
     case element(unary) return
-        let $operand := f:resolveFoxpathRC($n/*[1], false(), $context, $position, $last, $vars, $options)
+        let $operand := $n/*[1]/f:resolveFoxpathRC(
+            ., false(), $context, $position, $last, $vars, $options)
         let $op := $n/@op
         let $value := 
             if ($op eq '-') then - $operand else + $operand
@@ -468,9 +469,14 @@ declare function f:resolveFoxpathRC($n as node(),
         let $value := f:getVarValue($n, $vars, $options)
         return
             if ($ebvMode) then f:getEbv($value) else $value
+    case element(contextExpression) return $n
+    case element(contextExpressionCall) return
+        $n/*[1]/*/f:resolveFoxpathRC(
+            ., $ebvMode, $context, $position, $last, $vars, $options)
     case element(exprItem) return <foxpathTree>{$n/(@*, *)}</foxpathTree>            
     default return
-        if ($n/@ignore eq 'true') then () else
+        if (
+        $n/@ignore eq 'true') then () else
         error(QName((), 'NOT_YET_IMPLEMENTED'),
             concat('Unexpected foxpath node, name=', local-name($n)))
 };
@@ -1614,8 +1620,13 @@ declare function f:resolveDynFunctionCall($callExpr as element(),
                                           $options as map(*)?)
         as item()* {
     let $funcExpr := $callExpr/*[1]
+    let $funcItem := $funcExpr/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)    
+    return
+        if ($funcItem instance of element(contextExpression)) then
+            f:resolveFoxpathRC($funcItem/*, false(), $context, $position, $last, $vars, $options)
+        else
+        
     let $argExprs := $callExpr/*[position() gt 1]    
-    let $funcItem := $funcExpr/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
     
     (: @TODO@ assignment `isInlineFunction`:
               Find a better way to recognize the use of an inline function expression :)
