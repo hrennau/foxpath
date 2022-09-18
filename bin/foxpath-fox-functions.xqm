@@ -369,24 +369,15 @@ declare function f:docxDoc($uri as xs:string)
  :)
 declare function f:groupItems($items as item()*,
                               $groupKeyExpr as item(),
-                              $groupProcExpr as item(),
-                              $wrapperName as item(),
+                              $groupProcExpr as item()?,
+                              $wrapperName as item()?,
                               $keyName as xs:string?,
                               $options as xs:string?,
                               $processingOptions as map(*))
         as node()* {
     if (empty($items)) then () else
     
-    let $groupProcExpr := $groupProcExpr ! ('declare variable $items external; '||.)
-    (:
-    let $groupKeyExprTree := i:parseFoxpath($groupKeyExpr, $processingOptions)
-    let $groupProcExprTree := $groupProcExpr ! i:parseFoxpath(., $processingOptions)
-    :)
     let $wrapperNameExpr := $wrapperName[. instance of node()]
-    (:
-        if (not(matches($wrapperName, '^\s*\{.*\}\s*$'))) then ()
-        else replace($wrapperName, '^\s*\{\s*|\s*\}\s*$', '') ! i:parseFoxpath(., $processingOptions)
-     :)
     let $wrapperName := if ($wrapperNameExpr) then () else ($wrapperName, 'group')[1]
     let $keyName := ($keyName, 'key')[1]
     let $itemsQname := QName((), 'items')
@@ -405,12 +396,11 @@ declare function f:groupItems($items as item()*,
                 attribute {$keyName} {$key},
                 for $item in $groupContent  return
                     typeswitch ($item) 
-                        case element() return $item 
+                        case document-node() | element() return $item 
                         case attribute() return $item
                         default return <item>{$item}</item>
             }
-    return
-        $groups
+    return $groups
  };
 
 (:~
@@ -3124,7 +3114,7 @@ declare function f:resolveFoxpath($context as item(),
                                   $vars as map(xs:QName, item()*),
                                   $options as map(*))
         as item()* {
-    (: let $_DEBUG := trace($exprTextOrTree, '_EXPRESSION_TREE: ') :)   
+    (: let $_DEBUG := trace($exprTextOrTree, '_RESOLVEFOXPATH#4 EXPRESSION_TEXT_OR_TREE: ') :)
     let $isContextNode := $context instance of node()
     let $useOptions := map:put($options, 'IS_CONTEXT_URI', $isContextNode)
     return
@@ -3133,7 +3123,6 @@ declare function f:resolveFoxpath($context as item(),
                 if ($exprTextOrTree/self::contextExpression) then $exprTextOrTree/* 
                 else $exprTextOrTree 
             let $result := i:resolveFoxpathExprTree($expr, false(), $context, $vars, $useOptions)
-            (: let $_DEBUG := trace($result, '___RESULT: ') :)
             return $result
         else
             (: Set IS_CONTEXT_URI to empty sequence to enable ambivalent frog steps :)
@@ -3928,15 +3917,19 @@ declare function f:xelement($content as item()*,
                             $name as xs:string, 
                             $options as xs:string?)
         as element()* {
-    let $ops := $options ! tokenize(.)
+    let $ops := f:getOptions($options, ('repeat', 'pretty'), 'xelem')
     let $repeat := $ops = 'repeat'
-    return
+    let $pretty := $ops = 'pretty'
+    let $element :=
         if ($repeat) then $content ! element {$name} {.}
         else
             let $atts := $content[. instance of attribute()]
             let $nonatts := $content[not(. instance of attribute())]
             return
                 element {$name} {$atts, $nonatts}
+    return
+        if ($pretty) then $element ! util:prettyNode(., ())
+        else $element
 };      
 
 (:~

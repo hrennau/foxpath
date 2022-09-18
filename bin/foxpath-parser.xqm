@@ -55,7 +55,7 @@ declare function f:parseFoxpath_noOptimization($text as xs:string?)
  : @return expression tree
  :)
 declare function f:parseFoxpath($text as xs:string?, $options as map(*)?)
-        as element()+ {    
+        as item()+ {    
     let $DEBUG := util:trace($text, 'parse.text.foxpath', 'INTEXT_FOXPATH: ')
     let $context := f:getInitialParsingContext($options)
     
@@ -77,7 +77,7 @@ declare function f:parseFoxpath($text as xs:string?, $options as map(*)?)
             util:finalizeFoxpathErrors(util:createFoxpathError('SYNTAX_ERROR', 
               concat('Unexpected text after expression end: ', $textAfter,
                 '; expression text: ', substring($text, 1, 
-                string-length($text) - string-length($textAfter)))))                    
+                string-length($text) - string-length($textAfter)))))
         else
         
     (: 3. Optimize parse tree :)            
@@ -1995,6 +1995,8 @@ declare function f:parseStep($text as xs:string?,
 declare function f:parseFrogAxisStep($text as xs:string?, $context as map(*))
         as item()* {
     let $DEBUG := util:trace($text, 'parse.frog_axis_step', 'NODE_AXIS_STEP_EXPR: ') return
+    if (starts-with($text, '@')) then () else
+    
     let $attsEtc :=
         if (starts-with($text, '..')) then (
             attribute axis {'parent'},
@@ -2012,6 +2014,8 @@ declare function f:parseFrogAxisStep($text as xs:string?, $context as map(*))
                     $nameTest/attribute regex {'^'||@text||'$'},
                     f:extractTextAfter($nameTestEtc)
                 )
+    return if (empty($attsEtc)) then () else
+    
     let $atts := $attsEtc[. instance of attribute()]
     let $textAfter := $attsEtc[not(. instance of attribute())]
     let $predicatesEtc :=
