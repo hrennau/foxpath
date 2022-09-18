@@ -559,10 +559,14 @@ declare function f:resolveFoxpathExprRC($steps as element()+,
         as item()* {
     let $step1 := $steps[1]
     let $tail := tail($steps)
+    let $frogStepBecomes :=
+        if (not($step1/self::frogStep)) then ()
+        else if ($context instance of node()) then 'node'
+        else 'fox'
     let $items :=
-        if ($step1/self::foxStep/@axis) then 
+        if ($step1/self::foxStep/@axis or $frogStepBecomes eq 'fox') then 
             f:resolveFoxAxisStep($step1, $context, $vars, $options)
-        else if ($step1/self::step/@axis) then 
+        else if ($step1/self::step/@axis or $frogStepBecomes eq 'node') then 
             f:resolveNodeAxisStep($step1, $context, $vars, $options)
         else
             (: bugfix 20160724 - expr either child or self of step1 :)

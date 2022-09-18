@@ -1741,18 +1741,20 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
              it must not use abbreviated syntax, as this cannot be disambiguated 
              from a node axis step; consider the path foo - if IS_CONTEXT_URI is 
              false, it would be interpreted as a node axis step, not a fox axis step.
-        :)
-        let $isContextUri :=
-            if ($root/self::foxRoot) then true()
-            else if ($root/self::root) then false()
-            else if ($startHerePrefix) then 
-                $FOXSTEP_SEPERATOR eq substring($startHerePrefix, string-length($startHerePrefix))
-            else map:get($context, 'IS_CONTEXT_URI')
-                
+        :)                
         (: update context component 'IS_CONTEXT_URI' :)        
         let $newContext :=
-            if ($isContextUri eq map:get($context, 'IS_CONTEXT_URI')) then $context
-            else map:put($context, 'IS_CONTEXT_URI', $isContextUri)
+            let $isContextUri :=
+                if ($root/self::foxRoot) then true()
+                else if ($root/self::root) then false()
+                else if ($startHerePrefix) then 
+                    $FOXSTEP_SEPERATOR eq substring($startHerePrefix, string-length($startHerePrefix))
+                else map:get($context, 'IS_CONTEXT_URI')
+            return
+                (: Do not change the context if IS_CONTEXT_URI is the empty sequence :)            
+                if (empty($isContextUri)) then $context
+                else if ($isContextUri eq map:get($context, 'IS_CONTEXT_URI')) then $context
+                else map:put($context, 'IS_CONTEXT_URI', $isContextUri)
      
         let $precedingOperator := 
             if ($root/self::foxRoot) then $FOXSTEP_SEPERATOR
@@ -1770,7 +1772,8 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
     let $parsed :=
         if ($root or count($steps) > 1 or 
             $steps[1]/self::foxStep/@axis or 
-            $steps[1]/self::step/@axis) 
+            $steps[1]/self::step/@axis or
+            $steps[1]/self::frogStep/@axis) 
         then
             let $exprText :=
                 let $raw :=
@@ -1929,26 +1932,76 @@ declare function f:parseStep($text as xs:string?,
             replace($text, '^#archive#\s*', '')
         )
         else
-            (: then, try to parse as fox axis step :)
-            let $foxAxisStepEtc := f:parseFoxAxisStep($text, $context)
-            let $foxAxisStep := $foxAxisStepEtc[. instance of node()]
+            (: Try to parse as frog axis step :)
+            let $frogAxisStepEtc := 
+                if ($precedingOperator or exists($context?IS_CONTEXT_URI)) then ()
+                else f:parseFrogAxisStep($text, $context)
+            let $frogAxisStep := $frogAxisStepEtc[. instance of node()]
             return
-                if ($foxAxisStep) then
-                    let $textAfter := f:extractTextAfter($foxAxisStepEtc)       
-                    return 
-                        ($foxAxisStep, $textAfter)
+                if ($frogAxisStep) then
+                    let $textAfter := f:extractTextAfter($frogAxisStepEtc)
+                    return ($frogAxisStep, $textAfter)
                 else
-                    (: finally, try to parse as node axis step :)
-                    let $nodeAxisStepEtc := f:parseNodeAxisStep($text, $context)
-                    let $nodeAxisStep := $nodeAxisStepEtc[. instance of node()]
-                    let $textAfter := f:extractTextAfter($nodeAxisStepEtc)
+                    (: Try to parse as fox axis step :)
+                    let $foxAxisStepEtc := f:parseFoxAxisStep($text, $context)
+                    let $foxAxisStep := $foxAxisStepEtc[. instance of node()]
                     return
-                        if (not($nodeAxisStep)) then
-                            util:createFoxpathError('SYNTAX_ERROR',
-                                concat('Expected path step, but did not encounter a valid one; ',
-                                'expression text: ', $text))
-                        else                                
-                            ($nodeAxisStep, $textAfter)
+                        if ($foxAxisStep) then
+                            let $textAfter := f:extractTextAfter($foxAxisStepEtc)       
+                            return ($foxAxisStep, $textAfter)
+                        (: Try to parse as node axis step :)                                
+                        else                    
+                            let $nodeAxisStepEtc := f:parseNodeAxisStep($text, $context)
+                            let $nodeAxisStep := $nodeAxisStepEtc[. instance of node()]
+                            let $textAfter := f:extractTextAfter($nodeAxisStepEtc)
+                            return
+                                if (not($nodeAxisStep)) then
+                                    util:createFoxpathError('SYNTAX_ERROR',
+                                        concat('Expected path step, but did not encounter a valid one; ',
+                                        'expression text: ', $text))
+                                 else ($nodeAxisStep, $textAfter)
+};
+
+(:~
+ : A frog axis step is an "amphibean" step which will be treated as fox 
+ : axis step or as node axis step, dependent on the actual context item.
+ :)
+declare function f:parseFrogAxisStep($text as xs:string?, $context as map(*))
+        as item()* {
+    let $DEBUG := util:trace($text, 'parse.frog_axis_step', 'NODE_AXIS_STEP_EXPR: ') return
+    let $attsEtc :=
+        if (starts-with($text, '..')) then (
+            attribute axis {'parent'},
+            attribute nodeKind {'node'},
+            substring($text, 3) ! replace(., '^\s+', '')
+        ) else
+            let $nameTestEtc := f:parseNametest($text, $context)
+            let $nameTest := $nameTestEtc[. instance of node()]
+            return 
+                if (not($nameTest)) then () 
+                else (
+                    attribute axis {'child'},
+                    $nameTest/(@* except @text),
+                    $nameTest/attribute name {@text},
+                    $nameTest/attribute regex {'^'||@text||'$'},
+                    f:extractTextAfter($nameTestEtc)
+                )
+    let $atts := $attsEtc[. instance of attribute()]
+    let $textAfter := $attsEtc[not(. instance of attribute())]
+    let $predicatesEtc :=
+        if (not(starts-with($textAfter, '['))) then () 
+        else f:parsePredicates($textAfter, $context)
+    let $predicates := $predicatesEtc[. instance of node()]
+    let $textAfterPredicates :=
+        if (not($predicates)) then $textAfter
+        else f:extractTextAfter($predicatesEtc)
+    return (
+        <frogStep>{
+            $atts,
+            $predicates
+        }</frogStep>,
+        $textAfterPredicates
+    )
 };
 
 (:~
@@ -2509,9 +2562,12 @@ declare function f:parseContextExpr($text as xs:string, $context as map(*))
     let $containedExprEtc :=
         if (starts-with($textAfterOpen, '}')) then 
             (<emptySequence/>, f:skipOperator($textAfterOpen, '}'))
-        else f:parseSeqExpr($textAfterOpen, $context)
+        else 
+            (: Evaluate expr with IS_CONTEXT_URI set to empty sequence :)
+            let $newContext := map:put($context, 'IS_CONTEXT_URI', ())
+            return f:parseSeqExpr($textAfterOpen, $newContext)
     let $containedExpr := $containedExprEtc[. instance of node()]
-    let $textAfter := f:extractTextAfter($containedExprEtc)  
+    let $textAfter := f:extractTextAfter($containedExprEtc)
     return
         if (not(starts-with($textAfter, '}'))) then
             util:createFoxpathError('SYNTAX_ERROR', 
