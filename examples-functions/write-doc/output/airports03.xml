@@ -1,0 +1,32 @@
+<airports country="Finland">
+  <airport id="426" icao="EFIM">
+    <name>Immola Airport</name>
+    <city>Immola</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>61.24919891357422</latitude>
+      <longitude>28.90369987487793</longitude>
+      <altitude>338</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+    </temporal>
+    <type>airport</type>
+  </airport>
+  <airport id="436" icao="EFKM">
+    <name>Kemijarvi Airport</name>
+    <city>Kemijarvi</city>
+    <country>Finland</country>
+    <geo>
+      <latitude>66.712898</latitude>
+      <longitude>27.156799</longitude>
+      <altitude>692</altitude>
+    </geo>
+    <temporal>
+      <timezone>2</timezone>
+      <tzTimezone>Europe/Helsinki</tzTimezone>
+    </temporal>
+    <type>airport</type>
+  </airport>
+</airports>

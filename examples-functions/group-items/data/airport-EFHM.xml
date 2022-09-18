@@ -1,0 +1,17 @@
+<airport id="422" icao="EFHM">
+  <name>Hameenkyro Airport</name>
+  <city>Hameenkyro</city>
+  <country>Finland</country>
+  <geo>
+    <latitude>61.689701080322266</latitude>
+    <longitude>23.073699951171875</longitude>
+    <altitude>449</altitude>
+  </geo>
+  <temporal>
+    <timezone>2</timezone>
+    <tzTimezone>Europe/Helsinki</tzTimezone>
+    <dst>E</dst>
+  </temporal>
+  <type>airport</type>
+  <source1>OurAirports</source1>
+</airport>

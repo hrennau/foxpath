@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="write-exnamed-doc">
+    <testenviron> In order to try out the examples, start a command shell and move to folder
+        $FOXPATH/examples-functions/write-exnamed-doc. </testenviron>
+    <examples>
+        <example tag="Basic use">
+            <description>
+                Write documents with output file names derived from document content. The output
+                folder is specified relative to the current work folder.
+            </description>
+            <code>
+                fox "data*/*.xml/write-exnamed-doc('output', '""""airports-""""||string-join(\\@icao, """"-"""")||"""".xml""""')"
+            </code>
+        </example>
+        <example tag="With ec variant">
+            <description>
+                Equivalent to the first example, using the ec function variant.
+            </description>
+            <code>
+                fox "data*/*.xml => write-exnamed-doc-ec('output', '""""airports-""""||string-join(\\@icao, """"-"""")||"""".xml""""')"                
+            </code>
+        </example>
+        <example tag="Dynamic output folder">
+            <description>
+                Write documents with output file names derived from document content. The output
+                folder is specified relative to the base URI of the input file.
+            </description>
+            <code>
+                fox "data*/*.xml/write-exnamed-doc('output', '""""airports-""""||string-join(\\@icao, """"-"""")||"""".xml""""', 'docbase')"
+            </code>
+        </example>
+        <example tag="Write document fragments with content-dependent file name">
+            <description> 
+                Write document fragments with content-dependent file names - each 'airport'
+                element is written into a file 'airport-$code.xml. The output folder is
+                specified relative to the current work folder.
+            </description>
+            <code> 
+                fox "data*/*.xml\\airport[*]\write-exnamed-doc('output', '""""airport-""""||@icao||"""".xml""""')" 
+            </code>
+        </example>
+        <example tag="Write document fragments into base URI dependent folders">
+            <description> 
+                Write document fragments with content-dependent file names - each 'airport'
+                element is written into a file 'airport-$code.xml'. The output folder is
+                specified relative to the base URI of the document containing the fragments.
+            </description>
+            <code> 
+                fox "data*/*.xml\\airport[*]\write-exnamed-doc('output', '""""airport-""""||@icao||"""".xml""""', 'docbase')" 
+            </code>
+        </example>
+    </examples>
+</function-usage>

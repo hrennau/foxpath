@@ -117,6 +117,14 @@
                 fox "books/books.xml\\p[contains-text('site learning completion#Wo')]\normalize-space()" 
             </code>
         </example>
+        <example tag="Window">
+            <description>
+                Extract the text of paragraphs containing three words within a window of at most 6 words.
+            </description>
+            <code>
+                fox "books/books.xml\\p[contains-text('usability web site#W window..6')]\normalize-space()" 
+            </code>
+        </example>
         <example tag="Complex query with global option">
             <description>
                 Check if a document contains two different phrases, using global options for fuzziness and stop words.

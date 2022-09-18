@@ -1,36 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <function-usage function="write-doc">
     <testenviron> In order to try out the examples, start a command shell and move to folder
-        $FOXPATH/examples-functions/write-doc. </testenviron>
+        $FOXPATH/examples-functions/write-named-doc. </testenviron>
     <examples>
         <example tag="Basic use">
             <description> 
-                Write selected documents into a folder. The written files are indented, but
-                indentation may be irregular, if the input files have an irregular indentation. 
+                Write a selected document to a file with a new name. The written file is indented, but
+                indentation may be irregular, if the input file haa an irregular indentation. 
             </description>
             <code> 
-                fox "data*/airports*.xml/write-doc('output')" 
+                fox "data*/airports*.xml[\\@icao = 'EFEU']/write-named-doc('output', 'air.xml')" 
             </code>
         </example>
         <example tag="Indentation normalized">
             <description> 
-                Write selected documents into a folder, enforce regular indentation. This is
-                achieved by submitting the input documents to function 'pretty-node', which
-                removes any existing pretty-print nodes and thus enforces a complete
-                re-indentation.
+                Write a selected document, enforcing regular indentation. This is achieved by submitting 
+                the input document to function 'pretty-node', which removes any existing pretty-print 
+                nodes and thus enforces a complete re-indentation.
             </description>
             <code> 
-                fox "data*/airports*.xml/pretty-node()/write-doc('output')" 
+                fox "data*/airports*.xml[\\@icao = 'EFEU']/pretty-node()/write-named-doc('output', 'air.xml')" 
             </code>
         </example>
         <example tag="Indentation removed">
             <description> 
-                Write selected documents into a folder, with any indentation removed. Function
-                'pretty-node' removes any pretty-print nodes, and option 'noindent' prevents
-                the construction of new ones.
+                Write selected document, with any indentation removed. Function 'pretty-node' removes any 
+                pretty-print nodes, and option 'noindent' prevents the construction of new ones.
             </description>
             <code> 
-                fox "data*/airports*.xml/pretty-node()/write-doc('output', 'noindent')" 
+                fox "data*/airports*.xml[\\@icao = 'EFEU']/pretty-node()/write-named-doc('output', 'air.xml', 'noindent')" 
             </code>
         </example>
         <example tag="Use ec variant">

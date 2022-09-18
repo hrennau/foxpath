@@ -17,7 +17,7 @@
                 latitude and longitude rounded to 3 fractional digits.
             </description>
             <code>
-                fox "airports/airports.xml/insert-nodes('\\geo', 'round(latitude, 3)||""""/""""||round(longitude, 3)', 'coordinates')/pretty-node()"                
+                fox "airports/airports.xml/insert-nodes('\\geo', {round(latitude, 3)||'/'||round(longitude, 3)}, 'coordinates')/pretty-node()"                
             </code>
         </example>
         <example tag="Controlling the insertion point">
@@ -25,7 +25,7 @@
                 As the preceding example, but insert new elements as first child of their parent. 
             </description>
             <code>
-                fox "airports/airports.xml/insert-nodes('\\geo', 'round(latitude, 3)||""""/""""||round(longitude, 3)', 'coordinates', 'first')/pretty-node()"                
+                fox "airports/airports.xml/insert-nodes('\\geo', {round(latitude, 3)||'/'||round(longitude, 3)}, 'coordinates', 'first')/pretty-node()"
             </code>
         </example>
         <example tag="Insert copied elements">
@@ -41,6 +41,7 @@
                 Insert an element constructed using function xelem().
             </description>
             <code>
+                fox "airports/airports.xml/insert-nodes('\*', {xelem-ec(\\city, 'cities')}, (), 'first')/pretty-node()"
                 fox "airports/airports.xml/insert-nodes('\*', 'xelem-ec(\\city, """"cities"""")', (), 'first')/pretty-node()"
             </code>
         </example>
@@ -49,6 +50,11 @@
                 Chain two insertions: insert a 'cities' element, followed by an 'ids' element.
             </description>
             <code>
+                fox "airports/airports.xml
+                /insert-nodes('\*', {xelem-ec(\\city, 'cities')}, (), 'first')
+                /insert-nodes('\\cities', {\\@id => string-join(' ')}, 'ids', 'after')
+                /pretty-node()"                
+                
                 fox "airports/airports.xml
                      /insert-nodes('\*', 'xelem-ec(\\city, """"cities"""")', (), 'first')
                      /insert-nodes('\\cities', '\\@id => string-join("""" """")', 'ids', 'after')
@@ -61,10 +67,14 @@
             </description>
             <code>
                 fox "airports/*.xml
+                /insert-nodes('\*', {xelem-ec(\\city, 'cities')}, (), 'first')
+                /insert-nodes('\\cities', {\\@id => string-join(' ')}, 'ids', 'after')
+                /pretty-node()/write-doc('output')"                
+                
+                fox "airports/*.xml
                 /insert-nodes('\*', 'xelem-ec(\\city, """"cities"""")', (), 'first')
                 /insert-nodes('\\cities', '\\@id => string-join("""" """")', 'ids', 'after')
-                /pretty-node()
-                /write-doc('output')"                
+                /pretty-node()/write-doc('output')"                
             </code>
         </example>
         <example>
@@ -74,10 +84,14 @@
             </description>
             <code>
                 fox "airports/*.xml
+                => insert-nodes-ec('\*', {xelem-ec(\\city, 'cities')}, (), 'first')
+                => insert-nodes-ec('\\cities', {\\@id => string-join(' ')}, 'ids', 'after')
+                => pretty-node-ec() => write-doc-ec('output')"                
+                
+                fox "airports/*.xml
                 => insert-nodes-ec('\*', 'xelem-ec(\\city, """"cities"""")', (), 'first')
                 => insert-nodes-ec('\\cities', '\\@id => string-join("""" """")', 'ids', 'after')
-                => pretty-node-ec()
-                => write-doc-ec('output')"                
+                => pretty-node-ec() => write-doc-ec('output')"                
             </code>
         </example>
     </examples>

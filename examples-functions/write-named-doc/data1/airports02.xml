@@ -1,0 +1,3 @@
+<airports country="Finland">
+    <airport id="425" icao="EFIK"><name>Kiikala Airport</name><city>Kikala</city><country>Finland</country><geo><latitude>60.4625015259</latitude><longitude>23.6525001526</longitude><altitude>381</altitude></geo><temporal><timezone>2</timezone><tzTimezone>Europe/Helsinki</tzTimezone><dst>E</dst></temporal><type>airport</type><source1>OurAirports</source1></airport>
+</airports>

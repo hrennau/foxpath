@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="group-items">
+    <testenviron> In order to try out the examples, start a command shell and move to folder
+        $FOXPATH/examples-functions/group-items. </testenviron>
+    <examples>
+        <example tag="Grouped listing">
+            <description> 
+                Create a document containing a listing of airport files, grouped by country, which is read from a content element.                 
+            </description>
+            <code> 
+                fox "data/airport-* => group-items({\\country}) => xelem-ec('groups')" 
+            </code>
+        </example>
+        <example tag="Grouped contents">
+            <description> 
+                Create a document containing a set of airport elements grouped by country, which is read from a content element.                 
+            </description>
+            <code> 
+                fox "data/airport-*\. 
+                    => group-items({\\country}) 
+                    => xelem-ec('groups', 'pretty')" 
+            </code>
+        </example>
+        <example tag="Control names of group element and key attribute">
+            <description> 
+                As the preceding example, but wrap group items in a "country" element with a "name" attribute.                 
+            </description>
+            <code> 
+                fox "data/airport-*\. 
+                    => group-items({\\country}, (), 'country', 'name') 
+                    => xelem-ec('countries', 'pretty')" 
+            </code>
+        </example>
+        <example tag="Enhance the result of group-items">
+            <description> 
+                As the preceding example, but wrap group items in a "country" element with a "name" attribute.                 
+            </description>
+            <code> 
+                fox "data/airport-*\. 
+                    => group-items({\\country}, (), 'country', 'name') 
+                    => xelem-ec('countries', 'pretty') 
+                    => insert-nodes-ec({.}, {count(country)}, '@count')" 
+            </code>
+        </example>
+        <example tag="Map groups to evaluations">
+            <description> 
+                Group airports by country and map each group to a list cities.                 
+            </description>
+            <code> 
+                fox  "data/airport-*\. 
+                     => group-items({\\country}, {`$items\\city}, 'country', 'name') 
+                     => xelem-ec('countries', 'pretty')" 
+            </code>
+        </example>
+        <example tag="Enhance the report of evaluted groups">
+            <description> 
+                Group airports by country and map each group to a list cities.                 
+            </description>
+            <code> 
+                fox  "data/airport-*\. 
+                => group-items({\\country}, {`$items\\city}, 'country', 'name') 
+                => xelem-ec('countries', 'pretty')
+                => insert-nodes-ec({\\country}, {count(city)}, '@countCities')" 
+            </code>
+        </example>
+    </examples>
+</function-usage>

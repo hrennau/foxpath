@@ -1,0 +1,17 @@
+<airport id="423" icao="EFHN">
+  <name>Hanko Airport</name>
+  <city>Hanko</city>
+  <country>Finland</country>
+  <geo>
+    <latitude>59.848899841308594</latitude>
+    <longitude>23.083599090576172</longitude>
+    <altitude>20</altitude>
+  </geo>
+  <temporal>
+    <timezone>2</timezone>
+    <tzTimezone>Europe/Helsinki</tzTimezone>
+    <dst>E</dst>
+  </temporal>
+  <type>airport</type>
+  <source1>OurAirports</source1>
+</airport>
