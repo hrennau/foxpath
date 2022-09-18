@@ -83,7 +83,7 @@ let $value :=
     if ($foxpathExpr instance of element(error)) then string($foxpathExpr)
     else
         if ($mode eq 'parse') then f:parseFoxpath($foxpathExpr, $options)
-        else f:resolveFoxpath($foxpathExpr, $options, $context, $externalVariables)
+        else f:resolveFoxpathQuery($foxpathExpr, (), $context, $externalVariables, $options)
 let $stopTime := prof:current-ms()[$debugtime]      
 let $t := ((($stopTime - $startTime) div 1000) ! round(., 3))[$debugtime] 
 return ($value,

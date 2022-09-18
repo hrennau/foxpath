@@ -9,56 +9,105 @@ import module namespace util="http://www.ttools.org/xquery-functions/util"
 at  "foxpath-util.xqm";
 
 (:~
- : Resolves a foxpath expression. The result is an XDM value.
+ : Resolves a foxpath query text to a value.
  :
- : @param foxpath the expression text
- : @return the expression value
- :)
-declare function f:resolveFoxpath($foxpath as xs:string?) as item()* {
-    f:resolveFoxpath($foxpath, (), ())
-};
-
-(:~
- : Resolves a foxpath expression in an URI context. The result is an XDM value.
- :
- : @param foxpath the expression text
- : @return the expression value
- :)
-declare function f:resolveFoxpathInURIContext($foxpath as xs:string?) as item()* {
-    f:resolveFoxpath($foxpath, map:entry('IS_CONTEXT_URI', true()), ())
-};
-
-
-(:~
- : Resolves a foxpath expression. The result is an XDM value.
- :
- : @param foxpath the expression text
+ : @param queryText the query text
+ : @param ebvMode if true, the expression is resolved to its effective 
+ :    boolean value, rather than its value
+ : @param context initial context item 
+ :    relative path expressions; defaults to the current working directory
  : @param options evaluation options
- : @param externalVariableBindings a map providing the names and values of external variables 
+ : @param externalVariableBindings a map providing the names and values of external variables
  : @return the expression value
  :)
-declare function f:resolveFoxpath($foxpath as xs:string?, 
-                                  $options as map(*)?,
-                                  $externalVariableBindings as map(xs:QName, item()*)?) 
+declare function f:resolveFoxpathQuery(
+                                  $queryText as xs:string, 
+                                  $ebvMode as xs:boolean?, 
+                                  $context as item()?,
+                                  $externalVariableBindings as map(xs:QName, item()*)?,
+                                  $options as map(*)?)
         as item()* {
-    f:resolveFoxpath($foxpath, false(), (), $options, $externalVariableBindings)
+    let $DEBUG := util:trace($queryText, 'parse.resolve_foxpath_query', 'INTEXT_RESOLVE_FOXPATH_QUERY: ')
+    let $context := f:editInitialContext($context)
+    let $tree := util:trace(i:parseFoxpath($queryText, $options), 'parse', 'FOXPATH_ELEM: ')
+    return f:resolveFoxpathQueryTree($tree, $ebvMode, $context, $externalVariableBindings, $options)
 };
 
 (:~
- : Resolves a foxpath expression. The result is an XDM value.
+ : Resolves a foxpath query tree to a value.
  :
- : @param foxpath the expression text
+ : @param queryTree the expression tree
+ : @param ebvMode if true, the expression is resolved to its effective 
+ :    boolean value, rather than its value
+ : @param context initial context item 
+ :    relative path expressions; defaults to the current working directory
  : @param options evaluation options
- : @param context initial context item
- : @param externalVariableBindings a map providing the names and values of external variables 
- : @return the expression value
+ : @param externalVariableBindings a map providing the names and values of external variables
+ : @return the expression value 
  :)
-declare function f:resolveFoxpath($foxpath as xs:string?,
-                                  $options as map(*)?,
+declare function f:resolveFoxpathQueryTree(
+                                  $queryTree as element(), 
+                                  $ebvMode as xs:boolean?, 
                                   $context as item()?,                                  
-                                  $externalVariableBindings as map(xs:QName, item()*)?) 
+                                  $externalVariableBindings as map(xs:QName, item()*)?,
+                                  $options as map(*)?)
         as item()* {
-    f:resolveFoxpath($foxpath, false(), $context, $options, $externalVariableBindings)
+    let $errors := $queryTree/self::errors 
+    return if ($errors) then $errors else
+    
+    let $useOptions := f:finalizeOptions($options)
+    let $expr := $queryTree/*[not(self::prolog)]
+    let $vars := f:initVars($queryTree/prolog, $externalVariableBindings, $context, $useOptions)
+    return
+        f:resolveFoxpathExprTree($expr, $ebvMode, $context, $vars, $useOptions)
+};
+
+(:~
+ : Resolves a foxpath expression tree to a value.
+ :
+ : @param exprTree the expression tree
+ : @param ebvMode if true, the expression is resolved to its effective 
+ :    boolean value, rather than its value
+ : @param context initial context item 
+ :    relative path expressions; defaults to the current working directory
+ : @param options evaluation options
+ : @param externalVariableBindings a map providing the names and values of external variables
+ : @return the expression value 
+ :)
+declare function f:resolveFoxpathExprTree(
+                                  $exprTree as element(), 
+                                  $ebvMode as xs:boolean?, 
+                                  $context as item()?,
+                                  $vars as map(xs:QName, item()*)?,
+                                  $options as map(*)?)
+        as item()* {
+    let $errors := $exprTree/self::errors 
+    return if ($errors) then $errors else    
+    f:resolveFoxpathRC($exprTree, $ebvMode, $context, (), (), $vars, $options)
+};
+
+(:~
+ : Resolves a foxpath query text to a value.
+ :
+ : @param queryText the query text
+ : @param ebvMode if true, the expression is resolved to its effective 
+ :    boolean value, rather than its value
+ : @param context initial context item 
+ :    relative path expressions; defaults to the current working directory
+ : @param options evaluation options
+ : @param externalVariableBindings a map providing the names and values of external variables
+ : @return the expression value
+ :)
+declare function f:resolveFoxpathExpr(
+                                  $exprText as xs:string, 
+                                  $ebvMode as xs:boolean?, 
+                                  $context as item()?,
+                                  $vars as map(xs:QName, item()*)?,
+                                  $options as map(*)?)
+        as item()* {
+    let $DEBUG := util:trace($exprText, 'parse.resolve_foxpath_expr', 'INTEXT_RESOLVE_FOXPATH_EXPR: ')
+    let $tree := util:trace(i:parseFoxpath($exprText, $options)/*, 'parse', 'FOXPATH_ELEM: ')
+    return f:resolveFoxpathExprTree($tree, $ebvMode, $context, $vars, $options)
 };
 
 (:~
@@ -73,7 +122,7 @@ declare function f:resolveFoxpath($foxpath as xs:string?,
  : @param externalVariableBindings a map providing the names and values of external variables
  : @return the expression value
  :)
-declare function f:resolveFoxpath($foxpath as xs:string, 
+declare function f:resolveFoxpathXXX($foxpath as xs:string, 
                                   $ebvMode as xs:boolean?, 
                                   $context as item()?,
                                   $options as map(*)?,
@@ -360,7 +409,7 @@ declare function f:resolveFoxpathRC($n as node(),
         f:resolveFlworExpr($n, $ebvMode, $context, $position, $last, $vars, $options)
 
     case element(foxpath) return
-        f:resolveFoxpathExpr($n, $ebvMode, $context, $position, $last, $vars, $options)
+        f:resolvePathExpr($n, $ebvMode, $context, $position, $last, $vars, $options)
         
      case element(functionRef) return
         let $funcItem := f:resolveNamedFunctionRef($n, $context, $position, $last, $vars, $options)
@@ -471,9 +520,12 @@ declare function f:resolveFoxpathRC($n as node(),
             if ($ebvMode) then f:getEbv($value) else $value
     case element(contextExpression) return $n
     case element(contextExpressionCall) return
+        $n/*[1]/f:resolveContextExpressionCall(., $context, $vars, $options)
+        (:
         $n/*[1]/*/f:resolveFoxpathRC(
             ., $ebvMode, $context, $position, $last, $vars, $options)
-    case element(exprItem) return <foxpathTree>{$n/(@*, *)}</foxpathTree>            
+         :)
+    (: case element(exprItem) return <foxpathTree>{$n/(@*, *)}</foxpathTree> :)            
     default return
         if (
         $n/@ignore eq 'true') then () else
@@ -484,26 +536,26 @@ declare function f:resolveFoxpathRC($n as node(),
 (: 
  : ===============================================================================
  :
- :     r e s o l v e    f o x p a t h    e x p r e s s i o n
+ :     r e s o l v e    p a t h    e x p r e s s i o n
  :
  : ===============================================================================
  :)
 
 (:~
- : Resolves a foxpath expression.
+ : Resolves a path expression.
  :
  : @param foxpath the expression as an expression tree
  : qparam ebvMode if true, the effective boolean value is returned, rather than the expression value
  : @param context the context item
  : @return the value or effective boolean value of the expression
  :)
-declare function f:resolveFoxpathExpr($foxpath as element(foxpath), 
-                                      $ebvMode as xs:boolean?,
-                                      $context as item()?,
-                                      $position as xs:integer?,
-                                      $last as xs:integer?,
-                                      $vars as map(xs:QName, item()*)?,
-                                      $options as map(*)?)                                      
+declare function f:resolvePathExpr($foxpath as element(foxpath), 
+                                   $ebvMode as xs:boolean?,
+                                   $context as item()?,
+                                   $position as xs:integer?,
+                                   $last as xs:integer?,
+                                   $vars as map(xs:QName, item()*)?,
+                                   $options as map(*)?)                                      
         as item()* {
     let $initialRoot := $foxpath/*[1][self::foxRoot or self::root]   
     
@@ -535,7 +587,7 @@ declare function f:resolveFoxpathExpr($foxpath as element(foxpath),
             (: 20161202, hjr - removed .../string() :)
             (: $initialContext/string() [f:fox-file-exists($initialContext, $options)] :)
         else
-            let $items := f:resolveFoxpathExprRC($steps, $initialContext, $vars, $options)
+            let $items := f:resolvePathExprRC($steps, $initialContext, $vars, $options)
             (: 20161001, hjr: removed the sorting; 
                          sorting is handled within fox axis step resolver 
             return
@@ -550,12 +602,12 @@ declare function f:resolveFoxpathExpr($foxpath as element(foxpath),
 };
 
 (:~
- : Recursive helper function of `resolveFoxpathExpr`.
+ : Recursive helper function of `resolvePathExpr`.
  :)
-declare function f:resolveFoxpathExprRC($steps as element()+, 
-                                        $context as item()*,
-                                        $vars as map(xs:QName, item()*)?,
-                                        $options as map(*)?)                                        
+declare function f:resolvePathExprRC($steps as element()+, 
+                                     $context as item()*,
+                                     $vars as map(xs:QName, item()*)?,
+                                     $options as map(*)?)                                        
         as item()* {
     let $step1 := $steps[1]
     let $tail := tail($steps)
@@ -594,7 +646,7 @@ declare function f:resolveFoxpathExprRC($steps as element()+,
                 $value
     return (
         if (not($tail)) then $items
-        else f:resolveFoxpathExprRC($tail, $items, $vars, $options)
+        else f:resolvePathExprRC($tail, $items, $vars, $options)
     )
 };
 
@@ -1627,7 +1679,7 @@ declare function f:resolveDynFunctionCall($callExpr as element(),
     let $funcItem := $funcExpr/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)    
     return
         if ($funcItem instance of element(contextExpression)) then
-            f:resolveFoxpathRC($funcItem/*, false(), $context, $position, $last, $vars, $options)
+            f:resolveContextExpressionCall($funcItem, $context, $vars, $options)
         else
         
     let $argExprs := $callExpr/*[position() gt 1]    
@@ -1668,6 +1720,19 @@ declare function f:resolveDynFunctionCall($callExpr as element(),
             util:createFoxpathError('NOT_YET_IMPLEMENTED', 
                 concat('Dynamic function call with >3 arguments; # arguments: ', count($argExprs)))
 };    
+
+(:~
+ : Resolve a context expression in an actual context.
+ :) 
+declare function f:resolveContextExpressionCall(
+            $contextExpression as element(contextExpression), 
+            $context as item()?,
+            $vars as map(xs:QName, item()*),
+            $options as map(xs:string, item()*))
+            as item()* {
+    $contextExpression/*[1]/f:resolveFoxpathRC(
+        ., false(), $context, (), (), $vars, $options)            
+};
 
 (:
 (:~
@@ -1975,7 +2040,7 @@ declare function f:resolveFunctionCall($call as element(),
             else
                 map:put($options, 'IS_CONTEXT_URI', true())
         return
-            i:resolveFoxpath($expression, false(), $context, $useOptions, ())
+            i:resolveFoxpathExpr($expression, false(), $context, $useOptions, ())
     else
         i:resolveStaticFunctionCall($call, $context, $position, $last, $vars, $options)
 };      

@@ -368,9 +368,9 @@ declare function f:docxDoc($uri as xs:string)
  : @return for each group an element containing the grouped items
  :)
 declare function f:groupItems($items as item()*,
-                              $groupKeyExpr as xs:string,
-                              $groupProcExpr as xs:string?,
-                              $wrapperName as xs:string?,
+                              $groupKeyExpr as item(),
+                              $groupProcExpr as item(),
+                              $wrapperName as item(),
                               $keyName as xs:string?,
                               $options as xs:string?,
                               $processingOptions as map(*))
@@ -378,24 +378,27 @@ declare function f:groupItems($items as item()*,
     if (empty($items)) then () else
     
     let $groupProcExpr := $groupProcExpr ! ('declare variable $items external; '||.)
+    (:
     let $groupKeyExprTree := i:parseFoxpath($groupKeyExpr, $processingOptions)
     let $groupProcExprTree := $groupProcExpr ! i:parseFoxpath(., $processingOptions)
-    let $_DEBUG := trace($groupProcExprTree, 'GET: ')
-    let $wrapperNameExpr := 
+    :)
+    let $wrapperNameExpr := $wrapperName[. instance of node()]
+    (:
         if (not(matches($wrapperName, '^\s*\{.*\}\s*$'))) then ()
         else replace($wrapperName, '^\s*\{\s*|\s*\}\s*$', '') ! i:parseFoxpath(., $processingOptions)
+     :)
     let $wrapperName := if ($wrapperNameExpr) then () else ($wrapperName, 'group')[1]
     let $keyName := ($keyName, 'key')[1]
     let $itemsQname := QName((), 'items')
     let $groups :=
         for $item in $items
-        let $key := f:resolveFoxpath($item, (), $groupKeyExprTree, $processingOptions)
+        let $key := f:resolveFoxpath($item, $groupKeyExpr, $processingOptions)
         group by $key
         let $groupContent :=
             if (not($groupProcExpr)) then $item
-            else f:resolveFoxpath($key, (), $groupProcExprTree, map{$itemsQname: $item}, $processingOptions)
+            else f:resolveFoxpath($key, $groupProcExpr, map{$itemsQname: $item}, $processingOptions)
         let $groupElemName := 
-            if ($wrapperNameExpr) then f:resolveFoxpath($key, (), $wrapperNameExpr, $processingOptions)
+            if ($wrapperNameExpr) then f:resolveFoxpath($key, $wrapperNameExpr, $processingOptions)
             else $wrapperName
         return
             element {$groupElemName} {
@@ -3096,26 +3099,49 @@ declare function f:resolveFoxpath($context as item(),
                                   $exprTextOrTree as item(), 
                                   $options as map(*))
         as item()* {
-    (: let $_DEBUG := trace($exprTree, '_EXPRESSION_TREE: ') :)   
+    (:
+    let $_DEBUG := trace($exprTextOrTree, '_EXPRESSION_TREE: ')
+    let $_DEBUG := trace($context, '_CONTEXT: ')
+    :)
     let $isContextNode := $context instance of node()
-    let $useOptions :=
-        if ($isContextNode) then $options
-        else map:put($options, 'IS_CONTEXT_URI', true())
+    let $useOptions := map:put($options, 'IS_CONTEXT_URI', $isContextNode)
     return
         if ($exprTextOrTree instance of node()) then
-            let $isExprContextNode := not($exprTextOrTree/@isContextURI/xs:boolean(.))
-            return
-                (: If parse context different from current context => parse again :)
-                if ($isContextNode and not($isExprContextNode) 
-                    or not($isContextNode) and $isExprContextNode) then
-                    i:resolveFoxpath($exprTextOrTree/@text, false(), $context, $useOptions, ())                    
-                else
-                    i:resolveFoxpathTree($exprTextOrTree, false(), $context, $useOptions, ())                
-            
-
-        else i:resolveFoxpath($exprTextOrTree, false(), $context, $useOptions, ())
+            let $expr := 
+                if ($exprTextOrTree/self::contextExpression) then $exprTextOrTree/* 
+                else $exprTextOrTree 
+            let $result := i:resolveFoxpathExprTree($expr, false(), $context, (), $useOptions)
+            (: let $_DEBUG := trace($result, '___RESULT: ') :)
+            return $result
+        else
+            (: Set IS_CONTEXT_URI to empty sequence to enable ambivalent frog steps :)
+            let $useOptions := map:put($options, 'IS_CONTEXT_URI', ())
+            return i:resolveFoxpathExpr($exprTextOrTree, false(), $context, (), $useOptions)
 };
 
+declare function f:resolveFoxpath($context as item(), 
+                                  $exprTextOrTree as item(),
+                                  $vars as map(xs:QName, item()*),
+                                  $options as map(*))
+        as item()* {
+    (: let $_DEBUG := trace($exprTextOrTree, '_EXPRESSION_TREE: ') :)   
+    let $isContextNode := $context instance of node()
+    let $useOptions := map:put($options, 'IS_CONTEXT_URI', $isContextNode)
+    return
+        if ($exprTextOrTree instance of node()) then
+            let $expr := 
+                if ($exprTextOrTree/self::contextExpression) then $exprTextOrTree/* 
+                else $exprTextOrTree 
+            let $result := i:resolveFoxpathExprTree($expr, false(), $context, $vars, $useOptions)
+            (: let $_DEBUG := trace($result, '___RESULT: ') :)
+            return $result
+        else
+            (: Set IS_CONTEXT_URI to empty sequence to enable ambivalent frog steps :)
+            let $useOptions := map:put($options, 'IS_CONTEXT_URI', ())
+            return i:resolveFoxpathExpr($exprTextOrTree, false(), $context, $vars, $useOptions)
+};
+
+(:
 declare function f:resolveFoxpath($context as item(), 
                                   $expr as xs:string?, 
                                   $exprTree as element()?, 
@@ -3130,9 +3156,11 @@ declare function f:resolveFoxpath($context as item(),
         if ($exprTree) then
             i:resolveFoxpathTree($exprTree, false(), $context, $useOptions, ())
             (: i:resolveFoxpathRC($exprTree, false(), $context, 1, 1, (), $options) :)
-        else i:resolveFoxpath($expr, false(), $context, $useOptions, ())
+        else i:resolveFoxpathExpr($expr, false(), $context, $useOptions, ())
 };
+:)
 
+(:
 declare function f:resolveFoxpath($context as item(), 
                                   $expr as xs:string?, 
                                   $exprTree as element()?,
@@ -3146,8 +3174,8 @@ declare function f:resolveFoxpath($context as item(),
         else map:put($options, 'IS_CONTEXT_URI', true())
     return
         if ($exprTree) then
-            i:resolveFoxpathTree($exprTree, false(), $context, $useOptions, $vars)
-        else i:resolveFoxpath($expr, false(), $context, $useOptions, $vars)
+            i:resolveFoxpathExprTree($exprTree, false(), $context, $useOptions, $vars)
+        else i:resolveFoxpathExpr($expr, false(), $context, $useOptions, $vars)
         
         (:
 declare function f:resolveFoxpathExpr($foxpath as element(foxpath), 
@@ -3159,7 +3187,7 @@ declare function f:resolveFoxpathExpr($foxpath as element(foxpath),
                                       $options as map(*)?)                                      
 :)        
 };
-
+:)
 
 (:~
  : Resolves a JSON Schema allOf group. Returns all subschemas, with schema
@@ -3675,7 +3703,7 @@ declare function f:writeFiles($files as item()*,
 declare function f:writeDoc($urisOrNodes as item()*, 
                             $dir as xs:string?,
                             $name as xs:string?,
-                            $nameExpr as xs:string?,
+                            $nameExpr as item()?,
                             $nameFrom as xs:string?,
                             $nameTo as xs:string?,
                             $options as xs:string?,
@@ -3698,7 +3726,7 @@ declare function f:writeDoc($urisOrNodes as item()*,
         else i:fox-doc($uriOrNode, $processingOptions)    
     let $fileName :=
         if ($name) then $name
-        else if ($nameExpr) then $nameExpr ! f:resolveFoxpath($node, ., (), $processingOptions)
+        else if ($nameExpr) then $nameExpr ! f:resolveFoxpath($node, ., $processingOptions)
         else 
             let $_CHECK := if ($baseUri) then () else error(QName((), 'INVALID_ARG'),
                 'Function '||$extFuncName||' requires documents with a base URI, but '||

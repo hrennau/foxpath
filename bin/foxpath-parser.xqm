@@ -1934,6 +1934,7 @@ declare function f:parseStep($text as xs:string?,
         else
             (: Try to parse as frog axis step :)
             let $frogAxisStepEtc := 
+                (: Note how an empty IS_CONTREXT_EMPTY may trigger parsing as frog step :) 
                 if ($precedingOperator or exists($context?IS_CONTEXT_URI)) then ()
                 else f:parseFrogAxisStep($text, $context)
             let $frogAxisStep := $frogAxisStepEtc[. instance of node()]
@@ -1963,8 +1964,33 @@ declare function f:parseStep($text as xs:string?,
 };
 
 (:~
- : A frog axis step is an "amphibean" step which will be treated as fox 
- : axis step or as node axis step, dependent on the actual context item.
+ : Parses a frog axis step. A frog axis step is an "amphibean" step which 
+ : will be treated as fox axis step or as node axis step, dependent on the 
+ : actual context item. 
+ :
+ : ACKNOWLEDGEMENT: Many thanks to Hauke Brandes for the idea of introducing 
+ : such ambivalent path steps in order to enable evaluation of context 
+ : expressions dependent on the actual context item.)
+ :
+ : Parsing a step as frog step fails unless the step is indeed syntactically
+ : ambivalent, so that resolving to node step and to fox step would both be
+ : possible. This means
+ : (1) no explicit axis is used
+ : (2) the step content (excluding predicates) is ".." or an item test which 
+ :     would be a valid node name test: 'foo', 'x:foo', '*', 'x:*', '*:foo').
+ :
+ : Note that an explicit axis reveals the nature of the step (e.g. 
+ : "descendant:: reveals node step", whereas "descendant~:: reveals 
+ : a fox step. 
+ :
+ : Implementation hint: the <frogStep> element has all attributes required
+ : for resolving the step as a <nodeStep> or as a <foxStep>: 
+ : @localName, @namespace, @name, @regex.
+ :
+ : @param text the text to be parsed
+ : @param context parsing options
+ : @return parse tree and the remaining text not yet parsed, or the
+ :   empty sequence if parsing fails 
  :)
 declare function f:parseFrogAxisStep($text as xs:string?, $context as map(*))
         as item()* {
@@ -1996,10 +2022,7 @@ declare function f:parseFrogAxisStep($text as xs:string?, $context as map(*))
         if (not($predicates)) then $textAfter
         else f:extractTextAfter($predicatesEtc)
     return (
-        <frogStep>{
-            $atts,
-            $predicates
-        }</frogStep>,
+        <frogStep>{$atts, $predicates}</frogStep>,
         $textAfterPredicates
     )
 };
@@ -2483,7 +2506,7 @@ declare function f:parsePrimaryExpr($text as xs:string, $context as map(*))
     else if (matches($text, '^function\s*\(', 's')) then f:parseInlineFunctionExpr($text, $context)    
     else if (matches($text, '^\i\c*\s*\(')) then f:parseFunctionCall($text, $context)
     else if (matches($text, '^\i\c*\s*#\s*\d', 's')) then f:parseNamedFunctionItem($text, $context)  
-    else if (matches($text, 'E?\{', 's')) then f:parseContextExpr($text, $context)
+    else if (matches($text, '^E?\{', 's')) then f:parseContextExpr($text, $context)
     else ()
 };
 
@@ -2558,6 +2581,7 @@ declare function f:parseParenthesizedExpr($text as xs:string, $context as map(*)
  :)
 declare function f:parseContextExpr($text as xs:string, $context as map(*))
         as item()+ {
+    (: let $_DEBUG := trace($text, '_CONTEXT_EXPR_TEXT: ') :)
     let $textAfterOpen := replace($text, '^E?\{\s*', '')
     let $containedExprEtc :=
         if (starts-with($textAfterOpen, '}')) then 
@@ -2566,6 +2590,7 @@ declare function f:parseContextExpr($text as xs:string, $context as map(*))
             (: Evaluate expr with IS_CONTEXT_URI set to empty sequence :)
             let $newContext := map:put($context, 'IS_CONTEXT_URI', ())
             return f:parseSeqExpr($textAfterOpen, $newContext)
+    (: let $_DEBUG := trace($containedExprEtc, '_CONTAINED_EXPR_ETC: ') :)
     let $containedExpr := $containedExprEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($containedExprEtc)
     return
@@ -2573,7 +2598,8 @@ declare function f:parseContextExpr($text as xs:string, $context as map(*))
             util:createFoxpathError('SYNTAX_ERROR', 
                 concat('Unbalanced parentheses: {', $text))
         else
-            let $contextExpr := <contextExpression>{$containedExpr}</contextExpression>        
+            let $contextExpr := <contextExpression>{$containedExpr}</contextExpression>
+            (: let $_DEBUG := trace($contextExpr, '_CONTEXT_EXPR: ') :)
             let $textAfterClose := f:skipOperator($textAfter, '}')
             let $parentheses := replace($textAfterClose, '^(\(\s*\)).*', '$1')
             return
@@ -2824,15 +2850,16 @@ declare function f:parseArgumentListRC($text as xs:string, $context as map(*))
         if (matches($text, '^\?\s*[,)]')) then (
             <argPlaceholder/>,
             replace($text, '^\?\s*', '')
-        ) else if (matches($text, '^\{')) then 
+        )
+        (: else if (matches($text, '^\{')) then 
             let $exprEtc := $text ! replace(., '^\{\s*', '') ! f:parseSeqExpr(., $context)
             let $newText := $exprEtc[. instance of xs:anyAtomicType] ! replace(., '^\s*\}', '')
             let $exprText := substring-before($text, $newText) ! replace(., '^\s*\{\s*|\s*\}\s*', '')
             let $node := $exprEtc[. instance of node()] ! 
                 <exprItem text="{$exprText}" isContextURI="{$context?IS_CONTEXT_URI}">{.}</exprItem>
             return ($node, $newText)
-        else
-            f:parseExprSingle($text, $context)
+         :)
+        else f:parseExprSingle($text, $context)
     let $exprSingle := $exprSingleEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($exprSingleEtc)        
     return (
