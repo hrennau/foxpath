@@ -31,6 +31,19 @@
                     => xelem-ec('countries', 'pretty')" 
             </code>
         </example>
+        <example tag="Dynamic wrapper name">
+            <description> 
+                As the preceding example, but the group elements have a name which is equal to the grouping key.
+                This is achieved by providing for the name an expression, which is evaluated in the context of
+                the current grouping key. As the group element name is equal to the key, the @key attribute is 
+                suppressed by setting the key name parameter to the value '#none'.                 
+            </description>
+            <code> 
+                fox "data/airport-*\. 
+                => group-items({\\country}, (), {.}, '#none') 
+                => xelem-ec('countries', 'pretty')" 
+            </code>
+        </example>
         <example tag="Enhance the result of group-items">
             <description> 
                 As the preceding example, but wrap group items in a "country" element with a "name" attribute.                 
