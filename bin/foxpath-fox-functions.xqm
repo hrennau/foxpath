@@ -389,11 +389,11 @@ declare function f:groupItems($items as item()*,
             if (not($groupProcExpr)) then $item
             else f:resolveFoxpath($key, $groupProcExpr, map{$itemsQname: $item}, $processingOptions)
         let $groupElemName := 
-            if ($wrapperNameExpr) then f:resolveFoxpath($key, $wrapperNameExpr, $processingOptions)
+            if ($wrapperNameExpr) then f:resolveFoxpath($key, $wrapperNameExpr, map{$itemsQname: $item}, $processingOptions)
             else $wrapperName
         return
             element {$groupElemName} {
-                attribute {$keyName} {$key},
+                attribute {$keyName} {$key}[not($keyName eq '#none')],
                 for $item in $groupContent  return
                     typeswitch ($item) 
                         case document-node() | element() return $item 
@@ -439,7 +439,7 @@ declare function f:nodesDeepEqual($items as item()*)
  : @return true if all nodes are deep-similar, false otherwise
  :)
 declare function f:nodesDeepSimilar($items as item()+,
-                                    $excludeExprs as xs:string*,
+                                    $excludeExprs as item()*,
                                     $processingOptions as map(*))
         as xs:boolean? {
     let $count := count($items) return        
@@ -459,7 +459,7 @@ declare function f:nodesDeepSimilar($items as item()+,
 
 declare function f:nodePairDeepSimilar($node1 as node(), 
                                        $node2 as node(), 
-                                       $excludeExprs as xs:string*,
+                                       $excludeExprs as item()*,
                                        $processingOptions as map(*))
         as xs:boolean {
     if (empty($excludeExprs)) then deep-equal($node1, $node2) else
@@ -468,9 +468,8 @@ declare function f:nodePairDeepSimilar($node1 as node(),
         copy $node_ := $node
         modify
             let $delNodes :=
-                for $expr in $excludeExprs return 
-                    f:resolveFoxpath($node_, $expr, (), $processingOptions)
-                    [. instance of node()]
+                $excludeExprs ! f:resolveFoxpath($node_, ., $processingOptions)
+                [. instance of node()]
             (: let $_DEBUG := trace($delNodes, '_DEL_NODES: ') :)
             return 
                 if (empty($delNodes))then () else
