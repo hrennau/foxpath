@@ -649,7 +649,7 @@ declare function f:parseSeqExpr($text as xs:string, $context as map(*))
     let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_SEQ: ') return        
     let $seqExprEtc := f:parseSeqExprRC($text, $context)
     let $seqExpr := $seqExprEtc[. instance of node()]
-    let $textAfter := f:extractTextAfter($seqExprEtc)        
+    let $textAfter := f:extractTextAfter($seqExprEtc)  
     return (
         if (count($seqExpr) lt 2) then $seqExpr 
         else <seq>{$seqExpr}</seq>,
@@ -671,7 +671,7 @@ declare function f:parseSeqExprRC($text as xs:string, $context as map(*))
     let $termOp := ','
     let $exprSingleEtc := f:parseExprSingle($text, $context)
     let $exprSingle := $exprSingleEtc[. instance of node()]
-    let $textAfter := f:extractTextAfter($exprSingleEtc)        
+    let $textAfter := f:extractTextAfter($exprSingleEtc)
     return (
         $exprSingle,        
 
@@ -948,7 +948,7 @@ declare function f:parseOrExpr($text as xs:string, $context as map(*))
  :)
 declare function f:parseOrExprRC($text as xs:string, $context as map(*))
         as item()+ {
-    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_OR_RC: ') return        
+    let $DEBUG := util:trace($text, 'parse.text', 'INTEXT_OR_RC: ') return      
     let $andEtc := f:parseAndExpr($text, $context)
     let $and := $andEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($andEtc)        
@@ -1707,7 +1707,7 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
         else if (starts-with($text, $FOXSTEP_SEPERATOR)) then <foxRoot path="/"/>
         else if (starts-with($text, $NODESTEP_SEPERATOR)) then <root/>
         else ()
-    
+        
     (: parse steps etc
        =============== :) 
     let $stepsEtc :=
@@ -1728,6 +1728,7 @@ declare function f:parsePathExpr($text as xs:string, $context as map(*))
                 else if ($startHerePrefix) then substring($text, 1 + string-length($startHerePrefix))
                 else $text
             , '^\s+', '')[string()]
+            
         (: 
            update context component IS_CONTEXT_URI:
              if the initial operator is \: true 
@@ -2596,13 +2597,15 @@ declare function f:parseContextExpr($text as xs:string, $context as map(*))
             return f:parseSeqExpr($textAfterOpen, $newContext)
     (: let $_DEBUG := trace($containedExprEtc, '_CONTAINED_EXPR_ETC: ') :)
     let $containedExpr := $containedExprEtc[. instance of node()]
-    let $textAfter := f:extractTextAfter($containedExprEtc)
+    let $textAfterRaw := $containedExprEtc[not(. instance of node())]
+    let $textAfter := f:skipWhitespace($textAfterRaw)
+    let $exprText := substring-before($textAfterOpen, $textAfterRaw)
     return
         if (not(starts-with($textAfter, '}'))) then
             util:createFoxpathError('SYNTAX_ERROR', 
                 concat('Unbalanced parentheses: {', $text))
         else
-            let $contextExpr := <contextExpression>{$containedExpr}</contextExpression>
+            let $contextExpr := <contextExpression text="{$exprText}">{$containedExpr}</contextExpression>
             (: let $_DEBUG := trace($contextExpr, '_CONTEXT_EXPR: ') :)
             let $textAfterClose := f:skipOperator($textAfter, '}')
             let $parentheses := replace($textAfterClose, '^(\(\s*\)).*', '$1')
@@ -2690,13 +2693,15 @@ declare function f:parseNestedFoxpathCall($functionName as xs:string,
     return
     
     (: resolve-fox :)
+(:    
     if ($functionName eq 'resolve-fox') then
         let $text := $arguments[last()]/string()
         let $tree := f:parseFoxpath($text, $context)
         return <_parsed ignore="true">{$tree}</_parsed>
-        
+ :)        
     (: free, ftree-ec :)
-    else if ($functionName = ('ftree', 'ftree-ec')) then
+(:    
+    if ($functionName = ('ftree', 'ftree-ec')) then
         let $ecShift := if (ends-with($functionName, '-ec')) then 1 else 0
         let $useArgs := subsequence($arguments, 1 + $argShift + $ecShift)
         let $trees :=
@@ -2707,8 +2712,9 @@ declare function f:parseNestedFoxpathCall($functionName as xs:string,
             let $tree := f:parseFoxpath($expr, $context)
             return element {$pname} {$tree}
         return
-            if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>            
-    else if ($functionName = ('ftree-selective', 'ftree-selective-ec')) then
+            if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>
+:)
+    if ($functionName = ('ftree-selective', 'ftree-selective-ec')) then
         let $ecShift := if (ends-with($functionName, '-ec')) then 1 else 0    
         let $useArgs := subsequence($arguments, 3 + $argShift + $ecShift)
         let $trees :=
@@ -2855,14 +2861,6 @@ declare function f:parseArgumentListRC($text as xs:string, $context as map(*))
             <argPlaceholder/>,
             replace($text, '^\?\s*', '')
         )
-        (: else if (matches($text, '^\{')) then 
-            let $exprEtc := $text ! replace(., '^\{\s*', '') ! f:parseSeqExpr(., $context)
-            let $newText := $exprEtc[. instance of xs:anyAtomicType] ! replace(., '^\s*\}', '')
-            let $exprText := substring-before($text, $newText) ! replace(., '^\s*\{\s*|\s*\}\s*', '')
-            let $node := $exprEtc[. instance of node()] ! 
-                <exprItem text="{$exprText}" isContextURI="{$context?IS_CONTEXT_URI}">{.}</exprItem>
-            return ($node, $newText)
-         :)
         else f:parseExprSingle($text, $context)
     let $exprSingle := $exprSingleEtc[. instance of node()]
     let $textAfter := f:extractTextAfter($exprSingleEtc)        
@@ -3852,6 +3850,19 @@ declare function f:skipOperator($text as xs:string, $operator as xs:string?)
         as xs:string {
     replace(substring($text, 1 + string-length($operator)), '^\s+', '')
 };
+
+(:~
+ : Removes leading whitespace.
+ :
+ : @param text a text
+ : @return the text obtained by removing any leading whitespace
+ :     immediately following it
+ :)
+declare function f:skipWhitespace($text as xs:string)
+        as xs:string {
+    replace($text, '^\s+', '')
+};
+
 
 (:~
  : Parses a text which may begin with a canonical fox name test.

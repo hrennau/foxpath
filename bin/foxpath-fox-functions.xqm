@@ -4300,9 +4300,10 @@ declare function f:extractNamespaceNodes($elems as element()*)
  : expression.
  :)
 declare function f:ftree($folders as xs:string*,
-                         $fileProperties as xs:string*, 
-                         $exprTrees as element()*) as element(*)? {
-    let $filePropertiesMap := f:ftreeUtil_filePropertyMap($fileProperties, $exprTrees)
+                         $fileProperties as item()*,
+                         $processingOptions as map(*)) as element(*)? {
+    let $filePropertiesMap := 
+        f:ftreeUtil_filePropertyMap($fileProperties, $processingOptions)
     let $useOptions := map:merge((
         $filePropertiesMap ! map:entry('_file-properties', $filePropertiesMap)
     ))
@@ -4335,7 +4336,7 @@ declare function f:ftreeREC($folder as xs:string, $options as map(*)) as element
                     else
                         let $itemElemName := $pmap?itemElemName[string()]
                         let $occs := $pmap?occs[string()]
-                        let $pvalueP := f:resolveFoxpath(., (), $pmap?exprTree/*, $options)
+                        let $pvalueP := f:resolveFoxpath(., $pmap?exprTree, $options)
                         return 
                             if (empty($pvalueP) and $occs = ('?', '*')) then ()
                             else if ($pmap?isAtt) then attribute {$pname} {$pvalueP}
@@ -4452,13 +4453,17 @@ declare function f:ftreeSelectiveREC(
  : @param options the options map received by the ftree* function
  : @return an array of maps
  :)
-declare function f:ftreeUtil_filePropertyMap($fileProperties as xs:string*, $exprTrees as element()?)
+declare function f:ftreeUtil_filePropertyMap($fileProperties as item()*, 
+                                             $processingOptions as map(*))
         as array(map(*))? {
     if (empty($fileProperties)) then () else
     
+    let $countProperties := (count($fileProperties) div 2) ! xs:integer(.)
     let $entries :=
-        for $fp in $fileProperties
-        let $fnameAndPname := replace($fp, '^(.+?)\s*=.*', '$1') ! normalize-space(.)
+        for $p in 1 to $countProperties
+        let $fnameAndPname := $fileProperties[$p * 2 - 1]
+        let $propertyExpression := $fileProperties[$p * 2]
+        
         let $withFname := matches($fnameAndPname, '\s')
         (: File name filter :)
         let $fname := (
@@ -4475,9 +4480,18 @@ declare function f:ftreeUtil_filePropertyMap($fileProperties as xs:string*, $exp
         let $pname := $pnameRaw ! replace(., '^@|\?|\*$', '')       
         let $pname2 := $pname[contains(., '/')] ! replace(., '.*/\s*', '')
         let $pname1 := if (empty($pname2)) then $pname else replace($pname, '\s*/.*', '')
+        
         (: Expression or expression tree :)
-        let $expr := replace($fp, '^.+?=\s*', '')
-        let $exprTree := $exprTrees/*[local-name(.) eq $pname1]
+        let $expr := 
+            if ($propertyExpression instance of element(contextExpression)) then 
+                $propertyExpression/@text
+            else $propertyExpression
+        let $exprTree := 
+            if ($propertyExpression instance of element(contextExpression)) then 
+                $propertyExpression
+            else 
+                let $processingOptions := map:put($processingOptions, 'IS_CONTEXT_URI', ())
+                return i:parseSeqExpr($propertyExpression, $processingOptions)
         return
             map:entry($pname1, map{'isAtt': $isAtt,
                                    'occs': $occs,            

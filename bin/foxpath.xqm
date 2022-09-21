@@ -176,7 +176,7 @@ declare function f:finalizeOptions($options as map(*)?)
     let $ugraphUriPrefixes := 
         if (empty($ugraphEndpoints)) then () else
             f:get-ugraph-uri-prefixes($ugraphEndpoints[1], $options)
-    let $map :=
+    let $map := map:merge(($options,
         map{       
             'URI_TREES_DIRS': $utreeDirs,
             'URI_TREES': $utrees,
@@ -184,7 +184,7 @@ declare function f:finalizeOptions($options as map(*)?)
             'URI_TREES_PREFIXES': $uriPrefixes,
             'UGRAPH_ENDPOINTS': $ugraphEndpoints,
             'UGRAPH_URI_PREFIXES': $ugraphUriPrefixes
-        }
+        }))
     return $map
 };
 

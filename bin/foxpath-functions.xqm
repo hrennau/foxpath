@@ -463,7 +463,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 $text
                 
         (: function `file-copy` 
-           ======================= :)
+           ==================== :)
         else if ($fname = ('file-copy', 'fcopy')) then
             let $countArgs := count($call/*)
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
@@ -639,7 +639,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:frequencies($values, $min, $max, 'count', $order, $format)
 
-        else if ($fname = ('ftree', 'ftree-ec')) then
+        else if ($fname = ('ftree', 'ftree-ec')) then  
+            (:
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
             let $args := $call/*[not(@ignore eq 'true')]        
             let $rootFolders := 
@@ -648,6 +649,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $fileProperties := subsequence($args, 1 + $da)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $exprTrees := $call/_parsed
             return foxf:ftree($rootFolders, $fileProperties, $exprTrees)    
+            :)
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $arg1 := 
+                $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $rootFolders := if ($da eq 1) then $arg1 else $context
+            let $fileProperties := 
+                $call/*[1 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:ftree($rootFolders, $fileProperties, $options)
             
         else if ($fname = ('ftree-selective', 'ftree-selective-ec')) then
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
@@ -1248,16 +1257,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
                         
         (: function `resolve-fox` 
            ====================== :)
-        else if ($fname eq 'resolve-fox') then
-            let $args := $call/*[not(@ignore eq 'true')]        
-            let $narg := count($args)
-            let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $arg2 := $args[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $exprTree := $call/_parsed/*
-            let $expr := if ($narg le 1) then $arg1 else $arg2
-            let $ctxt := if ($narg le 1) then $context else $arg1
-            return foxf:resolveFoxpath($ctxt, (), $exprTree, $options)            
-                
+        else if ($fname =  ('resolve-fox', 'resolve-fox-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
+            let $fox := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $ctxt := 
+                if (not($da)) then $context else 
+                  $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:resolveFoxpath($ctxt, $fox, map{})      
+
        (: function `relevant-xsds` 
           ======================== :)
         else if ($fname = ('relevant-xsds', 'rxsds')) then
@@ -1994,6 +2001,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `current-date` 
            ====================== :)
         else if ($fname eq 'current-date') then
+            let $_DEBUG := trace($options, '___OPTIONS: ') return
             current-date()
                 
         (: function `current-date-string` 
