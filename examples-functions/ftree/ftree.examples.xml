@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="xsd-validate">
+    <testenviron>
+        In order to try out the examples, start a command shell and 
+        move to folder $FOXPATH/examples-functions/ftree.
+    </testenviron>
+    <examples function="ftree">
+    <example>
+        <description>
+            Get a folder tree, that is, a tree representation of the folder "image-map".
+        </description>
+        <code>
+            fox "image-map/ftree()"
+        </code>
+    </example>
+    <example>
+        <description>
+            Get folder trees of folders matching "image-map*". If there are 
+            several folders, the trees are wrapped in an "ftrees" element.
+        </description>
+        <code>
+            fox "image-map* => ftree-ec()"
+        </code>
+    </example>
+    <example>
+        <description>
+            Get a folder tree in which every file is annotated with a @date attribute showing the file date.
+            The whitespace after the equal sign is inserted in order to avoid string mangling caused by
+            the command shell.
+        </description>
+        <code>
+            fox "image-map/ftree(('@date', {file-date()}))"
+        </code>
+    </example>
+    <example>
+        <description>
+            Get a folder tree in which every file is annotated with an @date attribute showing the file date
+            and a @size attribute showing the file size. Use one parameter for each file property.
+        </description>
+        <code>
+            fox "image-map/ftree(('@date', {file-date()}, '@size', {file-size()}))"
+        </code>
+    </example>
+    <example>
+        <description>
+            Get a folder tree in which every .dita file is annotate with a @ti attribute showing the title.
+            In order to annotated selected files, use a file name selector preceding the property name.
+        </description>
+        <code>
+            fox "image-map/ftree(('*.dita @ti', {\*\title\truncate(50)}))"
+        </code>
+    </example>
+    <example>
+        <description>
+            Get a folder tree in which every every .dita file has a "href" annotation, containing a space-separated list of referenced file names.
+        </description>
+        <code>
+            fox "image-map/ftree(('*.dita href', {\\@href\substring-before(., '#')[string()] => distinct-values() => sort()}))"
+        </code>
+    </example>
+    <example>
+        <description>
+            Similar to the previous example, but writing one "href" element for each referenced file name. 
+            Use a * after the property name in order to get one property element per value item.
+        </description>
+        <code>
+            fox "image-map/ftree(('*.dita href*', {\\@href\substring-before(., '#')[string()] => distinct-values() => sort()}))"
+        </code>
+    </example>
+    <example>
+        <description>
+            Similar to the previous example, but wrapping the "href" elements in a "hrefs" element. Specify two element names separated by a slash - 
+            first the wrapper element name, then the item element name.
+        </description>
+        <code>
+            fox "image-map/ftree(('*.dita hrefs/href', {\\@href\substring-before(., '#')[string()] => distinct-values() => sort()}))"
+        </code>
+    </example>
+    <example>
+        <description>
+            As the previous example, but suppress property items if the property value is the empty sequence. Use a ? after
+            the property name (or names) in order to suppress empty property items.
+        </description>
+        <code>
+            fox "image-map/ftree(('*.dita hrefs/href?', {\\@href\substring-before(., '#')[string()] => distinct-values() => sort()}))"
+        </code>
+    </example>
+</examples>
