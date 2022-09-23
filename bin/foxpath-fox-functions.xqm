@@ -4355,13 +4355,14 @@ declare function f:ftreeREC($folder as xs:string, $options as map(*)) as element
 declare function f:ftreeSelective(
                          $folders as xs:string*,
                          $uris as xs:string*,
-                         $descendantNamesFilter as xs:string?,
+                         $fileNamesFilter as xs:string?,
                          $folderNamesFilter as xs:string?,
-                         $fileProperties as xs:string*,
-                         $exprTrees as element()?,
-                         $options as map(*)?) as element()? {
-    let $filePropertiesMap := f:ftreeUtil_filePropertyMap($fileProperties, $exprTrees)
-    let $cdescendantNamesFilter := $descendantNamesFilter ! util:compilePlusMinusNameFilter(.)        
+                         $fileProperties as item()*,
+                         $options as map(*)?,
+                         $processingOptions as map(*)) as element()? {
+    let $filePropertiesMap := 
+        f:ftreeUtil_filePropertyMap($fileProperties, $processingOptions)    
+    let $cfileNamesFilter := $fileNamesFilter ! util:compilePlusMinusNameFilter(.)     
     let $cfolderNamesFilter := $folderNamesFilter! util:compilePlusMinusNameFilter(.)
     let $folders :=
         if (exists($folders)) then $folders
@@ -4372,14 +4373,13 @@ declare function f:ftreeSelective(
         $cfolderNamesFilter ! map:entry('_folderNames', .),
         $filePropertiesMap ! map:entry('_file-properties', $filePropertiesMap)
     ))
-    (: let $_DEBUG := trace($useOptions, '_OPTIONS: ') :)
     let $ftrees :=
         for $folder in $folders
         let $descendantUris := 
             if (exists($uris)) then $uris
             else
                 i:descendantUriCollection($folder, (), (), ()) ! concat($folder, '/', .)
-                [replace(., '.+/', '') ! util:matchesPlusMinusNameFilter(., $cdescendantNamesFilter)]
+                [replace(., '.+/', '') ! util:matchesPlusMinusNameFilter(., $cfileNamesFilter)]
         let $descendants := $descendantUris ! replace(., '^'||$folder||'/', '')
         let $content := $folder ! f:ftreeSelectiveREC(., $descendants, $useOptions)
         let $rootAttributes := f:getFtreeAttributes($folder, $content, $options)
@@ -4396,7 +4396,9 @@ declare function f:ftreeSelectiveREC(
         $folder as xs:string,
         $descendants as xs:string*,
         $options as map(*)) as element()? {
-    if ($folder ! util:fileName(.) ! (not(util:matchesPlusMinusNameFilter(., $options?_folderNames)))) then () else
+    if ($folder 
+        ! util:fileName(.) 
+        ! (not(util:matchesPlusMinusNameFilter(., $options?_folderNames)))) then () else
     
     let $filePropertiesMap := $options?_file-properties    
     let $folderName := replace($folder, '.*/', '')
@@ -4418,7 +4420,7 @@ declare function f:ftreeSelectiveREC(
                             else
                                 let $itemElemName := $pmap?itemElemName[string()]
                                 let $occs := $pmap?occs[string()]
-                                let $pvalueP := $childUri ! f:resolveFoxpath(., (), $pmap?exprTree/*, $options)
+                                let $pvalueP := $childUri ! f:resolveFoxpath(., $pmap?exprTree/*, $options)
                                 return 
                                     if (empty($pvalueP) and $occs = ('?', '*')) then ()
                                     else if ($pmap?isAtt) then attribute {$pname} {$pvalueP}

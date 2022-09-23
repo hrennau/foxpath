@@ -2714,6 +2714,7 @@ declare function f:parseNestedFoxpathCall($functionName as xs:string,
         return
             if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>
 :)
+(:
     if ($functionName = ('ftree-selective', 'ftree-selective-ec')) then
         let $ecShift := if (ends-with($functionName, '-ec')) then 1 else 0    
         let $useArgs := subsequence($arguments, 3 + $argShift + $ecShift)
@@ -2725,8 +2726,9 @@ declare function f:parseNestedFoxpathCall($functionName as xs:string,
             let $tree := f:parseFoxpath($expr, $context)
             return element {$pname} {$tree}
         return
-            if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>            
-    else if ($functionName = ('ftree-view')) then
+            if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>
+:)            
+    if ($functionName = ('ftree-view')) then
         let $ecShift := if (ends-with($functionName, '-ec')) then 1 else 0    
         let $useArgs := subsequence($arguments, 2 + $argShift + $ecShift)
         let $trees :=

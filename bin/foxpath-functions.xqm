@@ -640,16 +640,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 foxf:frequencies($values, $min, $max, 'count', $order, $format)
 
         else if ($fname = ('ftree', 'ftree-ec')) then  
-            (:
-            let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
-            let $args := $call/*[not(@ignore eq 'true')]        
-            let $rootFolders := 
-                if ($da eq 1) then $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
-                else $context
-            let $fileProperties := subsequence($args, 1 + $da)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $exprTrees := $call/_parsed
-            return foxf:ftree($rootFolders, $fileProperties, $exprTrees)    
-            :)
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0
             let $arg1 := 
                 $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -659,16 +649,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return foxf:ftree($rootFolders, $fileProperties, $options)
             
         else if ($fname = ('ftree-selective', 'ftree-selective-ec')) then
-            let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
-            let $args := $call/*[not(@ignore eq 'true')]        
-            let $rootFolders := 
-                if ($da eq 1) then $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
-                else $context
-            let $descendantNames := $args[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
-            let $folderNames := $args[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
-            let $fileProperties := subsequence($args, 3 + $da)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $exprTrees := $call/_parsed            
-            return foxf:ftreeSelective($rootFolders, (), $descendantNames, $folderNames, $fileProperties, $exprTrees, ())
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $rootFolders := if ($da eq 1) then $arg1 else $context
+            let $fileNames := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
+            let $folderNames := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fileProperties := 
+                $call/*[3 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $functionOptions := $call/*[4 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
+            return foxf:ftreeSelective($rootFolders, (), $fileNames, $folderNames, $fileProperties, $functionOptions, $options)
             
         else if ($fname = 'ftree-view') then
             let $args := $call/*[not(@ignore eq 'true')]
