@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="xsd-validate">
+    <testenviron>
+        In order to try out the examples, start a command shell and move to folder
+        $FOXPATH/examples-functions/ftree-selective. 
+    </testenviron>
+    <examples function="ftree-selective">
+        <example>
+            <description>
+                Get a folder tree, that is, a tree representation of the folder
+                "image-map". Do not exclude any folders or files. 
+            </description>
+            <code> 
+                fox "image-map/ftree-selective()"
+            </code>
+        </example>
+        <example>
+            <description> 
+                As the first example, but excluding any files which do not have the
+                extension ".dita". 
+            </description>
+            <code> 
+                fox "image-map/ftree-selective('*.dita')"
+            </code>
+        </example>
+        <example>
+            <description> 
+                As the first example, but excluding any folders with a name matching
+                *parts* or equal "images". 
+            </description>
+            <code> 
+                fox "image-map/ftree-selective((), '~*parts* ~images')" 
+            </code>
+        </example>
+        <example>
+            <description> 
+                Get folder trees of folders matching "image-map*", including only files
+                with extension ".dita". If there are several folders matching "image-map*", 
+                the trees are wrapped in an "ftrees" element.
+            </description>
+            <code> 
+                fox "image-map* => ftree-selective-ec('*.dita')" 
+            </code>
+        </example>
+        <example>
+            <description> 
+                Similar to the preceding example, but annotating every ".dita" file with a
+                @ti attribute providing the title.
+            </description>
+            <code> 
+                fox "image-map* => ftree-selective-ec('*.dita', (), ('*.dita @ti', {\*\title}))"
+            </code>
+        </example>
+        <example>
+            <description> 
+                Similar to the preceding example, but annotating every ".dita" file also
+                with a "terms" annotation containing all referenced terms. 
+            </description>
+            <code> 
+                fox "image-map* => ftree-selective-ec('*.dita', (), 
+                ('*.dita @ti', {\*\title},
+                 '*.dita terms/term?', {\\term => distinct-values() => sort()}))"
+            </code>
+        </example>
+        <hint> For more examples how to annotate file elements, see function "ftree()". </hint>
+    </examples>
+</function-usage>
