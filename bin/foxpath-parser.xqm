@@ -2690,7 +2690,7 @@ declare function f:parseNestedFoxpathCall($functionName as xs:string,
                                           $context as map(*))
         as element()* {
     let $argShift := if ($isArrowCall) then -1 else 0        
-    return
+    return ()
     
     (: resolve-fox :)
 (:    
@@ -2727,7 +2727,8 @@ declare function f:parseNestedFoxpathCall($functionName as xs:string,
             return element {$pname} {$tree}
         return
             if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>
-:)            
+:)    
+(:
     if ($functionName = ('ftree-view')) then
         let $ecShift := if (ends-with($functionName, '-ec')) then 1 else 0    
         let $useArgs := subsequence($arguments, 2 + $argShift + $ecShift)
@@ -2741,6 +2742,8 @@ declare function f:parseNestedFoxpathCall($functionName as xs:string,
         return 
             if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>            
     else ()
+:)
+
 };
 
 (:~

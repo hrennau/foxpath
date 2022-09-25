@@ -2,7 +2,7 @@
 <function-usage-examples function="ftree-view">
     <testenviron>
         In order to try out the examples, start a command shell and 
-        move to folder $FOXPATH/example-data/oxygen-samples.
+        move to folder $FOXPATH/example-data/ftree-oxygen-samples.
     </testenviron>
     <examples>
         <example>
@@ -18,7 +18,7 @@
                 As before, but annotate the file elements with an @ti annotation providing the title.
             </description>
             <code>
-                fox ".//*.dita[\concept] => ftree-view('@ti=\*\title')"
+                fox ".//*.dita[\concept] => ftree-view(('@ti', {\*\title\normalize-space(.)}))"
             </code>
         </example>
         <example>
@@ -27,7 +27,10 @@
                 Create for each term a distinct child element "term".
             </description>
             <code>
-                fox ".//*.dita[\concept] => ftree-view('@ti=\*\title', 'terms/term?=\\term[text()] => distinct-values() => sort()')"
+                fox ".//*.dita[\concept] => ftree-view((
+                  '@ti', {\*\title\normalize-space(.)}, 
+                  'terms/term?', {\\term[text()]\normalize-space(.) => distinct-values() => sort()}
+                ))"
             </code>
         </example>
         <example>
@@ -37,7 +40,11 @@
                 for each element name a distinct child element "ename".
             </description>
             <code>
-                fox ".//*.dita[\concept] => ftree-view('@ti=\*\title', 'terms/term?=\\term[text()] => distinct-values() => sort()', 'c_mv_* enames/ename=\\*\name() => distinct-values() => sort()')"
+                fox ".//*.dita[\concept] => ftree-view((
+                  '@ti', {\*\title}, 
+                  'terms/term?', {\\term[text()]\normalize-space(.) => distinct-values() => sort()}, 
+                  'c_mv_* enames/ename', {\\*\name() => distinct-values() => sort()}
+                ))"
             </code>
         </example>
     </examples>

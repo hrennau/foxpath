@@ -1251,6 +1251,7 @@ declare function f:ftTokenize($text as item()*,
 
 declare function f:getRootUri($uris as xs:string*)
         as xs:string? {
+    let $_DEBUG := trace($uris, '_URIS: ')        
     let $schemas :=        
         for $uri in $uris
         group by $schema := string(replace($uri, '^(\S+?:/+)(.:/)?.*', '$1$2')[. ne $uri])
@@ -4408,8 +4409,10 @@ declare function f:ftreeSelectiveREC(
         where $childName
         return
             let $childUri := $folder||'/'||$childName return        
-            if (empty($d[contains(., '/')])) then 
-                <fi name="{$childName}">{
+            if (empty($d[contains(., '/')])) then
+                let $ename := if (file:is-dir($childUri)) then 'fo' else 'fi' return
+                element {$ename} {
+                    attribute name {$childName},
                     if (empty($filePropertiesMap)) then () else
                         for $p in array:flatten($filePropertiesMap)
                         let $pname := map:keys($p)
@@ -4428,7 +4431,7 @@ declare function f:ftreeSelectiveREC(
                                         element {$pname} {$pvalueP ! element {$itemElemName} {.}}
                                     else if ($occs eq '*') then $pvalueP ! element {$pname} {.}                                        
                                     else element {$pname} {$pvalueP}
-                }</fi>
+                }
             else
                 let $newFolder := $folder||'/'||$childName
                 let $newDescendants := $d ! substring-after(., $childName||'/')                

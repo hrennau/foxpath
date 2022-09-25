@@ -660,11 +660,10 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return foxf:ftreeSelective($rootFolders, (), $fileNames, $folderNames, $fileProperties, $functionOptions, $options)
             
         else if ($fname = 'ftree-view') then
-            let $args := $call/*[not(@ignore eq 'true')]
-            let $exprTrees := $call/_parsed        
-            let $uris := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $fileProperties := subsequence($args, 2)/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:ftreeSelective((), $uris, (), (), $fileProperties, $exprTrees, ())
+            let $uris := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fileProperties := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $functionOptions := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            return foxf:ftreeSelective((), $uris, (), (), $fileProperties, $functionOptions, $options)
 
         (: function `ft-tokenize` 
            ====================== :)
