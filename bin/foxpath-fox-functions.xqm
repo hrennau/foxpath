@@ -269,14 +269,14 @@ declare function f:bslash($arg as xs:string?)
  :)
 declare function f:contentDeepEqual($items as item()*, $scope as xs:string?)
         as xs:boolean? {
-    (:
+
     let $_DEBUG := trace($items, 'ITEMS: ')        
     let $_DEBUG := trace($scope, 'SCOPE: ')
-    :)
+
     let $docs :=
         for $item in $items return
             if ($item instance of node()) then $item
-            else i:fox-doc($item, ())
+            else i:fox-doc($item, ())/*
     let $count := count($docs)
     return if ($count le 1) then () else
     

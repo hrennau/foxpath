@@ -1489,12 +1489,11 @@ declare function f:parseArrowExprClauses($text as xs:string, $context as map(*))
                     if (not(starts-with($textAfterName, '('))) then () else
                         let $argumentListEtc := f:parseArgumentList($textAfterName, $context)
                         let $argumentList := $argumentListEtc[. instance of node()]
-                        let $furtherInformation := f:parseNestedFoxpathCall($name/@localName, $argumentList, true(), $context)
                         let $textAfterArgumentList := f:extractTextAfter($argumentListEtc)
                         return (
                             <arrayClause kind="EQName">{
                                 $name,                                
-                                <argumentList>{$argumentList, $furtherInformation}</argumentList>
+                                <argumentList>{$argumentList}</argumentList>
                             }</arrayClause>,
                             $textAfterArgumentList
                         )
@@ -2656,94 +2655,10 @@ declare function f:parseFunctionCall($text as xs:string, $context as map(*))
     let $argumentsText := f:skipOperator($text, $name)
     let $argumentsEtc := f:parseArgumentList($argumentsText, $context)
     let $arguments := $argumentsEtc[. instance of node()]
-    let $furtherInformation := f:parseNestedFoxpathCall($name, $arguments, false(), $context)
     let $textAfter := f:extractTextAfter($argumentsEtc)
-    let $parsed := <functionCall name="{$name}">{$arguments, $furtherInformation}</functionCall>
+    let $parsed := <functionCall name="{$name}">{$arguments}</functionCall>
     return    
         ($parsed, $textAfter)
-};
-
-(:~
- : Parses Foxpath expressions passed to an extension function as function
- : argument(s). Stores the parse tree(s) in an element to be evaluated when 
- : evaluating the extension function. Which substring of which argument is
- : to be interpreted as a Foxpath expression depends on the extension function 
- : identified by the function name.
- :
- : When the function is called via arrow operator, the index identifying
- : an argument is diminuished by one.
- :
- : The function is called from two functions: (1) f:parseFunctionCall, 
- : (2)f:parseArrowExprClauses.
- :
- : @param functionName name of the extension function
- : @param arguments arguments of a function call
- : @param isArrowCall if true, the function is called via arrow operator
- : @param context the parsing context
- : @return if the function has arguments which are nested Foxpath
- :   expressions - an element contained the parse trees of the
- :   expression(s); the empty sequence otherwise
- :) 
-declare function f:parseNestedFoxpathCall($functionName as xs:string, 
-                                          $arguments as element()*,
-                                          $isArrowCall as xs:boolean,
-                                          $context as map(*))
-        as element()* {
-    let $argShift := if ($isArrowCall) then -1 else 0        
-    return ()
-    
-    (: resolve-fox :)
-(:    
-    if ($functionName eq 'resolve-fox') then
-        let $text := $arguments[last()]/string()
-        let $tree := f:parseFoxpath($text, $context)
-        return <_parsed ignore="true">{$tree}</_parsed>
- :)        
-    (: free, ftree-ec :)
-(:    
-    if ($functionName = ('ftree', 'ftree-ec')) then
-        let $ecShift := if (ends-with($functionName, '-ec')) then 1 else 0
-        let $useArgs := subsequence($arguments, 1 + $argShift + $ecShift)
-        let $trees :=
-            for $arg in $useArgs
-            let $pname := replace($arg, '^.*?([\S]+?)\s*=.*', '$1') ! replace(., '^@', '')
-            let $pname := replace($pname, '/.*|\?$|\*$', '')
-            let $expr := replace($arg, '^.+?=\s*', '')
-            let $tree := f:parseFoxpath($expr, $context)
-            return element {$pname} {$tree}
-        return
-            if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>
-:)
-(:
-    if ($functionName = ('ftree-selective', 'ftree-selective-ec')) then
-        let $ecShift := if (ends-with($functionName, '-ec')) then 1 else 0    
-        let $useArgs := subsequence($arguments, 3 + $argShift + $ecShift)
-        let $trees :=
-            for $arg in $useArgs
-            let $pname := replace($arg, '^.*?([\S]+?)\s*=.*', '$1') ! replace(., '^@', '')
-            let $pname := replace($pname, '/.*|\?$|\*$', '')
-            let $expr := replace($arg, '^.+?=\s*', '')
-            let $tree := f:parseFoxpath($expr, $context)
-            return element {$pname} {$tree}
-        return
-            if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>
-:)    
-(:
-    if ($functionName = ('ftree-view')) then
-        let $ecShift := if (ends-with($functionName, '-ec')) then 1 else 0    
-        let $useArgs := subsequence($arguments, 2 + $argShift + $ecShift)
-        let $trees :=
-            for $arg in $useArgs
-            let $pname := replace($arg, '^.*?([\S]+?)\s*=.*', '$1') ! replace(., '^@', '')
-            let $pname := replace($pname, '/.*|\?$|\*$', '')            
-            let $expr := replace($arg, '^.+?=\s*', '')
-            let $tree := f:parseFoxpath($expr, $context)
-            return element {$pname} {$tree}
-        return 
-            if (empty($trees)) then () else <_parsed ignore="true">{$trees}</_parsed>            
-    else ()
-:)
-
 };
 
 (:~
