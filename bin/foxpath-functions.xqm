@@ -203,9 +203,10 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $items := (
                 $context[$da eq 0],
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
-            let $controlOptions := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $scope := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $controlOptions := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:contentDeepEqual($items, $controlOptions)
+                foxf:contentDeepEqual($items, $scope, $controlOptions)
 
         (: function `count-chars` 
            ====================== :)

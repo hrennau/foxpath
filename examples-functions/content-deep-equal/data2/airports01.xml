@@ -15,7 +15,6 @@
     </temporal>
     <type>airport</type>
     <source1>OurAirports</source1>
-    <source2>-</source2>
   </airport>
   <airport id="616" icao="EKPB">
     <name>Kruså-Padborg Airport</name>
@@ -33,7 +32,6 @@
     </temporal>
     <type>airport</type>
     <source1>OurAirports</source1>
-    <source2>-</source2>
   </airport>
   <airport id="624" icao="EKVD">
     <name>Kolding Vamdrup Airfield</name>
@@ -51,7 +49,6 @@
     </temporal>
     <type>airport</type>
     <source1>OurAirports</source1>
-    <source2>-</source2>
   </airport>
   <airport id="626" icao="EKVH">
     <name>Vesthimmerlands Flyveplads</name>
@@ -69,7 +66,6 @@
     </temporal>
     <type>airport</type>
     <source1>OurAirports</source1>
-    <source2>-</source2>
   </airport>
   <airport id="4080" icao="EKSS">
     <name>Samsø Airport</name>
@@ -87,7 +83,6 @@
     </temporal>
     <type>airport</type>
     <source1>OurAirports</source1>
-    <source2>-</source2>
   </airport>
   <airport id="6855" icao="EKKL">
     <name>Kalundborg Airport</name>
@@ -105,7 +100,6 @@
     </temporal>
     <type>airport</type>
     <source1>OurAirports</source1>
-    <source2>-</source2>
   </airport>
   <airport id="8097" icao="EKTD">
     <name>Tønder Airport</name>
@@ -123,7 +117,6 @@
     </temporal>
     <type>airport</type>
     <source1>OurAirports</source1>
-    <source2>-</source2>
   </airport>
   <airport id="9075" icao="EKEL">
     <name>Endelave Flyveplads</name>
@@ -141,7 +134,6 @@
     </temporal>
     <type>airport</type>
     <source1>OurAirports</source1>
-    <source2>-</source2>
   </airport>
   <airport id="9136" icao="EKHG">
     <name>Herning Airport</name>
@@ -159,7 +151,6 @@
     </temporal>
     <type>airport</type>
     <source1>OurAirports</source1>
-    <source2>-</source2>
   </airport>
   <airport id="11129" icao="EKNB">
     <name>Nordborg Flyveplads</name>
@@ -177,7 +168,6 @@
     </temporal>
     <type>airport</type>
     <source1>OurAirports</source1>
-    <source2>-</source2>
   </airport>
   <airport id="11719" icao="EKAE">
     <name>Ærø Airport</name>
@@ -195,7 +185,6 @@
     </temporal>
     <type>airport</type>
     <source1>OurAirports</source1>
-    <source2>-</source2>
   </airport>
   <airport id="12931" icao="SVFT">
     <name>El Fuentero Airport</name>
@@ -213,7 +202,6 @@
     </temporal>
     <type>airport</type>
     <source1>OurAirports</source1>
-    <source2>-</source2>
   </airport>
   <airport id="13405" icao="EKAT">
     <name>Anholt Airport</name>
@@ -231,7 +219,6 @@
     </temporal>
     <type>airport</type>
     <source1>OurAirports</source1>
-    <source2>-</source2>
   </airport>
   <airport id="13435" icao="EKAC">
     <name>Aarhus Seaplne Terminal</name>
@@ -249,6 +236,5 @@
     </temporal>
     <type>airport</type>
     <source1>OurAirports</source1>
-    <source2>-</source2>
   </airport>
 </airports>

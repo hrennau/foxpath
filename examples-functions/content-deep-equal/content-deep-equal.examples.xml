@@ -6,11 +6,69 @@
         <example>
             <description>
                 Compare two documents with different root names for equal 
-                content. Using option c, node contents are compared, but 
-                not the nodes themselves.
+                attribute and child node content.
             </description>
             <code>
-                fox "data/airports.xml/content-deep-equal(../airports-root-renamed.xml, 'c')"
+                fox "data/airports.xml/content-deep-equal(../airports-root-renamed.xml)"
+            </code>
+        </example>
+        <example>
+            <description>
+                Compare two root elements for equal attribute content, ignoring child nodes.
+            </description>
+            <code>
+                fox "data/airports.xml\*\content-deep-equal(base-uri(.)/../airports-elems-renamed.xml, 'a')"
+            </code>
+        </example>
+        <example>
+            <description>
+                Check if every 'airport' element in one document has the same child node content
+                as the corresponding 'airport' element in another document.
+            </description>
+            <code>
+                fox "every `$airport in data/airports.xml\\airport satisfies 
+                  content-deep-equal-ec(
+                    (`$airport, data/airports-atts-removed.xml\\airport[@icao eq `$airport\@icao]), 
+                    'n')"
+            </code>
+        </example>
+        <example>
+            <description>
+                Check if every 'airport' element in one document has the attribute and child node
+                content as the corresponding 'airport' element in another document. Note that
+                the $scope parameter defaults to 'c' which means the attribute and child node
+                content.
+            </description>
+            <code>
+                fox "every `$airport in data/airports.xml\\airport satisfies 
+                content-deep-equal-ec(
+                (`$airport, data/airports-atts-removed.xml\\airport[@icao eq `$airport\@icao]))"
+            </code>
+        </example>
+        <example>
+            <description>
+                Compare a set of elements for equal child node content.
+            </description>
+            <code>
+                fox "data2/airports*xml\\airport[@icao eq 'EKGH'] => content-deep-equal-ec('n')"
+            </code>
+        </example>
+        <example>
+            <description>
+                Compare a set of elements for equal attribute and child node content. As the 
+                $scope value 'c' is the default value, it might be omitted.
+            </description>
+            <code>
+                fox "data2/airports*xml\\airport[@icao eq 'EKGH'] => content-deep-equal-ec('c')"
+            </code>
+        </example>
+        <example>
+            <description>
+                Compare a set of elements for equal names and equal content. This means checking
+                for deep equality, so that also function 'nodes-deep-equal()' might be used.
+            </description>
+            <code>
+                fox "data2/airports*xml\\airport[@icao eq 'EKGH'] => content-deep-equal-ec('s')"
             </code>
         </example>
     </examples>

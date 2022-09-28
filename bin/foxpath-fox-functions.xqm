@@ -259,7 +259,7 @@ declare function f:bslash($arg as xs:string?)
  : compared can be restricted by the $scope parameter.
  :
  : scope s - compare the items themselves
- : scope c - compare attributes and child nodes
+ : scope c - compare content, that is, attributes and child nodes
  : scope n - compare child nodes
  : scope a - compare attributes
  :
@@ -267,12 +267,15 @@ declare function f:bslash($arg as xs:string?)
  : @param scope specifies which part of the content to compare
  : @return false if there is a pair of items which do not have deep-equal content, true otherwise
  :)
-declare function f:contentDeepEqual($items as item()*, $scope as xs:string?)
+declare function f:contentDeepEqual($items as item()*, 
+                                    $scope as xs:string?,
+                                    $options as xs:string?)
         as xs:boolean? {
-
+    (:
     let $_DEBUG := trace($items, 'ITEMS: ')        
     let $_DEBUG := trace($scope, 'SCOPE: ')
-
+     :)
+     
     let $docs :=
         for $item in $items return
             if ($item instance of node()) then $item
@@ -280,7 +283,7 @@ declare function f:contentDeepEqual($items as item()*, $scope as xs:string?)
     let $count := count($docs)
     return if ($count le 1) then () else
     
-    let $scope := ($scope, 's')[1]
+    let $scope := ($scope[string()], 'c')[1]
     return if ($scope eq 's' and $count eq 2) then deep-equal($docs[1], $docs[2]) else
     
     let $fn_cmp :=
@@ -1724,6 +1727,53 @@ declare function f:namePath($nodes as node()*,
 };        
 
 (:~
+ : Returns for given nodes their plain name paths.
+ :
+ : @param nodes a set of nodes
+ : @param context if specified, the result path is the path
+ :   relative to this context is determined
+ : @param nameKind identifies the kind of names to be used in the path -
+ :        name|lname|jname for lexical name, local name, JSON name
+ : @param numSteps truncate path to this number of steps by removing
+ :        leading steps
+ : @param options options controlling the evaluation;
+ :        noconcat - do not concatenate the path steps
+ : @return the parent name
+ :)
+declare function f:namePath($nodes as node()*, 
+                            $context as node()?,
+                            $numSteps as xs:integer?,
+                            $options as xs:string?)
+        as xs:string* {
+    let $ops := $options ! tokenize(.)        
+    let $nameKind := ($ops[. = ('lname', 'jname', 'name')][1], 'lname')[1]
+    let $noconcat := $ops = 'N'
+    let $options := map:merge((map:entry('noconcat', true())[$noconcat]))
+
+    for $node in $nodes return
+    
+    (: _TO_DO_ Remove hack when BaseX Bug is removed; return to: let $nodes := $node/ancestor-or-self::node() :)        
+    let $ancos := 
+        let $all := $node/ancestor-or-self::node()[not($context) or . >> $context]
+        let $dnode := $all[. instance of document-node()]
+        return ($dnode, $all except $dnode)
+    let $steps :=         
+        if ($nameKind eq 'lname') then 
+            $ancos/concat(self::attribute()/'@', local-name(.))
+        else if ($nameKind eq 'jname') then 
+            $ancos/concat(self::attribute()/'@', 
+                let $raw := f:unescapeJsonName(local-name(.))
+                return if (not(contains($raw, '/'))) then $raw else concat('"', $raw, '"')
+            )
+        else 
+            $ancos/concat(self::attribute()/'@', name(.))
+    let $steps := if (empty($numSteps)) then $steps else subsequence($steps, count($steps) + 1 - $numSteps)
+    return 
+        if ($options?noconcat) then $steps[string()]
+        else string-join($steps, '/')
+};        
+
+(:~
  : Returns for given nodes their indexed name paths.
  :
  : @param nodes a set of nodes
@@ -1773,6 +1823,59 @@ declare function f:indexedNamePath(
         else string-join($steps, '/')
 };        
 
+(:~
+ : Returns for given nodes their indexed name paths.
+ :
+ : @param nodes a set of nodes
+ : @param context if specified, the result path is the path
+ :   relative to this context is determined
+ : @param numSteps truncate path to this number of steps by removing
+ :        leading steps
+ : @param options options controlling the evaluation;
+ :        noconcat - do not concatenate the path steps
+ :        lname - use local names
+ :        jname - use JSON names
+ :        name - use lexical names
+ : @return the parent name
+ :)
+declare function f:indexedNamePath(
+                            $nodes as node()*, 
+                            $context as node()?,
+                            $numSteps as xs:integer?,                            
+                            $options as xs:string?)
+        as xs:string* {
+    let $ops := $options ! tokenize(.)        
+    let $nameKind := ($ops[. = ('lname', 'jname', 'name')][1], 'lname')[1]
+    let $noconcat := $ops = 'N'       
+    let $options := map:merge((map:entry('noconcat', true())[$noconcat]))
+    let $fnGetName :=
+        switch($nameKind)
+        case 'name' return function($node) {name($node)}
+        case 'lname' return function($node) {local-name($node)}
+        case 'jname' return function($node) {$node ! name() ! convert:decode-key(.)}
+        default return error()
+        
+    for $node in $nodes return
+    
+    (: _TO_DO_ Remove hack when BaseX Bug is removed; return to: let $nodes := $node/ancestor-or-self::node() :)        
+    (:
+    let $ancos := 
+        let $all := $node/ancestor-or-self::node()
+        let $dnode := $all[. instance of document-node()]
+        return ($dnode, $all except $dnode)
+     :)
+    let $ancos := $node/ancestor-or-self::node()[not($context) or . >> $context]
+    let $steps := 
+        for $n in $ancos
+        let $index := $n/self::*/(
+            '['|| (1 + count($n/preceding-sibling::*[node-name() eq node-name($n)])) ||']'
+        )
+        return $n/self::attribute()/'@'||$n/$fnGetName(.)||$index
+    let $steps := if (empty($numSteps)) then $steps else subsequence($steps, count($steps) + 1 - $numSteps)        
+    return 
+        if ($options?noconcat) then $steps[string()]
+        else string-join($steps, '/')
+};        
 
 (:~
  : Creates an Item Location Report for a sequence of given nodes.
@@ -2619,9 +2722,9 @@ declare function f:pathMultiDiff($items as item()*,
         else 'pathMultiDiff'
         
     let $fnPath := 
-        if ($indexed) then f:indexedNamePath#3
+        if ($indexed) then f:indexedNamePath#4
         else if ($reportNames) then f:nameString#3
-        else f:namePath#3
+        else f:namePath#4
         
     let $fnPathElem := 
         if ($reportNames) then function ($name) {<item name="{$name}"/>}
@@ -2644,10 +2747,11 @@ declare function f:pathMultiDiff($items as item()*,
     
     let $pathArrays := 
         for $doc at $pos in $docs
+        let $context := $doc[parent::*]
         let $alldesc := $doc/f:allDescendants(.)
         let $paths := (
-            if ($reportNames) then $alldesc/$fnPath(., $nameKind, ())
-            else $alldesc/$fnPath(., (), $nameKind)
+            if ($reportNames) then $alldesc/$fnPath(., $context, $nameKind, ())
+            else $alldesc/$fnPath(., $context, (), $nameKind)
         ) => distinct-values() => sort()
         return array{$paths}
         

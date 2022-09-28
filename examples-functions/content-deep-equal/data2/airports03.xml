@@ -1,5 +1,5 @@
 <airports country="Denmark" count="31">
-  <airport ident="611" icao="EKGH">
+  <airport id="613" icao="EKGH">
     <name>Grønholt Hillerød Airport</name>
     <city>Gronholt</city>
     <country>Denmark</country>
@@ -16,7 +16,7 @@
     <type>airport</type>
     <source1>OurAirports</source1>
   </airport>
-  <airport ident="616" icao="EKPB">
+  <airport id="616" icao="EKPB">
     <name>Kruså-Padborg Airport</name>
     <city>Krusa-padborg</city>
     <country>Denmark</country>
@@ -33,7 +33,7 @@
     <type>airport</type>
     <source1>OurAirports</source1>
   </airport>
-  <airport ident="624" icao="EKVD">
+  <airport id="624" icao="EKVD">
     <name>Kolding Vamdrup Airfield</name>
     <city>Kolding</city>
     <country>Denmark</country>
@@ -50,7 +50,7 @@
     <type>airport</type>
     <source1>OurAirports</source1>
   </airport>
-  <airport ident="626" icao="EKVH">
+  <airport id="626" icao="EKVH">
     <name>Vesthimmerlands Flyveplads</name>
     <city>Vesthimmerland</city>
     <country>Denmark</country>
@@ -67,7 +67,7 @@
     <type>airport</type>
     <source1>OurAirports</source1>
   </airport>
-  <airport ident="4080" icao="EKSS">
+  <airport id="4080" icao="EKSS">
     <name>Samsø Airport</name>
     <city>Samsoe</city>
     <country>Denmark</country>
@@ -84,7 +84,7 @@
     <type>airport</type>
     <source1>OurAirports</source1>
   </airport>
-  <airport ident="6855" icao="EKKL">
+  <airport id="6855" icao="EKKL">
     <name>Kalundborg Airport</name>
     <city>Kalundborg</city>
     <country>Denmark</country>
@@ -101,7 +101,7 @@
     <type>airport</type>
     <source1>OurAirports</source1>
   </airport>
-  <airport ident="8097" icao="EKTD">
+  <airport id="8097" icao="EKTD">
     <name>Tønder Airport</name>
     <city>Toender</city>
     <country>Denmark</country>
@@ -118,7 +118,7 @@
     <type>airport</type>
     <source1>OurAirports</source1>
   </airport>
-  <airport ident="9075" icao="EKEL">
+  <airport id="9075" icao="EKEL">
     <name>Endelave Flyveplads</name>
     <city>Endelage</city>
     <country>Denmark</country>
@@ -135,7 +135,7 @@
     <type>airport</type>
     <source1>OurAirports</source1>
   </airport>
-  <airport ident="9136" icao="EKHG">
+  <airport id="9136" icao="EKHG">
     <name>Herning Airport</name>
     <city>Herning</city>
     <country>Denmark</country>
@@ -152,7 +152,7 @@
     <type>airport</type>
     <source1>OurAirports</source1>
   </airport>
-  <airport ident="11129" icao="EKNB">
+  <airport id="11129" icao="EKNB">
     <name>Nordborg Flyveplads</name>
     <city>Nordborg</city>
     <country>Denmark</country>
@@ -169,7 +169,7 @@
     <type>airport</type>
     <source1>OurAirports</source1>
   </airport>
-  <airport ident="11719" icao="EKAE">
+  <airport id="11719" icao="EKAE">
     <name>Ærø Airport</name>
     <city>Aero</city>
     <country>Denmark</country>
@@ -186,7 +186,7 @@
     <type>airport</type>
     <source1>OurAirports</source1>
   </airport>
-  <airport ident="12931" icao="SVFT">
+  <airport id="12931" icao="SVFT">
     <name>El Fuentero Airport</name>
     <city>Svenborg</city>
     <country>Denmark</country>
@@ -203,7 +203,7 @@
     <type>airport</type>
     <source1>OurAirports</source1>
   </airport>
-  <airport ident="13405" icao="EKAT">
+  <airport id="13405" icao="EKAT">
     <name>Anholt Airport</name>
     <city>Anholt</city>
     <country>Denmark</country>
@@ -220,7 +220,7 @@
     <type>airport</type>
     <source1>OurAirports</source1>
   </airport>
-  <airport ident="13435" icao="EKAC">
+  <airport id="13435" icao="EKAC">
     <name>Aarhus Seaplne Terminal</name>
     <city>Aarhus</city>
     <country>Denmark</country>
