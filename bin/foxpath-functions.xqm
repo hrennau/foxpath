@@ -106,7 +106,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $pselector := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $controlOptions := $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:nodeNavigation($contextNodes, $axis, $namesFilter, $pselector, $controlOptions)
+                foxf:nodeNavigation($contextNodes, $axis, $namesFilter, $pselector, $controlOptions, $fname)
 
         (: function `back-slash` 
            ===================== :)

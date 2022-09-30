@@ -1964,9 +1964,10 @@ declare function f:nodeNavigation(
                        $axis as xs:string,
                        $namesFilter as xs:string?,
                        $pselector as xs:integer?,
-                       $options as xs:string?)                       
+                       $options as xs:string?,
+                       $extFuncName as xs:string)                       
         as node()* {
-    let $ops := $options ! tokenize(.)        
+    let $ops := f:getOptions($options, ('name', 'lname', 'jname'), $extFuncName)        
     let $contextNodes :=
         for $item in $contextItems return
             if ($item instance of node()) then $item else 
@@ -1992,13 +1993,14 @@ declare function f:nodeNavigation(
         default return error()
         
     let $fn_name := 
-        if ($ops = 'name') then function($node) {$node/name(.)}
-        else if ($ops = 'jname') then function($node) {$node/local-name(.) ! convert:decode-key(.)}
-        else function($node) {$node/local-name(.)}
+        if ($ops = 'name') then function($node) {$node/name(.)[string()]}
+        else if ($ops = 'jname') then function($node) {$node/local-name(.)[string()] ! convert:decode-key(.)}
+        else function($node) {$node/local-name(.)[string()]}
 
     let $result :=
         for $node in $contextNodes
-        let $related := $node ! $fn_nodes(.)[$fn_name(.) 
+        let $related := $node ! $fn_nodes(.)[
+                        empty($cNamesFilter) or $fn_name(.) 
                         ! sf:matchesComplexStringFilter(., $cNamesFilter)]
         return if (empty($pselector)) then $related else
 
