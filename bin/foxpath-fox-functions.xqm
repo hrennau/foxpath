@@ -4,6 +4,9 @@ at "foxpath-processorDependent.xqm",
    "foxpath-uri-operations.xqm",
    "foxpath-parser.xqm";
 
+import module namespace uth="http://www.foxpath.org/ns/urithmetic" 
+at  "foxpath-urithmetic.xqm";
+
 import module namespace util="http://www.ttools.org/xquery-functions/util" 
 at  "foxpath-util.xqm";
 
@@ -1698,32 +1701,7 @@ declare function f:namePath($nodes as node()*,
                             $numSteps as xs:integer?,
                             $options as xs:string?)
         as xs:string* {
-    let $ops := $options ! tokenize(.)        
-    let $nameKind := ($ops[. = ('lname', 'jname', 'name')][1], 'lname')[1]
-    let $noconcat := $ops = 'N'
-    let $options := map:merge((map:entry('noconcat', true())[$noconcat]))
-
-    for $node in $nodes return
-    
-    (: _TO_DO_ Remove hack when BaseX Bug is removed; return to: let $nodes := $node/ancestor-or-self::node() :)        
-    let $ancos := 
-        let $all := $node/ancestor-or-self::node()
-        let $dnode := $all[. instance of document-node()]
-        return ($dnode, $all except $dnode)
-    let $steps :=         
-        if ($nameKind eq 'lname') then 
-            $ancos/concat(self::attribute()/'@', local-name(.))
-        else if ($nameKind eq 'jname') then 
-            $ancos/concat(self::attribute()/'@', 
-                let $raw := f:unescapeJsonName(local-name(.))
-                return if (not(contains($raw, '/'))) then $raw else concat('"', $raw, '"')
-            )
-        else 
-            $ancos/concat(self::attribute()/'@', name(.))
-    let $steps := if (empty($numSteps)) then $steps else subsequence($steps, count($steps) + 1 - $numSteps)
-    return 
-        if ($options?noconcat) then $steps[string()]
-        else string-join($steps, '/')
+    f:namePath($nodes, (), $numSteps, $options)        
 };        
 
 (:~
@@ -1745,9 +1723,10 @@ declare function f:namePath($nodes as node()*,
                             $numSteps as xs:integer?,
                             $options as xs:string?)
         as xs:string* {
-    let $ops := $options ! tokenize(.)        
+    let $ops := f:getOptions($options, ('name', 'lname', 'jname', 'base-uri', 'rel-base-uri'), 'name-path')
     let $nameKind := ($ops[. = ('lname', 'jname', 'name')][1], 'lname')[1]
     let $noconcat := $ops = 'N'
+    let $withBaseUri := $ops[. = ('base-uri', 'rel-base-uri')][1] 
     let $options := map:merge((map:entry('noconcat', true())[$noconcat]))
 
     for $node in $nodes return
@@ -1768,9 +1747,13 @@ declare function f:namePath($nodes as node()*,
         else 
             $ancos/concat(self::attribute()/'@', name(.))
     let $steps := if (empty($numSteps)) then $steps else subsequence($steps, count($steps) + 1 - $numSteps)
-    return 
+    let $path := 
         if ($options?noconcat) then $steps[string()]
         else string-join($steps, '/')
+    return if (not($withBaseUri)) then $path
+           else if ($withBaseUri eq 'base-uri') then $node/base-uri(.)||'#'||$path
+           else (uth:relUri(file:current-dir(), $node/base-uri(.)))||'#'||$path
+           
 };        
 
 (:~

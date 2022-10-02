@@ -186,6 +186,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $relationship := replace($fname, '^(.*?)-.*(-ec)?', '$1')                
             return foxf:relatedNames($nodes, $relationship, $nameKind, $nameFilter, $flags)            
 
+        (: function `contains-nonws` 
+           ======================== :)
+        else if ($fname = ('contains-nonws', 'contains-nonws-ec', 'nonws', 'nonws-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $text := if ($da) then $arg1 else $context
+            return 
+                if (count($text) eq 1) then matches($text, '\S')
+                else some $item in $text satisfies matches($text, '\S')
+                
         (: function `contains-text` 
            ======================== :)
         else if ($fname = ('contains-text', 'contains-text-ec')) then
