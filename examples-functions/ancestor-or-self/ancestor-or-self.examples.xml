@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="ancestor-or-self">
+    <testenviron> In order to try out the examples, start a command shell and move to folder
+        $FOXPATH/examples-data/oxygen-samples. </testenviron>
+    <examples>        
+        <example label="no filter">
+            <description>
+                Inspecting a set of dita documents - which @xml:lang attribute values are
+                observed in 'term' elements and their ancestors? As no filter is applied,
+                the function call is equivalent to the navigation step 
+                ancestor-or-self::node().
+            </description>
+            <code>
+                fox "dita//*.dita\\term\ancestor-or-self()\@xml:lang => f()"
+            </code>
+        </example>
+        <example label="name filter">
+            <description>
+                Find the 'table', 'ul' and 'ol' elements directly or indirectly containing a @conref.
+                For each element return a relative URI with a name path fragment.
+            </description>
+            <code>
+                fox "dita//*.dita\\*[@conref]\ancestor-or-self('table ul ol')\name-path((), 'rel-base-uri') => f()"
+            </code>
+        </example>
+        <example label="combined filters">
+            <description>
+                As the previous example, but return only the innermost 'table' element. 
+            </description>
+            <code>
+                fox "dita//*.dita\\*[@conref]\ancestor-or-self('table ul ol', 1)\name-path((), 'rel-base-uri') => f()"
+            </code>
+        </example>
+    </examples>
+</function-usage>

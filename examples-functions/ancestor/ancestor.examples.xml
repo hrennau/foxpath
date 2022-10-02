@@ -3,7 +3,7 @@
     <testenviron> In order to try out the examples, start a command shell and move to folder
         $FOXPATH/examples-data/oxygen-samples. </testenviron>
     <examples>        
-        <example label="basic example">
+        <example label="no filter">
             <description>
                 Inspecting a set of docbook documents - which elements contain 'para' elements?
             </description>
@@ -11,40 +11,45 @@
                 fox "docbook//*.xml\\docbook:para\ancestor()\name() => f()"
             </code>
         </example>
-        <example label="using a name filter">
+        <example label="name filter">
             <description>
-                Which section related elements contain 'para' elements?
+                Which section elements ('section', 'sect1', 'sect2', ...) contain 'para' elements?
             </description>
             <code>
                 fox "docbook//*.xml\\docbook:para\ancestor('sect*')\name() => f()"
             </code>
         </example>
-        <example label="using a positional filter">
+        <example label="positional filter">
             <description>
-                Which elements contain an element containing a 'para' element?
+                Which top-level elements contain 'module' elements? Note that 
+                the last three ancestors are top-level element, root element, 
+                document node.
             </description>
             <code>
-                fox "docbook//*.xml\\docbook:para\ancestor((), 2)\name() => f()"
+                fox "docbook//*.xml\\docbook:module\ancestor((), -3)\name() => f()"
             </code>
         </example>
-        <example label="using a more complex name filter">
+        <example label="combined filters">
             <description>
-                Inspecting a set of dita documents, which elements contain 'step' elements,
-                ignoring elements with a name matching *steps* or *task*?
+                Return the nearest ancestor elements of a text node containing 
+                a given phrase, skipping any containing 'emphasis' or 'phrase' 
+                elements (in search of the smallest containing semantic unit).
             </description>
             <code>
-                fox "dita//*.dita\\step\ancestor('~*steps* ~*task*')\name() => f()"
+                fox  "docbook//*.xml\\text()
+                  [contains-text('available free space on .+ disk')]
+                  \ancestor('~emphasis ~phrase', 1) 
+                => xwrap('elems')"
             </code>
         </example>
-        <example label="Considering only top-level ancestor element">
+        <example label="option name">
             <description>
-                Inspecting a set of dita documents, which top-level elements (= child elements of
-                the root element) contain a 'step' element? Note the wildcard name test, which
-                ensures that only element ancestors are considered, so that position -2 means
-                a top-level element, rather than a root element.
+                List the text nodes containing non-whitespace and contained by an element with an 'svg' prefix.
+                When using option 'name', the name filter deals with the lexical name - nodes in the svg 
+                namespace but using a different prefix, or no prefix, are not found.
             </description>
             <code>
-                fox "dita//*.dita\\step\ancestor('*', -2)\name() => f()"
+                fox "docbook//*.xml\\text()[nonws()][ancestor('*svg:*', (), 'name')]\truncate() => f()"
             </code>
         </example>
     </examples>
