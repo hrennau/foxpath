@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="attributes">
+    <testenviron> In order to try out the examples, start a command shell and move to folder
+        $FOXPATH/examples-data/oxygen-samples. </testenviron>
+    <examples>        
+        <example label="no filter">
+            <description>
+                Inspecting a set of docbook documents - get the names and 
+                frequencies of attributes on 'table' elements.
+            </description>
+            <code>
+                fox "docbook//*\docbook:article\\docbook:table\attributes()\name() => f()"
+            </code>
+        </example>
+        <example label="name filter">
+            <description>
+                Inspecting a set of docbook documents - get the names and frequencies
+                of elements which have an attribute with a local name equal 'width' or 
+                matching '*span'.
+            </description>
+            <code>
+                fox "docbook//*\docbook:article\\docbook:*[attributes('width *span')]\name() => f()"
+            </code>
+        </example>
+        <example label="option name">
+            <description>
+                Inspecting a set of docbook documents - get the names and frequencies
+                of attributes with prefix 'xml', found in section elements.
+            </description>
+            <code>
+                fox "docbook//*\docbook:article\descendant('sect*')\attributes('xml:*', (), 'name')\name() =>f()"
+            </code>
+        </example>
+    </examples>
+</function-usage>
