@@ -2371,7 +2371,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 else $context
             return
-                try {html:parse($text)} catch * {<PARSE_ERROR>{$text}</PARSE_ERROR>}
+                try {html:parse($text)} catch * {()}
 
         (: function `parse-xml` 
            =================== :)
@@ -2380,7 +2380,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 else $context
             return
-                try {parse-xml($text)} catch * {<PARSE_ERROR>{$text}</PARSE_ERROR>}
+                try {parse-xml($text)} catch * {()}
 
         (: function `position` 
            =================== :)

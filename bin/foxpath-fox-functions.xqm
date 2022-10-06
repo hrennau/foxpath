@@ -2834,9 +2834,8 @@ declare function f:pathContent($context as item()*,
         
     let $context := (
         $context[. instance of node()],
-        $context[not(. instance of node())] ! (try {doc(.)} catch * {try {json:doc(.)} catch * {}})
+        $context[not(. instance of node())] ! (try {i:fox-doc(., ())} catch * {try {json:doc(.)} catch * {}})
     ) 
-    
     for $cnode in $context
     let $descendants1 := (
         if (empty($cInnerNodeNameFilter)) then    
@@ -4499,7 +4498,7 @@ declare function f:ftreeSelectiveREC(
         return
             let $childUri := $folder||'/'||$childName return        
             if (empty($d[contains(., '/')])) then
-                let $ename := if (file:is-dir($childUri)) then 'fo' else 'fi' return
+                let $ename := if (i:fox-is-dir($childUri, ())) then 'fo' else 'fi' return
                 element {$ename} {
                     attribute name {$childName},
                     if (empty($filePropertiesMap)) then () else
