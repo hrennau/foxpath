@@ -303,6 +303,20 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
     f:fox-file-date($uri, $options) ! string(.)
 };
 
+(:~
+ : Returns the last modification date of a resource as a string.
+ :
+ : @param uri the URI or file path of the resource
+ : @param options options controlling the evaluation
+ : @return the last update date of the resource
+ :)
+ declare function f:fox-base-uri($node as node())
+        as xs:string? {  
+    let $buri := $node/base-uri(.)
+    return
+        if (i:isDbNode($node)) then 'basex://'||$buri else $buri
+};
+
 (: 
  : ===============================================================================
  :

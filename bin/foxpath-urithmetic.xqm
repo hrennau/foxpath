@@ -126,7 +126,7 @@ declare function f:relUri($uriOrPath1 as xs:string, $uriOrPath2 as xs:string)
     
     let $scheme1 := f:extractUriScheme($uriOrPath1)
     let $scheme2 := f:extractUriScheme($uriOrPath2)
-    return if ($scheme1 ne $scheme2) then $uriOrPath1 else
+    return if ($scheme1 ne $scheme2 or $scheme2 ne 'file') then $uriOrPath2 else
     
     let $path1 := f:removeUriScheme($uriOrPath1)
     let $path2 := f:removeUriScheme($uriOrPath2)

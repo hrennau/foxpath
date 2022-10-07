@@ -1730,7 +1730,6 @@ declare function f:namePath($nodes as node()*,
     let $options := map:merge((map:entry('noconcat', true())[$noconcat]))
 
     for $node in $nodes return
-    
     (: _TO_DO_ Remove hack when BaseX Bug is removed; return to: let $nodes := $node/ancestor-or-self::node() :)        
     let $ancos := 
         let $all := $node/ancestor-or-self::node()[not($context) or . >> $context]
@@ -1751,8 +1750,8 @@ declare function f:namePath($nodes as node()*,
         if ($options?noconcat) then $steps[string()]
         else string-join($steps, '/')
     return if (not($withBaseUri)) then $path
-           else if ($withBaseUri eq 'base-uri') then $node/base-uri(.)||'#'||$path
-           else (uth:relUri(file:current-dir(), $node/base-uri(.)))||'#'||$path
+           else if ($withBaseUri eq 'base-uri') then $node/i:fox-base-uri(.)||'#'||$path
+           else (uth:relUri(file:current-dir(), $node/i:fox-base-uri(.)))||'#'||$path
            
 };        
 
@@ -1946,11 +1945,16 @@ declare function f:nodeNavigation(
                        $contextItems as item()*,
                        $axis as xs:string,
                        $namesFilter as xs:string?,
-                       $pselector as xs:integer?,
                        $options as xs:string?,
                        $extFuncName as xs:string)                       
         as node()* {
-    let $ops := f:getOptions($options, ('name', 'lname', 'jname'), $extFuncName)        
+    let $ops := f:getOptions($options, ('name', 'lname', 'jname', 'first', 'first2', 'last', 'last2'), $extFuncName)    
+    let $pselector :=
+        if ($ops = 'first') then 1
+        else if ($ops = 'first2') then 2
+        else if ($ops = 'last') then -1
+        else if ($ops = 'last2') then -2
+        else ()
     let $contextNodes :=
         for $item in $contextItems return
             if ($item instance of node()) then $item else 

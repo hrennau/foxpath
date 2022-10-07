@@ -324,3 +324,12 @@ declare function f:descendantUriCollection_basex($uri as xs:string,
     return
         ($db, $path)
 };
+
+(:~
+ : Returns true if a given node belongs to a BaseX database
+ :)
+declare function f:isDbNode($node as node())
+        as xs:boolean {
+    try {db:name($node) ! db:exists(.)} catch * {false()}        
+};
+
