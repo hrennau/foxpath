@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="child">
+    <testenviron> In order to try out the examples, start a command shell and move to folder
+        $FOXPATH/examples-data/oxygen-samples. </testenviron>
+    <examples>        
+        <example label="no filter">
+            <description>
+                Get the names and frequencies of the child elements of docbook root elements.
+            </description>
+            <code>
+                fox "docbook//*.xml\docbook:*\child()\name() => f()"
+            </code>
+        </example>
+        <example label="name filter">
+            <description>
+                Get the names and frequencies of elements which have section child
+                elements - 'section', 'sect1', 'sect2', ...
+            </description>
+            <code>
+                fox "docbook//*.xml\\*[child('sect*')]\name() => f()"
+            </code>
+        </example>
+        <example label="option name">
+            <description>
+                Get the names and frequencies of docbook elements containing mml elements.
+            </description>
+            <code>
+                fox "docbook//*.xml\\docbook:*[child('mml:*', (), 'name')]\name() => f()"
+            </code>
+        </example>
+    </examples>
+</function-usage>

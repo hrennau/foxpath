@@ -22,11 +22,10 @@
         <example label="positional filter">
             <description>
                 Which top-level elements contain 'module' elements? Note that 
-                the last three ancestors are top-level element, root element, 
-                document node.
+                the last two element ancestors are top-level element and root element.
             </description>
             <code>
-                fox "docbook//*.xml\\docbook:module\ancestor((), -3)\name() => f()"
+                fox "docbook//*.xml\\docbook:module\ancestor('*', 'last2')\name() => f()"
             </code>
         </example>
         <example label="combined filters">
@@ -38,7 +37,7 @@
             <code>
                 fox  "docbook//*.xml\\text()
                   [contains-text('available free space on .+ disk')]
-                  \ancestor('~emphasis ~phrase', 1) 
+                  \ancestor('~emphasis ~phrase', 'first') 
                 => xwrap('elems')"
             </code>
         </example>
@@ -49,7 +48,7 @@
                 namespace but using a different prefix, or no prefix, are not found.
             </description>
             <code>
-                fox "docbook//*.xml\\text()[nonws()][ancestor('*svg:*', (), 'name')]\truncate() => f()"
+                fox "docbook//*.xml\\text()[nonws()][ancestor('*svg:*', 'name')]\truncate() => f()"
             </code>
         </example>
     </examples>

@@ -23,12 +23,12 @@
                 fox "dita//*.dita\\*[@conref]\ancestor-or-self('table ul ol')\name-path((), 'rel-base-uri') => f()"
             </code>
         </example>
-        <example label="combined filters">
+        <example label="name and positional filter">
             <description>
                 As the previous example, but return only the innermost 'table' element. 
             </description>
             <code>
-                fox "dita//*.dita\\*[@conref]\ancestor-or-self('table ul ol', 1)\name-path((), 'rel-base-uri') => f()"
+                fox "dita//*.dita\\*[@conref]\ancestor-or-self('table ul ol', 'first')\name-path((), 'rel-base-uri') => f()"
             </code>
         </example>
     </examples>
