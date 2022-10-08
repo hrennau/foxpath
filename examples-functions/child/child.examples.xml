@@ -13,7 +13,7 @@
         </example>
         <example label="name filter">
             <description>
-                Get the names and frequencies of elements which have section child
+                Get the names and frequencies of elements which have "section" child
                 elements - 'section', 'sect1', 'sect2', ...
             </description>
             <code>
@@ -25,7 +25,7 @@
                 Get the names and frequencies of docbook elements containing mml elements.
             </description>
             <code>
-                fox "docbook//*.xml\\docbook:*[child('mml:*', (), 'name')]\name() => f()"
+                fox "docbook//*.xml\\docbook:*[child('mml:*', 'name')]\name() => f()"
             </code>
         </example>
     </examples>

@@ -9,7 +9,7 @@
                 frequencies of attributes on 'table' elements.
             </description>
             <code>
-                fox "docbook//*\docbook:article\\docbook:table\attributes()\name() => f()"
+                fox "docbook//*.xml\docbook:article\\docbook:table\attributes()\name() => f()"
             </code>
         </example>
         <example label="name filter">
@@ -19,16 +19,17 @@
                 matching '*span'.
             </description>
             <code>
-                fox "docbook//*\docbook:article\\docbook:*[attributes('width *span')]\name() => f()"
+                fox "docbook//*.xml\docbook:article\\docbook:*[attributes('width *span')]\name() => f()"
             </code>
         </example>
         <example label="option name">
             <description>
                 Inspecting a set of docbook documents - get the names and frequencies
-                of attributes with prefix 'xml', found in section elements.
+                of attributes with prefix 'xml', found in "section" elements ('section',
+                'sect1', 'sect2', ...).
             </description>
             <code>
-                fox "docbook//*\docbook:article\descendant('sect*')\attributes('xml:*', (), 'name')\name() =>f()"
+                fox "docbook//*.xml\docbook:article\descendant('sect*')\attributes('xml:*', 'name')\name() =>f()"
             </code>
         </example>
     </examples>
