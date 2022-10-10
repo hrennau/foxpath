@@ -1948,7 +1948,8 @@ declare function f:nodeNavigation(
                        $options as xs:string?,
                        $extFuncName as xs:string)                       
         as node()* {
-    let $ops := f:getOptions($options, ('name', 'lname', 'jname', 'first', 'first2', 'last', 'last2'), $extFuncName)    
+    let $ops := f:getOptions($options, ('name', 'lname', 'jname', 'first', 'first2', 'last', 'last2'), $extFuncName)   
+    let $_DEBUG := trace($ops, '_OPS: ')
     let $pselector :=
         if ($ops = 'first') then 1
         else if ($ops = 'first2') then 2
@@ -3135,8 +3136,8 @@ declare function f:replaceValues($items as item()*,
  : @return the edited input item
  :)
 declare function f:renameNodes($items as item()*,
-                               $targetNodesExpr as xs:string,
-                               $nameExpr as xs:string,
+                               $targetNodesExpr as item(),
+                               $nameExpr as item(),
                                $options as xs:string?,
                                $processingOptions as map(*))
         as node()* {
@@ -3149,9 +3150,13 @@ declare function f:renameNodes($items as item()*,
     let $resultDoc :=  
         copy $node_ := $node
         modify (
-            let $targetNodes := f:resolveFoxpath($node_, $targetNodesExpr, (), $processingOptions)
+            let $targetNodes := $targetNodesExpr !                 
+                f:resolveFoxpath($node_, ., $processingOptions)[. instance of node()]
+            
             for $rnode in $targetNodes
-            let $newName := f:resolveFoxpath($rnode, $nameExpr, (), $processingOptions)
+            (: let $newName := f:resolveFoxpath($rnode, $nameExpr, (), $processingOptions) :)
+            let $newName := $nameExpr !
+                f:resolveFoxpath($rnode, ., $processingOptions)
             return rename node $rnode as $newName,
             
             if (not($withBaseUri)) then () else

@@ -103,7 +103,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $contextNodes := if ($da eq 0) then $context else 
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $namesFilter := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            (: let $pselector := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) :)
             let $controlOptions := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:nodeNavigation($contextNodes, $axis, $namesFilter, $controlOptions, $fname)
@@ -185,6 +184,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 else 'lname'
             let $relationship := replace($fname, '^(.*?)-.*(-ec)?', '$1')                
             return foxf:relatedNames($nodes, $relationship, $nameKind, $nameFilter, $flags)            
+
+        (: function `clark-name` 
+           ===================== :)
+        else if ($fname = ('clark-name', 'cname')) then
+            let $node := 
+                let $explicit := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                if (not(count($node) eq 1 and $node[1] instance of node())) then ()
+                else 'Q{'||namespace-uri($node)||'}'||local-name($node)
 
         (: function `contains-nonws` 
            ======================== :)
@@ -888,6 +897,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return ($explicit, $context)[1]
             let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
             return foxf:jparse($text, $options)
+
+        (: function `json-text` 
+           ==================== :)
+        else if ($fname = ('json-text')) then
+            let $doc :=
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
+            return serialize($doc, map{'method': 'json', 'indent': 'yes'})
 
        (: function `left-value-only` 
           ========================== :)
@@ -2063,8 +2081,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
                     $docs ! <doc uri="{.}"/>
                 }</docs>
 
-        (: function `decodeKey` 
-           ==================== :)
+        (: function `decode-key` 
+           ===================== :)
         else if ($fname eq 'decode-key') then
             let $arg := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
