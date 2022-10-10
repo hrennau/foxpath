@@ -24,12 +24,13 @@
         </example>
         <example label="option jname">
             <description>
-                Inspecting a set of JSON documents - get the names and
-                frequencies of elements with a name containing the
-                "/" character, the "#" character or a blank.
+                Inspecting a set of JSON documents - get the names and 
+                frequencies of fields with a name matching '*geo*' or
+                contained by such an element, and with a name containing 
+                a blank or a slash.
             </description>
             <code>
-                fox "../json/*/descendant-or-self('*/* ##* *\s*', 'jname')\jname() => f()"
+                fox "../json/*.json\\descendant('*geo*')\descendant-or-self('*/* *\s*', 'jname')\jname() => f()"
             </code>
         </example>
     </examples>

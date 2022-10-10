@@ -19,13 +19,14 @@
                 fox "docbook//*.xml/descendant('*list')/name-path() => f()"
             </code>
         </example>
-        <example label="option name">
+        <example label="option jname">
             <description>
-                Get the names and frequencies of docbook elements, excluding elements
-                with prefix svg or mml.
+                Inspecting a set of JSON documents - get the names and
+                frequencies of elements with a name containing the 
+                "/" character, the "#" character or a blank.
             </description>
             <code>
-                fox "docbook//*.xml/descendant('* ~svg:* ~mml:*', 'name')/name() => f()"
+                fox "../json/*.json/descendant('*/* ##* *\s*', 'jname')\jname() => f()"
             </code>
         </example>
     </examples>

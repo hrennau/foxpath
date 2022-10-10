@@ -1949,7 +1949,6 @@ declare function f:nodeNavigation(
                        $extFuncName as xs:string)                       
         as node()* {
     let $ops := f:getOptions($options, ('name', 'lname', 'jname', 'first', 'first2', 'last', 'last2'), $extFuncName)   
-    let $_DEBUG := trace($ops, '_OPS: ')
     let $pselector :=
         if ($ops = 'first') then 1
         else if ($ops = 'first2') then 2

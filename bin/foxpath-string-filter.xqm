@@ -62,7 +62,6 @@ declare function f:compileComplexStringFilter($patterns as xs:string?, $addAncho
     let $itemsAndFlags := f:splitStringIntoItemsAndFlags($patterns)
     let $flags := $itemsAndFlags[1]    
     let $items := subsequence($itemsAndFlags, 2)
-    let $_DEBUG := trace($items, '_ITEMS: ')
     
     let $isFulltext := $flags ! tokenize(.) = ('fulltext', 'ftext', 'ft')
     return
@@ -125,7 +124,7 @@ declare function f:compileStringFilter($patterns as xs:string*,
         return if (not($ignoreCase)) then $raw else $raw ! lower-case(.)
     let $regexes := 
         if ($patternIsRegex) then $patterns else
-        $patterns[contains(., '*') or contains(., '?')]
+        $patterns[contains(., '*') or contains(., '?') or contains(., '\s')]
         ! replace(., '((^|[^\\])(\\\\)*)\\s', '$1 ')   (: _TO_DO_ support escaping \ :)
         ! replace(., '[.+|\\(){}\[\]\^$]', '\\$0')        
         ! replace(., '\*', '.*')
