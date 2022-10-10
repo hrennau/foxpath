@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-usage function="descendant-or-self">
+    <testenviron> In order to try out the examples, start a command shell and move to folder
+        $FOXPATH/examples-data/oxygen-samples. </testenviron>
+    <examples>        
+        <example label="no filter">
+            <description>
+                Inspecting docbook documents - get the names and frequencies of "list" elements
+                ('itemizedlist', 'orderedlist') and their descendant elements.
+            </description>
+            <code>
+                fox "docbook//*.xml\descendant('*list')\descendant-or-self()\name() => f()"
+            </code>
+        </example>
+        <example label="name filter">
+            <description>
+                Inspecting a set of XML documents - get the names and 
+                frequencies of elements with a name containing the string 
+                "object". The name is rendered in Clark notation.
+            </description>
+            <code>
+                fox ".//*.xml\descendant-or-self('*object*')\clark-name() => f()"
+            </code>
+        </example>
+        <example label="option jname">
+            <description>
+                Inspecting a set of JSON documents - get the names and
+                frequencies of elements with a name containing the
+                "/" character, the "#" character or a blank.
+            </description>
+            <code>
+                fox "../json/*/descendant-or-self('*/* ##* *\s*', 'jname')\jname() => f()"
+            </code>
+        </example>
+    </examples>
+</function-usage>
