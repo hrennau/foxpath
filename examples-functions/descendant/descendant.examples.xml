@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <function-usage function="descendant">
     <testenviron> In order to try out the examples, start a command shell and move to folder
-        $FOXPATH/examples-data/oxygen-samples. </testenviron>
+        $FOXPATH/examples-data. </testenviron>
     <examples>        
         <example label="no filter">
             <description>
                 Get the names and frequencies of the descendant elements of docbook table elements.
             </description>
             <code>
-                fox "docbook//*.xml\\docbook:table\descendant()\name() => f()"
+                fox "ox*ples/docbook//*.xml\\docbook:table\descendant()\name() => f()"
             </code>
         </example>
         <example label="name filter">
@@ -16,7 +16,18 @@
                 Get the data paths of "list" elements ('itemizedlist', 'orderedlist')
             </description>
             <code>
-                fox "docbook//*.xml/descendant('*list')/name-path() => f()"
+                fox "ox*ples/docbook//*.xml/descendant('*list')/name-path() => f()"
+            </code>
+        </example>
+        <example label="option qname">
+            <description>
+                Get the names and frequencies of docbook "equation" elements with a 
+                math ML child element.
+            </description>
+            <code>
+                fox "declare namespace math='http://www.w3.org/1998/Math/MathML';
+                     ox*ples/docbook//*.xml/descendant('docbook:*equation*', 'qname')
+                     [child('math:*', 'qname')]/name-path() => f()"                
             </code>
         </example>
         <example label="option jname">
@@ -26,7 +37,17 @@
                 "/" character, the "#" character or a blank.
             </description>
             <code>
-                fox "../json/*.json/descendant('*/* ##* *\s*', 'jname')\jname() => f()"
+                fox "json/*.json/descendant('*/* ##* *\s*', 'jname')\jname() => f()"
+            </code>
+        </example>
+        <example label="option name">
+            <description>
+                Get the names and frequencies of elements with an "mml" prefix. Note 
+                that the selection is based on the use of name prefixes and not 
+                affected by the namespace of the element names.
+            </description>
+            <code>
+                fox "ox*ples/docbook//*.xml/descendant('mml:*', 'name')/name() => f()"
             </code>
         </example>
     </examples>
