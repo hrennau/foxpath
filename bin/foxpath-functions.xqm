@@ -105,7 +105,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $namesFilter := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $controlOptions := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:nodeNavigation($contextNodes, $axis, $namesFilter, $controlOptions, $fname)
+                foxf:nodeNavigation($contextNodes, $axis, $namesFilter, $controlOptions, $fname, $options)
 
         (: function `back-slash` 
            ===================== :)
@@ -834,10 +834,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $nodes := 
                 if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 else $context
-            let $names := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
-            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $nameFilter := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+(:            
+            let $names := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+ :)            
             return
-                foxf:jschemaKeywords($nodes, $names, $namesExcluded)                            
+                foxf:jschemaKeywords($nodes, $nameFilter)                            
 
         (: function `jsoncat` 
            ================== :)
@@ -1096,12 +1099,11 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $nodes :=
                 if (count($call/*) le 1) then $context
                 else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $names := 
+            let $nameFilter := 
                 let $index := if (count($call/*) le 1) then 1 else 2
                 return $call/*[$index]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:oasJschemaKeywords($nodes, $names, $namesExcluded)            
+                foxf:oasJschemaKeywords($nodes, $nameFilter)            
 
         (: function `oas-keywords` 
            ======================= :)
@@ -1109,10 +1111,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $nodes := 
                 if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 else $context
-            let $names := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
-            let $namesExcluded := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $nameFilter := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
             return
-                foxf:oasKeywords($nodes, $names, $namesExcluded)            
+                foxf:oasKeywords($nodes, $nameFilter)            
 
         (: function `oas-msg-schemas` 
            ========================== :)
@@ -1809,27 +1810,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
          : p a r t  1 b:    o b s o l e t e    f u n c t i o n s
          :)
          
-        (: function `zzz-fox-ancestor` 
-           ====================== :)
-
-        (: function `zzz-fox-self` 
-           ======================= :)
-        else if ($fname = ('zzz-fox-self', 'zzz-fself')) then
-            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                foxf:zzzFoxSelf($context, $names, $namesExcluded)
-
-        (: function `zzz-fox-sibling` 
-           ========================== :)
-        else if ($fname = ('zzz-fox-sibling', 'zzz-fsibling')) then
-            let $names := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $namesExcluded:= $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $from := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $to := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
-            return
-                foxf:zzzFoxSibling($context, $names, $namesExcluded, $from, $to)
-
         (: function `zzz-has-xatt` 
            ======================= :)
         else if ($fname eq 'zzz-has-xatt' or $fname eq 'xatt') then
@@ -2152,6 +2132,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
+            let $_DEBUG := trace($options, '_OPTIONS: ')
             return
                 convert:encode-key($arg)
                 

@@ -7,19 +7,19 @@ declare variable $f:DG :=
     for $item in tokenize(normalize-space($f:DEBUG), ' ') 
     return concat('^', replace($item, '\*', '.*'), '$');
 declare variable $f:ARCHIVE_TOKEN external := '#archive#';
-declare variable $f:PREDECLARED_NAMESPACES := (
-    <namespace prefix="xml" uri="http://www.w3.org/XML/1998/namespace"/>,
-    <namespace prefix="xs" uri="http://www.w3.org/2001/XMLSchema"/>,
-    <namespace prefix="xsl" uri="http://www.w3.org/1999/XSL/Transform"/>,    
-    <namespace prefix="xsi" uri="http://www.w3.org/2001/XMLSchema-instance"/>,    
-    <namespace prefix="rdfs" uri="http://www.w3.org/2000/01/rdf-schema,#"/>,
-    <namespace prefix="rdf" uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>,
-    <namespace prefix="owl" uri="http://www.w3.org/2002/07/owl#"/>,
-    <namespace prefix="wsdl" uri="http://schemas.xmlsoap.org/wsdl/"/>,
-    <namespace prefix="docbook" uri="http://docbook.org/ns/docbook"/>,
-    <namespace prefix="svrl" uri="http://purl.oclc.org/dsdl/svrl"/>,
-    <namespace prefix="dc" uri="http://purl.org/dc/elements/1.1/"/>
-);
+declare variable $f:PREDECLARED_NAMESPACE_BINDINGS := map{
+    "dc": "http://purl.org/dc/elements/1.1/",
+    "docbook": "http://docbook.org/ns/docbook",
+    "owl": "http://www.w3.org/2002/07/owl#",    
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "svrl": "http://purl.oclc.org/dsdl/svrl",
+    "wsdl": "http://schemas.xmlsoap.org/wsdl/",    
+    "xml": "http://www.w3.org/XML/1998/namespace",
+    "xs": "http://www.w3.org/2001/XMLSchema",
+    "xsi": "http://www.w3.org/2001/XMLSchema-instance",    
+    "xsl": "http://www.w3.org/1999/XSL/Transform"
+};
 
 (: 
  : Functions compiling and matching a plus minus name filter.
@@ -33,6 +33,7 @@ declare variable $f:PREDECLARED_NAMESPACES := (
  : @param ignoreCase if true, the filter ignores case 
  : @return a map with entries 'names', 'regexes' and 'flags' 
  :)
+(: 
 declare function f:compilePlusMinusNameFilter($patterns as xs:string*) 
         as map(xs:string, item()*)? {
     (: To do - check for \# :)        
@@ -133,7 +134,7 @@ declare function f:matchesNameFilter($string as xs:string,
         or exists($nameFilter?substrings) and (some $sstr in $nameFilter?substrings satisfies contains($string, $sstr))
         or exists($nameFilter?regexes) and (some $r in $nameFilter?regexes satisfies matches($string, $r, $flags))
 };
-
+:)
 
 (: 
  : Old versions of functions compiling and matching name filters.
@@ -148,6 +149,7 @@ declare function f:matchesNameFilter($string as xs:string,
  : @param patternIsRegex if true, the patterns are treated as regular expressions
  : @return a map with entries 'names', 'regexes' and 'flags' 
  :)
+(: 
 declare function f:compilePatternFilter($patterns as xs:string*, 
                                         $addAnchors as xs:boolean?,
                                         $ignoreCase as xs:boolean?,
@@ -241,6 +243,7 @@ declare function f:matchesNameFilter($string as xs:string,
         or exists($nameFilter?substrings) and (some $sstr in $nameFilter?substrings satisfies contains($string, $sstr))
         or exists($nameFilter?regexes) and (some $r in $nameFilter?regexes satisfies matches($string, $r, $flags))
 };
+:)
 
 (:~
  : Returns all items contained in every array in a given

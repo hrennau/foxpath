@@ -1,4 +1,4 @@
-module namespace f="http://www.foxpath.org/ns/string-filter";
+module namespace f="http://www.foxpath.org/ns/string-expression";
 
 import module namespace ft="http://www.foxpath.org/ns/fulltext" at "foxpath-fulltext.xqm";
 
@@ -57,7 +57,10 @@ import module namespace ft="http://www.foxpath.org/ns/fulltext" at "foxpath-full
  :   mandated by flags (a or A) 
  : @return a map with entries 'names', 'regexes' and 'flags' 
  :)
-declare function f:compileComplexStringFilter($patterns as xs:string?, $addAnchorsDefault as xs:boolean?) 
+declare function f:compileUnifiedStringExpression($patterns as xs:string?, 
+                                                  $addAnchorsDefault as xs:boolean?,
+                                                  $withNamespace as xs:boolean?,
+                                                  $namespaceBindings as map(*)?) 
         as map(xs:string, item()*)? {
     let $itemsAndFlags := f:splitStringIntoItemsAndFlags($patterns)
     let $flags := $itemsAndFlags[1]    
@@ -83,14 +86,17 @@ declare function f:compileComplexStringFilter($patterns as xs:string?, $addAncho
     
     let $patternsPlus := $patterns[not(starts-with(., '~'))]
     let $patternsMinus := $patterns[starts-with(., '~')] ! substring(., 2)
+    let $useNamespaceBindings := $namespaceBindings[$withNamespace]
     return
         map:merge((
             map:entry('ignoreCase', $ignoreCase),
             map:entry('empty', empty(($patternsPlus, $patternsMinus))), 
             if (empty($patternsPlus)) then () else
-                map:entry('include', f:compileStringFilter($patternsPlus, $ignoreCase, $patternIsRegex, $addAnchors)),
+                map:entry('include', f:compileStringExpressionPatterns(
+                    $patternsPlus, $ignoreCase, $patternIsRegex, $addAnchors, $useNamespaceBindings)),
             if (empty($patternsMinus)) then () else
-                map:entry('exclude', f:compileStringFilter($patternsMinus, $ignoreCase, $patternIsRegex, $addAnchors))
+                map:entry('exclude', f:compileStringExpressionPatterns(
+                    $patternsMinus, $ignoreCase, $patternIsRegex, $addAnchors, $useNamespaceBindings))
         ))
 };
 
@@ -110,11 +116,17 @@ declare function f:compileComplexStringFilter($patterns as xs:string?, $addAncho
  : @return a map with possible entries 'empty', 'regexes', 'flags', 
  :   'strings', 'substrings'. 
  :)
-declare function f:compileStringFilter($patterns as xs:string*, 
+declare function f:compileStringExpressionPatterns(
+                                       $patterns as xs:string*, 
                                        $ignoreCase as xs:boolean?,
                                        $patternIsRegex as xs:boolean?,
-                                       $addAnchors as xs:boolean?)
+                                       $addAnchors as xs:boolean?,
+                                       $namespaceBindings as map(*)?)
         as map(xs:string, item()*)? {
+    if (exists($namespaceBindings)) then 
+        f:compileStringExpressionPatternsWithNamespace($patterns, $ignoreCase, $patternIsRegex, $addAnchors, $namespaceBindings)
+    else
+    
     let $patterns := $patterns ! normalize-space(.)[string()]
     return if (empty($patterns)) then () else
     
@@ -144,6 +156,84 @@ declare function f:compileStringFilter($patterns as xs:string*,
 };
 
 (:~
+ : Translates a whitespace-separated list of "patterns" into a structured
+ : representation. A pattern is a glob pattern or a regular expression.
+ : The structured representation is a map.
+ :
+ : This variant splits the patterns into prefix and local name. The prefix
+ : is mapped to a namespace URI, and only the local name is evaluated as
+ : a pattern.
+ :
+ : @param patterns a list of patterns
+ : @param ignoreCase if true, regex matching ignores case
+ : @param patternIsRegex if true, patterns are interpreted as regular
+ :   expressions, otherwise as glob patterns
+ : @param addAnchors if true, by default glob patterns are translated
+ :   into regular expressions with anchors indicating the begin and
+ :   end of the string; the default can be overridden by flags 'a'
+ :   (add anchors) and 'A' (do not add anchors). 
+ : @param namespaceBindings a mapping of prefixes to namespace URIs
+ : @return a map with possible entries 'empty', 'regexes', 'flags', 
+ :   'strings', 'substrings'. 
+ :)
+declare function f:compileStringExpressionPatternsWithNamespace(
+                                       $patterns as xs:string*, 
+                                       $ignoreCase as xs:boolean?,
+                                       $patternIsRegex as xs:boolean?,
+                                       $addAnchors as xs:boolean?,
+                                       $namespaceBindings as map(*))
+        as map(xs:string, item()*)? {
+    (: let $_DEBUG := trace($namespaceBindings, '_NAMESPACE_BINDINGS: ') :)        
+    let $patterns := $patterns ! normalize-space(.)[string()]
+    return if (empty($patterns)) then () else
+    
+    let $fn_nsuri_lname := function($pattern) {
+        let $withPrefix := contains($pattern, ':')
+        let $prefix := if (not($withPrefix)) then () else replace($pattern, ':.*', '')
+        let $lname := if (not($withPrefix)) then $pattern else replace($pattern, '^.+:', '')
+        let $string := if (not($ignoreCase)) then $lname else $lname ! lower-case(.)
+        let $namespace := if (not($prefix)) then () else $namespaceBindings($prefix)
+        let $_CHECK := if (not($prefix) or $namespace) then () else 
+            error(QName((), 'INVALID_ARG'), concat('No namespace binding for prefix: ', $prefix))
+        return ($string, $namespace)
+    }
+    let $literals := 
+        if ($patternIsRegex) then () else        
+        let $raw := $patterns[not(contains(., '*')) and not(contains(., '?'))]
+        for $item in $raw
+        let $nsuri_lname := $fn_nsuri_lname($item)
+        return map{'string': $nsuri_lname[1], 'namespace': $nsuri_lname[2]}
+    let $regexes := 
+        if ($patternIsRegex) then 
+            for $pattern in $patterns
+            let $nsuri_lname := $fn_nsuri_lname($pattern)
+            return map{'string': $nsuri_lname[1], 'namespace': $nsuri_lname[2]}            
+        else
+            for $pattern in $patterns
+            let $nsuri_lname := $fn_nsuri_lname($pattern)
+            let $regex :=
+                $nsuri_lname[1][contains(., '*') or contains(., '?') or contains(., '\s')]
+                ! replace(., '((^|[^\\])(\\\\)*)\\s', '$1 ')   (: _TO_DO_ support escaping \ :)
+                ! replace(., '[.+|\\(){}\[\]\^$]', '\\$0')        
+                ! replace(., '\*', '.*')
+                ! replace(., '\?', '.')
+                ! (if ($addAnchors) then concat('^', ., '$') else .)
+            where $regex
+            return map{'string': $regex, 'namespace': $nsuri_lname[2]}
+    let $flags := if ($ignoreCase) then 'i' else ''     
+    let $map := 
+        map{'regexes': $regexes, 
+            'empty': empty(($literals, $regexes)), 
+            'flags': $flags,
+            'ignoreCase': $ignoreCase}
+    return
+        if (exists($literals)) then
+            let $key := if ($addAnchors) then 'strings' else 'substrings'
+            return map:put($map, $key, $literals)
+        else $map            
+};
+
+(:~
  : Matches a string against a complex string filter. The filter has
  : been constructed by function f:compileComplexStringFilter.
  :
@@ -151,7 +241,7 @@ declare function f:compileStringFilter($patterns as xs:string*,
  : @param filter the compiled complex string filter
  : @return true of false, if the string matches, does not match, the filter
  :) 
-declare function f:matchesComplexStringFilter(
+declare function f:matchesUnifiedStringExpression(
                    $string as xs:string,                                               
                    $filter as map(xs:string, item()?)?)
         as xs:boolean {
@@ -164,8 +254,34 @@ declare function f:matchesComplexStringFilter(
     let $include := $filter?include
     let $exclude := $filter?exclude
     return
-        (empty($include) or f:matchesStringFilter($string, $include, $ignoreCase)) and
-        (empty($exclude) or not(f:matchesStringFilter($string, $exclude, $ignoreCase)))        
+        (empty($include) or f:matchesStringExpressionPattern($string, $include, $ignoreCase)) and
+        (empty($exclude) or not(f:matchesStringExpressionPattern($string, $exclude, $ignoreCase)))        
+};
+
+(:~
+ : Matches a string against a complex string filter. The filter has
+ : been constructed by function f:compileComplexStringFilter.
+ :
+ : @param string the string to match
+ : @param filter the compiled complex string filter
+ : @return true of false, if the string matches, does not match, the filter
+ :) 
+declare function f:matchesUnifiedStringExpression(
+                   $string as xs:string,
+                   $namespace as xs:string,
+                   $filter as map(xs:string, item()?)?)
+        as xs:boolean {
+    let $fnContainsText := $filter?contains-text
+    return
+        if (exists($fnContainsText)) then $fnContainsText($string) else
+        
+    if (empty($filter)) then true() else        
+    let $ignoreCase := $filter?ignoreCase
+    let $include := $filter?include
+    let $exclude := $filter?exclude
+    return
+        (empty($include) or f:matchesStringExpressionPattern($string, $namespace, $include, $ignoreCase)) and
+        (empty($exclude) or not(f:matchesStringExpressionPattern($string, $namespace, $exclude, $ignoreCase)))        
 };
 
 (:~
@@ -176,7 +292,8 @@ declare function f:matchesComplexStringFilter(
  : @param stringFilter a compiled string filter 
  : @return true if the string filter is matched, false otherwise
  :)
-declare function f:matchesStringFilter($string as xs:string, 
+declare function f:matchesStringExpressionPattern(
+                                       $string as xs:string, 
                                        $stringFilter as map(xs:string, item()*)?,
                                        $ignoreCase as xs:boolean?)
         as xs:boolean {
@@ -187,6 +304,32 @@ declare function f:matchesStringFilter($string as xs:string,
         or exists($stringFilter?strings) and $string = $stringFilter?strings
         or exists($stringFilter?substrings) and (some $sstr in $stringFilter?substrings satisfies contains($string, $sstr))
         or exists($stringFilter?regexes) and (some $r in $stringFilter?regexes satisfies matches($string, $r, $flags))
+};
+
+(:~
+ : Matches a string associated with a namespace URI against a string filter.
+ :
+ : @param string the string to match
+ : @param namespace the namespace associated with the string
+ : @param stringFilter a compiled string filter 
+ : @return true if the string filter is matched, false otherwise
+ :)
+declare function f:matchesStringExpressionPattern(
+                                       $string as xs:string,
+                                       $namespace as xs:string,
+                                       $stringFilter as map(xs:string, item()*)?,
+                                       $ignoreCase as xs:boolean?)
+        as xs:boolean {
+    let $flags := if ($ignoreCase) then 'i' else ''
+    let $string := if ($stringFilter?ignoreCase) then lower-case($string) else $string 
+    return
+        $stringFilter?empty
+        or exists($stringFilter?strings) and (
+            some $s in $stringFilter?strings satisfies $string eq $s?string and $namespace eq $s?namespace)
+        or exists($stringFilter?substrings) and (
+            some $s in $stringFilter?substrings satisfies contains($string, $s?string) and $namespace eq $s?namespace)
+        or exists($stringFilter?regexes) and (
+            some $r in $stringFilter?regexes satisfies matches($string, $r?string, $flags) and $namespace eq $r?namespace)
 };
 
 (:~

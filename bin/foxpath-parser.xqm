@@ -175,7 +175,8 @@ declare function f:finalizeParseTree_namespacesRC($n as node(), $prolog as eleme
                 let $uri := $prolog/nsDecls/namespace[@prefix eq $prefix]/@uri
                 let $uri :=
                     if ($uri) then $uri
-                    else $util:PREDECLARED_NAMESPACES[@prefix eq $prefix]/@uri
+                    (: else $util:PREDECLARED_NAMESPACES[@prefix eq $prefix]/@uri :)
+                    else $util:PREDECLARED_NAMESPACE_BINDINGS($prefix)
                 return
                     if (not($uri)) then
                         util:createFoxpathError('SYNTAX_ERROR',

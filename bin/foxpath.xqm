@@ -55,7 +55,7 @@ declare function f:resolveFoxpathQueryTree(
     let $errors := $queryTree/self::errors 
     return if ($errors) then $errors else
     
-    let $useOptions := f:finalizeOptions($options)
+    let $useOptions := f:finalizeOptions($options, $queryTree)
     let $expr := $queryTree/*[not(self::prolog)]
     let $vars := f:initVars($queryTree/prolog, $externalVariableBindings, $context, $useOptions)
     return
@@ -149,7 +149,8 @@ declare function f:resolveFoxpathXXX($foxpath as xs:string,
  : @param options evaluation options
  : @return finalized options
  :)
-declare function f:finalizeOptions($options as map(*)?)
+declare function f:finalizeOptions($options as map(*)?,
+                                   $parseTree as element()?)
         as map(*) {
     let $utreeDirs := $options ! map:get(., 'UTREE_DIRS') ! tokenize(normalize-space(.), ' ')        
     let $ugraphEndpoints := $options ! map:get(., 'UGRAPH_ENDPOINTS') ! tokenize(normalize-space(.), ' ')    
@@ -176,6 +177,10 @@ declare function f:finalizeOptions($options as map(*)?)
     let $ugraphUriPrefixes := 
         if (empty($ugraphEndpoints)) then () else
             f:get-ugraph-uri-prefixes($ugraphEndpoints[1], $options)
+    let $nsBindings := map:merge((
+        $util:PREDECLARED_NAMESPACE_BINDINGS,
+        $parseTree//prolog/nsDecls/namespace/map:entry(@prefix/string(), @uri/string())
+    ))
     let $map := map:merge(($options,
         map{       
             'URI_TREES_DIRS': $utreeDirs,
@@ -183,8 +188,10 @@ declare function f:finalizeOptions($options as map(*)?)
             'URI_TREES_BASE_URIS': $utrees/tree/@baseURI,
             'URI_TREES_PREFIXES': $uriPrefixes,
             'UGRAPH_ENDPOINTS': $ugraphEndpoints,
-            'UGRAPH_URI_PREFIXES': $ugraphUriPrefixes
-        }))
+            'UGRAPH_URI_PREFIXES': $ugraphUriPrefixes,
+            'NAMESPACE_BINDINGS': $nsBindings
+        }
+        ))
     return $map
 };
 
@@ -276,7 +283,7 @@ declare function f:resolveFoxpathTree(
     let $errors := $foxpathTree/self::errors 
     return if ($errors) then $errors else
     
-    let $useOptions := f:finalizeOptions($options)
+    let $useOptions := f:finalizeOptions($options, $foxpathTree)
     let $expr := $foxpathTree/*[not(self::prolog)]
     let $vars := f:initVars($foxpathTree/prolog, $externalVariableBindings, $context, $useOptions)
     return

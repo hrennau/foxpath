@@ -10,8 +10,8 @@ at  "foxpath-urithmetic.xqm";
 import module namespace util="http://www.ttools.org/xquery-functions/util" 
 at  "foxpath-util.xqm";
 
-import module namespace sf="http://www.foxpath.org/ns/string-filter" 
-at  "foxpath-string-filter.xqm";
+import module namespace sf="http://www.foxpath.org/ns/string-expression" 
+at  "foxpath-unified-string-expression.xqm";
 
 (:~
  : Writes a set of standard attributes. Can be useful when working
@@ -903,7 +903,7 @@ declare function f:foxNavigation(
         
     let $ops := $options ! tokenize(.)        
     let $useBaseUri := $ops = 'use-base-uri'
-    let $cNamesFilter := $namesFilter ! sf:compileComplexStringFilter(., true()) 
+    let $cNamesFilter := $namesFilter ! sf:compileUnifiedStringExpression(., true(), (), ()) 
     let $contextUris :=
         if (not($useBaseUri)) then $contextUris else
             $contextUris ! (if (. instance of node()) then base-uri(.) else .)
@@ -928,7 +928,7 @@ declare function f:foxNavigation(
     let $result :=
         for $curi in $contextUris
         let $related := $curi ! $fn_uris(.)[$fn_name(.) 
-                        ! sf:matchesComplexStringFilter(., $cNamesFilter)]
+                        ! sf:matchesUnifiedStringExpression(., $cNamesFilter)]
         return if (empty($pselector)) then $related else
 
         let $reverseAxis := $axis = ('ancestor', 'ancestor-or-self', 'parent', 'preceding-sibling')
@@ -1294,19 +1294,20 @@ declare function f:grep($uris as xs:string*,
                         $textFilter as xs:string?,
                         $flags as xs:string?)
         as item()* {                        
-    let $ctextFilter := sf:compileComplexStringFilter($textFilter, false())
+    let $ctextFilter := sf:compileUnifiedStringExpression($textFilter, false(), (), ())
     for $uri in $uris
     where i:fox-is-file($uri, ())
     let $matchLines :=
         i:fox-unparsed-text-lines($uri, (), ())
-        [sf:matchesComplexStringFilter(., $ctextFilter)]
+        [sf:matchesUnifiedStringExpression(., $ctextFilter)]
     return
         if (contains($flags, 'n')) then count($matchLines)
         else
             if (empty($matchLines)) then () else
                 string-join((concat('##### ', $uri, ' #####'), $matchLines, '----------'), '&#xA;')
 };
- 
+
+(:
 declare function f:grepObsolete($uris as xs:string*,
                         $pattern as xs:string?,
                         $patternExcluded as xs:string?,
@@ -1329,6 +1330,7 @@ declare function f:grepObsolete($uris as xs:string*,
             if (empty($matchLines)) then () else
                 string-join((concat('##### ', $uri, ' #####'), $matchLines, '----------'), '&#xA;')
 };
+:)
 
 (:~
  : Transforms a sequence of value into an indented list. Each value is a concatenated 
@@ -1532,13 +1534,11 @@ declare function f:jparse($text as xs:string*,
  : @return the resolved reference, if the value contains one, or the original value
  :)
 declare function f:jschemaKeywords($nodes as node()*, 
-                                   $names as xs:string?,
-                                   $namesExcluded as xs:string?)
+                                   $nameFilter as xs:string?)
         as element()* {
-    let $cnameFilter := util:compileNameFilter($names, true())
-    let $cnameFilterExclude := util:compileNameFilter($namesExcluded, true())
+    let $cnameFilter := $nameFilter ! sf:compileUnifiedStringExpression(., true(), (), ())
     return
-        $nodes/f:jschemaKeywordsRC(., $cnameFilter, $cnameFilterExclude)
+        $nodes/f:jschemaKeywordsRC(., $cnameFilter)
 };
 
 (:~
@@ -1549,8 +1549,7 @@ declare function f:jschemaKeywords($nodes as node()*,
  : @return the keyword nodes under the input node, including it
  :)
 declare function f:jschemaKeywordsRC($n as node(),
-                                     $nameFilter as map(xs:string, item()*)?,
-                                     $nameFilterExclude as map(xs:string, item()*)?)
+                                     $nameFilter as map(xs:string, item()*)?)
         as node()* {
     let $unfiltered :=        
         typeswitch($n)
@@ -1559,19 +1558,19 @@ declare function f:jschemaKeywordsRC($n as node(),
         case element(example) return $n
         case element(examples) return $n
         case element(enum) return $n    
-        case element(json) return ($n[parent::*], $n/*/f:jschemaKeywordsRC(., $nameFilter, $nameFilterExclude))
-        case element(patternProperties) return ($n, $n/*/*/f:jschemaKeywordsRC(., $nameFilter, $nameFilterExclude))    
-        case element(properties) return ($n, $n/*/*/f:jschemaKeywordsRC(., $nameFilter, $nameFilterExclude))
-        case element(_) return $n/*/f:jschemaKeywordsRC(., $nameFilter, $nameFilterExclude)
-        case document-node() return $n/*/f:jschemaKeywordsRC(., $nameFilter, $nameFilterExclude)
+        case element(json) return ($n[parent::*], $n/*/f:jschemaKeywordsRC(., $nameFilter))
+        case element(patternProperties) return ($n, $n/*/*/f:jschemaKeywordsRC(., $nameFilter))    
+        case element(properties) return ($n, $n/*/*/f:jschemaKeywordsRC(., $nameFilter))
+        case element(_) return $n/*/f:jschemaKeywordsRC(., $nameFilter)
+        case document-node() return $n/*/f:jschemaKeywordsRC(., $nameFilter)
         default return 
             if (starts-with($n/name(), 'x-')) then $n
-            else ($n, $n/*/f:jschemaKeywordsRC(., $nameFilter, $nameFilterExclude))
+            else ($n, $n/*/f:jschemaKeywordsRC(., $nameFilter))
     return
         if (empty($nameFilter)) then $unfiltered else
         for $node in $unfiltered
         let $jname := $node/local-name() ! convert:decode-key(.) ! lower-case(.)
-        where util:matchesPlusMinusNameFilters($jname, $nameFilter, $nameFilterExclude)
+        where sf:matchesUnifiedStringExpression($jname, $nameFilter)
         return $node
 };        
 
@@ -1639,10 +1638,10 @@ declare function f:mapItems($items as item()*,
 declare function f:matchesPattern($item as item(), 
                                   $pattern as xs:string)
         as xs:boolean {
-    let $cpattern := $pattern ! sf:compileComplexStringFilter(., true())
+    let $cpattern := $pattern ! sf:compileUnifiedStringExpression(., true(), (), ())
     let $item :=
         if ($item instance of xs:anyAtomicType) then string($item) else $item
-    return sf:matchesComplexStringFilter($item, $cpattern)
+    return sf:matchesUnifiedStringExpression($item, $cpattern)
 };
 
 (:~
@@ -1946,9 +1945,10 @@ declare function f:nodeNavigation(
                        $axis as xs:string,
                        $namesFilter as xs:string?,
                        $options as xs:string?,
-                       $extFuncName as xs:string)                       
+                       $extFuncName as xs:string,
+                       $processingOptions as map(*))                       
         as node()* {
-    let $ops := f:getOptions($options, ('name', 'lname', 'jname', 'first', 'first2', 'last', 'last2'), $extFuncName)   
+    let $ops := f:getOptions($options, ('name', 'lname', 'jname', 'qname', 'first', 'first2', 'last', 'last2'), $extFuncName)   
     let $pselector :=
         if ($ops = 'first') then 1
         else if ($ops = 'first2') then 2
@@ -1959,7 +1959,8 @@ declare function f:nodeNavigation(
         for $item in $contextItems return
             if ($item instance of node()) then $item else 
                 i:fox-doc($item, ())
-    let $cNamesFilter := $namesFilter ! sf:compileComplexStringFilter(., true())
+    let $cNamesFilter := $namesFilter ! 
+        sf:compileUnifiedStringExpression(., true(), $ops = 'qname', $processingOptions?NAMESPACE_BINDINGS)
     let $fn_nodes :=
         switch($axis)
         case 'child' return function($c) {$c/*}
@@ -1979,16 +1980,20 @@ declare function f:nodeNavigation(
         case 'all-descendant-or-self' return function($c) {$c/descendant-or-self::*/(., @*)}        
         default return error()
         
-    let $fn_name := 
-        if ($ops = 'name') then function($node) {$node/name(.)[string()]}
-        else if ($ops = 'jname') then function($node) {$node/local-name(.)[string()] ! convert:decode-key(.)}
-        else function($node) {$node/local-name(.)[string()]}
+    let $fn_matchesName := 
+        if ($ops = 'name') then function($node) 
+            {$node/name(.)[string()]! sf:matchesUnifiedStringExpression(., $cNamesFilter)}
+        else if ($ops = 'jname') then function($node) 
+            {$node/local-name(.)[string()] ! convert:decode-key(.) ! sf:matchesUnifiedStringExpression(., $cNamesFilter)}
+        else if ($ops = 'qname') then function($node) 
+            {$node/sf:matchesUnifiedStringExpression(local-name(.), namespace-uri(.), $cNamesFilter)}
+        else function($node) 
+            {$node/local-name(.)[string()] ! sf:matchesUnifiedStringExpression(., $cNamesFilter)}
 
     let $result :=
         for $node in $contextNodes
         let $related := $node ! $fn_nodes(.)[
-                        empty($cNamesFilter) or $fn_name(.) 
-                        ! sf:matchesComplexStringFilter(., $cNamesFilter)]
+                        empty($cNamesFilter) or $fn_matchesName(.)]
         return if (empty($pselector)) then $related else
 
         let $reverseAxis := $axis = ('ancestor', 'ancestor-or-self', 'parent', 'preceding-sibling')
@@ -2009,7 +2014,7 @@ declare function f:nameContent(
         for $item in $contextItems return
             if ($item instance of node()) then $item 
             else i:fox-doc($item, ())
-    let $cNamesFilter := $namesFilter ! util:compilePlusMinusNameFilter(.)
+    let $cNamesFilter := $namesFilter ! sf:compileUnifiedStringExpression($namesFilter, true(), (), ())
 
     let $fn_name := 
         if ($ops = 'name') then function($node) {$node/name(.)}
@@ -2025,7 +2030,7 @@ declare function f:nameContent(
         for $inputNode in $inputNodes
         return
             $inputNode/descendant-or-self::*/(., @*)
-                [$fn_name(.) ! util:matchesPlusMinusNameFilter(., $cNamesFilter)]
+                [$fn_name(.) ! sf:matchesUnifiedStringExpression(., $cNamesFilter)]
                 
     let $results :=
         for $node in $nodes
@@ -2132,8 +2137,7 @@ declare function f:nonDistinctValues($value as item()*,
  : @return keyword elements contained by the OpenAPI documents
  :)
 declare function f:oasJschemaKeywords($oasNodes as node()*,
-                                      $names as xs:string?,
-                                      $namesExcluded as xs:string?)
+                                      $nameFilter as xs:string?)
         as element()* {
     let $oasNodes := 
         $oasNodes ! (
@@ -2142,9 +2146,9 @@ declare function f:oasJschemaKeywords($oasNodes as node()*,
     return
     
     $oasNodes/(
-        definitions/*/*/f:jschemaKeywords(., $names, $namesExcluded),
-        components/schemas/*/*/f:jschemaKeywords(., $names, $namesExcluded),
-        f:oasMsgSchemas(.)/*/f:jschemaKeywords(., $names, $namesExcluded)
+        definitions/*/*/f:jschemaKeywords(., $nameFilter),
+        components/schemas/*/*/f:jschemaKeywords(., $nameFilter),
+        f:oasMsgSchemas(.)/*/f:jschemaKeywords(., $nameFilter)
     )        
 };
 
@@ -2157,12 +2161,9 @@ declare function f:oasJschemaKeywords($oasNodes as node()*,
  : @return the resolved reference, if the value contains one, or the original value
  :)
 declare function f:oasKeywords($values as node()*, 
-                               $names as xs:string?,
-                               $namesExcluded as xs:string?)
+                               $nameFilter as xs:string?)
         as element()* {
-    let $cnameFilter := util:compileNameFilter($names, true())
-    let $cnameFilterExclude := util:compileNameFilter($namesExcluded, true())
-        
+    let $cnameFilter := sf:compileUnifiedStringExpression($nameFilter, true(), (), ())
     let $values := $values ! root()/descendant-or-self::*[1]        
     for $value in $values
     let $oasVersion := $value/ancestor-or-self::*[last()]/(
@@ -2170,7 +2171,7 @@ declare function f:oasKeywords($values as node()*,
         swagger/substring(., 1, 1)
         )[1]
     return        
-        $value/f:oasKeywordsRC(., $oasVersion, $cnameFilter, $cnameFilterExclude)
+        $value/f:oasKeywordsRC(., $oasVersion, $cnameFilter)
 };
 
 (:~
@@ -2182,14 +2183,13 @@ declare function f:oasKeywords($values as node()*,
  :)
 declare function f:oasKeywordsRC($n as node(),
                                  $version as xs:string?,
-                                 $nameFilter as map(xs:string, item()*)?,
-                                 $nameFilterExclude as map(xs:string, item()*)?)
+                                 $nameFilter as map(xs:string, item()*)?)
         as node()* {
     let $unfiltered :=        
         typeswitch($n)
         
         (: Array item - continue with children :)
-        case element(_) return $n/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude)
+        case element(_) return $n/*/f:oasKeywordsRC(., $version, $nameFilter)
         
         (: Keywords with version-dependent treatment :)
         
@@ -2199,7 +2199,7 @@ declare function f:oasKeywordsRC($n as node(),
         case element(examples) return (
             $n,
             if ($version ! starts-with(., '2')) then ()
-            else $n/*/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude))
+            else $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))
             
         (: Schema-related keywords - do not continue recursion :)
         case element(schema) return $n
@@ -2208,20 +2208,20 @@ declare function f:oasKeywordsRC($n as node(),
         
         (: Maps with object-valued entries - use the map object and continue with the children of the map entries :)
 
-        case element(callbacks) return ($n, $n/*/*/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude)) (: Callback has a single member = expr :)
-        case element(content) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude))   
-        case element(encoding) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude))        
-        case element(examples) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude))        
-        case element(headers) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude))
-        case element(links) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude))
-        case element(pathItems) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude))        
-        case element(paths) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude))        
-        case element(requestBodies) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude))
-        case element(responses) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude))
-        case element(securityDefinitions) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude))   (: V2 :)
-        case element(securitySchemes) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude))        
-        case element(variables) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude))
-        case element(webhooks) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude))        
+        case element(callbacks) return ($n, $n/*/*/*/f:oasKeywordsRC(., $version, $nameFilter)) (: Callback has a single member = expr :)
+        case element(content) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))   
+        case element(encoding) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))        
+        case element(examples) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))        
+        case element(headers) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))
+        case element(links) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))
+        case element(pathItems) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))        
+        case element(paths) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))        
+        case element(requestBodies) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))
+        case element(responses) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))
+        case element(securityDefinitions) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))   (: V2 :)
+        case element(securitySchemes) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))        
+        case element(variables) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))
+        case element(webhooks) return ($n, $n/*/*/f:oasKeywordsRC(., $version, $nameFilter))        
         
         (: Keywords which MAY be a map :)
         (: ... parameters - dependent on location an array or a map:
@@ -2230,8 +2230,8 @@ declare function f:oasKeywordsRC($n as node(),
          :)
         case element(parameters) return (
             $n, 
-            if ($n/(parent::components, ../parent::links, parent::json)) then $n/*/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude)
-            else $n/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude)
+            if ($n/(parent::components, ../parent::links, parent::json)) then $n/*/*/f:oasKeywordsRC(., $version, $nameFilter)
+            else $n/*/f:oasKeywordsRC(., $version, $nameFilter)
         )            
         
         (: Maps string-string - do not consider children :)        
@@ -2249,19 +2249,19 @@ declare function f:oasKeywordsRC($n as node(),
         case element(requestBody) return (
             $n,
             if ($n/../parent::links) then () else
-            $n/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude)
+            $n/*/f:oasKeywordsRC(., $version, $nameFilter)
         )
         
         default return (
             $n, 
             if (starts-with(local-name($n), 'x-')) then () else
-                $n/*/f:oasKeywordsRC(., $version, $nameFilter, $nameFilterExclude))
+                $n/*/f:oasKeywordsRC(., $version, $nameFilter))
    
     return
         if (empty($nameFilter)) then $unfiltered else
         for $node in $unfiltered
         let $jname := $node/local-name() ! convert:decode-key(.) ! lower-case(.)
-        where util:matchesPlusMinusNameFilters($jname, $nameFilter, $nameFilterExclude)
+        where sf:matchesUnifiedStringExpression($jname, $nameFilter)
         return $node
 };        
 
@@ -2819,8 +2819,8 @@ declare function f:pathContent($context as item()*,
         as xs:string* {
     let $ops := $options ! tokenize(.)        
     let $alsoInnerNodes := $ops = 'with-inner'
-    let $cLeafNameFilter := $leafNameFilter ! sf:compileComplexStringFilter(., true())    
-    let $cInnerNodeNameFilter := $innerNodeNameFilter ! sf:compileComplexStringFilter(., true())
+    let $cLeafNameFilter := $leafNameFilter ! sf:compileUnifiedStringExpression(., true(), (), ())    
+    let $cInnerNodeNameFilter := $innerNodeNameFilter ! sf:compileUnifiedStringExpression(., true(), (), ())
     
     let $fnGetName :=
         if ($ops = 'name') then function($node) {name($node)}
@@ -2846,7 +2846,7 @@ declare function f:pathContent($context as item()*,
             if ($ops = 'jname') then $cnode/descendant::*
             else $cnode/(@*, descendant::*/(., @*))
         else
-            let $excluded := $cnode//*[*][not(sf:matchesComplexStringFilter($fnGetName(.), $cInnerNodeNameFilter))]
+            let $excluded := $cnode//*[*][not(sf:matchesUnifiedStringExpression($fnGetName(.), $cInnerNodeNameFilter))]
             let $unfiltered :=
                 if ($ops = 'jname') then $cnode/descendant::*
                 else $cnode/(@*, descendant::*/(., @*))
@@ -2855,9 +2855,9 @@ declare function f:pathContent($context as item()*,
     let $descendants2 := (
         if (empty($cLeafNameFilter)) then $descendants1
         else if ($alsoInnerNodes) then 
-            $descendants1[* or sf:matchesComplexStringFilter($fnGetName(.), $cLeafNameFilter)]
+            $descendants1[* or sf:matchesUnifiedStringExpression($fnGetName(.), $cLeafNameFilter)]
         else 
-            $descendants1[sf:matchesComplexStringFilter($fnGetName(.), $cLeafNameFilter)]
+            $descendants1[sf:matchesUnifiedStringExpression($fnGetName(.), $cLeafNameFilter)]
         )
     for $d in $descendants2 return
     let $ancos := $d/ancestor-or-self::node()[. >> $cnode]
@@ -2898,8 +2898,8 @@ declare function f:percent($values as xs:numeric*, $value2 as xs:numeric?, $frac
 declare function f:pfilterItems($items as item()*, 
                                $pattern as xs:string)
         as item()* {
-    let $cpattern := $pattern ! sf:compileComplexStringFilter(., true())
-    return $items[sf:matchesComplexStringFilter(string(.), $cpattern)]
+    let $cpattern := $pattern ! sf:compileUnifiedStringExpression(., true(), (), ())
+    return $items[sf:matchesUnifiedStringExpression(string(.), $cpattern)]
 };
 
 declare function f:prettyNode($items as item()*, 
@@ -2976,7 +2976,7 @@ declare function f:relatedNames($nodes as node()*,
                             $options as xs:string?)
         as xs:string* {
     let $nosort := contains($options, 'nosort') 
-    let $cnameFilter := util:compilePlusMinusNameFilter($nameFilter)
+    let $cnameFilter := sf:compileUnifiedStringExpression($nameFilter, true(), (), ())
     (:
     let $_DEBUG := trace($nameFilter, '_FILTER_STRING: ')    
     let $_DEBUG := trace($cnameFilter, '_FILTER_ELEM: ')
@@ -3010,7 +3010,7 @@ declare function f:relatedNames($nodes as node()*,
             default return error(QName((), 'INVALID_ARG'), 'Unknown structure relationship: '||$relationship)
         return 
             if (empty($cnameFilter)) then $unfiltered
-            else $unfiltered[$fnName(.) ! replace(., '^@', '') ! util:matchesPlusMinusNameFilter(., $cnameFilter)]
+            else $unfiltered[$fnName(.) ! replace(., '^@', '') ! sf:matchesUnifiedStringExpression(., $cnameFilter)]
     let $names := $items/$fnName(.) => distinct-values() 
     let $names := if ($nosort) then $names else $names => sort()        
     let $nameseq := string-join($names, $separator)
@@ -4429,7 +4429,7 @@ declare function f:ftreeREC($folder as xs:string, $options as map(*)) as element
                 let $pmap := $p($pname)
                 let $fileNameFilter := $pmap?fileName                
                 return
-                    if (not(sf:matchesComplexStringFilter(util:fileName(.), $fileNameFilter))) then ()
+                    if (not(sf:matchesUnifiedStringExpression(util:fileName(.), $fileNameFilter))) then ()
                     else
                         let $itemElemName := $pmap?itemElemName[string()]
                         let $occs := $pmap?occs[string()]
@@ -4459,8 +4459,8 @@ declare function f:ftreeSelective(
                          $processingOptions as map(*)) as element()? {
     let $filePropertiesMap := 
         f:ftreeUtil_filePropertyMap($fileProperties, $processingOptions)    
-    let $cfileNamesFilter := $fileNamesFilter ! util:compilePlusMinusNameFilter(.)     
-    let $cfolderNamesFilter := $folderNamesFilter! util:compilePlusMinusNameFilter(.)
+    let $cfileNamesFilter := $fileNamesFilter ! sf:compileUnifiedStringExpression(., true(), (), ())     
+    let $cfolderNamesFilter := $folderNamesFilter! sf:compileUnifiedStringExpression(., true(), (), ())
     let $folders :=
         if (exists($folders)) then $folders
         else if (exists($uris)) then f:getRootUri($uris)
@@ -4476,7 +4476,7 @@ declare function f:ftreeSelective(
             if (exists($uris)) then $uris
             else
                 i:descendantUriCollection($folder, (), (), ()) ! concat($folder, '/', .)
-                [replace(., '.+/', '') ! util:matchesPlusMinusNameFilter(., $cfileNamesFilter)]
+                [replace(., '.+/', '') ! sf:matchesUnifiedStringExpression(., $cfileNamesFilter)]
         let $descendants := $descendantUris ! replace(., '^'||$folder||'/', '')
         let $content := $folder ! f:ftreeSelectiveREC(., $descendants, $useOptions)
         let $rootAttributes := f:getFtreeAttributes($folder, $content, $options)
@@ -4495,7 +4495,7 @@ declare function f:ftreeSelectiveREC(
         $options as map(*)) as element()? {
     if ($folder 
         ! util:fileName(.) 
-        ! (not(util:matchesPlusMinusNameFilter(., $options?_folderNames)))) then () else
+        ! (not(sf:matchesUnifiedStringExpression(., $options?_folderNames)))) then () else
     
     let $filePropertiesMap := $options?_file-properties    
     let $folderName := replace($folder, '.*/', '')
@@ -4515,7 +4515,7 @@ declare function f:ftreeSelectiveREC(
                         let $pmap := $p($pname)
                         let $fileNameFilter := $pmap?fileName
                         return
-                            if (not(util:matchesPlusMinusNameFilter($childName, $fileNameFilter))) then ()
+                            if (not(sf:matchesUnifiedStringExpression($childName, $fileNameFilter))) then ()
                             else
                                 let $itemElemName := $pmap?itemElemName[string()]
                                 let $occs := $pmap?occs[string()]
@@ -4570,7 +4570,7 @@ declare function f:ftreeUtil_filePropertyMap($fileProperties as item()*,
         let $fname := (
             if (not($withFname)) then '*' 
             else replace($fnameAndPname, '^(.*)\s.*', '$1')
-        ) ! sf:compileComplexStringFilter(., true())
+        ) ! sf:compileUnifiedStringExpression(., true(), (), ())
         (: Property name :)
         let $pnameRaw := 
             if (not($withFname)) then $fnameAndPname 
@@ -4701,234 +4701,6 @@ declare function f:zzzAttNamesOld($nodes as node()*,
         if (exists($separator)) then string-join($names, $separator)
         else $names
 };  
-
-(:~
- : For each input URI, ancestor URIs or ancestor-or-self URIs are returned in
- : reverse file system order. If $names and/or $namesExcluded are specified, only 
- : ancestors (or ancestor-or-self URIs) with a name matching a name or name pattern 
- : from $names, and not matching a name or name pattern from $namesExcluded are 
- : considered. Parameter $pselector selects an individual ancestor by position in
- : reverse file system order, specified as an integer number or the string #last.
- :
- : When there are several input URIs, the result sequence is composed of subsequences, 
- : each one of which contains the ancestors (or ancestor-or-self URIs) of an input URI
- : in reverse file system order. In this case, duplicate URIs may occur, and the result 
- : as a whole may neither be in file system order nor in reverse file system order.
- :
- : @param context the context URIs
- : @param names names or name paterns of URIs to be included, whitespace separated
- : @param namesExcluded names or name patterns of URIs to be excluded, whitespace separated
- : @param pselector An integer number or the string '#last'; for each input URI, only
- :   the ancestor at the corresponding position will be returned.
- : @param ignoreCase If true, file names are compared with parameter values in
- :   a case-sensitive way; by default, names are compared in a case-insensitive way 
- : @param includeSelf If true, the ancestor-or-self URIs are considered, otherwise
- :   only the ancestor URIs
- : @return selected child URIs
- :)
-declare function f:zzzFoxAncestor(
-                       $context as xs:string*,
-                       $names as xs:string?,
-                       $namesExcluded as xs:string?,
-                       $pselector as item()?,                       
-                       $ignoreCase as xs:boolean?,
-                       $includeSelf as xs:boolean?)                       
-        as xs:string* {
-    let $ignoreCase := ($ignoreCase, true())[1]        
-    let $cnameFilter := $names ! util:compileNameFilter(., $ignoreCase)        
-    let $cnameFilterExclude := $namesExcluded ! util:compileNameFilter(., $ignoreCase)
-    let $last := if (not($pselector instance of xs:string)) then () else $pselector = '#last'
-    for $c in $context
-    let $anc := 
-        i:ancestorUriCollection($c, (), $includeSelf)
-        [file:name(.) ! util:matchesPlusMinusNameFilters(., $cnameFilter, $cnameFilterExclude)]
-        => reverse()
-    return
-        if (empty($pselector)) then $anc 
-        else if ($last) then $anc[last()]
-        else $anc[$pselector]
-};
-
-(:~
- : Returns for a set of URIs the child URIs with a file name (final step) 
- : matching a name or name pattern from $names, and not matching a name or 
- : name pattern from $namesExcluded. 
- :
- : If $fromSubstring and $toSubstring are supplied, the file name must match the 
- : regex obtained by replacing in $name substring $fromSubstring with $toSubstring.
- :
- : @param context the context URIs
- : @param names names or name paterns of URIs to be included, whitespace separated
- : @param namesExcluded names or name paterns of URIs to be excluded, whitespace separated
- : @return selected child URIs
- :)
-declare function f:zzzFoxChild($context as xs:string*,
-                            $names as xs:string*,
-                            $namesExcluded as xs:string*)
-        as xs:string* {
-    let $cnameFilter := util:compileNameFilter($names, true())        
-    let $cnameFilterExclude := util:compileNameFilter($namesExcluded, true())    
-    return (
-        for $c in $context return
-            i:childUriCollection($c, (), (), ()) 
-            [empty($names) or util:matchesNameFilter(., $cnameFilter)]
-            [empty($namesExcluded) or not(util:matchesNameFilter(., $cnameFilterExclude))]
-            ! concat($c, '/', .)
-        ) => distinct-values()
-};
-
-(:~
- : Returns for a set of URIs the descendant URIs with a file name (final step) 
- : matching a name or name pattern from $names, and not matching a name or name 
- : pattern from $namesExcluded. 
- :
- : @param context the context URIs
- : @param names names or name paterns of URIs to be included, whitespace separated
- : @param namesExcluded names or name paterns of URIs to be excluded, whitespace separated
- : @return selected child URIs
- :)
-declare function f:zzzFoxDescendant(
-                         $context as xs:string*,
-                         $names as xs:string*,
-                         $namesExcluded as xs:string*)
-        as xs:string* {
-    let $cnameFilter := util:compileNameFilter($names, true())        
-    let $cnameFilterExclude := util:compileNameFilter($namesExcluded, true())
-    return (
-        for $c in $context 
-            return i:descendantUriCollection($c, (), (), ()) 
-                   [empty($names) or file:name(.) ! util:matchesNameFilter(., $cnameFilter)]
-                   [empty($namesExcluded) or file:name(.) ! not(util:matchesNameFilter(., $cnameFilterExclude))]
-                   ! concat($c, '/', .)
-    ) => distinct-values()
-};
-
-(:~
- : Returns for a set of URIs the descendant or self URIs with a file name 
- : (final step) matching a name or name pattern from $names, and not matching 
- : a name or name pattern from $namesExcluded. 
- :
- : @param context the context URIs
- : @param names names or name paterns of URIs to be included, whitespace separated
- : @param namesExcluded names or name paterns of URIs to be excluded, whitespace separated
- : @return selected descendant or self URIs
- :)
-declare function f:zzzFoxDescendantOrSelf(
-                             $context as xs:string*,
-                             $names as xs:string*,
-                             $namesExcluded as xs:string*)
-        as xs:string* {
-    (
-        for $c in $context return (
-        f:zzzFoxDescendant($context, $names, $namesExcluded),
-        f:zzzFoxSelf($context, $names, $namesExcluded)
-    )) => distinct-values() => sort()
-};
-
-(:~
- : Returns for a set of URIs the parent URIs with a file name (final step) 
- : matching a name or name pattern from $names, and not matching a name or 
- : name pattern from $namesExcluded. 
- :
- : @param context the context URIs
- : @param names names or name paterns of URIs to be included, whitespace separated
- : @param namesExcluded names or name paterns of URIs to be excluded, whitespace separated
- : @return selected parent URIs
-:)
-declare function f:zzzFoxParent($context as xs:string*,
-                             $names as xs:string*,
-                             $namesExcluded as xs:string*)
-        as xs:string? {
-    let $cnameFilter := util:compileNameFilter($names, true())        
-    let $cnameFilterExclude := util:compileNameFilter($namesExcluded, true())    
-    return (
-        for $c in $context return
-            i:parentUri($c, ()) 
-            [empty($names) or util:matchesNameFilter(., $cnameFilter)]
-            [empty($namesExcluded) or not(util:matchesNameFilter(., $cnameFilterExclude))]
-        ) => distinct-values()
-};
-
-(:~
- : Returns the sibling URIs of the parent URI of a given URI, provided their 
- ; name matches a given name, or a regex derived from it. If $fromSubstring 
- : and $toSubstring are supplied, the URI names must match the regex obtained 
- : obtained by replacing in $name substring $fromSubstring with $toSubstring.
- :
- : @param context the context URI
- : @param names one or several name patterns
- : @param fromSubstring used to map $name to a regex
- : @param toSubstring used to map $name to a regex
- : @return sibling URIs matching the name or the derived regex
- :)
-declare function f:zzzFoxParentSibling($context as xs:string*,
-                                    $names as xs:string*,
-                                    $namesExcluded as xs:string*,                                      
-                                    $fromSubstring as xs:string?,
-                                    $toSubstring as xs:string?)
-        as xs:string* {
-    (
-    for $c in $context return
-        i:parentUri($c, ()) 
-        ! f:zzzFoxSibling(., $names, $namesExcluded, $fromSubstring, $toSubstring)
-    ) => distinct-values()        
-};
-
-(:~
- : Filters a set of URIs, returning those URIs with a file name (final step) matching a 
- : name or name pattern from $names, and not matching a name or name pattern from 
- : $namesExcluded. 
- :
- : @param context the context URIs
- : @param names names or name paterns of URIs to be included, whitespace separated
- : @param namesExcluded names or name paterns of URIs to be excluded, whitespace separated
- : @return selected descendant or self URIs
- :)
-declare function f:zzzFoxSelf($context as xs:string*,
-                           $names as xs:string*,
-                           $namesExcluded as xs:string*)
-        as xs:string* {
-    let $cnameFilter := util:compileNameFilter($names, true())        
-    let $cnameFilterExclude := util:compileNameFilter($namesExcluded, true())
-    return (    
-        for $c in $context return
-        $c
-        [empty($names) or file:name(.) ! util:matchesNameFilter(., $cnameFilter)]
-        [empty($namesExcluded) or file:name(.) ! not(util:matchesNameFilter(., $cnameFilterExclude))]
-    ) => distinct-values()        
-};
-
-(:~
- : Returns the sibling URIs of a given URI, provided their name matches a given 
- : name, or a regex derived from it. If $fromSubstring and $toSubstring are 
- : supplied, the URI names must match the regex obtained obtained by replacing 
- : in $name substring $fromSubstring with $toSubstring.
- :
- : @param context the context URI
- : @param names one or several name patterns
- : @param fromSubstring used to map $name to a regex
- : @param toSubstring used to map $name to a regex
- : @return sibling URIs matching the name or the derived regex
- :)
-declare function f:zzzFoxSibling($context as xs:string*,
-                              $names as xs:string*,
-                              $namesExcluded as xs:string*,
-                              $fromSubstring as xs:string?,
-                              $toSubstring as xs:string?)
-        as xs:string* {
-    (
-    for $c in $context
-    let $names := 
-        let $raw :=if (exists($names)) then $names else file:name($c)
-        return
-            if (empty($fromSubstring) or empty($toSubstring)) then $raw
-            else $raw ! replace(., $fromSubstring, $toSubstring, 'i')
-    for $name in $names
-    let $parent := i:parentUri($c, ())
-    let $raw := f:zzzFoxChild($parent, $name, $namesExcluded)
-    return $raw[not(. eq $c)]
-    ) => distinct-values()
-};
 
 (:~
  : Concatenates the arguments into a string, using an "improbable"
