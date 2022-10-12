@@ -189,17 +189,23 @@ declare function f:compileStringExpressionPatternsWithNamespace(
     
     let $fn_nsuri_lname := function($pattern) {
         let $withPrefix := contains($pattern, ':')
-        let $prefix := if (not($withPrefix)) then () else replace($pattern, ':.*', '')
+        let $prefix := 
+            if ($pattern eq '*') then '*' 
+            else if (not($withPrefix)) then () 
+            else replace($pattern, ':.*', '')
         let $lname := if (not($withPrefix)) then $pattern else replace($pattern, '^.+:', '')
         let $string := if (not($ignoreCase)) then $lname else $lname ! lower-case(.)
-        let $namespace := if (not($prefix)) then () else $namespaceBindings($prefix)
+        let $namespace := 
+            if ($prefix ne '*') then $namespaceBindings($prefix)
+            else if ($prefix eq '*') then '*'
+            else ()
         let $_CHECK := if (not($prefix) or $namespace) then () else 
             error(QName((), 'INVALID_ARG'), concat('No namespace binding for prefix: ', $prefix))
         return ($string, $namespace)
     }
     let $literals := 
         if ($patternIsRegex) then () else        
-        let $raw := $patterns[not(contains(., '*')) and not(contains(., '?'))]
+        let $raw := $patterns[replace(., '^.+:', '')[not(contains(., '*')) and not(contains(., '?'))]]
         for $item in $raw
         let $nsuri_lname := $fn_nsuri_lname($item)
         return map{'string': $nsuri_lname[1], 'namespace': $nsuri_lname[2]}
@@ -325,11 +331,11 @@ declare function f:matchesStringExpressionPattern(
     return
         $stringFilter?empty
         or exists($stringFilter?strings) and (
-            some $s in $stringFilter?strings satisfies $string eq $s?string and $namespace eq $s?namespace)
+            some $s in $stringFilter?strings satisfies $s?string eq $string and $s?namespace = ($namespace, '*'))
         or exists($stringFilter?substrings) and (
-            some $s in $stringFilter?substrings satisfies contains($string, $s?string) and $namespace eq $s?namespace)
+            some $s in $stringFilter?substrings satisfies contains($string, $s?string) and $s?namespace = ($namespace, '*'))
         or exists($stringFilter?regexes) and (
-            some $r in $stringFilter?regexes satisfies matches($string, $r?string, $flags) and $namespace eq $r?namespace)
+            some $r in $stringFilter?regexes satisfies matches($string, $r?string, $flags) and $r?namespace = ($namespace, '*'))
 };
 
 (:~
