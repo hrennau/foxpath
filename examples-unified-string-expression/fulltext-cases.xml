@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fulltext-cases>
+    <case>
+        <expr>markup language #fulltext</expr>
+        <description>A string containing the phrase "markup language", any case, anywhere</description>        
+        <examples>
+            <example>
+                <text>XML is a versatile markup language.</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>There are several markup languages.</text>
+                <expect>-</expect>
+                <reason>language is a different word than languages</reason>                
+            </example>
+        </examples>
+    </case>
+    <case>
+        <expr>language markup versatile #fulltext W</expr>
+        <description>A string containing all words from "language", "markup"and "versatile"</description>
+        <examples>
+            <example>
+                <text>XML is a versatile markup language.</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML is a popular markup language.</text>
+                <expect>-</expect>                
+                <reason>Missing word: versatile</reason>
+            </example>
+        </examples>
+    </case>
+    <case>
+        <expr>language markup versatile #fulltext w</expr>
+        <description>A string containing a word from "language", "markup" and "versatile"</description>
+        <examples>
+            <example>
+                <text>XML is a popular markup language.</text>
+                <expect>+</expect>
+            </example>
+        </examples>
+    </case>
+    <case>
+        <expr>^language markup versatile #fulltext w</expr>
+        <description>A string starting with a word from "language", "markup", and "versatile"</description>
+        <examples>
+            <example>
+                <text>Markup languages are considered.</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>These markup languages are considered.</text>
+                <expect>-</expect>
+                <reason>The first word ("These") is not from "language", "markup" and "versatile".</reason>
+            </example>
+        </examples>
+    </case>
+    <case>
+        <expr>language markup versatile$ #fulltext w</expr>
+        <description>A string ending with a word from "language", "markup", and "versatile"</description>
+        <examples>
+            <example>
+                <text>XML is a popular markup language.</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>These markup languages are considered.</text>
+                <expect>-</expect>
+                <reason>The last word ("considered") is not from "language", "markup" and "versatile".</reason>
+            </example>
+        </examples>
+    </case>
+</fulltext-cases>

@@ -1,0 +1,25 @@
+let $cases := fulltext-cases.xml\\case
+for $case in $cases
+let $expr := $case\expr
+let $desc := $case\description
+return (
+    '***   '||$expr\string(),
+    '',
+    'Desc: '||$desc,    
+    'Examples:',
+    for $example in $case\\example
+    let $string := $example\text
+    let $expect := $example\expect
+    let $reason := $example\reason
+        
+    let $result := $string ! matches-pattern($expr)
+    let $resultInfo := if ($result) then '+' else '-'
+    return (
+    '      Text: '||$string,    
+    '      Rslt: '||'AE='||$resultInfo||$expect,
+    $reason !
+    '      Why:  '||$reason,
+    ''    
+    ),
+    ''
+)
