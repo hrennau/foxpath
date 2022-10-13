@@ -1,0 +1,27 @@
+let $cases := glob-or-regex-cases.xml\\case
+for $case in $cases
+let $expr := $case\expr
+let $desc := $case\description\normalize-space(.)
+return (
+    '       #Demo: '||$case\@topic||,
+    '***    '||$expr\string(),
+    '',
+    'Desc:  '||$desc,    
+    'Examples:',
+    for $example in $case\\example
+    let $string := $example\text
+    let $expect := $example\expect
+    let $reason := $example\reason
+        
+    let $result := $string ! matches-pattern($expr)
+    let $resultInfo := if ($result) then '+' else '-'
+    return (
+    '       Text: '||$string,    
+    '       Rslt: '||'AE='||$resultInfo||$expect,
+    $reason ! (
+    '       Why:  '||$reason),
+    ('       U N E X P E C T E D    R E S U L T   -   E X P E C T E D    '||$expect)[$resultInfo ne $expect],
+    ''    
+    ),
+    ''
+)

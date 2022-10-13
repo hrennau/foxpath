@@ -134,4 +134,35 @@
             </example>
         </examples>
     </case>
+    <case topic="wild token">
+        <expr>XML x popular markup language #fulltext wild-x</expr>
+        <description>A string containing the phrase "XML * popular markup language", where
+            * represents an arbitrary token.</description>
+        <examples>
+            <example>
+                <text>XML, the popular markup language</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML, popular markup language</text>
+                <expect>-</expect>
+                <reason>The wild token represents exactly one token, which must appear between "XML" and "popular".</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="ordered">
+        <expr>JSON XML languages #fulltext Wo</expr>
+        <description>A string containing the words "JSON", "XML" and "language" in that order.</description>
+        <examples>
+            <example>
+                <text>JSON, XML and other languages</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML, JSON and other languages</text>
+                <expect>-</expect>
+                <reason>The words do not appear in the expected order.</reason>
+            </example>
+        </examples>
+    </case>
 </fulltext-cases>

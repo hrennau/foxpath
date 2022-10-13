@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fulltext-cases>
+    <case topic="glob">
+        <expr>tab*</expr>
+        <description>A string starting with "tab", in any case, followed by zero or more characters</description>        
+        <examples>
+            <example>
+                <text>table</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>TABLE</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>informaltable</text>
+                <expect>-</expect>
+                <reason>The string does not start with "tab"</reason>                
+            </example>
+        </examples>
+    </case>
+    <case topic="glob alternatives">
+        <expr>tab* *list</expr>
+        <description>A string starting with "tab" or ending with "list", in any case</description>        
+        <examples>
+            <example>
+                <text>table</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>orderedlist</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>TABLE</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>informaltable</text>
+                <expect>-</expect>
+                <reason>The string does not start with "lang" or "encod"</reason>                
+            </example>
+        </examples>
+    </case>
+    <case topic="glob exclusions">
+        <expr>tab* *list ~*simple* ~*plain*</expr>
+        <description>A string starting with "tab" or ending with "list", in any case,
+            but not containing "simple" or "plain", in any case</description>        
+        <examples>
+            <example>
+                <text>table</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>orderedlist</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>ORDEREDLIST</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>simplelist</text>
+                <expect>-</expect>
+                <reason>Matching strings must not contain "simple" or "plain"</reason>                
+            </example>
+            <example>
+                <text>plainlist</text>
+                <expect>-</expect>
+                <reason>Matching strings must not contain "simple" or "plain"</reason>                
+            </example>
+            <example>
+                <text>PLAINLIST</text>
+                <expect>-</expect>
+                <reason>Matching strings must not contain "simple" or "plain"</reason>                
+            </example>
+        </examples>
+    </case>
+    <case topic="glob case sensitive">
+        <expr>tab* *list ~*simple* ~*plain* #c</expr>
+        <description>A string starting with "tab" or ending with "list", in any case,
+            but not containing "simple" or "plain", in any case</description>        
+        <examples>
+            <example>
+                <text>table</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>orderedlist</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>Simplelist</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>PLAINlist</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>orderedList</text>
+                <expect>-</expect>                
+                <reason>Matching is case-sensitive</reason>
+            </example>
+            <example>
+                <text>simplelist</text>
+                <expect>-</expect>
+                <reason>Matching strings must not contain "simple" or "plain"</reason>                
+            </example>
+            <example>
+                <text>plainlist</text>
+                <expect>-</expect>
+                <reason>Matching strings must not contain "simple" or "plain"</reason>                
+            </example>
+        </examples>
+    </case>
+</fulltext-cases>
