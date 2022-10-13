@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fulltext-cases>
-    <case>
+    <case topic="phrase">
         <expr>markup language #fulltext</expr>
         <description>A string containing the phrase "markup language", any case, anywhere</description>        
         <examples>
@@ -15,7 +15,7 @@
             </example>
         </examples>
     </case>
-    <case>
+    <case topic="all words">
         <expr>language markup versatile #fulltext W</expr>
         <description>A string containing all words from "language", "markup"and "versatile"</description>
         <examples>
@@ -30,7 +30,7 @@
             </example>
         </examples>
     </case>
-    <case>
+    <case topic="some word">
         <expr>language markup versatile #fulltext w</expr>
         <description>A string containing a word from "language", "markup" and "versatile"</description>
         <examples>
@@ -40,7 +40,7 @@
             </example>
         </examples>
     </case>
-    <case>
+    <case topic="start anchor">
         <expr>^language markup versatile #fulltext w</expr>
         <description>A string starting with a word from "language", "markup", and "versatile"</description>
         <examples>
@@ -55,7 +55,7 @@
             </example>
         </examples>
     </case>
-    <case>
+    <case topic="end anchor">
         <expr>language markup versatile$ #fulltext w</expr>
         <description>A string ending with a word from "language", "markup", and "versatile"</description>
         <examples>
@@ -67,6 +67,70 @@
                 <text>These markup languages are considered.</text>
                 <expect>-</expect>
                 <reason>The last word ("considered") is not from "language", "markup" and "versatile".</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="phrase1">
+        <expr>XML popular language #fulltext phrase1</expr>
+        <description>A string containing the open phrase "XML popular language", allowing for
+            at most one additional word between two adjacent words of the phrase.</description>
+        <examples>
+            <example>
+                <text>XML, the popular markup language</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML, the still popular markup language</text>
+                <expect>-</expect>
+                <reason>Text contains two additional words ("the still") between two adjacent words of the phrase.</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="phrase2">
+        <expr>XML popular language #fulltext phrase2</expr>
+        <description>A string containing the open phrase "XML popular language", allowing for
+            at most two additional words between two adjacent words of the phrase.</description>
+        <examples>
+            <example>
+                <text>XML, the still popular markup language</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML, the still very popular markup language</text>
+                <expect>-</expect>
+                <reason>Text contains three additional words ("the still very") between two adjacent words of the phrase.</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="phrase3">
+        <expr>XML popular language #fulltext phrase3</expr>
+        <description>A string containing the open phrase "XML popular language", allowing for
+            at most three additional words between two adjacent words of the phrase.</description>
+        <examples>
+            <example>
+                <text>XML remains a very popular markup language</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML still remains a very popular markup language</text>
+                <expect>-</expect>
+                <reason>Text contains four additional words ("still remains a very") between two adjacent words of the phrase.</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="phrase5win">
+        <expr>XML popular language #fulltext phrase5win</expr>
+        <description>A string containing the open phrase "XML popular language", allowing for
+            additional words inserted, but keeping within a total length of 5 words.</description>
+        <examples>
+            <example>
+                <text>XML, the popular markup language</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML, the still popular markup language</text>
+                <expect>-</expect>
+                <reason>The length of the open phrase is 6.</reason>
             </example>
         </examples>
     </case>
