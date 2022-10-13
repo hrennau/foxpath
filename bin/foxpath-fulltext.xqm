@@ -10,9 +10,24 @@ module namespace f="http://www.foxpath.org/ns/fulltext";
  :)
 declare function f:containsText($text as item()*, 
                                 $selections as xs:string+, 
-                                $flags as xs:string?)
+                                $options as xs:string?)
         as xs:boolean {
-    f:fnContainsText($selections, (), (), $flags)($text)
+    f:fnContainsText($selections, (), (), $options)($text)
+};    
+
+(:~
+ : Returns the text of the fulltext expression used by 'containsText()'.
+ :
+ : @param text the text to be checked
+ : @param selections full-text selections (will be ANDed)
+ : @param flags flag characters: M - merge consecutive text nodes; T - test mode
+ : @return true, if the text matches the full-text selections
+ :)
+declare function f:containsTextExpr($text as item()*, 
+                                    $selections as xs:string+, 
+                                    $options as xs:string?)
+        as xs:string {
+    f:fnContainsText($selections, (), (), $options||' expr')
 };    
 
 (:~
@@ -31,8 +46,10 @@ declare function f:containsText($text as item()*,
  :        are assumed to consist only of a query string - they are
  :        not parsed for options, appended and separated by a # char
  : @param toplevelOr selections are ORed, rather than ANDed
- : @param flags flag characters: M - merge consecutive text nodes; T - test mode;
- :                               P - return parse tree
+ : @param options; merge - merge consecutive text nodes; 
+ :                 test - test mode;
+ :                 expr - return expression text
+ :                 parse - return parse tree
  : @return function item implementing the selections
  :)
 declare function f:fnContainsText($selections as xs:string+, 
@@ -53,12 +70,13 @@ declare function f:fnContainsText($selections as xs:string+,
         let $item := $itemAndOptions[1]        
         let $options := $itemAndOptions[2]   
         return
-            f:parseFt($item, $options) ! f:serializeFt(.)
+            f:parseFt($item, $options) ! f:serializeFt(.)    
     let $_DEBUG := 
         trace($sels, '### QUERY MAPPED TO FULLTEXT EXPR: ')[$TRACE]            
     let $expr := 
         if (count($sels) eq 1) then $sels
-        else ($sels ! concat('(', ., ')')) => string-join(' '||$toplevelBool||' ') 
+        else ($sels ! concat('(', ., ')')) => string-join(' '||$toplevelBool||' ')
+    return if ($ops = 'expr') then $sels else        
     let $funcText :=
         if (not($mergeTextnodes)) then 'function($text) {$text contains text '||$expr||'}'
         else 
