@@ -1,0 +1,406 @@
+Demo:  phrase
+------------------------------------------------
+
+***    markup language #fulltext
+
+ =>    'markup language'
+
+Desc:  A string containing the phrase "markup language", any case, anywhere.
+Examples:
+       Text: XML is a versatile markup language.
+       Rslt: +
+
+       Text: There are several markup languages.
+       Rslt: -
+       Why:  language is a different word than languages
+
+
+Demo:  all words
+------------------------------------------------
+
+***    language markup versatile #fulltext W
+
+ =>    'language markup versatile' all words
+
+Desc:  A string containing all words from a list of words.
+Examples:
+       Text: XML is a versatile markup language.
+       Rslt: +
+
+       Text: XML is a popular markup language.
+       Rslt: -
+       Why:  Missing word: versatile
+
+
+Demo:  some word
+------------------------------------------------
+
+***    language markup versatile #fulltext w
+
+ =>    'language markup versatile' any word
+
+Desc:  A string containing at least one word from a list of words.
+Examples:
+       Text: XML is a popular markup language.
+       Rslt: +
+
+
+Demo:  character wildcard
+------------------------------------------------
+
+***    pop.* .* lang.* #fulltext
+
+ =>    'pop.* .* lang.*' using wildcards
+
+Desc:  A phrase using character wildcards.
+Examples:
+       Text: XML and JSON are popular markup languages.
+       Rslt: +
+
+       Text: XML and JSON are popular .* languages.
+       Rslt: -
+       Why:  A word consisting of a character wildcard (.*) must match a word in the string
+
+
+Demo:  start anchor
+------------------------------------------------
+
+***    ^Markup languages #fulltext
+
+ =>    'Markup languages' at start
+
+Desc:  A string starting with the phrase "Markup languages".
+Examples:
+       Text: Markup languages are considered.
+       Rslt: +
+
+       Text: These markup languages are considered.
+       Rslt: -
+       Why:  The phrase is found, but not at the begin of the string.
+
+
+Demo:  end anchor
+------------------------------------------------
+
+***    popular markup language$ #fulltext
+
+ =>    'popular markup language' at end
+
+Desc:  A string ending with the phrase "Markup languages".
+Examples:
+       Text: XML is a popular markup language.
+       Rslt: +
+
+       Text: a popular markup language, which is XML
+       Rslt: -
+       Why:  The phrase is found, but not at the end of the string.
+
+
+Demo:  case sensitive
+------------------------------------------------
+
+***    XML versatile markup language #fulltext c
+
+ =>    'XML versatile markup language' using case sensitive
+
+Desc:  A phrase, case sensitive matching.
+Examples:
+       Text: XML versatile markup language
+       Rslt: +
+
+       Text: xml versatile markup language
+       Rslt: -
+       Why:  The phrase is found, but incorrect case detected.
+
+
+Demo:  diacritics sensitive
+------------------------------------------------
+
+***    Übung macht den Meister #fulltext d
+
+ =>    'Übung macht den Meister' using diacritics sensitive
+
+Desc:  A phrase, diacritics sensitive.
+Examples:
+       Text: Übung macht den Meister
+       Rslt: +
+
+       Text: Ubung macht den Meister
+       Rslt: -
+       Why:  The phrase is found, but incorrect diacritics detected.
+
+
+Demo:  fuzzy 1
+------------------------------------------------
+
+***    XML versatile markup language #fulltext W f1
+
+ =>    'XML versatile markup language' all words using fuzzy 1 errors
+
+Desc:  A string containing all words from a list of four words; fuzzy matching, fuzziness level 1
+Examples:
+       Text: XML is a varsatile markup lenguage
+       Rslt: +
+
+       Text: XML is a varsatil markup lenguage
+       Rslt: -
+       Why:  Fuzziness level 1 does not suffice to accept "varsatil" for "versatile".
+
+
+Demo:  fuzzy 2
+------------------------------------------------
+
+***    XML versatile markup language #fulltext W f2
+
+ =>    'XML versatile markup language' all words using fuzzy 2 errors
+
+Desc:  A string containing all words from a list of four words; fuzzy matching, fuzziness level 2
+Examples:
+       Text: XML is a varsatil markup lenguage
+       Rslt: +
+
+       Text: XML is a varssatil markup lenguage
+       Rslt: -
+       Why:  Fuzziness level 2 does not suffice to accept "varssatil" for "versatile".
+
+
+Demo:  stemming en
+------------------------------------------------
+
+***    markup language #fulltext s-en
+
+ =>    'markup language' using stemming using language "en"
+
+Desc:  A string containing the phrase "markup language", any case, anywhere; when matching words, English stemming is applied
+Examples:
+       Text: Considering various markup languages
+       Rslt: +
+
+       Text: Considering various markup languagex
+       Rslt: -
+       Why:  stemming of language does not yield languagex
+
+
+Demo:  stemming de
+------------------------------------------------
+
+***    Markup Sprache #fulltext s-de
+
+ =>    'Markup Sprache' using stemming using language "de"
+
+Desc:  A string containing the phrase "Markup Sprache", any case, anywhere; when matching words, German stemming is applied
+Examples:
+       Text: Einige Markup Sprachen
+       Rslt: +
+
+       Text: Einige Markup Sprachex
+       Rslt: -
+       Why:  stemming of Sprache does not yield Sprachex
+
+
+Demo:  phrase1
+------------------------------------------------
+
+***    XML popular language #fulltext phrase1
+
+ =>    'XML popular language' all words ordered distance at most 1 words
+
+Desc:  A string containing the open phrase "XML popular language", allowing for at most one additional word between two adjacent words of the phrase.
+Examples:
+       Text: XML, the popular markup language
+       Rslt: +
+
+       Text: XML, the still popular markup language
+       Rslt: -
+       Why:  Text contains two additional words ("the still") between two adjacent words of the phrase.
+
+
+Demo:  phrase2
+------------------------------------------------
+
+***    XML popular language #fulltext phrase2
+
+ =>    'XML popular language' all words ordered distance at most 2 words
+
+Desc:  A string containing the open phrase "XML popular language", allowing for at most two additional words between two adjacent words of the phrase.
+Examples:
+       Text: XML, the still popular markup language
+       Rslt: +
+
+       Text: XML, the still very popular markup language
+       Rslt: -
+       Why:  Text contains three additional words ("the still very") between two adjacent words of the phrase.
+
+
+Demo:  phrase5win
+------------------------------------------------
+
+***    XML popular language #fulltext phrase5win
+
+ =>    'XML popular language' all words ordered window 5 words
+
+Desc:  A string containing the open phrase "XML popular language", allowing for additional words inserted, but keeping within a total length of 5 words.
+Examples:
+       Text: XML, the popular markup language
+       Rslt: +
+
+       Text: XML, the still popular markup language
+       Rslt: -
+       Why:  The length of the open phrase is 6.
+
+
+Demo:  token wildcard
+------------------------------------------------
+
+***    XML x popular markup language #fulltext wild-x
+
+ =>    'XML x popular markup language' using stop words ("x")
+
+Desc:  A string containing the phrase "XML x popular markup language", where w represents an arbitrary token.
+Examples:
+       Text: XML, the popular markup language
+       Rslt: +
+
+       Text: XML, popular markup language
+       Rslt: -
+       Why:  The wild token represents exactly one token, which must appear between "XML" and "popular".
+
+
+Demo:  stopwords
+------------------------------------------------
+
+***    XML x y markup language #fulltext stop(x, y)
+
+ =>    'XML x y markup language' using stop words ('x', 'y')
+
+Desc:  A string containing the phrase "XML x y markup language", where x and y represent arbitrary tokens.
+Examples:
+       Text: XML my favourite markup language
+       Rslt: +
+
+       Text: XML, a popular markup language
+       Rslt: +
+
+       Text: XML, a markup language
+       Rslt: -
+       Why:  The second stop word could not be matched.
+
+
+Demo:  ordered
+------------------------------------------------
+
+***    JSON XML languages #fulltext Wo
+
+ =>    'JSON XML languages' all words ordered
+
+Desc:  A string containing the words "JSON", "XML" and "language" in that order.
+Examples:
+       Text: JSON, XML and other languages
+       Rslt: +
+
+       Text: XML, JSON and other languages
+       Rslt: -
+       Why:  The words do not appear in the expected order.
+
+
+Demo:  window
+------------------------------------------------
+
+***    JSON lightweight format widely used #fulltext W win11
+
+ =>    'JSON lightweight format widely used' all words window 11 words
+
+Desc:  A string containing all words from a list of five words, within a window of 11 words.
+Examples:
+       Text: JSON is a lightweight data-interchange format that is widely used
+       Rslt: +
+
+       Text: JSON is a lightweight data-interchange format that is still widely used
+       Rslt: -
+       Why:  The matches are within a window of 12 words, which is greater 11.
+
+
+Demo:  distance max
+------------------------------------------------
+
+***    JSON format lightweight #fulltext W dist..2
+
+ =>    'JSON format lightweight' all words distance at most 2 words
+
+Desc:  A string containing three given words, with at most two other words between adjacent matches.
+Examples:
+       Text: JSON is a lightweight data-interchange format
+       Rslt: +
+
+       Text: JSON is considered a lightweight data-interchange format
+       Rslt: -
+       Why:  Three words between two matches ('is considered a'), but at most two allowed
+
+
+Demo:  distance min
+------------------------------------------------
+
+***    JSON data format #fulltext W dist1..
+
+ =>    'JSON data format' all words distance at least 1 words
+
+Desc:  A string containing two words, with at least two other words between them.
+Examples:
+       Text: JSON is a lightweight data-interchange format
+       Rslt: +
+
+       Text: JSON is a lightweight data format
+       Rslt: -
+       Why:  Two matches adjacent, but at least one word between them required
+
+
+Demo:  distance exact
+------------------------------------------------
+
+***    more data format #fulltext W dist1
+
+ =>    'more data format' all words distance exactly 1 words
+
+Desc:  A string containing three words, separated by exactly one other word
+Examples:
+       Text: more accessible data-exchange format
+       Rslt: +
+
+       Text: more accessible data format
+       Rslt: -
+       Why:  Two adjacent matches, but one word between them required
+
+
+Demo:  occurs max
+------------------------------------------------
+
+***    JSON #fulltext occ..1
+
+ =>    'JSON' occurs at most 1 times
+
+Desc:  A string containing a word at most once
+Examples:
+       Text: JSON is a versatile data format.
+       Rslt: +
+
+       Text: JSON is a versatile data format. JSON is considered ...
+       Rslt: -
+       Why:  JSON occurs twice, only one occurrence allowed
+
+
+Demo:  occurs min
+------------------------------------------------
+
+***    JSON #fulltext occ2..
+
+ =>    'JSON' occurs at least 2 times
+
+Desc:  A string containing a word at least twice
+Examples:
+       Text: JSON is a versatile data format. JSON is considered ...
+       Rslt: +
+
+       Text: JSON is a versatile data format.
+       Rslt: -
+       Why:  JSON occurs only once, two occurrences required.
+

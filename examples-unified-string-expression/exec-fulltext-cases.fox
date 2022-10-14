@@ -1,14 +1,20 @@
+let $SHOWTREE := 0
 let $cases := fulltext-cases.xml\\case
 for $case in $cases
 let $expr := $case\expr
 let $exprText := 'dummy' ! contains-text-expr($expr)
 let $desc := $case\description\normalize-space(.)
 return (
-    '       #Demo: '||$case\@topic||,
+    'Demo:  '||$case\@topic,
+    '------------------------------------------------',
+    '',
     '***    '||$expr\string(),
     '',
     ' =>    '||$exprText,
     '',
+    if (not($SHOWTREE)) then () else (
+    'dummy' ! contains-text-expr($expr, 'tree'),
+    ''),
     'Desc:  '||$desc,    
     'Examples:',
     for $example in $case\\example
@@ -20,7 +26,7 @@ return (
     let $resultInfo := if ($result) then '+' else '-'
     return (
     '       Text: '||$string,    
-    '       Rslt: '||'AE='||$resultInfo||$expect,
+    '       Rslt: '||$resultInfo,
     $reason ! (
     '       Why:  '||$reason),
     ('       U N E X P E C T E D    R E S U L T   -   E X P E C T E D    '||$expect)[$resultInfo ne $expect],

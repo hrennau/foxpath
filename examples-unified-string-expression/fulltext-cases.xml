@@ -2,7 +2,7 @@
 <fulltext-cases>
     <case topic="phrase">
         <expr>markup language #fulltext</expr>
-        <description>A string containing the phrase "markup language", any case, anywhere</description>        
+        <description>A string containing the phrase "markup language", any case, anywhere.</description>        
         <examples>
             <example>
                 <text>XML is a versatile markup language.</text>
@@ -17,7 +17,7 @@
     </case>
     <case topic="all words">
         <expr>language markup versatile #fulltext W</expr>
-        <description>A string containing all words from "language", "markup"and "versatile"</description>
+        <description>A string containing all words from a list of words.</description>
         <examples>
             <example>
                 <text>XML is a versatile markup language.</text>
@@ -32,7 +32,7 @@
     </case>
     <case topic="some word">
         <expr>language markup versatile #fulltext w</expr>
-        <description>A string containing a word from "language", "markup" and "versatile"</description>
+        <description>A string containing at least one word from a list of words.</description>
         <examples>
             <example>
                 <text>XML is a popular markup language.</text>
@@ -40,9 +40,24 @@
             </example>
         </examples>
     </case>
+    <case topic="character wildcard">
+        <expr>pop.* .* lang.* #fulltext</expr>
+        <description>A phrase using character wildcards.</description>
+        <examples>
+            <example>
+                <text>XML and JSON are popular markup languages.</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML and JSON are popular .* languages.</text>
+                <expect>-</expect>
+                <reason>A word consisting of a character wildcard (.*) must match a word in the string</reason>
+            </example>
+        </examples>
+    </case>
     <case topic="start anchor">
-        <expr>^language markup versatile #fulltext w</expr>
-        <description>A string starting with a word from "language", "markup", and "versatile"</description>
+        <expr>^Markup languages #fulltext</expr>
+        <description>A string starting with the phrase "Markup languages".</description>
         <examples>
             <example>
                 <text>Markup languages are considered.</text>
@@ -51,22 +66,116 @@
             <example>
                 <text>These markup languages are considered.</text>
                 <expect>-</expect>
-                <reason>The first word ("These") is not from "language", "markup" and "versatile".</reason>
+                <reason>The phrase is found, but not at the begin of the string.</reason>
             </example>
         </examples>
     </case>
     <case topic="end anchor">
-        <expr>language markup versatile$ #fulltext w</expr>
-        <description>A string ending with a word from "language", "markup", and "versatile"</description>
+        <expr>popular markup language$ #fulltext</expr>
+        <description>A string ending with the phrase "Markup languages".</description>
         <examples>
             <example>
                 <text>XML is a popular markup language.</text>
                 <expect>+</expect>
             </example>
             <example>
-                <text>These markup languages are considered.</text>
+                <text>a popular markup language, which is XML</text>
                 <expect>-</expect>
-                <reason>The last word ("considered") is not from "language", "markup" and "versatile".</reason>
+                <reason>The phrase is found, but not at the end of the string.</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="case sensitive">
+        <expr>XML versatile markup language #fulltext c</expr>
+        <description>A phrase, case sensitive matching.</description>
+        <examples>
+            <example>
+                <text>XML versatile markup language</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>xml versatile markup language</text>
+                <expect>-</expect>
+                <reason>The phrase is found, but incorrect case detected.</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="diacritics sensitive">
+        <expr>Übung macht den Meister #fulltext d</expr>
+        <description>A phrase, diacritics sensitive.</description>
+        <examples>
+            <example>
+                <text>Übung macht den Meister</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>Ubung macht den Meister</text>
+                <expect>-</expect>
+                <reason>The phrase is found, but incorrect diacritics detected.</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="fuzzy 1">
+        <expr>XML versatile markup language #fulltext W f1</expr>
+        <description>A string containing all words from a list of four words;
+            fuzzy matching, fuzziness level 1</description>
+        <examples>
+            <example>
+                <text>XML is a varsatile markup lenguage</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML is a varsatil markup lenguage</text>
+                <expect>-</expect>
+                <reason>Fuzziness level 1 does not suffice to accept "varsatil" for "versatile".</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="fuzzy 2">
+        <expr>XML versatile markup language #fulltext W f2</expr>
+        <description>A string containing all words from a list of four words;
+            fuzzy matching, fuzziness level 2</description>
+        <examples>
+            <example>
+                <text>XML is a varsatil markup lenguage</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML is a varssatil markup lenguage</text>
+                <expect>-</expect>
+                <reason>Fuzziness level 2 does not suffice to accept "varssatil" for "versatile".</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="stemming en">
+        <expr>markup language #fulltext s-en</expr>
+        <description>A string containing the phrase "markup language", any case, anywhere;
+            when matching words, English stemming is applied</description>        
+        <examples>
+            <example>
+                <text>Considering various markup languages</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>Considering various markup languagex</text>
+                <expect>-</expect>
+                <reason>stemming of language does not yield languagex</reason>                
+            </example>
+        </examples>
+    </case>
+    <case topic="stemming de">
+        <expr>Markup Sprache #fulltext s-de</expr>
+        <description>A string containing the phrase "Markup Sprache", any case, anywhere;
+            when matching words, German stemming is applied</description>        
+        <examples>
+            <example>
+                <text>Einige Markup Sprachen</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>Einige Markup Sprachex</text>
+                <expect>-</expect>
+                <reason>stemming of Sprache does not yield Sprachex</reason>                
             </example>
         </examples>
     </case>
@@ -102,22 +211,6 @@
             </example>
         </examples>
     </case>
-    <case topic="phrase3">
-        <expr>XML popular language #fulltext phrase3</expr>
-        <description>A string containing the open phrase "XML popular language", allowing for
-            at most three additional words between two adjacent words of the phrase.</description>
-        <examples>
-            <example>
-                <text>XML remains a very popular markup language</text>
-                <expect>+</expect>
-            </example>
-            <example>
-                <text>XML still remains a very popular markup language</text>
-                <expect>-</expect>
-                <reason>Text contains four additional words ("still remains a very") between two adjacent words of the phrase.</reason>
-            </example>
-        </examples>
-    </case>
     <case topic="phrase5win">
         <expr>XML popular language #fulltext phrase5win</expr>
         <description>A string containing the open phrase "XML popular language", allowing for
@@ -134,10 +227,10 @@
             </example>
         </examples>
     </case>
-    <case topic="wild token">
+    <case topic="token wildcard">
         <expr>XML x popular markup language #fulltext wild-x</expr>
-        <description>A string containing the phrase "XML * popular markup language", where
-            * represents an arbitrary token.</description>
+        <description>A string containing the phrase "XML x popular markup language", where
+            w represents an arbitrary token.</description>
         <examples>
             <example>
                 <text>XML, the popular markup language</text>
@@ -147,6 +240,26 @@
                 <text>XML, popular markup language</text>
                 <expect>-</expect>
                 <reason>The wild token represents exactly one token, which must appear between "XML" and "popular".</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="stopwords">
+        <expr>XML x y markup language #fulltext stop(x, y)</expr>
+        <description>A string containing the phrase "XML x y markup language", where
+            x and y represent arbitrary tokens.</description>
+        <examples>
+            <example>
+                <text>XML my favourite markup language</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML, a popular markup language</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML, a markup language</text>
+                <expect>-</expect>
+                <reason>The second stop word could not be matched.</reason>
             </example>
         </examples>
     </case>
@@ -162,6 +275,99 @@
                 <text>XML, JSON and other languages</text>
                 <expect>-</expect>
                 <reason>The words do not appear in the expected order.</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="window">
+        <expr>JSON lightweight format widely used #fulltext W win11</expr>
+        <description>A string containing all words from a list of five words,
+            within a window of 11 words.</description>
+        <examples>
+            <example>
+                <text>JSON is a lightweight data-interchange format that is widely used</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>JSON is a lightweight data-interchange format that is still widely used</text>
+                <expect>-</expect>
+                <reason>The matches are within a window of 12 words, which is greater 11.</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="distance max">
+        <expr>JSON format lightweight #fulltext W dist..2</expr>
+        <description>A string containing three given words, with at most two 
+            other words between adjacent matches.</description>
+        <examples>
+            <example>
+                <text>JSON is a lightweight data-interchange format</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>JSON is considered a lightweight data-interchange format</text>
+                <expect>-</expect>
+                <reason>Three words between two matches ('is considered a'), but at most two allowed</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="distance min">
+        <expr>JSON data format #fulltext W dist1..</expr>
+        <description>A string containing two words, with at least two other
+            words between them.</description>
+        <examples>
+            <example>
+                <text>JSON is a lightweight data-interchange format</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>JSON is a lightweight data format</text>
+                <expect>-</expect>
+                <reason>Two matches adjacent, but at least one word between them required</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="distance exact">
+        <expr>more data format #fulltext W dist1</expr>
+        <description>A string containing three words, separated by exactly one other word</description>
+        <examples>
+            <example>
+                <text>more accessible data-exchange format</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>more accessible data format</text>
+                <expect>-</expect>
+                <reason>Two adjacent matches, but one word between them required</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="occurs max">
+        <expr>JSON #fulltext occ..1</expr>
+        <description>A string containing a word at most once</description>
+        <examples>
+            <example>
+                <text>JSON is a versatile data format.</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>JSON is a versatile data format. JSON is considered ...</text>
+                <expect>-</expect>
+                <reason>JSON occurs twice, only one occurrence allowed</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="occurs min">
+        <expr>JSON #fulltext occ2..</expr>
+        <description>A string containing a word at least twice</description>
+        <examples>
+            <example>
+                <text>JSON is a versatile data format. JSON is considered ...</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>JSON is a versatile data format.</text>
+                <expect>-</expect>
+                <reason>JSON occurs only once, two occurrences required.</reason>
             </example>
         </examples>
     </case>
