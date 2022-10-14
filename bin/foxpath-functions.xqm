@@ -222,8 +222,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             let $text := if ($da) then $arg1 else $context
             let $query := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $flags := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)     
-            return ft:containsTextExpr($text, $query, $flags)            
+            let $options := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)     
+            return ft:containsTextExpr($text, $query, $options)            
                 
         (: function `content-deep-equal` 
            ============================= :)

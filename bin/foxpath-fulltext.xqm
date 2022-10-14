@@ -26,8 +26,11 @@ declare function f:containsText($text as item()*,
 declare function f:containsTextExpr($text as item()*, 
                                     $selections as xs:string+, 
                                     $options as xs:string?)
-        as xs:string {
-    f:fnContainsText($selections, (), (), $options||' expr')
+        as item() {
+    let $ops := tokenize(normalize-space($options))        
+    let $useOptions := if ($ops = ('tree', 'expr')) then $options
+                       else $options||' expr'
+    return f:fnContainsText($selections, (), (), $useOptions)
 };    
 
 (:~
@@ -49,6 +52,8 @@ declare function f:containsTextExpr($text as item()*,
  : @param options; merge - merge consecutive text nodes; 
  :                 test - test mode;
  :                 expr - return expression text
+ :                 tree - return expression tree
+ :                 trace - trace output showing the fulltext expression
  :                 parse - return parse tree
  : @return function item implementing the selections
  :)
@@ -62,7 +67,7 @@ declare function f:fnContainsText($selections as xs:string+,
     let $TRACE := $ops = 'trace'
     let $mergeTextnodes := $ops = 'merge'
     let $toplevelBool := if ($toplevelOr) then 'ftor' else 'ftand'        
-    let $sels :=
+    let $selTrees :=
         for $selection in $selections
         let $itemAndOptions := 
             if (exists($externalOptions)) then ($selection, $externalOptions)
@@ -70,13 +75,19 @@ declare function f:fnContainsText($selections as xs:string+,
         let $item := $itemAndOptions[1]        
         let $options := $itemAndOptions[2]   
         return
-            f:parseFt($item, $options) ! f:serializeFt(.)    
+            f:parseFt($item, $options)    
+    let $sels :=
+        $selTrees ! f:serializeFt(.)    
     let $_DEBUG := 
         trace($sels, '### QUERY MAPPED TO FULLTEXT EXPR: ')[$TRACE]            
     let $expr := 
         if (count($sels) eq 1) then $sels
         else ($sels ! concat('(', ., ')')) => string-join(' '||$toplevelBool||' ')
-    return if ($ops = 'expr') then $sels else        
+    return 
+        if ($ops = 'expr') then $sels 
+        else if ($ops = 'tree') then 
+            if (count($selTrees) gt 1) then <trees>{$selTrees}</trees> else $selTrees 
+        else       
     let $funcText :=
         if (not($mergeTextnodes)) then 'function($text) {$text contains text '||$expr||'}'
         else 
@@ -473,7 +484,7 @@ declare function f:parseFtRange($text as xs:string, $withUnit as xs:boolean?)
         if (not($withUnit)) then () else 
             ' '||f:parseFtUnit(replace($text, '\D+$', '$0')[. ne $text])
     let $useText :=
-        if (not($withUnit)) then $text else replace($text, '\D+$', '')
+        if (not($withUnit)) then $text else replace($text, '[^\d.]+$', '')
     return (
         (: ..9 => at most 9 :)
         if (starts-with($useText, '..')) then 'at most '||substring($useText, 3)
