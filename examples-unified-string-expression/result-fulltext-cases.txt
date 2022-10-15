@@ -5,6 +5,8 @@ Demo:  phrase
 
  =>    'markup language'
 
+<words text="markup language ">markup language</words>
+
 Desc:  A string containing the phrase "markup language", any case, anywhere.
 Examples:
        Text: XML is a versatile markup language.
@@ -21,6 +23,8 @@ Demo:  all words
 ***    language markup versatile #fulltext W
 
  =>    'language markup versatile' all words
+
+<words text="language markup versatile " mode="all words">language markup versatile</words>
 
 Desc:  A string containing all words from a list of words.
 Examples:
@@ -39,6 +43,8 @@ Demo:  some word
 
  =>    'language markup versatile' any word
 
+<words text="language markup versatile " mode="any word">language markup versatile</words>
+
 Desc:  A string containing at least one word from a list of words.
 Examples:
        Text: XML is a popular markup language.
@@ -51,6 +57,8 @@ Demo:  character wildcard
 ***    pop.* .* lang.* #fulltext
 
  =>    'pop.* .* lang.*' using wildcards
+
+<words text="pop.* .* lang.* " wildcards="using wildcards">pop.* .* lang.*</words>
 
 Desc:  A phrase using character wildcards.
 Examples:
@@ -69,6 +77,8 @@ Demo:  start anchor
 
  =>    'Markup languages' at start
 
+<words text="^Markup languages " atStart="at start">Markup languages</words>
+
 Desc:  A string starting with the phrase "Markup languages".
 Examples:
        Text: Markup languages are considered.
@@ -85,6 +95,8 @@ Demo:  end anchor
 ***    popular markup language$ #fulltext
 
  =>    'popular markup language' at end
+
+<words text="popular markup language$ " atEnd="at end">popular markup language</words>
 
 Desc:  A string ending with the phrase "Markup languages".
 Examples:
@@ -103,6 +115,8 @@ Demo:  case sensitive
 
  =>    'XML versatile markup language' using case sensitive
 
+<words text="XML versatile markup language " case="using case sensitive">XML versatile markup language</words>
+
 Desc:  A phrase, case sensitive matching.
 Examples:
        Text: XML versatile markup language
@@ -120,6 +134,8 @@ Demo:  diacritics sensitive
 
  =>    'Übung macht den Meister' using diacritics sensitive
 
+<words text="Übung macht den Meister " diacritics="using diacritics sensitive">Übung macht den Meister</words>
+
 Desc:  A phrase, diacritics sensitive.
 Examples:
        Text: Übung macht den Meister
@@ -133,9 +149,11 @@ Examples:
 Demo:  fuzzy 1
 ------------------------------------------------
 
-***    XML versatile markup language #fulltext W f1
+***    XML versatile markup language #fulltext Wf
 
  =>    'XML versatile markup language' all words using fuzzy 1 errors
+
+<words text="XML versatile markup language " mode="all words" fuzzy="using fuzzy 1 errors">XML versatile markup language</words>
 
 Desc:  A string containing all words from a list of four words; fuzzy matching, fuzziness level 1
 Examples:
@@ -150,9 +168,11 @@ Examples:
 Demo:  fuzzy 2
 ------------------------------------------------
 
-***    XML versatile markup language #fulltext W f2
+***    XML versatile markup language #fulltext W f-2
 
  =>    'XML versatile markup language' all words using fuzzy 2 errors
+
+<words text="XML versatile markup language " mode="all words" fuzzy="using fuzzy 2 errors">XML versatile markup language</words>
 
 Desc:  A string containing all words from a list of four words; fuzzy matching, fuzziness level 2
 Examples:
@@ -171,6 +191,8 @@ Demo:  stemming en
 
  =>    'markup language' using stemming using language "en"
 
+<words text="markup language " stemming-and-language="using stemming using language &quot;en&quot;">markup language</words>
+
 Desc:  A string containing the phrase "markup language", any case, anywhere; when matching words, English stemming is applied
 Examples:
        Text: Considering various markup languages
@@ -188,6 +210,8 @@ Demo:  stemming de
 
  =>    'Markup Sprache' using stemming using language "de"
 
+<words text="Markup Sprache " stemming-and-language="using stemming using language &quot;de&quot;">Markup Sprache</words>
+
 Desc:  A string containing the phrase "Markup Sprache", any case, anywhere; when matching words, German stemming is applied
 Examples:
        Text: Einige Markup Sprachen
@@ -198,12 +222,14 @@ Examples:
        Why:  stemming of Sprache does not yield Sprachex
 
 
-Demo:  phrase1
+Demo:  phrase-1
 ------------------------------------------------
 
-***    XML popular language #fulltext phrase1
+***    XML popular language #fulltext phrase-1
 
  =>    'XML popular language' all words ordered distance at most 1 words
+
+<words text="XML popular language " mode="all words" ordered="ordered" distance="distance at most 1 words">XML popular language</words>
 
 Desc:  A string containing the open phrase "XML popular language", allowing for at most one additional word between two adjacent words of the phrase.
 Examples:
@@ -215,12 +241,14 @@ Examples:
        Why:  Text contains two additional words ("the still") between two adjacent words of the phrase.
 
 
-Demo:  phrase2
+Demo:  phrase-2
 ------------------------------------------------
 
-***    XML popular language #fulltext phrase2
+***    XML popular language #fulltext phrase-2
 
  =>    'XML popular language' all words ordered distance at most 2 words
+
+<words text="XML popular language " mode="all words" ordered="ordered" distance="distance at most 2 words">XML popular language</words>
 
 Desc:  A string containing the open phrase "XML popular language", allowing for at most two additional words between two adjacent words of the phrase.
 Examples:
@@ -232,12 +260,14 @@ Examples:
        Why:  Text contains three additional words ("the still very") between two adjacent words of the phrase.
 
 
-Demo:  phrase5win
+Demo:  phrase-5win
 ------------------------------------------------
 
-***    XML popular language #fulltext phrase5win
+***    XML popular language #fulltext phrase-5win
 
  =>    'XML popular language' all words ordered window 5 words
+
+<words text="XML popular language " mode="all words" ordered="ordered" window="window 5 words">XML popular language</words>
 
 Desc:  A string containing the open phrase "XML popular language", allowing for additional words inserted, but keeping within a total length of 5 words.
 Examples:
@@ -256,6 +286,8 @@ Demo:  token wildcard
 
  =>    'XML x popular markup language' using stop words ("x")
 
+<words text="XML x popular markup language " stop="using stop words (&quot;x&quot;)">XML x popular markup language</words>
+
 Desc:  A string containing the phrase "XML x popular markup language", where w represents an arbitrary token.
 Examples:
        Text: XML, the popular markup language
@@ -272,6 +304,8 @@ Demo:  stopwords
 ***    XML x y markup language #fulltext stop(x, y)
 
  =>    'XML x y markup language' using stop words ('x', 'y')
+
+<words text="XML x y markup language " stop="using stop words ('x', 'y')">XML x y markup language</words>
 
 Desc:  A string containing the phrase "XML x y markup language", where x and y represent arbitrary tokens.
 Examples:
@@ -293,6 +327,8 @@ Demo:  ordered
 
  =>    'JSON XML languages' all words ordered
 
+<words text="JSON XML languages " mode="all words" ordered="ordered">JSON XML languages</words>
+
 Desc:  A string containing the words "JSON", "XML" and "language" in that order.
 Examples:
        Text: JSON, XML and other languages
@@ -306,9 +342,11 @@ Examples:
 Demo:  window
 ------------------------------------------------
 
-***    JSON lightweight format widely used #fulltext W win11
+***    JSON lightweight format widely used #fulltext W win-11
 
  =>    'JSON lightweight format widely used' all words window 11 words
+
+<words text="JSON lightweight format widely used " mode="all words" window="window 11 words">JSON lightweight format widely used</words>
 
 Desc:  A string containing all words from a list of five words, within a window of 11 words.
 Examples:
@@ -323,9 +361,11 @@ Examples:
 Demo:  distance max
 ------------------------------------------------
 
-***    JSON format lightweight #fulltext W dist..2
+***    JSON format lightweight #fulltext W dist-..2
 
  =>    'JSON format lightweight' all words distance at most 2 words
+
+<words text="JSON format lightweight " mode="all words" distance="distance at most 2 words">JSON format lightweight</words>
 
 Desc:  A string containing three given words, with at most two other words between adjacent matches.
 Examples:
@@ -340,9 +380,11 @@ Examples:
 Demo:  distance min
 ------------------------------------------------
 
-***    JSON data format #fulltext W dist1..
+***    JSON data format #fulltext W dist-1..
 
  =>    'JSON data format' all words distance at least 1 words
+
+<words text="JSON data format " mode="all words" distance="distance at least 1 words">JSON data format</words>
 
 Desc:  A string containing two words, with at least two other words between them.
 Examples:
@@ -357,9 +399,11 @@ Examples:
 Demo:  distance exact
 ------------------------------------------------
 
-***    more data format #fulltext W dist1
+***    more data format #fulltext W dist-1
 
  =>    'more data format' all words distance exactly 1 words
+
+<words text="more data format " mode="all words" distance="distance exactly 1 words">more data format</words>
 
 Desc:  A string containing three words, separated by exactly one other word
 Examples:
@@ -374,9 +418,11 @@ Examples:
 Demo:  occurs max
 ------------------------------------------------
 
-***    JSON #fulltext occ..1
+***    JSON #fulltext occ-..1
 
  =>    'JSON' occurs at most 1 times
+
+<words text="JSON " occurs="occurs at most 1 times">JSON</words>
 
 Desc:  A string containing a word at most once
 Examples:
@@ -391,9 +437,11 @@ Examples:
 Demo:  occurs min
 ------------------------------------------------
 
-***    JSON #fulltext occ2..
+***    JSON #fulltext occ-2..
 
  =>    'JSON' occurs at least 2 times
+
+<words text="JSON " occurs="occurs at least 2 times">JSON</words>
 
 Desc:  A string containing a word at least twice
 Examples:
@@ -403,4 +451,152 @@ Examples:
        Text: JSON is a versatile data format.
        Rslt: -
        Why:  JSON occurs only once, two occurrences required.
+
+
+Demo:  phrase and phrase
+------------------------------------------------
+
+***    versatile markup language / diverse data sources #fulltext
+
+ =>    'versatile markup language' ftand 'diverse data sources'
+
+<ft text="versatile markup language / diverse data sources ">
+  <words>versatile markup language</words>
+  <ftand/>
+  <words>diverse data sources</words>
+</ft>
+
+Desc:  A string containing two phrases.
+Examples:
+       Text: XML is a versatile markup language, capable of labeling the information content of diverse data sources
+       Rslt: +
+
+       Text: XML is a versatile markup language, capable of labeling the information content of many data sources
+       Rslt: -
+       Why:  One of the phrases not found.
+
+
+Demo:  phrase or phrase
+------------------------------------------------
+
+***    versatile markup language | diverse data sources #fulltext
+
+ =>    'versatile markup language' ftor 'diverse data sources'
+
+<ft text="versatile markup language | diverse data sources ">
+  <words>versatile markup language</words>
+  <ftor/>
+  <words>diverse data sources</words>
+</ft>
+
+Desc:  A string containing at least one of two phrases.
+Examples:
+       Text: XML is a versatile markup language, capable of labeling the information content of many data sources
+       Rslt: +
+
+       Text: XML is a flexible markup language, capable of labeling the information content of diverse data sources
+       Rslt: +
+
+       Text: XML is a flexible markup language, capable of labeling the information content of many data sources
+       Rslt: -
+       Why:  One of the phrases not found.
+
+
+Demo:  phrase and phrase with wildcards
+------------------------------------------------
+
+***    versatile markup lang.* / div.* data sources #fulltext
+
+ =>    'versatile markup lang.*' using wildcards ftand 'div.* data sources' using wildcards
+
+<ft text="versatile markup lang.* / div.* data sources ">
+  <words wildcards="using wildcards">versatile markup lang.*</words>
+  <ftand/>
+  <words wildcards="using wildcards">div.* data sources</words>
+</ft>
+
+Desc:  A string containing two phrases.
+Examples:
+       Text: XML is a versatile markup language, capable of labeling the information content of diverse data sources
+       Rslt: +
+
+       Text: XML is a versatile markup language, capable of labeling the information content of many data sources
+       Rslt: -
+       Why:  One of the phrases not found.
+
+
+Demo:  phrase and phrase with anchors
+------------------------------------------------
+
+***    ^versatile markup language / diverse data sources$ #fulltext
+
+ =>    ('versatile markup language' at start) ftand ('diverse data sources' at end)
+
+<ft text="^versatile markup language / diverse data sources$ ">
+  <words atStart="at start">versatile markup language</words>
+  <ftand/>
+  <words atEnd="at end">diverse data sources</words>
+</ft>
+
+Desc:  A string containing two phrases.
+Examples:
+       Text: versatile markup language, capable of labeling the information content of diverse data sources
+       Rslt: +
+
+       Text: XML is a versatile markup language, capable of labeling the information content of diverse data sources
+       Rslt: -
+       Why:  One of the phrases not found.
+
+
+Demo:  all words and some word
+------------------------------------------------
+
+***    markup language versatile @W / sources targets @w #fulltext
+
+ =>    'markup language versatile' all words ftand 'sources targets' any word
+
+<ft text="markup language versatile @W / sources targets @w ">
+  <words mode="all words">markup language versatile</words>
+  <ftand/>
+  <words mode="any word">sources targets</words>
+</ft>
+
+Desc:  A string containing all words from a list and some word from another list.
+Examples:
+       Text: versatile markup language, capable of labeling the information content of diverse data sources
+       Rslt: +
+
+       Text: XML is a versatile markup language, capable of labeling the information content of diverse data bases
+       Rslt: -
+       Why:  Did not find a word from 'sources' and 'targets'.
+
+       Text: XML is a versatile language, capable of labeling the information content of diverse data sources
+       Rslt: -
+       Why:  Did not find all words from 'markup', 'language' and 'versatile'.
+
+
+Demo:  all words or all words
+------------------------------------------------
+
+***    markup language versatile @W | data sources diverse @W #fulltext
+
+ =>    'markup language versatile' all words ftor 'data sources diverse' all words
+
+<ft text="markup language versatile @W | data sources diverse @W ">
+  <words mode="all words">markup language versatile</words>
+  <ftor/>
+  <words mode="all words">data sources diverse</words>
+</ft>
+
+Desc:  A string containing at least one of two phrases.
+Examples:
+       Text: XML is a versatile markup language, capable of labeling the information content of many data sources
+       Rslt: +
+
+       Text: XML is a flexible markup language, capable of labeling the information content of diverse data sources
+       Rslt: +
+
+       Text: XML is a flexible markup language, capable of labeling the information content of many data sources
+       Rslt: -
+       Why:  A word from the first list ('versatile') and a word from the second list ('diverse') is missing.
 

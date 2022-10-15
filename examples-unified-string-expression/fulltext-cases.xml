@@ -116,7 +116,7 @@
         </examples>
     </case>
     <case topic="fuzzy 1">
-        <expr>XML versatile markup language #fulltext W f1</expr>
+        <expr>XML versatile markup language #fulltext Wf</expr>
         <description>A string containing all words from a list of four words;
             fuzzy matching, fuzziness level 1</description>
         <examples>
@@ -132,7 +132,7 @@
         </examples>
     </case>
     <case topic="fuzzy 2">
-        <expr>XML versatile markup language #fulltext W f2</expr>
+        <expr>XML versatile markup language #fulltext W f-2</expr>
         <description>A string containing all words from a list of four words;
             fuzzy matching, fuzziness level 2</description>
         <examples>
@@ -179,8 +179,8 @@
             </example>
         </examples>
     </case>
-    <case topic="phrase1">
-        <expr>XML popular language #fulltext phrase1</expr>
+    <case topic="phrase-1">
+        <expr>XML popular language #fulltext phrase-1</expr>
         <description>A string containing the open phrase "XML popular language", allowing for
             at most one additional word between two adjacent words of the phrase.</description>
         <examples>
@@ -195,8 +195,8 @@
             </example>
         </examples>
     </case>
-    <case topic="phrase2">
-        <expr>XML popular language #fulltext phrase2</expr>
+    <case topic="phrase-2">
+        <expr>XML popular language #fulltext phrase-2</expr>
         <description>A string containing the open phrase "XML popular language", allowing for
             at most two additional words between two adjacent words of the phrase.</description>
         <examples>
@@ -211,8 +211,8 @@
             </example>
         </examples>
     </case>
-    <case topic="phrase5win">
-        <expr>XML popular language #fulltext phrase5win</expr>
+    <case topic="phrase-5win">
+        <expr>XML popular language #fulltext phrase-5win</expr>
         <description>A string containing the open phrase "XML popular language", allowing for
             additional words inserted, but keeping within a total length of 5 words.</description>
         <examples>
@@ -279,7 +279,7 @@
         </examples>
     </case>
     <case topic="window">
-        <expr>JSON lightweight format widely used #fulltext W win11</expr>
+        <expr>JSON lightweight format widely used #fulltext W win-11</expr>
         <description>A string containing all words from a list of five words,
             within a window of 11 words.</description>
         <examples>
@@ -295,7 +295,7 @@
         </examples>
     </case>
     <case topic="distance max">
-        <expr>JSON format lightweight #fulltext W dist..2</expr>
+        <expr>JSON format lightweight #fulltext W dist-..2</expr>
         <description>A string containing three given words, with at most two 
             other words between adjacent matches.</description>
         <examples>
@@ -311,7 +311,7 @@
         </examples>
     </case>
     <case topic="distance min">
-        <expr>JSON data format #fulltext W dist1..</expr>
+        <expr>JSON data format #fulltext W dist-1..</expr>
         <description>A string containing two words, with at least two other
             words between them.</description>
         <examples>
@@ -327,7 +327,7 @@
         </examples>
     </case>
     <case topic="distance exact">
-        <expr>more data format #fulltext W dist1</expr>
+        <expr>more data format #fulltext W dist-1</expr>
         <description>A string containing three words, separated by exactly one other word</description>
         <examples>
             <example>
@@ -342,7 +342,7 @@
         </examples>
     </case>
     <case topic="occurs max">
-        <expr>JSON #fulltext occ..1</expr>
+        <expr>JSON #fulltext occ-..1</expr>
         <description>A string containing a word at most once</description>
         <examples>
             <example>
@@ -357,7 +357,7 @@
         </examples>
     </case>
     <case topic="occurs min">
-        <expr>JSON #fulltext occ2..</expr>
+        <expr>JSON #fulltext occ-2..</expr>
         <description>A string containing a word at least twice</description>
         <examples>
             <example>
@@ -368,6 +368,131 @@
                 <text>JSON is a versatile data format.</text>
                 <expect>-</expect>
                 <reason>JSON occurs only once, two occurrences required.</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="phrase and phrase">
+        <expr>versatile markup language / diverse data sources #fulltext</expr>
+        <description>A string containing two phrases.</description>
+        <examples>
+            <example>
+                <text>XML is a versatile markup language, capable of labeling the information content of diverse data sources</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML is a versatile markup language, capable of labeling the information content of many data sources</text>
+                <expect>-</expect>
+                <reason>One of the phrases not found.</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="phrase or phrase">
+        <expr>versatile markup language | diverse data sources #fulltext</expr>
+        <description>A string containing at least one of two phrases.</description>
+        <examples>
+            <example>
+                <text>XML is a versatile markup language, capable of labeling the information content of many data sources</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML is a flexible markup language, capable of labeling the information content of diverse data sources</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML is a flexible markup language, capable of labeling the information content of many data sources</text>
+                <expect>-</expect>
+                <reason>One of the phrases not found.</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="phrase and phrase with wildcards">
+        <expr>versatile markup lang.* / div.* data sources #fulltext</expr>
+        <description>A string containing two phrases.</description>
+        <examples>
+            <example>
+                <text>XML is a versatile markup language, capable of labeling the information content of diverse data sources</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML is a versatile markup language, capable of labeling the information content of many data sources</text>
+                <expect>-</expect>
+                <reason>One of the phrases not found.</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="phrase and phrase with anchors">
+        <expr>^versatile markup language / diverse data sources$ #fulltext</expr>
+        <description>A string containing two phrases.</description>
+        <examples>
+            <example>
+                <text>versatile markup language, capable of labeling the information content of diverse data sources</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML is a versatile markup language, capable of labeling the information content of diverse data sources</text>
+                <expect>-</expect>
+                <reason>One of the phrases not found.</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="all words and some word">
+        <expr>markup language versatile @W / sources targets @w #fulltext</expr>
+        <description>A string containing all words from a list and some word from another list.</description>
+        <examples>
+            <example>
+                <text>versatile markup language, capable of labeling the information content of diverse data sources</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML is a versatile markup language, capable of labeling the information content of diverse data bases</text>
+                <expect>-</expect>
+                <reason>Did not find a word from 'sources' and 'targets'.</reason>
+            </example>
+            <example>
+                <text>XML is a versatile language, capable of labeling the information content of diverse data sources</text>
+                <expect>-</expect>
+                <reason>Did not find all words from 'markup', 'language' and 'versatile'.</reason>
+            </example>
+        </examples>
+    </case>
+    <!--
+    <case topic="all words or all words">
+        <expr>markup language versatile | data sources diverse #fulltext W</expr>
+        <description>A string containing at least one of two phrases.</description>
+        <examples>
+            <example>
+                <text>XML is a versatile markup language, capable of labeling the information content of many data sources</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML is a flexible markup language, capable of labeling the information content of diverse data sources</text>
+                <expect>-</expect>
+                <reason>A word from the first list ('versatile') is missing.</reason>
+            </example>
+            <example>
+                <text>XML is a flexible markup language, capable of labeling the information content of many data sources</text>
+                <expect>-</expect>
+                <reason>A word from the second list ('diverse') is missing.</reason>
+            </example>
+        </examples>
+    </case>
+    -->
+    <case topic="all words or all words">
+        <expr>markup language versatile @W | data sources diverse @W #fulltext</expr>
+        <description>A string containing at least one of two phrases.</description>
+        <examples>
+            <example>
+                <text>XML is a versatile markup language, capable of labeling the information content of many data sources</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML is a flexible markup language, capable of labeling the information content of diverse data sources</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML is a flexible markup language, capable of labeling the information content of many data sources</text>
+                <expect>-</expect>
+                <reason>A word from the first list ('versatile') and a word from the second list ('diverse') is missing.</reason>
             </example>
         </examples>
     </case>

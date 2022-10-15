@@ -1,4 +1,4 @@
-let $SHOWTREE := 0
+let $SHOWTREE := 1
 let $cases := fulltext-cases.xml\\case
 for $case in $cases
 let $expr := $case\expr
