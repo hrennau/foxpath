@@ -97,6 +97,10 @@ declare function f:fnContainsText($selections as xs:string+,
                   if (not($textItem instance of element() or $textItem instance of document-node())) then $textItem        
                   else $textItem//text() => string-join(" ")
             return $useText contains text '||$expr ||'}'
+    (:
+    let $_DEBUG := trace($sels, '_SELS: ')            
+    let $_DEBUG := trace($selTrees, '_SEL_TREES: ')
+     :)
     let $func := xquery:eval($funcText)
     return 
         if ($TESTMODUS) then map{'function': $func, 'expression': $expr}
@@ -398,8 +402,8 @@ declare function f:parseFtOptions($optionsText as xs:string?,
                 map:entry('stemming-and-language', 'using stemming using language '||substring($o, 3) ! ('"'||.||'"'))
             else if (starts-with($o, 'wild-')) then 
                 map:entry('stop', 'using stop words '||substring($o, 6) ! ('("'||.||'")'))            
-            else if (starts-with($o, 'f')) then 
-                map:entry('fuzzy', 'using fuzzy '||(substring($o, 2)[string()], '1')[1] ! (.||' errors'))
+            else if (starts-with($o, 'f-')) then 
+                map:entry('fuzzy', 'using fuzzy '||(substring($o, 3)[string()], '1')[1] ! (.||' errors'))
             else if (starts-with($o, 'stop')) then
                 let $spec := substring($o, 5)
                 return map:entry('stop',
@@ -409,14 +413,14 @@ declare function f:parseFtOptions($optionsText as xs:string?,
                         replace($spec, '^\(\s*|\s*\)\s*$', '') ! tokenize(., ',\s*') ! concat("'", ., "'")
                         ) => string-join(', '))||')'
                     else error())
-            else if (starts-with($o, 'occ')) then 
-                map:entry('occurs', 'occurs '||f:parseFtRange(substring($o, 4), ())||' times')
-            else if (starts-with($o, 'win')) then 
+            else if (starts-with($o, 'occ-')) then 
+                map:entry('occurs', 'occurs '||f:parseFtRange(substring($o, 5), ())||' times')
+            else if (starts-with($o, 'win-')) then 
                 map:entry('window', 'window '||f:parseFtWindow($o))
-            else if (starts-with($o, 'dist')) then 
-                map:entry('distance', 'distance '||f:parseFtRange(substring($o, 5), true()))
-            else if (starts-with($o, 'phrase')) then
-                let $spec := substring($o, 7) ! replace(., '\s+$', '')
+            else if (starts-with($o, 'dist-')) then 
+                map:entry('distance', 'distance '||f:parseFtRange(substring($o, 6), true()))
+            else if (starts-with($o, 'phrase-')) then
+                let $spec := substring($o, 8) ! replace(., '\s+$', '')
                 return (
                     map:entry('additional-flags', 'W'[$isTargetFtwords]||'o'),
                     if (matches($spec, '^\d+$')) then map:entry('distance', 'distance at most '||$spec||' words')
@@ -445,6 +449,9 @@ declare function f:parseFtOptions($optionsText as xs:string?,
             
         if (not(matches($flags, '[dD]'))) then () else
         map:entry('diacritics', 'using diacritics '||(if (contains($flags, 'd')) then 'sensitive' else 'insensitive')),
+            
+        if (not(matches($flags, 'f'))) then () else
+        map:entry('fuzzy', 'using fuzzy 1 errors'),
             
         map:entry('ordered', 'ordered')[contains($flags, 'o')],
         
@@ -520,7 +527,7 @@ declare function f:parseFtUnit($text as xs:string?) as xs:string? {
  : Parses a window specification. Examples: win9, win9s, win9p.
  :)
 declare function f:parseFtWindow($text as xs:string) as xs:string {
-    let $parts := replace($text, '^win(\d+)(.*)?', '$1~$2')[. ne $text] ! tokenize(., '~')
+    let $parts := replace($text, '^win-(\d+)(.*)?', '$1~$2')[. ne $text] ! tokenize(., '~')
     return
         if (empty($parts)) then error()
         else 
