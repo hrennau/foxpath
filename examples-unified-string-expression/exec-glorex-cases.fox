@@ -1,23 +1,30 @@
-let $cases := glob-or-regex-cases.xml\\case
+let $SHOWTREE := 1
+let $cases := glorex-cases.xml\\case
 for $case in $cases
 let $expr := $case\expr
 let $desc := $case\description\normalize-space(.)
 return (
-    '       #Demo: '||$case\@topic||,
+    'Demo:  '||$case\@topic,
+    '------------------------------------------------',
+    '',
     '***    '||$expr\string(),
     '',
+    if (not($SHOWTREE)) then () else (
+    parse-glorex($expr),
+    ''),    
     'Desc:  '||$desc,    
     'Examples:',
     for $example in $case\\example
     let $string := $example\text
     let $expect := $example\expect
     let $reason := $example\reason
-        
-    let $result := $string ! matches-pattern($expr)
+    let $result := matches-pattern-ec($string, $expr)
     let $resultInfo := if ($result) then '+' else '-'
     return (
-    '       Text: '||$string,    
-    '       Rslt: '||'AE='||$resultInfo||$expect,
+    '       Text: '||$string[1],
+    $string[2] ! (
+    '       Nsp:  '||.),    
+    '       Rslt: '||$resultInfo,
     $reason ! (
     '       Why:  '||$reason),
     ('       U N E X P E C T E D    R E S U L T   -   E X P E C T E D    '||$expect)[$resultInfo ne $expect],

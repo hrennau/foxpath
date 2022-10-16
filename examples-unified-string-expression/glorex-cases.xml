@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fulltext-cases>
+    <case topic="glob">
+        <expr>tab*</expr>
+        <description>A string starting with "tab", in any case, followed by zero or more characters</description>        
+        <examples>
+            <example>
+                <text>table</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>TABLE</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>informaltable</text>
+                <expect>-</expect>
+                <reason>The string does not start with "tab"</reason>                
+            </example>
+        </examples>
+    </case>
+    <case topic="glob alternatives">
+        <expr>tab* *list</expr>
+        <description>A string starting with "tab" or ending with "list", in any case</description>        
+        <examples>
+            <example>
+                <text>table</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>orderedlist</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>TABLE</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>informaltable</text>
+                <expect>-</expect>
+                <reason>The string does not start with "lang" or "encod"</reason>                
+            </example>
+        </examples>
+    </case>
+    <case topic="glob exclusions">
+        <expr>tab* *list ~*simple* ~*plain*</expr>
+        <description>A string starting with "tab" or ending with "list", in any case,
+            but not containing "simple" or "plain", in any case</description>        
+        <examples>
+            <example>
+                <text>table</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>orderedlist</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>ORDEREDLIST</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>simplelist</text>
+                <expect>-</expect>
+                <reason>Substring "simple" not allowed.</reason>                
+            </example>
+            <example>
+                <text>plainlist</text>
+                <expect>-</expect>
+                <reason>Substring "plain" not allowed.</reason>                
+            </example>
+            <example>
+                <text>PLAINLIST</text>
+                <expect>-</expect>
+                <reason>Matching strings must not contain "simple" or "plain"</reason>                
+            </example>
+        </examples>
+    </case>
+    <case topic="glob case sensitive">
+        <expr>tab* *list ~*simple* ~*plain* #c</expr>
+        <description>A string starting with "tab" or ending with "list", 
+            but not containing "simple" or "plain", case-sensitive.</description>        
+        <examples>
+            <example>
+                <text>table</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>orderedlist</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>Simplelist</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>PLAINlist</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>orderedList</text>
+                <expect>-</expect>                
+                <reason>Matching is case-sensitive - "List" is not accepted for "list".</reason>
+            </example>
+            <example>
+                <text>simplelist</text>
+                <expect>-</expect>
+                <reason>Matching strings must not contain "simple" or "plain"</reason>                
+            </example>
+            <example>
+                <text>plainlist</text>
+                <expect>-</expect>
+                <reason>Matching strings must not contain "simple" or "plain"</reason>                
+            </example>
+        </examples>
+    </case>
+    <case topic="glob partially case sensitive">
+        <expr>tab* *list@c ~*simple* ~*PLAIN*@c</expr>
+        <description>A string starting with "tab" or ending with "list", 
+            but not containing "simple" or "PLAIN"; patterns "list"
+            and "PLAIN" treated case-sensitively.</description>        
+        <examples>
+            <example>
+                <text>Table</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>orderedlist</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>Plainlist</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>orderedList</text>
+                <expect>-</expect>                
+                <reason>Pattern "*list*" not matched by "List", because matching is case-sensitive.</reason>
+            </example>
+            <example>
+                <text>PLAINlist</text>
+                <expect>-</expect>                
+                <reason>Excluded pattern *PLAIN* matched, case-sensitively</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="regex">
+        <expr>^test\d\d$#r</expr>
+        <description>String "test" followed by two digits; case ignored.</description>        
+        <examples>
+            <example>
+                <text>test01</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>TEST01</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>xtest01</text>
+                <expect>-</expect>
+                <reason>Regex uses start anchor - the string must start with 'test'</reason>                
+            </example>
+            <example>
+                <text>test001</text>
+                <expect>-</expect>
+                <reason>Two trailing digits expected, not three.</reason>                
+            </example>
+        </examples>
+    </case>
+    <case topic="regex alternatives">
+        <expr>^test\d\d$ anno-\d+\. #r</expr>
+        <description>String "test" followed by two digits, or a string 
+            containing "anno-" followed by digits and a dot.</description>        
+        <examples>
+            <example>
+                <text>test01</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>xanno-001.b</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>xanno-001/b</text>
+                <expect>-</expect>                
+                <reason>Substring "anno" must be followed by "-".</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="regex exclusions">
+        <expr>^case\d\d$ anno-\d+\. ~999 ~^te?st|try #r</expr>
+        <description>String "test" followed by two digits, or a string 
+            containing "anno-" followed by digits and a dot.
+            The string must not contain "999", and it must
+            not start with "test", "tst" or "try".</description>        
+        <examples>
+            <example>
+                <text>case01</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>xanno-001.b</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>xanno-999.b</text>
+                <expect>-</expect>                
+                <reason>Substring "999" not allowed.</reason>
+            </example>
+            <example>
+                <text>test.xanno-001.b</text>
+                <expect>-</expect>                
+                <reason>The start must not start with "test".</reason>
+            </example>
+            <example>
+                <text>tst.xanno-001.b</text>
+                <expect>-</expect>                
+                <reason>The start must not start with "tst".</reason>
+            </example>
+            <example>
+                <text>try.xanno-001.b</text>
+                <expect>-</expect>                
+                <reason>The start must not start with "try".</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="regex case sensitive">
+        <expr>^test\d\d$ anno-\d+\. #rc</expr>
+        <description>String "test" followed by two digits, or a string 
+            containing "anno-" followed by digits and a dot.
+            Matching case-sensitive.</description>        
+        <examples>
+            <example>
+                <text>test01</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>xanno-001.b</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>Test01</text>
+                <expect>-</expect>                
+                <reason>Matching case-sensitive - "Test..." does not match "test...".</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="regex partially case sensitive">
+        <expr>^test\d\d$ anno-\d+\.@c #r</expr>
+        <description>String "test" followed by two digits, or a string 
+            containing "anno-" followed by digits and a dot. The
+            matching of "anno" is case-sensitive, whereas
+            the matching of "test" is case-insensitive.</description>        
+        <examples>
+            <example>
+                <text>test01</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>TEST01</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>xanno-001.b</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>xANNO-001.b</text>
+                <expect>-</expect>                
+                <reason>Matching of substring "anno" case-sensitive - "ANNO" not accepted.</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="glob and regex mixed">
+        <expr>tab* *list  ^(/\i\c+)+@r ~\d$@r ~test*</expr>
+        <description>A string starting with "tab" or ending with "list", 
+            or a string with path syntax (/foo/bar/...). The string
+            must not end with a digit and must not start with "test".</description>        
+        <examples>
+            <example>
+                <text>TABLE</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>orderedlist</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>/projects/foxpath</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>informaltable</text>
+                <expect>-</expect>
+                <reason>The string matches neither "tab*", nor "*list", nor does
+                    it have path syntax.</reason>                
+            </example>
+            <example>
+                <text>/projects/foxpath2</text>
+                <expect>-</expect>
+                <reason>The string must not end with a digit.</reason>                
+            </example>
+            <example>
+                <text>testorderedlist</text>
+                <expect>-</expect>
+                <reason>The string must not start with "test".</reason>                
+            </example>
+        </examples>
+    </case>
+    <case topic="glob qualified">
+        <expr>docbook:tab* #q</expr>
+        <description>A string starting with "tab", in the docbook namespace.</description>        
+        <examples>
+            <example>
+                <text>table</text>
+                <text>http://docbook.org/ns/docbook</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>TABLE</text>
+                <text>http://docbook.org/ns/docbook</text>                
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>informaltable</text>
+                <expect>-</expect>
+                <reason>The string does not start with "tab"</reason>                
+            </example>
+            <example>
+                <text>table</text>
+                <text>http://www.tei-c.org/ns/1.0</text>
+                <expect>-</expect>                
+                <reason>String in docbook namespace expected.</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="glob qualified">
+        <expr>docbook:tab* tei:text #q</expr>
+        <description>A string starting with "tab", in the docbook namespace.</description>        
+        <examples>
+            <example>
+                <text>table</text>
+                <text>http://docbook.org/ns/docbook</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>TABLE</text>
+                <text>http://docbook.org/ns/docbook</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>text</text>
+                <text>http://www.tei-c.org/ns/1.0</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>informaltable</text>
+                <text>http://docbook.org/ns/docbook</text>
+                <expect>-</expect>
+                <reason>The string does not start with "tab"</reason>                
+            </example>
+            <example>
+                <text>table</text>
+                <text></text>
+                <expect>-</expect>                
+                <reason>Element matching "tab*" in no namespace - docbook namespace expected.</reason>
+            </example>
+            <example>
+                <text>table</text>
+                <text>http://www.tei-c.org/ns/1.0</text>
+                <expect>-</expect>                
+                <reason>Element matching "tab*" in the TEI namespace - docbook namespace expected.</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="glob qualified namespace wildcard">
+        <expr>docbook:tab* *:text #q</expr>
+        <description>A string starting with "tab", in the docbook namespace.</description>        
+        <examples>
+            <example>
+                <text>table</text>
+                <text>http://docbook.org/ns/docbook</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>TABLE</text>
+                <text>http://docbook.org/ns/docbook</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>text</text>
+                <text>http://www.tei-c.org/ns/1.0</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>text</text>
+                <text>http://docbook.org/ns/docbook</text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>text</text>
+                <text></text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>informaltable</text>
+                <text>http://docbook.org/ns/docbook</text>
+                <expect>-</expect>
+                <reason>The string does not start with "tab"</reason>                
+            </example>
+            <example>
+                <text>table</text>
+                <text></text>
+                <expect>-</expect>                
+                <reason>Element matching "tab*" in no namespace - docbook namespace expected.</reason>
+            </example>
+            <example>
+                <text>table</text>
+                <text>http://www.tei-c.org/ns/1.0</text>
+                <expect>-</expect>                
+                <reason>Element matching "tab*" in the TEI namespace - docbook namespace expected.</reason>
+            </example>
+        </examples>
+    </case>
+    
+</fulltext-cases>

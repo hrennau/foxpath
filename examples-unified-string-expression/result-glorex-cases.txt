@@ -1,0 +1,657 @@
+Demo:  glob
+------------------------------------------------
+
+***    tab*
+
+map {
+  "include": map {
+    "flags": "i",
+    "cmpIgnoreCase": true(),
+    "empty": false(),
+    "regexes": map {
+      "flags": "i",
+      "expr": "^tab.*$"
+    }
+  },
+  "empty": false()
+}
+
+Desc:  A string starting with "tab", in any case, followed by zero or more characters
+Examples:
+       Text: table
+       Rslt: +
+
+       Text: TABLE
+       Rslt: +
+
+       Text: informaltable
+       Rslt: -
+       Why:  The string does not start with "tab"
+
+
+Demo:  glob alternatives
+------------------------------------------------
+
+***    tab* *list
+
+map {
+  "include": map {
+    "flags": "i",
+    "cmpIgnoreCase": true(),
+    "empty": false(),
+    "regexes": (map {
+      "flags": "i",
+      "expr": "^tab.*$"
+    }, map {
+      "flags": "i",
+      "expr": "^.*list$"
+    })
+  },
+  "empty": false()
+}
+
+Desc:  A string starting with "tab" or ending with "list", in any case
+Examples:
+       Text: table
+       Rslt: +
+
+       Text: orderedlist
+       Rslt: +
+
+       Text: TABLE
+       Rslt: +
+
+       Text: informaltable
+       Rslt: -
+       Why:  The string does not start with "lang" or "encod"
+
+
+Demo:  glob exclusions
+------------------------------------------------
+
+***    tab* *list ~*simple* ~*plain*
+
+map {
+  "include": map {
+    "flags": "i",
+    "cmpIgnoreCase": true(),
+    "empty": false(),
+    "regexes": (map {
+      "flags": "i",
+      "expr": "^tab.*$"
+    }, map {
+      "flags": "i",
+      "expr": "^.*list$"
+    })
+  },
+  "empty": false(),
+  "exclude": map {
+    "flags": "i",
+    "cmpIgnoreCase": true(),
+    "empty": false(),
+    "regexes": (map {
+      "flags": "i",
+      "expr": "^.*simple.*$"
+    }, map {
+      "flags": "i",
+      "expr": "^.*plain.*$"
+    })
+  }
+}
+
+Desc:  A string starting with "tab" or ending with "list", in any case, but not containing "simple" or "plain", in any case
+Examples:
+       Text: table
+       Rslt: +
+
+       Text: orderedlist
+       Rslt: +
+
+       Text: ORDEREDLIST
+       Rslt: +
+
+       Text: simplelist
+       Rslt: -
+       Why:  Substring "simple" not allowed.
+
+       Text: plainlist
+       Rslt: -
+       Why:  Substring "plain" not allowed.
+
+       Text: PLAINLIST
+       Rslt: -
+       Why:  Matching strings must not contain "simple" or "plain"
+
+
+Demo:  glob case sensitive
+------------------------------------------------
+
+***    tab* *list ~*simple* ~*plain* #c
+
+map {
+  "include": map {
+    "flags": "",
+    "cmpIgnoreCase": false(),
+    "empty": false(),
+    "regexes": (map {
+      "flags": (),
+      "expr": "^tab.*$"
+    }, map {
+      "flags": (),
+      "expr": "^.*list$"
+    })
+  },
+  "empty": false(),
+  "exclude": map {
+    "flags": "",
+    "cmpIgnoreCase": false(),
+    "empty": false(),
+    "regexes": (map {
+      "flags": (),
+      "expr": "^.*simple.*$"
+    }, map {
+      "flags": (),
+      "expr": "^.*plain.*$"
+    })
+  }
+}
+
+Desc:  A string starting with "tab" or ending with "list", but not containing "simple" or "plain", case-sensitive.
+Examples:
+       Text: table
+       Rslt: +
+
+       Text: orderedlist
+       Rslt: +
+
+       Text: Simplelist
+       Rslt: +
+
+       Text: PLAINlist
+       Rslt: +
+
+       Text: orderedList
+       Rslt: -
+       Why:  Matching is case-sensitive - "List" is not accepted for "list".
+
+       Text: simplelist
+       Rslt: -
+       Why:  Matching strings must not contain "simple" or "plain"
+
+       Text: plainlist
+       Rslt: -
+       Why:  Matching strings must not contain "simple" or "plain"
+
+
+Demo:  glob partially case sensitive
+------------------------------------------------
+
+***    tab* *list@c ~*simple* ~*PLAIN*@c
+
+map {
+  "include": map {
+    "flags": "i",
+    "cmpIgnoreCase": true(),
+    "empty": false(),
+    "regexes": (map {
+      "flags": "i",
+      "expr": "^tab.*$"
+    }, map {
+      "flags": (),
+      "expr": "^.*list$"
+    })
+  },
+  "empty": false(),
+  "exclude": map {
+    "flags": "i",
+    "cmpIgnoreCase": true(),
+    "empty": false(),
+    "regexes": (map {
+      "flags": "i",
+      "expr": "^.*simple.*$"
+    }, map {
+      "flags": (),
+      "expr": "^.*PLAIN.*$"
+    })
+  }
+}
+
+Desc:  A string starting with "tab" or ending with "list", but not containing "simple" or "PLAIN"; patterns "list" and "PLAIN" treated case-sensitively.
+Examples:
+       Text: Table
+       Rslt: +
+
+       Text: orderedlist
+       Rslt: +
+
+       Text: Plainlist
+       Rslt: +
+
+       Text: orderedList
+       Rslt: -
+       Why:  Pattern "*list*" not matched by "List", because matching is case-sensitive.
+
+       Text: PLAINlist
+       Rslt: -
+       Why:  Excluded pattern *PLAIN* matched, case-sensitively
+
+
+Demo:  regex
+------------------------------------------------
+
+***    ^test\d\d$#r
+
+map {
+  "include": map {
+    "flags": "i",
+    "cmpIgnoreCase": true(),
+    "empty": false(),
+    "regexes": map {
+      "flags": "i",
+      "expr": "^test\d\d$"
+    }
+  },
+  "empty": false()
+}
+
+Desc:  String "test" followed by two digits; case ignored.
+Examples:
+       Text: test01
+       Rslt: +
+
+       Text: TEST01
+       Rslt: +
+
+       Text: xtest01
+       Rslt: -
+       Why:  Regex uses start anchor - the string must start with 'test'
+
+       Text: test001
+       Rslt: -
+       Why:  Two trailing digits expected, not three.
+
+
+Demo:  regex alternatives
+------------------------------------------------
+
+***    ^test\d\d$ anno-\d+\. #r
+
+map {
+  "include": map {
+    "flags": "i",
+    "cmpIgnoreCase": true(),
+    "empty": false(),
+    "regexes": (map {
+      "flags": "i",
+      "expr": "^test\d\d$"
+    }, map {
+      "flags": "i",
+      "expr": "anno-\d+\."
+    })
+  },
+  "empty": false()
+}
+
+Desc:  String "test" followed by two digits, or a string containing "anno-" followed by digits and a dot.
+Examples:
+       Text: test01
+       Rslt: +
+
+       Text: xanno-001.b
+       Rslt: +
+
+       Text: xanno-001/b
+       Rslt: -
+       Why:  Substring "anno" must be followed by "-".
+
+
+Demo:  regex exclusions
+------------------------------------------------
+
+***    ^case\d\d$ anno-\d+\. ~999 ~^te?st|try #r
+
+map {
+  "include": map {
+    "flags": "i",
+    "cmpIgnoreCase": true(),
+    "empty": false(),
+    "regexes": (map {
+      "flags": "i",
+      "expr": "^case\d\d$"
+    }, map {
+      "flags": "i",
+      "expr": "anno-\d+\."
+    })
+  },
+  "empty": false(),
+  "exclude": map {
+    "flags": "i",
+    "cmpIgnoreCase": true(),
+    "empty": false(),
+    "regexes": (map {
+      "flags": "i",
+      "expr": "999"
+    }, map {
+      "flags": "i",
+      "expr": "^te?st|try"
+    })
+  }
+}
+
+Desc:  String "test" followed by two digits, or a string containing "anno-" followed by digits and a dot. The string must not contain "999", and it must not start with "test", "tst" or "try".
+Examples:
+       Text: case01
+       Rslt: +
+
+       Text: xanno-001.b
+       Rslt: +
+
+       Text: xanno-999.b
+       Rslt: -
+       Why:  Substring "999" not allowed.
+
+       Text: test.xanno-001.b
+       Rslt: -
+       Why:  The start must not start with "test".
+
+       Text: tst.xanno-001.b
+       Rslt: -
+       Why:  The start must not start with "tst".
+
+       Text: try.xanno-001.b
+       Rslt: -
+       Why:  The start must not start with "try".
+
+
+Demo:  regex case sensitive
+------------------------------------------------
+
+***    ^test\d\d$ anno-\d+\. #rc
+
+map {
+  "include": map {
+    "flags": "",
+    "cmpIgnoreCase": false(),
+    "empty": false(),
+    "regexes": (map {
+      "flags": (),
+      "expr": "^test\d\d$"
+    }, map {
+      "flags": (),
+      "expr": "anno-\d+\."
+    })
+  },
+  "empty": false()
+}
+
+Desc:  String "test" followed by two digits, or a string containing "anno-" followed by digits and a dot. Matching case-sensitive.
+Examples:
+       Text: test01
+       Rslt: +
+
+       Text: xanno-001.b
+       Rslt: +
+
+       Text: Test01
+       Rslt: -
+       Why:  Matching case-sensitive - "Test..." does not match "test...".
+
+
+Demo:  regex partially case sensitive
+------------------------------------------------
+
+***    ^test\d\d$ anno-\d+\.@c #r
+
+map {
+  "include": map {
+    "flags": "i",
+    "cmpIgnoreCase": true(),
+    "empty": false(),
+    "regexes": (map {
+      "flags": "i",
+      "expr": "^test\d\d$"
+    }, map {
+      "flags": (),
+      "expr": "anno-\d+\."
+    })
+  },
+  "empty": false()
+}
+
+Desc:  String "test" followed by two digits, or a string containing "anno-" followed by digits and a dot. The matching of "anno" is case-sensitive, whereas the matching of "test" is case-insensitive.
+Examples:
+       Text: test01
+       Rslt: +
+
+       Text: TEST01
+       Rslt: +
+
+       Text: xanno-001.b
+       Rslt: +
+
+       Text: xANNO-001.b
+       Rslt: -
+       Why:  Matching of substring "anno" case-sensitive - "ANNO" not accepted.
+
+
+Demo:  glob and regex mixed
+------------------------------------------------
+
+***    tab* *list  ^(/\i\c+)+@r ~\d$@r ~test*
+
+map {
+  "include": map {
+    "flags": "i",
+    "cmpIgnoreCase": true(),
+    "empty": false(),
+    "regexes": (map {
+      "flags": "i",
+      "expr": "^tab.*$"
+    }, map {
+      "flags": "i",
+      "expr": "^.*list$"
+    }, map {
+      "flags": "i",
+      "expr": "^(/\i\c+)+"
+    })
+  },
+  "empty": false(),
+  "exclude": map {
+    "flags": "i",
+    "cmpIgnoreCase": true(),
+    "empty": false(),
+    "regexes": (map {
+      "flags": "i",
+      "expr": "\d$"
+    }, map {
+      "flags": "i",
+      "expr": "^test.*$"
+    })
+  }
+}
+
+Desc:  A string starting with "tab" or ending with "list", or a string with path syntax (/foo/bar/...). The string must not end with a digit and must not start with "test".
+Examples:
+       Text: TABLE
+       Rslt: +
+
+       Text: orderedlist
+       Rslt: +
+
+       Text: /projects/foxpath
+       Rslt: +
+
+       Text: informaltable
+       Rslt: -
+       Why:  The string matches neither "tab*", nor "*list", nor does
+                    it have path syntax.
+
+       Text: /projects/foxpath2
+       Rslt: -
+       Why:  The string must not end with a digit.
+
+       Text: testorderedlist
+       Rslt: -
+       Why:  The string must not start with "test".
+
+
+Demo:  glob qualified
+------------------------------------------------
+
+***    docbook:tab* #q
+
+map {
+  "include": map {
+    "flags": "i",
+    "cmpIgnoreCase": true(),
+    "empty": false(),
+    "regexes": map {
+      "flags": "i",
+      "expr": "^tab.*$",
+      "namespace": "http://docbook.org/ns/docbook"
+    }
+  },
+  "empty": false()
+}
+
+Desc:  A string starting with "tab", in the docbook namespace.
+Examples:
+       Text: table
+       Nsp:  http://docbook.org/ns/docbook
+       Rslt: +
+
+       Text: TABLE
+       Nsp:  http://docbook.org/ns/docbook
+       Rslt: +
+
+       Text: informaltable
+       Rslt: -
+       Why:  The string does not start with "tab"
+
+       Text: table
+       Nsp:  http://www.tei-c.org/ns/1.0
+       Rslt: -
+       Why:  String in docbook namespace expected.
+
+
+Demo:  glob qualified
+------------------------------------------------
+
+***    docbook:tab* tei:text #q
+
+map {
+  "include": map {
+    "strings": map {
+      "string": "text",
+      "namespace": "http://www.tei-c.org/ns/1.0"
+    },
+    "flags": "i",
+    "cmpIgnoreCase": true(),
+    "empty": false(),
+    "regexes": (map {
+      "flags": "i",
+      "expr": "^tab.*$",
+      "namespace": "http://docbook.org/ns/docbook"
+    }, map {
+      "flags": "i",
+      "expr": "^text$",
+      "namespace": "http://www.tei-c.org/ns/1.0"
+    })
+  },
+  "empty": false()
+}
+
+Desc:  A string starting with "tab", in the docbook namespace.
+Examples:
+       Text: table
+       Nsp:  http://docbook.org/ns/docbook
+       Rslt: +
+
+       Text: TABLE
+       Nsp:  http://docbook.org/ns/docbook
+       Rslt: +
+
+       Text: text
+       Nsp:  http://www.tei-c.org/ns/1.0
+       Rslt: +
+
+       Text: informaltable
+       Nsp:  http://docbook.org/ns/docbook
+       Rslt: -
+       Why:  The string does not start with "tab"
+
+       Text: table
+       Nsp:  
+       Rslt: -
+       Why:  Element matching "tab*" in no namespace - docbook namespace expected.
+
+       Text: table
+       Nsp:  http://www.tei-c.org/ns/1.0
+       Rslt: -
+       Why:  Element matching "tab*" in the TEI namespace - docbook namespace expected.
+
+
+Demo:  glob qualified namespace wildcard
+------------------------------------------------
+
+***    docbook:tab* *:text #q
+
+map {
+  "include": map {
+    "strings": map {
+      "string": "text",
+      "namespace": "*"
+    },
+    "flags": "i",
+    "cmpIgnoreCase": true(),
+    "empty": false(),
+    "regexes": (map {
+      "flags": "i",
+      "expr": "^tab.*$",
+      "namespace": "http://docbook.org/ns/docbook"
+    }, map {
+      "flags": "i",
+      "expr": "^text$",
+      "namespace": "*"
+    })
+  },
+  "empty": false()
+}
+
+Desc:  A string starting with "tab", in the docbook namespace.
+Examples:
+       Text: table
+       Nsp:  http://docbook.org/ns/docbook
+       Rslt: +
+
+       Text: TABLE
+       Nsp:  http://docbook.org/ns/docbook
+       Rslt: +
+
+       Text: text
+       Nsp:  http://www.tei-c.org/ns/1.0
+       Rslt: +
+
+       Text: text
+       Nsp:  http://docbook.org/ns/docbook
+       Rslt: +
+
+       Text: text
+       Nsp:  
+       Rslt: +
+
+       Text: informaltable
+       Nsp:  http://docbook.org/ns/docbook
+       Rslt: -
+       Why:  The string does not start with "tab"
+
+       Text: table
+       Nsp:  
+       Rslt: -
+       Why:  Element matching "tab*" in no namespace - docbook namespace expected.
+
+       Text: table
+       Nsp:  http://www.tei-c.org/ns/1.0
+       Rslt: -
+       Why:  Element matching "tab*" in the TEI namespace - docbook namespace expected.
+
