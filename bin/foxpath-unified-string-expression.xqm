@@ -1,6 +1,11 @@
-module namespace f="http://www.foxpath.org/ns/string-expression";
+module namespace f="http://www.foxpath.org/ns/unified-string-expression";
 
 import module namespace ft="http://www.foxpath.org/ns/fulltext" at "foxpath-fulltext.xqm";
+
+(:
+ :    P a r s e    u n i f i e d    e x p r e s s i o n
+ :    =================================================
+ :)
 
 (:~
  : Compiles a complex string filter into a structured representation. This
@@ -51,18 +56,24 @@ import module namespace ft="http://www.foxpath.org/ns/fulltext" at "foxpath-full
  : by the flags - whereas a fulltext query is a single query, which is
  : not tokenized into subqueries.
  :
- : @param patterns a list of filter items, whitespace concatenated
- : @param addAnchorsDefault if true, translating glob patterns into
- :   regular expressions uses (does not use) anchors, unless otherwise
- :   mandated by flags (a or A) 
- : @return a map with entries 'names', 'regexes' and 'flags' 
+ : @param uexpr a unified string expression
+ : @param default value for the decision whether to add anchors when
+ :   translating glob patterns into regex; the value can be overriden
+ :   by options ('A' do not add, 'a' do add)
+ : @param qualifiedMatching if true, the qualified matching mode
+ :   is triggered, which interprets pattern substrings preceding
+ :   the first colon as namespace prefix, rather than a part
+ :   of the pattern
+ : @param namespaceBindings namespace bindings, required if and
+ :   only if $qualifiedMatching is true
+ : @return a map representation of the unified string expression 
  :)
-declare function f:compileUnifiedStringExpression($patterns as xs:string?, 
+declare function f:compileUnifiedStringExpression($uexpr as xs:string?, 
                                                   $addAnchorsDefault as xs:boolean?,
-                                                  $withNamespace as xs:boolean?,
+                                                  $qualifiedMatching as xs:boolean?,
                                                   $namespaceBindings as map(*)?) 
         as map(xs:string, item()*)? {
-    let $itemsAndFlags := f:splitStringIntoItemsAndFlags($patterns)
+    let $itemsAndFlags := f:splitStringIntoItemsAndFlags($uexpr)
     let $flags := $itemsAndFlags[1]    
     let $items := subsequence($itemsAndFlags, 2)
     
@@ -70,10 +81,10 @@ declare function f:compileUnifiedStringExpression($patterns as xs:string?,
     return
         if ($isFulltext) then  
             let $fnFulltext := ft:fnContainsText($items[1], $flags, (), ())
-            return
-                map{'contains-text': $fnFulltext}
+            return map{'contains-text': $fnFulltext}
         else
         
+    let $qualifiedMatching := $qualifiedMatching or contains($flags, 'q')
     let $ignoreCase := not(contains($flags, 'c'))
     let $patternIsRegex := contains($flags, 'r')
     let $addAnchors := 
@@ -86,16 +97,15 @@ declare function f:compileUnifiedStringExpression($patterns as xs:string?,
     
     let $patternsPlus := $patterns[not(starts-with(., '~'))]
     let $patternsMinus := $patterns[starts-with(., '~')] ! substring(., 2)
-    let $useNamespaceBindings := $namespaceBindings[$withNamespace]
-    return
+    let $useNamespaceBindings := $namespaceBindings[$qualifiedMatching]
+    return 
         map:merge((
-            map:entry('ignoreCase', $ignoreCase),
             map:entry('empty', empty(($patternsPlus, $patternsMinus))), 
             if (empty($patternsPlus)) then () else
-                map:entry('include', f:compileStringExpressionPatterns(
+                map:entry('include', f:compileGlorexPatternSet(
                     $patternsPlus, $ignoreCase, $patternIsRegex, $addAnchors, $useNamespaceBindings)),
             if (empty($patternsMinus)) then () else
-                map:entry('exclude', f:compileStringExpressionPatterns(
+                map:entry('exclude', f:compileGlorexPatternSet(
                     $patternsMinus, $ignoreCase, $patternIsRegex, $addAnchors, $useNamespaceBindings))
         ))
 };
@@ -116,7 +126,7 @@ declare function f:compileUnifiedStringExpression($patterns as xs:string?,
  : @return a map with possible entries 'empty', 'regexes', 'flags', 
  :   'strings', 'substrings'. 
  :)
-declare function f:compileStringExpressionPatterns(
+declare function f:compileGlorexPatternSet(
                                        $patterns as xs:string*, 
                                        $ignoreCase as xs:boolean?,
                                        $patternIsRegex as xs:boolean?,
@@ -124,36 +134,81 @@ declare function f:compileStringExpressionPatterns(
                                        $namespaceBindings as map(*)?)
         as map(xs:string, item()*)? {
     if (exists($namespaceBindings)) then 
-        f:compileStringExpressionPatternsWithNamespace($patterns, $ignoreCase, $patternIsRegex, $addAnchors, $namespaceBindings)
+        f:compileGlorexPatternSetQualified(
+            $patterns, $ignoreCase, $patternIsRegex, $addAnchors, $namespaceBindings)
     else
     
     let $patterns := $patterns ! normalize-space(.)[string()]
     return if (empty($patterns)) then () else
     
     let $literals := 
-        if ($patternIsRegex) then () else        
-        let $raw := $patterns[not(contains(., '*')) and not(contains(., '?'))]
-        return if (not($ignoreCase)) then $raw else $raw ! lower-case(.)
+        if ($patternIsRegex) then () else $patterns[not(matches(., '[@*?\\]'))]
+    let $useLiterals := 
+        if (not($ignoreCase)) then $literals else $literals ! lower-case(.)
     let $regexes := 
-        if ($patternIsRegex) then $patterns else
-        $patterns[contains(., '*') or contains(., '?') or contains(., '\s')]
-        ! replace(., '((^|[^\\])(\\\\)*)\\s', '$1 ')   (: _TO_DO_ support escaping \ :)
-        ! replace(., '[.+|\\(){}\[\]\^$]', '\\$0')        
-        ! replace(., '\*', '.*')
-        ! replace(., '\?', '.')
-        ! (if ($addAnchors) then concat('^', ., '$') else .)
+        for $pattern in $patterns[not(. = $literals)]
+        let $regexAndFlags := 
+            f:patternToRegexAndFlags($pattern, $ignoreCase, $patternIsRegex, $addAnchors)
+        return map{'expr': $regexAndFlags[1], 'flags': $regexAndFlags[2]}
+        
     let $flags := if ($ignoreCase) then 'i' else ''     
     let $map := 
         map{'regexes': $regexes, 
             'empty': empty(($literals, $regexes)), 
             'flags': $flags,
-            'ignoreCase': $ignoreCase}
+            'cmpIgnoreCase': $ignoreCase}
     return
         if (exists($literals)) then
             let $key := if ($addAnchors) then 'strings' else 'substrings'
             return map:put($map, $key, $literals)
         else $map            
 };
+
+(:~
+ : Maps a pattern string to a regex string and a flags string.
+ :)
+declare function f:patternToRegexAndFlags(
+                    $pattern as xs:string, 
+                    $ignoreCase as xs:boolean?, 
+                    $patternIsRegex as xs:boolean?, 
+                    $addAnchors as xs:boolean?)
+        as xs:string+ {
+    let $patternAndLocalflags :=
+        if (not(contains($pattern, '@'))) then $pattern
+        else (: _TO_DO_ consider doubled @'s :)
+            let $usePattern := replace($pattern, '@.*', '')
+            let $localFlags := replace($pattern, '^.*@', '')
+            return ($usePattern, $localFlags)
+    let $usePattern := $patternAndLocalflags[1]
+    let $lflags := $patternAndLocalflags[2]
+    let $regexAndFlags :=
+        if (not($lflags)) then
+            let $regexExpr := 
+                if ($patternIsRegex) then $usePattern 
+                else $usePattern ! f:globToRegex(., 'A'[not($addAnchors)])
+            let $useFlags := 'i'[$ignoreCase]                    
+            return ($regexExpr, $useFlags) 
+        else  
+            let $useAddAnchors := 
+                if ($lflags ! matches(., 'a', 'i')) then 
+                    if (contains($lflags, 'A')) then false() else true()
+                else $addAnchors 
+            let $useIgnoreCase :=
+                if ($lflags ! matches(., 'c', 'i')) then
+                    if (contains($lflags, 'c')) then false() else true()
+                else $ignoreCase 
+            let $usePatternIsRegex :=
+                if ($lflags ! matches(., 'r', 'i')) then
+                    if (contains($lflags, 'r')) then true() else false()
+                else $patternIsRegex
+            let $useFlags := 'i'[$useIgnoreCase]
+            let $regexExpr := 
+                if ($usePatternIsRegex) then $usePattern 
+                else $usePattern ! f:globToRegex(., 'A'[not($useAddAnchors)])
+            return ($regexExpr, $useFlags)    
+    return $regexAndFlags            
+};
+
 
 (:~
  : Translates a whitespace-separated list of "patterns" into a structured
@@ -176,7 +231,7 @@ declare function f:compileStringExpressionPatterns(
  : @return a map with possible entries 'empty', 'regexes', 'flags', 
  :   'strings', 'substrings'. 
  :)
-declare function f:compileStringExpressionPatternsWithNamespace(
+declare function f:compileGlorexPatternSetQualified(
                                        $patterns as xs:string*, 
                                        $ignoreCase as xs:boolean?,
                                        $patternIsRegex as xs:boolean?,
@@ -217,21 +272,18 @@ declare function f:compileStringExpressionPatternsWithNamespace(
         else
             for $pattern in $patterns
             let $nsuri_lname := $fn_nsuri_lname($pattern)
-            let $regex :=
-                $nsuri_lname[1][contains(., '*') or contains(., '?') or contains(., '\s')]
-                ! replace(., '((^|[^\\])(\\\\)*)\\s', '$1 ')   (: _TO_DO_ support escaping \ :)
-                ! replace(., '[.+|\\(){}\[\]\^$]', '\\$0')        
-                ! replace(., '\*', '.*')
-                ! replace(., '\?', '.')
-                ! (if ($addAnchors) then concat('^', ., '$') else .)
-            where $regex
-            return map{'string': $regex, 'namespace': $nsuri_lname[2]}
+            let $nsuri := $nsuri_lname[2]
+            let $regexAndFlags := 
+                f:patternToRegexAndFlags($nsuri_lname[1], $ignoreCase, $patternIsRegex, $addAnchors)  
+            return map{'expr': $regexAndFlags[1], 
+                       'flags': $regexAndFlags[2], 
+                       'namespace': $nsuri_lname[2]}
     let $flags := if ($ignoreCase) then 'i' else ''     
     let $map := 
         map{'regexes': $regexes, 
             'empty': empty(($literals, $regexes)), 
             'flags': $flags,
-            'ignoreCase': $ignoreCase}
+            'cmpIgnoreCase': $ignoreCase}
     return
         if (exists($literals)) then
             let $key := if ($addAnchors) then 'strings' else 'substrings'
@@ -239,30 +291,10 @@ declare function f:compileStringExpressionPatternsWithNamespace(
         else $map            
 };
 
-(:~
- : Matches a string against a complex string filter. The filter has
- : been constructed by function f:compileComplexStringFilter.
- :
- : @param string the string to match
- : @param filter the compiled complex string filter
- : @return true of false, if the string matches, does not match, the filter
- :) 
-declare function f:matchesUnifiedStringExpression(
-                   $string as xs:string,                                               
-                   $filter as map(xs:string, item()?)?)
-        as xs:boolean {
-    let $fnContainsText := $filter?contains-text
-    return
-        if (exists($fnContainsText)) then $fnContainsText($string) else
-        
-    if (empty($filter)) then true() else        
-    let $ignoreCase := $filter?ignoreCase
-    let $include := $filter?include
-    let $exclude := $filter?exclude
-    return
-        (empty($include) or f:matchesStringExpressionPattern($string, $include, $ignoreCase)) and
-        (empty($exclude) or not(f:matchesStringExpressionPattern($string, $exclude, $ignoreCase)))        
-};
+(:
+ :    M a t c h    u n i f i e d    e x p r e s s i o n
+ :    =================================================
+ :)
 
 (:~
  : Matches a string against a complex string filter. The filter has
@@ -273,6 +305,34 @@ declare function f:matchesUnifiedStringExpression(
  : @return true of false, if the string matches, does not match, the filter
  :) 
 declare function f:matchesUnifiedStringExpression(
+                   $string as xs:string+,                                               
+                   $filter as map(xs:string, item()?)?)
+        as xs:boolean {
+    if (count($string) gt 1) then 
+        f:matchesUnifiedStringExpressionQualified($string[1], $string[2], $filter)
+    else
+    
+    let $fnContainsText := $filter?contains-text
+    return
+        if (exists($fnContainsText)) then $fnContainsText($string) else
+        
+    if (empty($filter)) then true() else        
+    let $include := $filter?include
+    let $exclude := $filter?exclude
+    return
+        (empty($include) or f:matchesGlorexPatternSet($string, $include)) and
+        (empty($exclude) or not(f:matchesGlorexPatternSet($string, $exclude)))        
+};
+
+(:~
+ : Matches a string against a complex string filter. The filter has
+ : been constructed by function f:compileComplexStringFilter.
+ :
+ : @param string the string to match
+ : @param filter the compiled complex string filter
+ : @return true of false, if the string matches, does not match, the filter
+ :) 
+declare function f:matchesUnifiedStringExpressionQualified(
                    $string as xs:string,
                    $namespace as xs:string,
                    $filter as map(xs:string, item()?)?)
@@ -282,12 +342,11 @@ declare function f:matchesUnifiedStringExpression(
         if (exists($fnContainsText)) then $fnContainsText($string) else
         
     if (empty($filter)) then true() else        
-    let $ignoreCase := $filter?ignoreCase
     let $include := $filter?include
     let $exclude := $filter?exclude
     return
-        (empty($include) or f:matchesStringExpressionPattern($string, $namespace, $include, $ignoreCase)) and
-        (empty($exclude) or not(f:matchesStringExpressionPattern($string, $namespace, $exclude, $ignoreCase)))        
+        (empty($include) or f:matchesGlorexPatternSet($string, $namespace, $include)) and
+        (empty($exclude) or not(f:matchesGlorexPatternSet($string, $namespace, $exclude)))        
 };
 
 (:~
@@ -298,18 +357,16 @@ declare function f:matchesUnifiedStringExpression(
  : @param stringFilter a compiled string filter 
  : @return true if the string filter is matched, false otherwise
  :)
-declare function f:matchesStringExpressionPattern(
+declare function f:matchesGlorexPatternSet(
                                        $string as xs:string, 
-                                       $stringFilter as map(xs:string, item()*)?,
-                                       $ignoreCase as xs:boolean?)
+                                       $stringFilter as map(xs:string, item()*)?)
         as xs:boolean {
-    let $flags := if ($ignoreCase) then 'i' else ''
-    let $string := if ($stringFilter?ignoreCase) then lower-case($string) else $string 
+    let $stringCMP := if ($stringFilter?cmpIgnoreCase) then lower-case($string) else $string 
     return
-        $stringFilter?empty
-        or exists($stringFilter?strings) and $string = $stringFilter?strings
-        or exists($stringFilter?substrings) and (some $sstr in $stringFilter?substrings satisfies contains($string, $sstr))
-        or exists($stringFilter?regexes) and (some $r in $stringFilter?regexes satisfies matches($string, $r, $flags))
+        $stringFilter?empty 
+        or $stringFilter?strings = $stringCMP
+        or (some $sstr in $stringFilter?substrings satisfies contains($stringCMP, $sstr))
+        or (some $r in $stringFilter?regexes satisfies matches($string, $r?expr, $r?flags))
 };
 
 (:~
@@ -320,23 +377,26 @@ declare function f:matchesStringExpressionPattern(
  : @param stringFilter a compiled string filter 
  : @return true if the string filter is matched, false otherwise
  :)
-declare function f:matchesStringExpressionPattern(
+declare function f:matchesGlorexPatternSet(
                                        $string as xs:string,
                                        $namespace as xs:string,
-                                       $stringFilter as map(xs:string, item()*)?,
-                                       $ignoreCase as xs:boolean?)
+                                       $stringFilter as map(xs:string, item()*)?)
         as xs:boolean {
-    let $flags := if ($ignoreCase) then 'i' else ''
-    let $string := if ($stringFilter?ignoreCase) then lower-case($string) else $string 
+    let $stringCMP := if ($stringFilter?cmpIgnoreCase) then lower-case($string) else $string 
     return
         $stringFilter?empty
         or exists($stringFilter?strings) and (
-            some $s in $stringFilter?strings satisfies $s?string eq $string and $s?namespace = ($namespace, '*'))
+            some $s in $stringFilter?strings satisfies $s?string eq $stringCMP and $s('namespace') = ($namespace, '*'))
         or exists($stringFilter?substrings) and (
-            some $s in $stringFilter?substrings satisfies contains($string, $s?string) and $s?namespace = ($namespace, '*'))
+            some $s in $stringFilter?substrings satisfies contains($stringCMP, $s?string) and $s('namespace') = ($namespace, '*'))
         or exists($stringFilter?regexes) and (
-            some $r in $stringFilter?regexes satisfies matches($string, $r?string, $flags) and $r?namespace = ($namespace, '*'))
+            some $r in $stringFilter?regexes satisfies matches($string, $r?expr, $r?flags) and $r('namespace') = ($namespace, '*'))
 };
+
+(:
+ :    U t i l i t y    f u n c t i o n s
+ :    ==================================
+ :)
 
 (:~
  : Splits a string into items and flags. The optional flags are separated
@@ -399,3 +459,23 @@ declare function f:splitStringAtDoubleEscapableChar(
             return ($before, substring($string, string-length($before) + 2))
     ) ! replace(., $char||$char, $char)
 };        
+
+(:~
+ : Maps a glob pattern to a regular expression.
+ :
+ : @param glob a glob pattern
+ : @param flags flags controlling the evaluation;
+ 
+ : @return the equivalent regular expession
+ :)
+declare function f:globToRegex($glob as xs:string, $flags as xs:string?)
+        as xs:string {
+    let $addAnchors := not(contains($flags, 'A')) return
+    
+    $glob        
+    ! replace(., '\\s', ' ')
+    ! replace(., '[.+|\\(){}\[\]\^$]', '\\$0')        
+    ! replace(., '\*', '.*')
+    ! replace(., '\?', '.')
+    ! (if ($addAnchors) then concat('^', ., '$') else .)
+};

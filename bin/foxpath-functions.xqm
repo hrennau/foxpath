@@ -10,6 +10,9 @@ at  "foxpath-util.xqm";
 import module namespace ft="http://www.foxpath.org/ns/fulltext" 
 at  "foxpath-fulltext.xqm";
 
+import module namespace use="http://www.foxpath.org/ns/unified-string-expression" 
+at  "foxpath-unified-string-expression.xqm";
+
 import module namespace foxf="http://www.foxpath.org/ns/fox-functions" 
 at "foxpath-fox-functions.xqm";
 
@@ -706,6 +709,20 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:ftTokenize($text, $options)
 
+       (: function `glob-to-regex` :)
+       else if ($fname = ('glob-to-regex', 'glob-to-regex-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $text := if ($da) then $arg1 else $context
+            let $fnOptions := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return use:globToRegex($text, $fnOptions)
+
+       (: function `parse-glorex` :)
+       else if ($fname = ('parse-glorex')) then
+            let $expr := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:parseGlorex($expr, $fnOptions, $options)
+
        (: function `grep` 
           =============== :)
         else if ($fname eq 'grep') then        
@@ -964,17 +981,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 
         (: function `matches-pattern` 
            ========================= :)
-        else if ($fname eq 'matches-pattern') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $countArgs := count($call/*)
-            let $item :=
-                if (1 lt $countArgs) then $arg1 else $context 
-            let $pattern := 
-                if (1 lt $countArgs) then
-                    $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                else $arg1
+        else if ($fname = ('matches-pattern', 'matches-pattern-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0        
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $text := if ($da) then $arg1 else $context
+            let $pattern := $call/*[$da + 1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:matchesPattern($item, $pattern)
+                foxf:matchesPattern($text, $pattern, $options)
 
         (: function `matches-xpath` 
            ======================= :)

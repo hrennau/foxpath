@@ -14,6 +14,7 @@ declare variable $f:PREDECLARED_NAMESPACE_BINDINGS := map{
     "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "svrl": "http://purl.oclc.org/dsdl/svrl",
+    "tei": "http://www.tei-c.org/ns/1.0",
     "wsdl": "http://schemas.xmlsoap.org/wsdl/",    
     "xml": "http://www.w3.org/XML/1998/namespace",
     "xs": "http://www.w3.org/2001/XMLSchema",

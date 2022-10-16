@@ -10,7 +10,7 @@ at  "foxpath-urithmetic.xqm";
 import module namespace util="http://www.ttools.org/xquery-functions/util" 
 at  "foxpath-util.xqm";
 
-import module namespace sf="http://www.foxpath.org/ns/string-expression" 
+import module namespace use="http://www.foxpath.org/ns/unified-string-expression" 
 at  "foxpath-unified-string-expression.xqm";
 
 (:~
@@ -903,7 +903,7 @@ declare function f:foxNavigation(
         
     let $ops := $options ! tokenize(.)        
     let $useBaseUri := $ops = 'use-base-uri'
-    let $cNamesFilter := $namesFilter ! sf:compileUnifiedStringExpression(., true(), (), ()) 
+    let $cNamesFilter := $namesFilter ! use:compileUnifiedStringExpression(., true(), (), ()) 
     let $contextUris :=
         if (not($useBaseUri)) then $contextUris else
             $contextUris ! (if (. instance of node()) then base-uri(.) else .)
@@ -928,7 +928,7 @@ declare function f:foxNavigation(
     let $result :=
         for $curi in $contextUris
         let $related := $curi ! $fn_uris(.)[$fn_name(.) 
-                        ! sf:matchesUnifiedStringExpression(., $cNamesFilter)]
+                        ! use:matchesUnifiedStringExpression(., $cNamesFilter)]
         return if (empty($pselector)) then $related else
 
         let $reverseAxis := $axis = ('ancestor', 'ancestor-or-self', 'parent', 'preceding-sibling')
@@ -1294,12 +1294,12 @@ declare function f:grep($uris as xs:string*,
                         $textFilter as xs:string?,
                         $flags as xs:string?)
         as item()* {                        
-    let $ctextFilter := sf:compileUnifiedStringExpression($textFilter, false(), (), ())
+    let $ctextFilter := use:compileUnifiedStringExpression($textFilter, false(), (), ())
     for $uri in $uris
     where i:fox-is-file($uri, ())
     let $matchLines :=
         i:fox-unparsed-text-lines($uri, (), ())
-        [sf:matchesUnifiedStringExpression(., $ctextFilter)]
+        [use:matchesUnifiedStringExpression(., $ctextFilter)]
     return
         if (contains($flags, 'n')) then count($matchLines)
         else
@@ -1536,7 +1536,7 @@ declare function f:jparse($text as xs:string*,
 declare function f:jschemaKeywords($nodes as node()*, 
                                    $nameFilter as xs:string?)
         as element()* {
-    let $cnameFilter := $nameFilter ! sf:compileUnifiedStringExpression(., true(), (), ())
+    let $cnameFilter := $nameFilter ! use:compileUnifiedStringExpression(., true(), (), ())
     return
         $nodes/f:jschemaKeywordsRC(., $cnameFilter)
 };
@@ -1570,7 +1570,7 @@ declare function f:jschemaKeywordsRC($n as node(),
         if (empty($nameFilter)) then $unfiltered else
         for $node in $unfiltered
         let $jname := $node/local-name() ! convert:decode-key(.) ! lower-case(.)
-        where sf:matchesUnifiedStringExpression($jname, $nameFilter)
+        where use:matchesUnifiedStringExpression($jname, $nameFilter)
         return $node
 };        
 
@@ -1635,13 +1635,16 @@ declare function f:mapItems($items as item()*,
  : @param pattern a complex string filter
  : @return true or false
  :)
-declare function f:matchesPattern($item as item(), 
-                                  $pattern as xs:string)
+declare function f:matchesPattern($item as item()+, 
+                                  $pattern as xs:string,
+                                  $controlOptions as map(*)?)
         as xs:boolean {
-    let $cpattern := $pattern ! sf:compileUnifiedStringExpression(., true(), (), ())
+    let $cpattern := $pattern ! 
+        use:compileUnifiedStringExpression(., true(), count($item) gt 1, $controlOptions?NAMESPACE_BINDINGS)
     let $item :=
         if ($item instance of xs:anyAtomicType) then string($item) else $item
-    return sf:matchesUnifiedStringExpression($item, $cpattern)
+    (: let $_DEBUG := trace($cpattern, '_CPATTERN: ') :)        
+    return use:matchesUnifiedStringExpression($item, $cpattern)
 };
 
 (:~
@@ -1960,7 +1963,7 @@ declare function f:nodeNavigation(
             if ($item instance of node()) then $item else 
                 i:fox-doc($item, ())
     let $cNamesFilter := $namesFilter ! 
-        sf:compileUnifiedStringExpression(., true(), $ops = 'qname', $processingOptions?NAMESPACE_BINDINGS)
+        use:compileUnifiedStringExpression(., true(), $ops = 'qname', $processingOptions?NAMESPACE_BINDINGS)
     let $fn_nodes :=
         switch($axis)
         case 'child' return function($c) {$c/*}
@@ -1982,13 +1985,13 @@ declare function f:nodeNavigation(
         
     let $fn_matchesName := 
         if ($ops = 'name') then function($node) 
-            {$node/name(.)[string()]! sf:matchesUnifiedStringExpression(., $cNamesFilter)}
+            {$node/name(.)[string()]! use:matchesUnifiedStringExpression(., $cNamesFilter)}
         else if ($ops = 'jname') then function($node) 
-            {$node/local-name(.)[string()] ! convert:decode-key(.) ! sf:matchesUnifiedStringExpression(., $cNamesFilter)}
+            {$node/local-name(.)[string()] ! convert:decode-key(.) ! use:matchesUnifiedStringExpression(., $cNamesFilter)}
         else if ($ops = 'qname') then function($node) 
-            {$node/sf:matchesUnifiedStringExpression(local-name(.), namespace-uri(.), $cNamesFilter)}
+            {$node/use:matchesUnifiedStringExpressionQualified(local-name(.), namespace-uri(.), $cNamesFilter)}
         else function($node) 
-            {$node/local-name(.)[string()] ! sf:matchesUnifiedStringExpression(., $cNamesFilter)}
+            {$node/local-name(.)[string()] ! use:matchesUnifiedStringExpression(., $cNamesFilter)}
 
     let $result :=
         for $node in $contextNodes
@@ -2014,7 +2017,7 @@ declare function f:nameContent(
         for $item in $contextItems return
             if ($item instance of node()) then $item 
             else i:fox-doc($item, ())
-    let $cNamesFilter := $namesFilter ! sf:compileUnifiedStringExpression($namesFilter, true(), (), ())
+    let $cNamesFilter := $namesFilter ! use:compileUnifiedStringExpression($namesFilter, true(), (), ())
 
     let $fn_name := 
         if ($ops = 'name') then function($node) {$node/name(.)}
@@ -2030,7 +2033,7 @@ declare function f:nameContent(
         for $inputNode in $inputNodes
         return
             $inputNode/descendant-or-self::*/(., @*)
-                [$fn_name(.) ! sf:matchesUnifiedStringExpression(., $cNamesFilter)]
+                [$fn_name(.) ! use:matchesUnifiedStringExpression(., $cNamesFilter)]
                 
     let $results :=
         for $node in $nodes
@@ -2163,7 +2166,7 @@ declare function f:oasJschemaKeywords($oasNodes as node()*,
 declare function f:oasKeywords($values as node()*, 
                                $nameFilter as xs:string?)
         as element()* {
-    let $cnameFilter := sf:compileUnifiedStringExpression($nameFilter, true(), (), ())
+    let $cnameFilter := use:compileUnifiedStringExpression($nameFilter, true(), (), ())
     let $values := $values ! root()/descendant-or-self::*[1]        
     for $value in $values
     let $oasVersion := $value/ancestor-or-self::*[last()]/(
@@ -2261,7 +2264,7 @@ declare function f:oasKeywordsRC($n as node(),
         if (empty($nameFilter)) then $unfiltered else
         for $node in $unfiltered
         let $jname := $node/local-name() ! convert:decode-key(.) ! lower-case(.)
-        where sf:matchesUnifiedStringExpression($jname, $nameFilter)
+        where use:matchesUnifiedStringExpression($jname, $nameFilter)
         return $node
 };        
 
@@ -2365,6 +2368,23 @@ declare function f:parentName($node as node(),
     return
         $name
 };        
+
+(:~
+ : Parses a glorex into a tree representation. This function is intended for
+ : analytical and diagnosis purposes.
+ :
+ : @param item the item to check
+ : @param pattern a complex string filter
+ : @return true or false
+ :)
+declare function f:parseGlorex($glorex as xs:string,
+                               $options as xs:string?,
+                               $processingOptions as map(*)?)
+        as item() {
+    let $ops := f:getOptions($options, ('qualified'), 'parse-glorex')
+    let $qualified := $ops eq 'qualified'
+    return use:compileUnifiedStringExpression($glorex, true(), $qualified, $processingOptions?NAMESPACE_BINDINGS)
+};
 
 (:~
  : Compares two documents or nodes with respect to the names which they contain.
@@ -2819,8 +2839,8 @@ declare function f:pathContent($context as item()*,
         as xs:string* {
     let $ops := $options ! tokenize(.)        
     let $alsoInnerNodes := $ops = 'with-inner'
-    let $cLeafNameFilter := $leafNameFilter ! sf:compileUnifiedStringExpression(., true(), (), ())    
-    let $cInnerNodeNameFilter := $innerNodeNameFilter ! sf:compileUnifiedStringExpression(., true(), (), ())
+    let $cLeafNameFilter := $leafNameFilter ! use:compileUnifiedStringExpression(., true(), (), ())    
+    let $cInnerNodeNameFilter := $innerNodeNameFilter ! use:compileUnifiedStringExpression(., true(), (), ())
     
     let $fnGetName :=
         if ($ops = 'name') then function($node) {name($node)}
@@ -2846,7 +2866,7 @@ declare function f:pathContent($context as item()*,
             if ($ops = 'jname') then $cnode/descendant::*
             else $cnode/(@*, descendant::*/(., @*))
         else
-            let $excluded := $cnode//*[*][not(sf:matchesUnifiedStringExpression($fnGetName(.), $cInnerNodeNameFilter))]
+            let $excluded := $cnode//*[*][not(use:matchesUnifiedStringExpression($fnGetName(.), $cInnerNodeNameFilter))]
             let $unfiltered :=
                 if ($ops = 'jname') then $cnode/descendant::*
                 else $cnode/(@*, descendant::*/(., @*))
@@ -2855,9 +2875,9 @@ declare function f:pathContent($context as item()*,
     let $descendants2 := (
         if (empty($cLeafNameFilter)) then $descendants1
         else if ($alsoInnerNodes) then 
-            $descendants1[* or sf:matchesUnifiedStringExpression($fnGetName(.), $cLeafNameFilter)]
+            $descendants1[* or use:matchesUnifiedStringExpression($fnGetName(.), $cLeafNameFilter)]
         else 
-            $descendants1[sf:matchesUnifiedStringExpression($fnGetName(.), $cLeafNameFilter)]
+            $descendants1[use:matchesUnifiedStringExpression($fnGetName(.), $cLeafNameFilter)]
         )
     for $d in $descendants2 return
     let $ancos := $d/ancestor-or-self::node()[. >> $cnode]
@@ -2898,8 +2918,8 @@ declare function f:percent($values as xs:numeric*, $value2 as xs:numeric?, $frac
 declare function f:pfilterItems($items as item()*, 
                                $pattern as xs:string)
         as item()* {
-    let $cpattern := $pattern ! sf:compileUnifiedStringExpression(., true(), (), ())
-    return $items[sf:matchesUnifiedStringExpression(string(.), $cpattern)]
+    let $cpattern := $pattern ! use:compileUnifiedStringExpression(., true(), (), ())
+    return $items[use:matchesUnifiedStringExpression(string(.), $cpattern)]
 };
 
 declare function f:prettyNode($items as item()*, 
@@ -2976,7 +2996,7 @@ declare function f:relatedNames($nodes as node()*,
                             $options as xs:string?)
         as xs:string* {
     let $nosort := contains($options, 'nosort') 
-    let $cnameFilter := sf:compileUnifiedStringExpression($nameFilter, true(), (), ())
+    let $cnameFilter := use:compileUnifiedStringExpression($nameFilter, true(), (), ())
     (:
     let $_DEBUG := trace($nameFilter, '_FILTER_STRING: ')    
     let $_DEBUG := trace($cnameFilter, '_FILTER_ELEM: ')
@@ -3010,7 +3030,7 @@ declare function f:relatedNames($nodes as node()*,
             default return error(QName((), 'INVALID_ARG'), 'Unknown structure relationship: '||$relationship)
         return 
             if (empty($cnameFilter)) then $unfiltered
-            else $unfiltered[$fnName(.) ! replace(., '^@', '') ! sf:matchesUnifiedStringExpression(., $cnameFilter)]
+            else $unfiltered[$fnName(.) ! replace(., '^@', '') ! use:matchesUnifiedStringExpression(., $cnameFilter)]
     let $names := $items/$fnName(.) => distinct-values() 
     let $names := if ($nosort) then $names else $names => sort()        
     let $nameseq := string-join($names, $separator)
@@ -4429,7 +4449,7 @@ declare function f:ftreeREC($folder as xs:string, $options as map(*)) as element
                 let $pmap := $p($pname)
                 let $fileNameFilter := $pmap?fileName                
                 return
-                    if (not(sf:matchesUnifiedStringExpression(util:fileName(.), $fileNameFilter))) then ()
+                    if (not(use:matchesUnifiedStringExpression(util:fileName(.), $fileNameFilter))) then ()
                     else
                         let $itemElemName := $pmap?itemElemName[string()]
                         let $occs := $pmap?occs[string()]
@@ -4459,8 +4479,8 @@ declare function f:ftreeSelective(
                          $processingOptions as map(*)) as element()? {
     let $filePropertiesMap := 
         f:ftreeUtil_filePropertyMap($fileProperties, $processingOptions)    
-    let $cfileNamesFilter := $fileNamesFilter ! sf:compileUnifiedStringExpression(., true(), (), ())     
-    let $cfolderNamesFilter := $folderNamesFilter! sf:compileUnifiedStringExpression(., true(), (), ())
+    let $cfileNamesFilter := $fileNamesFilter ! use:compileUnifiedStringExpression(., true(), (), ())     
+    let $cfolderNamesFilter := $folderNamesFilter! use:compileUnifiedStringExpression(., true(), (), ())
     let $folders :=
         if (exists($folders)) then $folders
         else if (exists($uris)) then f:getRootUri($uris)
@@ -4476,7 +4496,7 @@ declare function f:ftreeSelective(
             if (exists($uris)) then $uris
             else
                 i:descendantUriCollection($folder, (), (), ()) ! concat($folder, '/', .)
-                [replace(., '.+/', '') ! sf:matchesUnifiedStringExpression(., $cfileNamesFilter)]
+                [replace(., '.+/', '') ! use:matchesUnifiedStringExpression(., $cfileNamesFilter)]
         let $descendants := $descendantUris ! replace(., '^'||$folder||'/', '')
         let $content := $folder ! f:ftreeSelectiveREC(., $descendants, $useOptions)
         let $rootAttributes := f:getFtreeAttributes($folder, $content, $options)
@@ -4495,7 +4515,7 @@ declare function f:ftreeSelectiveREC(
         $options as map(*)) as element()? {
     if ($folder 
         ! util:fileName(.) 
-        ! (not(sf:matchesUnifiedStringExpression(., $options?_folderNames)))) then () else
+        ! (not(use:matchesUnifiedStringExpression(., $options?_folderNames)))) then () else
     
     let $filePropertiesMap := $options?_file-properties    
     let $folderName := replace($folder, '.*/', '')
@@ -4515,7 +4535,7 @@ declare function f:ftreeSelectiveREC(
                         let $pmap := $p($pname)
                         let $fileNameFilter := $pmap?fileName
                         return
-                            if (not(sf:matchesUnifiedStringExpression($childName, $fileNameFilter))) then ()
+                            if (not(use:matchesUnifiedStringExpression($childName, $fileNameFilter))) then ()
                             else
                                 let $itemElemName := $pmap?itemElemName[string()]
                                 let $occs := $pmap?occs[string()]
@@ -4570,7 +4590,7 @@ declare function f:ftreeUtil_filePropertyMap($fileProperties as item()*,
         let $fname := (
             if (not($withFname)) then '*' 
             else replace($fnameAndPname, '^(.*)\s.*', '$1')
-        ) ! sf:compileUnifiedStringExpression(., true(), (), ())
+        ) ! use:compileUnifiedStringExpression(., true(), (), ())
         (: Property name :)
         let $pnameRaw := 
             if (not($withFname)) then $fnameAndPname 
