@@ -600,3 +600,179 @@ Examples:
        Rslt: -
        Why:  A word from the first list ('versatile') and a word from the second list ('diverse') is missing.
 
+
+Demo:  not
+------------------------------------------------
+
+***    ~ content of hidden data sources #fulltext
+
+ =>    ftnot 'content of hidden data sources'
+
+<ft text="~ content of hidden data sources ">
+  <ftnot>
+    <words>content of hidden data sources</words>
+  </ftnot>
+</ft>
+
+Desc:  A string not containing a phrase.
+Examples:
+       Text: XML is a versatile markup language, capable of labeling the information content of many data sources
+       Rslt: +
+
+       Text: XML is a flexible markup language, capable of labeling the information content of hidden data sources
+       Rslt: -
+       Why:  Text must not contain the phrase "content of hidden data sources".
+
+
+Demo:  phrase and not phrase
+------------------------------------------------
+
+***    versatile markup language ~ hidden data sources #fulltext
+
+ =>    'versatile markup language' ftand ftnot 'hidden data sources'
+
+<ft text="versatile markup language ~ hidden data sources ">
+  <words>versatile markup language</words>
+  <ftand/>
+  <ftnot>
+    <words>hidden data sources</words>
+  </ftnot>
+</ft>
+
+Desc:  A string containing one phrase, not containing another phrase.
+Examples:
+       Text: XML is a versatile markup language, capable of labeling the information content of many data sources
+       Rslt: +
+
+       Text: XML is a flexible markup language, capable of labeling the information content of hidden data sources
+       Rslt: -
+       Why:  Text contains the required phrase, but it must not contain the phrase "hidden data sources".
+
+
+Demo:  phrase and not all words
+------------------------------------------------
+
+***    versatile markup language ~ data sources hidden content@W #fulltext
+
+ =>    'versatile markup language' ftand ftnot 'data sources hidden content' all words
+
+<ft text="versatile markup language ~ data sources hidden content@W ">
+  <words>versatile markup language</words>
+  <ftand/>
+  <ftnot>
+    <words mode="all words">data sources hidden content</words>
+  </ftnot>
+</ft>
+
+Desc:  A string containing a phrase, not containing all words from a list.
+Examples:
+       Text: XML is a versatile markup language, capable of labeling the information content of many data sources
+       Rslt: +
+
+       Text: XML is a flexible markup language, capable of labeling the information content of hidden data sources
+       Rslt: -
+       Why:  Text contains the required phrase, but it must not contain all words 
+                    from this list: "data", "sources", "hidden", "content".
+
+
+Demo:  phrase and not any word
+------------------------------------------------
+
+***    versatile markup language ~ hidden concealed camouflaged@w #fulltext
+
+ =>    'versatile markup language' ftand ftnot 'hidden concealed camouflaged' any word
+
+<ft text="versatile markup language ~ hidden concealed camouflaged@w ">
+  <words>versatile markup language</words>
+  <ftand/>
+  <ftnot>
+    <words mode="any word">hidden concealed camouflaged</words>
+  </ftnot>
+</ft>
+
+Desc:  A string containing a phrase, not containing any word from a list.
+Examples:
+       Text: XML is a versatile markup language, capable of labeling the information content of many data sources
+       Rslt: +
+
+       Text: XML is a flexible markup language, capable of labeling the information content of hidden data sources
+       Rslt: -
+       Why:  Text contains the required phrase, but it must not contain any word from this list: "hidden" "concealed" "camouflage".
+
+
+Demo:  all words and not phrase
+------------------------------------------------
+
+***    XML versatile capable@W ~ hidden data sources #fulltext
+
+ =>    'XML versatile capable' all words ftand ftnot 'hidden data sources'
+
+<ft text="XML versatile capable@W ~ hidden data sources ">
+  <words mode="all words">XML versatile capable</words>
+  <ftand/>
+  <ftnot>
+    <words>hidden data sources</words>
+  </ftnot>
+</ft>
+
+Desc:  A string containing all words from a list, not containing any word from another list.
+Examples:
+       Text: XML is a versatile markup language, capable of labeling the information content of many data sources
+       Rslt: +
+
+       Text: XML is a flexible markup language, capable of labeling the information content of hidden data sources
+       Rslt: -
+       Why:  Text contains all required words, but it must not contain the phrase "hidden data sources".
+
+
+Demo:  all words and not any word
+------------------------------------------------
+
+***    XML versatile capable@W ~ hidden concealed camouflaged@w #fulltext
+
+ =>    'XML versatile capable' all words ftand ftnot 'hidden concealed camouflaged' any word
+
+<ft text="XML versatile capable@W ~ hidden concealed camouflaged@w ">
+  <words mode="all words">XML versatile capable</words>
+  <ftand/>
+  <ftnot>
+    <words mode="any word">hidden concealed camouflaged</words>
+  </ftnot>
+</ft>
+
+Desc:  A string containing all words from a list, not containing any word from another list.
+Examples:
+       Text: XML is a versatile markup language, capable of labeling the information content of many data sources
+       Rslt: +
+
+       Text: XML is a flexible markup language, capable of labeling the information content of hidden data sources
+       Rslt: -
+       Why:  Text contains all required words, but it must not contain any word from this list: 
+                    "hidden", "concealed", "camouflaged".
+
+
+Demo:  any word and not any word
+------------------------------------------------
+
+***    JSON XML@w ~ hidden concealed camouflaged@w #fulltext
+
+ =>    'JSON XML' any word ftand ftnot 'hidden concealed camouflaged' any word
+
+<ft text="JSON XML@w ~ hidden concealed camouflaged@w ">
+  <words mode="any word">JSON XML</words>
+  <ftand/>
+  <ftnot>
+    <words mode="any word">hidden concealed camouflaged</words>
+  </ftnot>
+</ft>
+
+Desc:  A string containing all words from a list, not containing any word from another list.
+Examples:
+       Text: XML is a versatile markup language, capable of labeling the information content of many data sources
+       Rslt: +
+
+       Text: XML is a flexible markup language, capable of labeling the information content of hidden data sources
+       Rslt: -
+       Why:  Text contains a word from the required list, but it must not contain any word from this list: 
+                    "hidden", "concealed", "camouflaged".
+
