@@ -62,7 +62,7 @@ declare function f:fnContainsText($selections as xs:string+,
                                   $toplevelOr as xs:boolean?, 
                                   $options as xs:string?)
         as item() {
-    let $ops := $options ! normalize-space(.) ! tokenize(.)         
+    let $ops := $options ! normalize-space(.) ! tokenize(.)    
     let $TESTMODUS := $ops = 'test'
     let $TRACE := $ops = 'trace'
     let $mergeTextnodes := $ops = 'merge'
@@ -79,7 +79,7 @@ declare function f:fnContainsText($selections as xs:string+,
     let $sels :=
         $selTrees ! f:serializeFt(.)    
     let $_DEBUG := 
-        trace($sels, '### QUERY MAPPED TO FULLTEXT EXPR: ')[$TRACE]            
+        trace($sels, '### QUERY MAPPED TO FULLTEXT EXPR: ')[$TRACE]  
     let $expr := 
         if (count($sels) eq 1) then $sels
         else ($sels ! concat('(', ., ')')) => string-join(' '||$toplevelBool||' ')
@@ -328,14 +328,27 @@ declare function f:parseFtParex($text as xs:string?)
             error(QName((), 'SYNTAX_ERROR'), 'Invalid syntax - missing )')
         else
             let $rest := f:removeChar($ftorRest)   
+            (: hjr, 20221018 - unsure why I used {...} - changed it to @...
             let $optionsText :=
                 if (not(substring($rest, 1, 1) eq '{')) then ''
                 else replace($rest, '^(\{.*?\}).*', '$1')
+            :)
+            let $optionsText :=
+                let $textBefore := f:textBeforeOperator($rest)
+                return
+                    if (not(matches($textBefore, '^\s*@'))) then ''
+                    else $textBefore
             let $newRest := 
                 if (not($optionsText)) then $rest
                 else f:removeChars($rest, string-length($optionsText))
+            (: hjr, 20221018 - unsure why I used {...} - changed it to @...
             let $optionsAtts :=
                 let $optionsText := replace($optionsText, '\{\s*|\s*\}', '')
+                let $optionsMap := f:parseFtOptions($optionsText, false(), false(), ())
+                return f:optionsAtts($optionsMap)
+             :)
+            let $optionsAtts :=
+                let $optionsText := replace($optionsText, '\s*@\s*|\s+', '')
                 let $optionsMap := f:parseFtOptions($optionsText, false(), false(), ())
                 return f:optionsAtts($optionsMap)
             return (
@@ -427,7 +440,11 @@ declare function f:parseFtOptions($optionsText as xs:string?,
                     else if (matches($spec, '^\d+win$')) then map:entry('window', 'window '||replace($spec, '\D+', '')||' words')
                     else ()
                 )
-            else map:entry('flags', $o)
+            else if ($o eq 'anyword') then map:entry('mode', 'any word')
+            else if ($o eq 'words') then map:entry('mode', 'all words')
+            else if (matches($o, '^[wWcCdDfoxXyYs]+$')) then map:entry('flags', $o)
+            else error(QName((), 'INVALID_ARG'), concat('Misspelled option or invalid flags: ', $o, '; ',
+                'valid flags: cCdDswWfoxXyY; valid options: dist-*, f-*, lang-*, occ-*, phrase-*, s-*, wild-*, win-*'))
     )
     let $flags := $omap?flags||$omap?additional-flags
                   ||('a'[$atStart])
@@ -561,7 +578,7 @@ declare function f:removeChars($text as xs:string,
  :)
 declare function f:textBeforeOperator($text as xs:string?)
         as xs:string? {
-    replace($text, '^(.*?)[()|/&amp;>~].*', '$1')        
+    replace($text, '^(.*?)[()|/&amp;>~#].*', '$1')        
 };
 
 (:~

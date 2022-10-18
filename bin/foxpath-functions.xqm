@@ -986,8 +986,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             let $text := if ($da) then $arg1 else $context
             let $pattern := $call/*[$da + 1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $call/*[$da + 2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:matchesPattern($text, $pattern, $options)
+                foxf:matchesPattern($text, $pattern, $fnOptions, $options)
 
         (: function `matches-xpath` 
            ======================= :)

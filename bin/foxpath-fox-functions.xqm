@@ -1637,6 +1637,7 @@ declare function f:mapItems($items as item()*,
  :)
 declare function f:matchesPattern($item as item()+, 
                                   $pattern as xs:string,
+                                  $fnOptions as xs:string?,
                                   $controlOptions as map(*)?)
         as xs:boolean {
     let $cpattern := $pattern ! 
