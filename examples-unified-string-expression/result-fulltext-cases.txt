@@ -20,7 +20,7 @@ Examples:
 Demo:  all words
 ------------------------------------------------
 
-***    language markup versatile #fulltext W
+***    language markup versatile #fulltext words
 
  =>    'language markup versatile' all words
 
@@ -39,7 +39,7 @@ Examples:
 Demo:  some word
 ------------------------------------------------
 
-***    language markup versatile #fulltext w
+***    language markup versatile #fulltext anyword
 
  =>    'language markup versatile' any word
 
@@ -548,47 +548,47 @@ Examples:
        Why:  One of the phrases not found.
 
 
-Demo:  all words and some word
+Demo:  all words and any word
 ------------------------------------------------
 
-***    markup language versatile @W / sources targets @w #fulltext
+***    markup language versatile @words / sources targets @anyword #fulltext
 
  =>    'markup language versatile' all words ftand 'sources targets' any word
 
-<ft text="markup language versatile @W / sources targets @w ">
+<ft text="markup language versatile @words / sources targets @anyword ">
   <words mode="all words">markup language versatile</words>
   <ftand/>
   <words mode="any word">sources targets</words>
 </ft>
 
-Desc:  A string containing all words from a list and some word from another list.
+Desc:  A string containing all words from a list and any word from another list.
 Examples:
        Text: versatile markup language, capable of labeling the information content of diverse data sources
        Rslt: +
 
        Text: XML is a versatile markup language, capable of labeling the information content of diverse data bases
        Rslt: -
-       Why:  Did not find a word from 'sources' and 'targets'.
+       Why:  Did not find a word from "sources" and "targets".
 
        Text: XML is a versatile language, capable of labeling the information content of diverse data sources
        Rslt: -
-       Why:  Did not find all words from 'markup', 'language' and 'versatile'.
+       Why:  Did not find all words from "markup", "language" and "versatile".
 
 
 Demo:  all words or all words
 ------------------------------------------------
 
-***    markup language versatile @W | data sources diverse @W #fulltext
+***    markup language versatile @words | data sources diverse @words #fulltext
 
  =>    'markup language versatile' all words ftor 'data sources diverse' all words
 
-<ft text="markup language versatile @W | data sources diverse @W ">
+<ft text="markup language versatile @words | data sources diverse @words ">
   <words mode="all words">markup language versatile</words>
   <ftor/>
   <words mode="all words">data sources diverse</words>
 </ft>
 
-Desc:  A string containing at least one of two phrases.
+Desc:  A string containing all words from a list, or all words from a different list.
 Examples:
        Text: XML is a versatile markup language, capable of labeling the information content of many data sources
        Rslt: +
@@ -598,7 +598,7 @@ Examples:
 
        Text: XML is a flexible markup language, capable of labeling the information content of many data sources
        Rslt: -
-       Why:  A word from the first list ('versatile') and a word from the second list ('diverse') is missing.
+       Why:  A word from the first list ("versatile") and a word from the second list ("diverse") is missing.
 
 
 Demo:  not
@@ -652,11 +652,11 @@ Examples:
 Demo:  phrase and not all words
 ------------------------------------------------
 
-***    versatile markup language ~ data sources hidden content@W #fulltext
+***    versatile markup language ~ data sources hidden content@words #fulltext
 
  =>    'versatile markup language' ftand ftnot 'data sources hidden content' all words
 
-<ft text="versatile markup language ~ data sources hidden content@W ">
+<ft text="versatile markup language ~ data sources hidden content@words ">
   <words>versatile markup language</words>
   <ftand/>
   <ftnot>
@@ -678,11 +678,11 @@ Examples:
 Demo:  phrase and not any word
 ------------------------------------------------
 
-***    versatile markup language ~ hidden concealed camouflaged@w #fulltext
+***    versatile markup language ~ hidden concealed camouflaged@anyword #fulltext
 
  =>    'versatile markup language' ftand ftnot 'hidden concealed camouflaged' any word
 
-<ft text="versatile markup language ~ hidden concealed camouflaged@w ">
+<ft text="versatile markup language ~ hidden concealed camouflaged@anyword ">
   <words>versatile markup language</words>
   <ftand/>
   <ftnot>
@@ -703,11 +703,11 @@ Examples:
 Demo:  all words and not phrase
 ------------------------------------------------
 
-***    XML versatile capable@W ~ hidden data sources #fulltext
+***    XML versatile capable@words ~ hidden data sources #fulltext
 
  =>    'XML versatile capable' all words ftand ftnot 'hidden data sources'
 
-<ft text="XML versatile capable@W ~ hidden data sources ">
+<ft text="XML versatile capable@words ~ hidden data sources ">
   <words mode="all words">XML versatile capable</words>
   <ftand/>
   <ftnot>
@@ -728,11 +728,11 @@ Examples:
 Demo:  all words and not any word
 ------------------------------------------------
 
-***    XML versatile capable@W ~ hidden concealed camouflaged@w #fulltext
+***    XML versatile capable@words ~ hidden concealed camouflaged@anyword #fulltext
 
  =>    'XML versatile capable' all words ftand ftnot 'hidden concealed camouflaged' any word
 
-<ft text="XML versatile capable@W ~ hidden concealed camouflaged@w ">
+<ft text="XML versatile capable@words ~ hidden concealed camouflaged@anyword ">
   <words mode="all words">XML versatile capable</words>
   <ftand/>
   <ftnot>
@@ -754,11 +754,11 @@ Examples:
 Demo:  any word and not any word
 ------------------------------------------------
 
-***    JSON XML@w ~ hidden concealed camouflaged@w #fulltext
+***    JSON XML@anyword ~ hidden concealed camouflaged@anyword #fulltext
 
  =>    'JSON XML' any word ftand ftnot 'hidden concealed camouflaged' any word
 
-<ft text="JSON XML@w ~ hidden concealed camouflaged@w ">
+<ft text="JSON XML@anyword ~ hidden concealed camouflaged@anyword ">
   <words mode="any word">JSON XML</words>
   <ftand/>
   <ftnot>
@@ -775,4 +775,94 @@ Examples:
        Rslt: -
        Why:  Text contains a word from the required list, but it must not contain any word from this list: 
                     "hidden", "concealed", "camouflaged".
+
+
+Demo:  mild not
+------------------------------------------------
+
+***    markup > markup language #fulltext
+
+ =>    'markup' not in 'markup language'
+
+<ft text="markup &gt; markup language ">
+  <words>markup</words>
+  <notin/>
+  <words>markup language</words>
+</ft>
+
+Desc:  A complex pattern.
+Examples:
+       Text: XML is a versatile markup language, with a well-known markup syntax
+       Rslt: +
+
+       Text: XML is a versatile markup language, with a well-known syntax
+       Rslt: -
+       Why:  Word "markup" is ignored if part of the phrase "markup language"
+
+
+Demo:  complex conditions
+------------------------------------------------
+
+***    JSON XML YAML@anyword / (data model | information model) / (serialization | string represent) ~ TEST-INPUT$@c #fulltext s-en
+
+ =>    ('JSON XML YAML' any word ftand ('data model' ftor 'information model') ftand ('serialization' ftor 'string represent') ftand ftnot ('TEST-INPUT' using case sensitive at end)) using stemming using language "en"
+
+<ft text="JSON XML YAML@anyword / (data model | information model) / (serialization | string represent) ~ TEST-INPUT$@c " stemming-and-language="using stemming using language &quot;en&quot;">
+  <words mode="any word">JSON XML YAML</words>
+  <ftand/>
+  <parex>
+    <words>data model</words>
+    <ftor/>
+    <words>information model</words>
+  </parex>
+  <ftand/>
+  <parex>
+    <words>serialization</words>
+    <ftor/>
+    <words>string represent</words>
+  </parex>
+  <ftand/>
+  <ftnot>
+    <words atEnd="at end" case="using case sensitive">TEST-INPUT</words>
+  </ftnot>
+</ft>
+
+Desc:  A complex pattern.
+Examples:
+       Text: Dealing with XML, it is important to distinguish between the data model and its serialization.
+       Rslt: +
+
+       Text: Dealing with XML, it is important to distinguish between the data model and its serialization. test-input
+       Rslt: +
+
+       Text: Dealing with XML, it is important to distinguish between the data model and its serialization. TEST-INPUT
+       Rslt: -
+       Why:  The phrase "TEST-INPUT" must not appear at the end of the text.
+
+
+Demo:  parentheses with local options
+------------------------------------------------
+
+***    JSON XML YAML@anyword / (serialization | string represent)@s-en #fulltext
+
+ =>    'JSON XML YAML' any word ftand ('serialization' ftor 'string represent') using stemming using language "en"
+
+<ft text="JSON XML YAML@anyword / (serialization | string represent)@s-en ">
+  <words mode="any word">JSON XML YAML</words>
+  <ftand/>
+  <parex stemming-and-language="using stemming using language &quot;en&quot;">
+    <words>serialization</words>
+    <ftor/>
+    <words>string represent</words>
+  </parex>
+</ft>
+
+Desc:  A complex pattern.
+Examples:
+       Text: Dealing with XML, it is important to distinguish between the data model and its serialization.
+       Rslt: +
+
+       Text: Dealing with XML, it is important to distinguish between the data model and surface syntax.
+       Rslt: -
+       Why:  Neither "serialization" nor "string represent" encountered.
 

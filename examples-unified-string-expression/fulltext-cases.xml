@@ -16,7 +16,7 @@
         </examples>
     </case>
     <case topic="all words">
-        <expr>language markup versatile #fulltext W</expr>
+        <expr>language markup versatile #fulltext words</expr>
         <description>A string containing all words from a list of words.</description>
         <examples>
             <example>
@@ -31,7 +31,7 @@
         </examples>
     </case>
     <case topic="some word">
-        <expr>language markup versatile #fulltext w</expr>
+        <expr>language markup versatile #fulltext anyword</expr>
         <description>A string containing at least one word from a list of words.</description>
         <examples>
             <example>
@@ -436,7 +436,7 @@
         </examples>
     </case>
     <case topic="all words and any word">
-        <expr>markup language versatile @W / sources targets @w #fulltext</expr>
+        <expr>markup language versatile @words / sources targets @anyword #fulltext</expr>
         <description>A string containing all words from a list and any word from another list.</description>
         <examples>
             <example>
@@ -455,7 +455,7 @@
             </example>
         </examples>
     </case>
-    <!--
+    <!-- When using boolea operators, global options wW not allowed
     <case topic="all words or all words">
         <expr>markup language versatile | data sources diverse #fulltext W</expr>
         <description>A string containing at least one of two phrases.</description>
@@ -477,8 +477,9 @@
         </examples>
     </case>
     -->
+    -->
     <case topic="all words or all words">
-        <expr>markup language versatile @W | data sources diverse @W #fulltext</expr>
+        <expr>markup language versatile @words | data sources diverse @words #fulltext</expr>
         <description>A string containing all words from a list, or all words from
             a different list.</description>
         <examples>
@@ -528,7 +529,7 @@
         </examples>
     </case>
     <case topic="phrase and not all words">
-        <expr>versatile markup language ~ data sources hidden content@W #fulltext</expr>
+        <expr>versatile markup language ~ data sources hidden content@words #fulltext</expr>
         <description>A string containing a phrase, not containing all words from a list.</description>
         <examples>
             <example>
@@ -544,7 +545,7 @@
         </examples>
     </case>
     <case topic="phrase and not any word">
-        <expr>versatile markup language ~ hidden concealed camouflaged@w #fulltext</expr>
+        <expr>versatile markup language ~ hidden concealed camouflaged@anyword #fulltext</expr>
         <description>A string containing a phrase, not containing any word from a list.</description>
         <examples>
             <example>
@@ -559,7 +560,7 @@
         </examples>
     </case>
     <case topic="all words and not phrase">
-        <expr>XML versatile capable@W ~ hidden data sources #fulltext</expr>
+        <expr>XML versatile capable@words ~ hidden data sources #fulltext</expr>
         <description>A string containing all words from a list, not containing any word from another list.</description>
         <examples>
             <example>
@@ -574,7 +575,7 @@
         </examples>
     </case>
     <case topic="all words and not any word">
-        <expr>XML versatile capable@W ~ hidden concealed camouflaged@w #fulltext</expr>
+        <expr>XML versatile capable@words ~ hidden concealed camouflaged@anyword #fulltext</expr>
         <description>A string containing all words from a list, not containing any word from another list.</description>
         <examples>
             <example>
@@ -590,7 +591,7 @@
         </examples>
     </case>
     <case topic="any word and not any word">
-        <expr>JSON XML@w ~ hidden concealed camouflaged@w #fulltext</expr>
+        <expr>JSON XML@anyword ~ hidden concealed camouflaged@anyword #fulltext</expr>
         <description>A string containing all words from a list, not containing any word from another list.</description>
         <examples>
             <example>
@@ -602,6 +603,56 @@
                 <expect>-</expect>
                 <reason>Text contains a word from the required list, but it must not contain any word from this list: 
                     "hidden", "concealed", "camouflaged".</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="mild not">
+        <expr>markup > markup language #fulltext</expr>
+        <description>A complex pattern.</description>
+        <examples>
+            <example>
+                <text>XML is a versatile markup language, with a well-known markup syntax</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>XML is a versatile markup language, with a well-known syntax</text>
+                <expect>-</expect>
+                <reason>Word "markup" is ignored if part of the phrase "markup language"</reason>
+            </example>
+        </examples>
+    </case>
+    <case topic="complex conditions">
+        <expr>JSON XML YAML@anyword / (data model | information model) / (serialization | string represent) ~ TEST-INPUT$@c #fulltext s-en</expr>
+        <description>A complex pattern.</description>
+        <examples>
+            <example>
+                <text>Dealing with XML, it is important to distinguish between the data model and its serialization.</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>Dealing with XML, it is important to distinguish between the data model and its serialization. test-input</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>Dealing with XML, it is important to distinguish between the data model and its serialization. TEST-INPUT</text>
+                <expect>-</expect>
+                <reason>The phrase "TEST-INPUT" must not appear at the end of the text.</reason>
+            </example>
+        </examples>
+    </case>
+    -->
+    <case topic="parentheses with local options">
+        <expr>JSON XML YAML@anyword / (serialization | string represent)@s-en #fulltext</expr>
+        <description>A complex pattern.</description>
+        <examples>
+            <example>
+                <text>Dealing with XML, it is important to distinguish between the data model and its serialization.</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>Dealing with XML, it is important to distinguish between the data model and surface syntax.</text>
+                <expect>-</expect>
+                <reason>Neither "serialization" nor "string represent" encountered.</reason>
             </example>
         </examples>
     </case>

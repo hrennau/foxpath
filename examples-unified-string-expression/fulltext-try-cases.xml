@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fulltext-cases>
+    <case topic="parentheses with local options">
+        <expr>JSON XML YAML@w / (serialization | string represent)@s-en #fulltext</expr>
+        <description>A complex pattern.</description>
+        <examples>
+            <example>
+                <text>Dealing with XML, it is important to distinguish between the data model and its serialization.</text>
+                <expect>+</expect>
+            </example>
+            <example>
+                <text>Dealing with XML, it is important to distinguish between the data model and surface syntax.</text>
+                <expect>-</expect>
+                <reason>Neither "serialization" nor "string represent" encountered.</reason>
+            </example>
+        </examples>
+    </case>
+</fulltext-cases>
