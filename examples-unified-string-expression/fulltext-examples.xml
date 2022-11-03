@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fulltext-cases>
+    <case topic="parsing JSON into XML">
+        <expr>(JSON text | JSON document) / XML document / parse #fulltext s-en</expr>
+        <description>
+  Contains one of the phrases "JSON text" and "JSON document", also
+  the phrase "XML document" and the word "parse" (with stemming).
+        </description>        
+        <examples>
+            <example>
+                <text>
+    Parses a string supplied in the form of a JSON text, 
+    returning the results in the form of an XML document node.
+                </text>
+                <expect>+</expect>                
+            </example>
+            <example>
+                <text>
+    Parses a string supplied in the form of a JSON record, 
+    returning the results in the form of an XML document node.
+                </text>                
+                <expect>-</expect>
+                <reason>Should contain one of "JSON text" or "JSON document".</reason>                
+            </example>
+        </examples>
+    </case>
+    <case topic="parsing JSON into XML">
+        <!--<expr>contains the token@phrase-1 / whitespace boundaries / supplied collation #fulltext s-en</expr>-->
+        <expr>contains the X token / whitespace boundaries / supplied collation #fulltext s-en wild-X</expr>
+        <description>
+  Contains the phrase "contains the X token", "whitespace boundaries", "supplied collation".
+  X used as token wildcard X. With stemming.
+        </description>        
+        <examples>
+            <example>
+                <text>
+  Determines whether or not any of the supplied strings, when tokenized at whitespace 
+  boundaries, contains the supplied token, under the rules of the supplied collation.
+                </text>
+                <expect>+</expect>
+            </example>
+        </examples>
+    </case>
+</fulltext-cases>

@@ -1726,28 +1726,38 @@ declare function f:namePath($nodes as node()*,
                             $numSteps as xs:integer?,
                             $options as xs:string?)
         as xs:string* {
-    let $ops := f:getOptions($options, ('name', 'lname', 'jname', 'base-uri', 'rel-base-uri'), 'name-path')
+    let $ops := f:getOptions($options, ('name', 'lname', 'jname', 'base-uri', 'rel-base-uri', 'text'), 'name-path')
     let $nameKind := ($ops[. = ('lname', 'jname', 'name')][1], 'lname')[1]
     let $noconcat := $ops = 'N'
     let $withBaseUri := $ops[. = ('base-uri', 'rel-base-uri')][1] 
     let $options := map:merge((map:entry('noconcat', true())[$noconcat]))
 
     for $node in $nodes return
-    (: _TO_DO_ Remove hack when BaseX Bug is removed; return to: let $nodes := $node/ancestor-or-self::node() :)        
+    (: _TO_DO_ Remove hack when BaseX Bug is removed; return to: let $nodes := $node/ancestor-or-self::node() :)     
+    let $kindMark := if ($node instance of attribute()) then '@' 
+                     else if ($node instance of text()) then '#text' else ()
     let $ancos := 
         let $all := $node/ancestor-or-self::node()[not($context) or . >> $context]
         let $dnode := $all[. instance of document-node()]
         return ($dnode, $all except $dnode)
-    let $steps :=         
-        if ($nameKind eq 'lname') then 
-            $ancos/concat(self::attribute()/'@', local-name(.))
-        else if ($nameKind eq 'jname') then 
+    let $steps :=   
+        if ($nameKind eq 'lname') then $ancos/local-name() 
+            (: $ancos/concat(self::attribute()/'@', local-name(.)) :)
+        else if ($nameKind eq 'jname') then
+        (:
             $ancos/concat(self::attribute()/'@', 
                 let $raw := f:unescapeJsonName(local-name(.))
                 return if (not(contains($raw, '/'))) then $raw else concat('"', $raw, '"')
             )
-        else 
-            $ancos/concat(self::attribute()/'@', name(.))
+         :)
+            $ancos/concat((), 
+                let $raw := f:unescapeJsonName(local-name(.))
+                return if (not(contains($raw, '/'))) then $raw else concat('"', $raw, '"')
+            )
+        else (:
+            $ancos/concat(self::attribute()/'@', name(.)):)
+            $ancos/name(.)
+    let $steps := if (not($kindMark)) then $steps else ($steps[position() lt last()], $kindMark||$steps[last()])
     let $steps := if (empty($numSteps)) then $steps else subsequence($steps, count($steps) + 1 - $numSteps)
     let $path := 
         if ($options?noconcat) then $steps[string()]
@@ -2838,25 +2848,14 @@ declare function f:pathContent($context as item()*,
                                $innerNodeNameFilter as xs:string?,
                                $options as xs:string?)
         as xs:string* {
-    let $ops := $options ! tokenize(.)        
+    let $ops := f:getOptions($options, ('name', 'lname', 'jname', 'with-inner', 'text'), 'path-content')        
     let $alsoInnerNodes := $ops = 'with-inner'
     let $cLeafNameFilter := $leafNameFilter ! use:compileUnifiedStringExpression(., true(), (), ())    
     let $cInnerNodeNameFilter := $innerNodeNameFilter ! use:compileUnifiedStringExpression(., true(), (), ())
-    
     let $fnGetName :=
         if ($ops = 'name') then function($node) {name($node)}
         else if ($ops = 'jname') then function($node) {$node ! name() ! convert:decode-key(.)} 
         else function($node) {local-name($node)}
-
-    let $fnGetStepName :=
-        if ($ops = 'name') then function($node) {$node/concat(self::attribute()/'@', name(.))}        
-        else if ($ops = 'jname') then 
-            function($node) {
-                let $raw := f:unescapeJsonName(local-name(.))
-                return if (not(contains($raw, '/'))) then $raw else concat('"', $raw, '"')
-            }
-        else function($node) {$node/concat(self::attribute()/'@', local-name(.))}
-        
     let $context := (
         $context[. instance of node()],
         $context[not(. instance of node())] ! (try {i:fox-doc(., ())} catch * {try {json:doc(.)} catch * {}})
@@ -2873,19 +2872,22 @@ declare function f:pathContent($context as item()*,
                 else $cnode/(@*, descendant::*/(., @*))
             return $unfiltered[not(ancestor-or-self::* intersect $excluded)]
     )[$alsoInnerNodes or not(*)]
-    let $descendants2 := (
+    let $descendants2 :=
         if (empty($cLeafNameFilter)) then $descendants1
         else if ($alsoInnerNodes) then 
             $descendants1[* or use:matchesUnifiedStringExpression($fnGetName(.), $cLeafNameFilter)]
         else 
             $descendants1[use:matchesUnifiedStringExpression($fnGetName(.), $cLeafNameFilter)]
-        )
-    for $d in $descendants2 return
-    let $ancos := $d/ancestor-or-self::node()[. >> $cnode]
-    let $steps := $ancos/$fnGetStepName(.)        
-    let $path := string-join($steps, '/')
-    order by $path
-    return $path
+    let $descendants2 := 
+        if (not($options = 'text')) then $descendants2
+        else 
+            let $textNodes := $descendants2/text()[matches(., '\S')]
+            return
+                if ($alsoInnerNodes) then ($descendants2, $textNodes)
+                else ($descendants2 except $textNodes/.., $textNodes)
+    return
+        f:namePath($descendants2, $cnode, (), $options)
+        => sort()
 };        
 
 (:~
@@ -2997,7 +2999,7 @@ declare function f:relatedNames($nodes as node()*,
                             $options as xs:string?)
         as xs:string* {
     let $nosort := contains($options, 'nosort') 
-    let $cnameFilter := use:compileUnifiedStringExpression($nameFilter, true(), (), ())
+    let $cnameFilter := $nameFilter ! use:compileUnifiedStringExpression(., true(), (), ())
     (:
     let $_DEBUG := trace($nameFilter, '_FILTER_STRING: ')    
     let $_DEBUG := trace($cnameFilter, '_FILTER_ELEM: ')
@@ -3768,7 +3770,7 @@ declare function f:writeDoc($item as item()*,
  :)
 declare function f:writeFiles($files as item()*, 
                               $dir as xs:string?,
-                              $fileNameExpr as xs:string?,
+                              $fileNameExpr as item()?,
                               $encoding as xs:string?,
                               $options as xs:string?,
                               $processingOptions as map(*)?)
@@ -3781,7 +3783,7 @@ declare function f:writeFiles($files as item()*,
             if ($file instance of node()) then $file ! base-uri(.) ! f:fileName(.)
             else error(QName((), 'INVALID_ARG'), 
                 'Writing a file with non-node content requires a file name expr')
-        else f:resolveFoxpath($file, $fileNameExpr, (), $processingOptions)
+        else f:resolveFoxpath($file, $fileNameExpr, $processingOptions)
     let $dir := ($dir, '.')[1]
     let $_CREATE := if (file:exists($dir)) then () else file:create-dir($dir) 
     let $path := $dir||'/'||$fileName
@@ -4073,6 +4075,20 @@ declare function f:xitemElems($items as item()*,
         let $name := $item[. instance of node()] ! name() 
         return element {($name, 'item')[1]} {$fnContent($item)}
 };      
+
+(:~
+ : Returns the parsed XML representation of an XQuery module.
+ :
+ : @param uri the URI of the module
+ : @param options processing options
+ : @return the parsed module content
+ :)
+declare function f:xqDoc($uri as xs:string, $options as map(*)?)
+    as item()* {
+    let $text := i:fox-unparsed-text($uri, (), $options)
+    return
+        try {xquery:parse($text)} catch * {()}
+};
 
 (:~
  : Foxpath function `xwrap#3`. Collects the items of $items into an XML document.

@@ -215,7 +215,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             let $text := if ($da) then $arg1 else $context
             let $query := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $flags := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)     
+            let $flags := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
+            let $_DEBUG := trace($text, '_TEXT: ')
+            let $_DEBUG := trace($query, '_QUERY: ')
             return ft:containsText($text, $query, $flags)            
                 
         (: function `contains-text-expr` 
@@ -274,6 +276,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $names := $call/*[$da + 3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $quotes := $call/*[$da + 4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             let $backslashes := $call/*[$da + 5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $_DEBUG := trace($header, '_HEADER: ')
             return
                 if ($parse) then
                     let $funcOps := map:merge((
@@ -2156,7 +2159,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg := 
                 let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
-            let $_DEBUG := trace($options, '_OPTIONS: ')
             return
                 convert:encode-key($arg)
                 
@@ -2679,7 +2681,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 year-from-date($arg)
-                
+           
+        (: function `xq-doc` 
+           ================= :)
+        else if ($fname eq 'xq-doc') then
+            let $uri := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                foxf:xqDoc($uri, $options)
+           
         (: function `xs:date` 
            ===================== :)
         else if ($fname eq 'xs:date') then

@@ -139,7 +139,7 @@ declare function f:fox-doc_basex($uri as xs:string, $options as map(*)?)
         as document-node()? {
     let $useUri := substring($uri, 9)
     return
-        if (not(doc-available($useUri))) then () else doc($useUri)
+        if (not(doc-available($useUri))) then () else doc($useUri) 
 };
 
 (:~

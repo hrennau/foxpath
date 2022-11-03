@@ -116,7 +116,7 @@
         </examples>
     </case>
     <case topic="fuzzy 1">
-        <expr>XML versatile markup language #fulltext Wf</expr>
+        <expr>XML versatile markup language #fulltext words f</expr>
         <description>A string containing all words from a list of four words;
             fuzzy matching, fuzziness level 1</description>
         <examples>
@@ -132,7 +132,7 @@
         </examples>
     </case>
     <case topic="fuzzy 2">
-        <expr>XML versatile markup language #fulltext W f-2</expr>
+        <expr>XML versatile markup language #fulltext words f-2</expr>
         <description>A string containing all words from a list of four words;
             fuzzy matching, fuzziness level 2</description>
         <examples>
@@ -230,7 +230,7 @@
     <case topic="token wildcard">
         <expr>XML x popular markup language #fulltext wild-x</expr>
         <description>A string containing the phrase "XML x popular markup language", where
-            w represents an arbitrary token.</description>
+            x represents an arbitrary token.</description>
         <examples>
             <example>
                 <text>XML, the popular markup language</text>
@@ -264,7 +264,7 @@
         </examples>
     </case>
     <case topic="ordered">
-        <expr>JSON XML languages #fulltext Wo</expr>
+        <expr>JSON XML languages #fulltext words o</expr>
         <description>A string containing the words "JSON", "XML" and "language" in that order.</description>
         <examples>
             <example>
@@ -279,7 +279,7 @@
         </examples>
     </case>
     <case topic="window">
-        <expr>JSON lightweight format widely used #fulltext W win-11</expr>
+        <expr>JSON lightweight format widely used #fulltext words win-11</expr>
         <description>A string containing all words from a list of five words,
             within a window of 11 words.</description>
         <examples>
@@ -295,7 +295,7 @@
         </examples>
     </case>
     <case topic="distance max">
-        <expr>JSON format lightweight #fulltext W dist-..2</expr>
+        <expr>JSON format lightweight #fulltext words dist-..2</expr>
         <description>A string containing three given words, with at most two 
             other words between adjacent matches.</description>
         <examples>
@@ -311,7 +311,7 @@
         </examples>
     </case>
     <case topic="distance min">
-        <expr>JSON data format #fulltext W dist-1..</expr>
+        <expr>JSON data format #fulltext words dist-1..</expr>
         <description>A string containing two words, with at least two other
             words between them.</description>
         <examples>
@@ -327,7 +327,7 @@
         </examples>
     </case>
     <case topic="distance exact">
-        <expr>more data format #fulltext W dist-1</expr>
+        <expr>more data format #fulltext words dist-1</expr>
         <description>A string containing three words, separated by exactly one other word</description>
         <examples>
             <example>

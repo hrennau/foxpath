@@ -149,7 +149,7 @@ Examples:
 Demo:  fuzzy 1
 ------------------------------------------------
 
-***    XML versatile markup language #fulltext words f
+***    XML versatile markup language #fulltext Wf
 
  =>    'XML versatile markup language' all words using fuzzy 1 errors
 
@@ -168,7 +168,7 @@ Examples:
 Demo:  fuzzy 2
 ------------------------------------------------
 
-***    XML versatile markup language #fulltext words f-2
+***    XML versatile markup language #fulltext W f-2
 
  =>    'XML versatile markup language' all words using fuzzy 2 errors
 
@@ -288,7 +288,7 @@ Demo:  token wildcard
 
 <words text="XML x popular markup language " stop="using stop words (&quot;x&quot;)">XML x popular markup language</words>
 
-Desc:  A string containing the phrase "XML x popular markup language", where x represents an arbitrary token.
+Desc:  A string containing the phrase "XML x popular markup language", where w represents an arbitrary token.
 Examples:
        Text: XML, the popular markup language
        Rslt: +
@@ -323,7 +323,7 @@ Examples:
 Demo:  ordered
 ------------------------------------------------
 
-***    JSON XML languages #fulltext words o
+***    JSON XML languages #fulltext Wo
 
  =>    'JSON XML languages' all words ordered
 
@@ -342,7 +342,7 @@ Examples:
 Demo:  window
 ------------------------------------------------
 
-***    JSON lightweight format widely used #fulltext words win-11
+***    JSON lightweight format widely used #fulltext W win-11
 
  =>    'JSON lightweight format widely used' all words window 11 words
 
@@ -361,7 +361,7 @@ Examples:
 Demo:  distance max
 ------------------------------------------------
 
-***    JSON format lightweight #fulltext words dist-..2
+***    JSON format lightweight #fulltext W dist-..2
 
  =>    'JSON format lightweight' all words distance at most 2 words
 
@@ -380,7 +380,7 @@ Examples:
 Demo:  distance min
 ------------------------------------------------
 
-***    JSON data format #fulltext words dist-1..
+***    JSON data format #fulltext W dist-1..
 
  =>    'JSON data format' all words distance at least 1 words
 
@@ -399,7 +399,7 @@ Examples:
 Demo:  distance exact
 ------------------------------------------------
 
-***    more data format #fulltext words dist-1
+***    more data format #fulltext W dist-1
 
  =>    'more data format' all words distance exactly 1 words
 

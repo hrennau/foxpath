@@ -1,0 +1,88 @@
+====   D e m o s    u s i n g    m a p s =============
+ Study the query output together with the source code.
+======================================================
+
+Demo - node entries retain their type and node identity
+----------------------------------------------------------------
+true
+2
+<foo>
+  <bar/>
+</foo>
+
+Demo - complex map where map entries are maps and arrays
+--------------------------------------------------------
+map {
+  "book": map {
+    "price": 39.95,
+    "author": [map {
+      "first": "Günther",
+      "last": "Netzer"
+    }, map {
+      "first": "Sepp",
+      "last": "Maier"
+    }],
+    "title": "Data on the Web",
+    "publisher": "Morgan Kaufmann Publishers",
+    "year": 2000
+  }
+}
+
+Demo - construct map with keys determined at design time
+--------------------------------------------------------
+map {
+  "x": "abc",
+  "y": (10, 11, 12),
+  "z": <foo/>
+}
+
+Demo - construct map with keys determined at runtime
+----------------------------------------------------
+map {
+  "foo": "1",
+  "foobar": "true",
+  "bar": "abc"
+}
+
+Demo - read map entry, function call form
+-----------------------------------------
+<foo/>
+<foo/>
+
+Demo - read map entry, lookup operator ?, using name
+----------------------------------------------------
+<foo/>
+
+Demo - read map entry, lookup operator ?, using expr
+----------------------------------------------------
+<foo/>
+<foo/>
+
+Demo - bulk read 1 - multiple keys
+----------------------------------
+x111
+z333
+y222
+
+Demo - bulk read 2 - multiple maps
+----------------------------------
+<foo/>
+<bar/>
+<zoo/>
+
+<foo/>
+<bar/>
+<zoo/>
+
+Demo - wild card read ?*
+------------------------
+<foo/>
+abc
+<bar/>
+abc
+<zoo/>
+abc
+
+Demo - filtering
+----------------
+2022

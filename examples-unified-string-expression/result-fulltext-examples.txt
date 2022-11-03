@@ -1,0 +1,42 @@
+Topic:  parsing JSON into XML
+------------------------------------------------
+
+***    (JSON text | JSON document) / XML document / parse #fulltext s-en
+
+ =>    (('JSON text' ftor 'JSON document') ftand 'XML document' ftand 'parse') using stemming using language "en"
+
+Desc:  
+  Contains one of the phrases "JSON text" and "JSON document", also
+  the phrase "XML document" and the word "parse" (with stemming).
+
+Examples:
+  Text: 
+    Parses a string supplied in the form of a JSON text, 
+    returning the results in the form of an XML document node.
+  Rslt: +
+
+  Text: 
+    Parses a string supplied in the form of a JSON record, 
+    returning the results in the form of an XML document node.
+  Rslt: -
+  Why:  Should contain one of "JSON text" or "JSON document".
+
+
+Topic:  parsing JSON into XML
+------------------------------------------------
+
+***    contains the X token / whitespace boundaries / supplied collation #fulltext s-en wild-X
+
+ =>    ('contains the X token' ftand 'whitespace boundaries' ftand 'supplied collation') using stemming using language "en" using stop words ("X")
+
+Desc:  
+  Contains the phrase "contains the X token", "whitespace boundaries", "supplied collation".
+  X used as token wildcard X. With stemming.
+
+Examples:
+  Text: 
+  Determines whether or not any of the supplied strings, when tokenized at whitespace 
+  boundaries, contains the supplied token, under the rules of the supplied collation.
+  Rslt: -
+ U N E X P E C T E D    R E S U L T   -   E X P E C T E D    +
+

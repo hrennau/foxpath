@@ -68,10 +68,11 @@ import module namespace ft="http://www.foxpath.org/ns/fulltext" at "foxpath-full
  :   only if $qualifiedMatching is true
  : @return a map representation of the unified string expression 
  :)
-declare function f:compileUnifiedStringExpression($uexpr as xs:string?, 
-                                                  $addAnchorsDefault as xs:boolean?,
-                                                  $qualifiedMatching as xs:boolean?,
-                                                  $namespaceBindings as map(*)?) 
+declare function f:compileUnifiedStringExpression(
+                    $uexpr as xs:string?, 
+                    $addAnchorsDefault as xs:boolean?,
+                    $qualifiedMatching as xs:boolean?,
+                    $namespaceBindings as map(*)?) 
         as map(xs:string, item()*)? {
     let $itemsAndFlags := f:splitStringIntoItemsAndFlags($uexpr)
     let $flags := $itemsAndFlags[1]    
@@ -175,9 +176,10 @@ declare function f:patternToRegexAndFlags(
         as xs:string+ {
     let $patternAndLocalflags :=
         if (not(contains($pattern, '@'))) then $pattern
-        else (: _TO_DO_ consider doubled @'s :)
-            let $usePattern := replace($pattern, '@.*', '')
-            let $localFlags := replace($pattern, '^.*@', '')
+        else            
+            let $flagsString := f:splitStringAtDoubleEscapableChar($pattern, '@')
+            let $localFlags := $flagsString[2]
+            let $usePattern := subsequence($flagsString, 1)
             return ($usePattern, $localFlags)
     let $usePattern := $patternAndLocalflags[1]
     let $lflags := $patternAndLocalflags[2]
@@ -409,10 +411,25 @@ declare function f:matchesGlorexPatternSet(
  : characters ,;:/. A non-whitespace separator is assumed if contained by
  : the flag string.
  :
+ : Example: "foo bar zoo"
+ : => flags="", three items="foo", "bar", "zoo"
+ :
+ : Example: "foo##bar#c"
+ : => flags="c", oe item="foo#bar"
+ :
+ : Example: "foo bar, zoo #,c"
+ : => flags=",c", two items="foo bar", "zoo"
+ :
+ : Example: "foo bar; zoo #c;"
+ : => flags="c;", two items="foo bar", "zoo"
+ :
+ : Example: "foo:bar, zoo #:"
+ : => flags=":", two items="foo", "bar, zoo"
+ :
  : @param string the string to be split
- : @return a sequence of items; the first one representing the flags, which
- :   may be a zero-length strings; all following items representing the
- :   items extracted from the string
+ : @return a sequence of strings; the first one represents the flags, which
+ :   may be a zero-length string; all following items represent the item
+ :   extracted from the string
  :)
 declare function f:splitStringIntoItemsAndFlags($string as xs:string) 
         as xs:string+ {
@@ -432,18 +449,21 @@ declare function f:splitStringIntoItemsAndFlags($string as xs:string)
 };
 
 (:~
- : Returns the substrings preceding and following the first occurrence
- : of a character ($char) which is not escaped by repeating it.
- : If the string does not contain the character in single form
- : (or repeated an uneven number of times), the original string and a 
- : zero-length string are returned.
+ : Returns the substrings preceding and following the first occurrence of a
+ : character ($char) which is not escaped by repeating it. (In other words:
+ : the first occurrence of $char which is either not repeated or repeated an 
+ : uneven number of times.) If the string does not contain the character or 
+ : any occurrence is repeated an even number of times), the original string 
+ : and a zero-length string are returned.
  : 
- : The substring returned is edited by replacing any doubled occurrence 
- : of the character with a single occurrence.
+ : The first substring returned is edited by replacing any doubled occurrence 
+ : of the character with a single occurrence. (Note that the second
+ : substring is not edited.)
  :
  : @param string the string to be analyzed
- : @param char the character delimiting the substring
- : @return the strings preceding and following the character
+ : @param char the character separating the substrings
+ : @return sequence of two strings: the string preceding and 
+ :   the string following the character
  :)
 declare function f:splitStringAtDoubleEscapableChar(
                     $string as xs:string, 
@@ -452,12 +472,12 @@ declare function f:splitStringAtDoubleEscapableChar(
     if (not(contains($string, $char))) then ($string, '')
     else if (not(contains($string, $char||$char))) then (
             substring-before($string, $char), substring-after($string, $char))
-    else (        
+    else        
         let $patternBefore := '^('||$char||$char||'|[^'||$char||'])+'
         return 
             let $before := replace($string, '('||$patternBefore||').*', '$1')
-            return ($before, substring($string, string-length($before) + 2))
-    ) ! replace(., $char||$char, $char)
+            let $after := substring($string, string-length($before) + 2)
+            return ($before ! replace(., $char||$char, $char), $after)
 };        
 
 (:~

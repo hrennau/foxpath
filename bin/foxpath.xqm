@@ -396,7 +396,7 @@ declare function f:resolveFoxpathRC($n as node(),
             else error(QName((), 'UNEXPECTED_OPERATOR'), 
                 concat('Unexpected operator in value comparison: ', $op))
         return
-            $value
+            if ($ebvMode) then f:getEbv($value) else $value
             
     case element(dynFuncCall) return
         let $value := f:resolveDynFunctionCall($n, $context, $position, $last, $vars, $options)       
@@ -586,7 +586,6 @@ declare function f:resolvePathExpr($foxpath as element(foxpath),
             ($context, $foxpath/@context/string())[1]
     return
         if (empty($initialContext)) then () else
-        
     let $steps := $foxpath/(* except $initialRoot)[not(@__ignore eq 'true')]
     let $value :=
         if (not($steps)) then 
@@ -813,7 +812,7 @@ declare function f:resolveNodeAxisStep($axisStep as element()+,
     let $context :=
         for $c in $context return
             if ($c instance of node()) then $c
-            else i:fox-doc($c, $options)              
+            else i:fox-doc($c, $options)
     let $axis := $axisStep/@axis
     let $localName := $axisStep/@localName
     let $uri := string($axisStep/@namespace)    
@@ -1198,7 +1197,7 @@ declare function f:resolveQuantifiedExpr($quant as element(quantified),
         typeswitch($firstClause)
         case element(for) return 
             if ($kind eq 'every') then
-                every $result in
+                every $result in 
                     f:resolveQuantifiedExpr_for($firstClause, $context, $position, $last, $vars, $options)
                 satisfies $result eq true()
             else      
@@ -1238,7 +1237,7 @@ declare function f:resolveQuantifiedExpr_for($for as element(for),
             (: note that ebvMode = true() :)
         else            
             typeswitch($nextClause)
-            case element(for) return 
+            case element(for) return
                 f:resolveQuantifiedExpr_for($nextClause, $context, $position, $last, $vars, $options)
             default return
                 util:createFoxpathError('NOT_YET_IMPLEMENTED', 
@@ -2119,7 +2118,7 @@ declare function f:getEbv($value as item()*)
  : @return the edited context
  :)
 declare function f:editInitialContext($context as item()?) as item()? {
-    (: let $_DEBUG := trace($context, '___INITIAL_CONTEXT: ') return :)
+    (: let $_DEBUG := trace($context, '___EDIT_INITIAL_CONTEXT: ') return :)
     if (empty($context)) then $context
     else if ($context instance of node()) then $context
     else if (not($context instance of xs:string)) then $context    

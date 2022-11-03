@@ -10,6 +10,7 @@ declare variable $f:ARCHIVE_TOKEN external := '#archive#';
 declare variable $f:PREDECLARED_NAMESPACE_BINDINGS := map{
     "dc": "http://purl.org/dc/elements/1.1/",
     "docbook": "http://docbook.org/ns/docbook",
+    "drg": "http://www.drugbank.ca",
     "owl": "http://www.w3.org/2002/07/owl#",    
     "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
@@ -744,7 +745,7 @@ declare function f:lpad($s as xs:anyAtomicType?,
  : Pads a string on the righthand side.
  :)
 declare function f:rpad($s as xs:anyAtomicType?, 
-                        $width as xs:integer, 
+                        $width as xs:integer?, 
                         $char as xs:string?)
         as xs:string? {
     let $s := string($s)
