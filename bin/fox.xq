@@ -14,6 +14,7 @@ declare variable $vars as xs:string? external := ();
 declare variable $utreeDirs as xs:string? external := ();
 declare variable $ugraphEndpoints as xs:string? external := ();
 declare variable $isFile as xs:boolean? external := false();
+declare variable $echo as xs:boolean? external := false();
 declare variable $mode as xs:string? external := 'eval';   (: eval | parse :)
 declare variable $sep as xs:string? external := '/';       (: / | \ :)
 declare variable $debugtime as xs:boolean? external := ();
@@ -75,7 +76,7 @@ let $foxpathExpr :=
                                     $lib//foxpath[@name eq $fragmentId]/replace(., '^\s+|\s$', '')
                                    
 let $startTime := prof:current-ms()[$debugtime]       
-(: let $_DEBUG := trace($foxpath, '_FOXPATH: ') :)  
+let $_CONSOLE := trace($foxpath, '___Foxpath expression: ')[$echo]  
 let $context :=
     if ($context) then $context
     else f:currentDirectory()

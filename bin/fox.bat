@@ -24,6 +24,7 @@ set UGRAPH_ENDPOINTS=
 set GITHUB_TOKEN=/git/token
 set DEBUG_TIME=0
 set CONSERVE_WS=
+set ECHO=
 
 REM echo "Expression: %1%"
 
@@ -43,8 +44,10 @@ if "%value%"=="" goto :ENDPAR
 
 if "%name%"=="-p" (
    set PARSE=Y
-) else if "%name%"=="-f" (
+ ) else if "%name%"=="-f" (
    set ISFILE=Y
+ ) else if "%name%"=="-e" (
+   set ECHO=Y
  ) else if "%name%"=="-w" (
    set CONSERVE_WS=Y   
  ) else if "%name%"=="-b" (
@@ -74,7 +77,7 @@ if "%name%"=="-p" (
 ) else (
    echo Unknown option: %name%
    echo Supported options: 
-   echo    -b -c -f -g -t -v -D -w -o
+   echo    -b -c -e -f -g -t -v -D -w -o
    echo Aborted.
    exit /b
 )
@@ -85,7 +88,7 @@ REM echo foxpath=%foxpath%
 if %foxpath%=="?" echo NO else (echo YES)
 
 if %FOXPATH%=="?" (
-    echo Usage: fox [-f] [-p] [-b] [-c] [-w] [-o] [-t utree-dirs] [-g ugraph-endpoints] [-h github-token] [-D] [-v name=value]* foxpath
+    echo Usage: fox [-f] [-e] [-p] [-b] [-c] [-w] [-o] [-t utree-dirs] [-g ugraph-endpoints] [-h github-token] [-D] [-v name=value]* foxpath
     echo foxpath : a foxpath expression, or a file containing a foxpath expression
     echo.
     echo -f      : the foxpath parameter is not a foxpath expression, but the path or URI of 
@@ -108,6 +111,7 @@ if %FOXPATH%=="?" (
     echo               ^/foxpath^>
     echo           ^</foxlib^>
     echo.
+    echo -e      : echo the Foxpath expression; in order to detect text manipulation performed by the shell 
     echo -p      : show the parse tree, rather than evaluate the expression
     echo -b      : within the foxpath expression path and foxpath operator are swapped;
     echo           using the option: path operator = / , foxpath operator = \
@@ -139,6 +143,7 @@ if %FOXPATH%=="?" (
 )
 if "%PARSE%"=="Y" (set MODE=parse) else (set MODE=eval)
 if "%ISFILE%"=="Y" (set ISFILE=true) else (set ISFILE=false)
+if "%ECHO%"=="Y" (set ECHO=true) else (set ECHO=false)
 set OPT_OFILE=
 set OPT_UTREE_DIRS=
 set OPT_UGRAPH_ENDPOINTS=
@@ -155,4 +160,4 @@ if "%DEBUG_TIME%"=="1" (set OPT_DEBUG_TIME=-b debugtime=1)
 if not "%CONSERVE_WS%"=="" (set OPT_CONSERVE_WS=-w)
 rem echo HERE=%HERE%
 rem if not "%CONSERVE_WS%"=="" (echo CONSERVE WHITESPACE)
-basex %OPT_SER% %OPT_CONSERVE_WS% %OPT_OFILE% -b isFile=%ISFILE% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% %OPT_CONTEXT_ITEM% %OPT_DEBUG_TIME% -b "vars=%VARS%" %HERE%/fox.xq
+basex %OPT_SER% %OPT_CONSERVE_WS% %OPT_OFILE% -b isFile=%ISFILE% -b echo=%ECHO% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% %OPT_CONTEXT_ITEM% %OPT_DEBUG_TIME% -b "vars=%VARS%" %HERE%/fox.xq
