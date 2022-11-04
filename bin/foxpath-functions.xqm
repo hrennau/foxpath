@@ -348,12 +348,33 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 count(distinct-values($values)) eq count($values)
                             
+        (: function `docx-ccount` 
+           ====================== :)
+        else if ($fname = ('docx-ccount')) then
+            let $uri := if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                        else $context
+            return foxf:docxDoc($uri)//*:t/text() => string-join() => string-length()
+                            
         (: function `docx-doc` 
            =================== :)
-        else if ($fname eq 'docx-doc') then
+        else if ($fname = ('docx-doc', 'docx')) then
             let $uri := if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                         else $context
             return foxf:docxDoc($uri)
+                            
+        (: function `docx-mcount` 
+           ===================== :)
+        else if ($fname = ('docx-mcount')) then
+            let $uri := if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                        else $context
+            return file:read-binary($uri) ! archive:entries(.)[starts-with(., 'word/media')] => count()
+            
+        (: function `docx-msize` 
+           ===================== :)
+        else if ($fname = ('docx-msize')) then
+            let $uri := if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                        else $context
+            return file:read-binary($uri) ! archive:entries(.)[starts-with(., 'word/media')]/@compressed-size => sum()
                             
         (: function `echo` 
            =============== :)
@@ -1448,10 +1469,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `row` 
            ============== :)
-        else if ($fname = ('row', 'hlist-entry')) then
-            let $items := $call/* ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                foxf:row($items)
+        else if ($fname = 'row') then
+            let $items :=
+                for $c in $call/*
+                let $item := $c ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return if (empty($item)) then '' else $item
+            return foxf:row($items)
 
         (: function `rpad` 
            =============== :)
