@@ -1517,10 +1517,19 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname = ('table')) then
             let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $headers := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                            (: ! normalize-space(.) ! tokenize(.) :)
             let $options := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                            
             return
                 foxf:table($values, $headers, $options)
+
+        (: function `csv` 
+           ============== :)
+        else if ($fname = ('csv')) then
+            let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $headers := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                            (: ! normalize-space(.) ! tokenize(.) :)
+            let $options := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                            
+            return
+                foxf:csv($values, $headers, $options)
 
         (: function `text-to-codepoints` 
            ============================= :)

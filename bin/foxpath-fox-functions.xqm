@@ -3678,6 +3678,55 @@ declare function f:table($rows as item()*,
 };
 
 (:~
+ : Transforms a sequence of rows into a CSV text document.
+ :)
+declare function f:csv($rows as item()*, 
+                       $headers as xs:string*,
+                       $options as xs:string?)
+        as xs:string {
+    let $ops := f:getOptions($options, ('sort', 'sortd', 'distinct', 'semicolon', 'colon'), 'table')        
+    let $sort := $ops = 'sort'
+    let $sortd := $ops = 'sortd'
+    let $distinct := $ops = 'distinct'
+    let $sep := codepoints-to-string(30000) (:  ($sep, '#')[1] :)
+    let $sep := 
+        if ($ops = 'semicolon') then ';' 
+        else if ($ops = 'colon') then ':' 
+        else ','
+    let $headers :=
+        if (count($headers) eq 1) then tokenize($headers, ',\s*') else $headers
+    let $ncols := $rows[1] ! array:size(.)        
+    return if (some $row in tail($rows) satisfies $ncols != array:size($row)) then
+        error(QName((), 'INVALID_ARG'), concat('Invalid call of "table" - ',
+            'all rows must contain the same number of columns; use string(...) ',
+            'in order to enforce a column in case of an empty column value; ',
+            'example: row(string(foo), string(bar))'))
+        else
+
+    let $textRows :=
+        for $row in $rows 
+        return string-join( 
+            for $c in 1 to $ncols
+            let $cval := string($row($c))
+            return if (not(contains($cval, $sep))) then $cval else
+                '"'||replace($cval, '["\\]', '\\$0')||'"'
+                   
+        , $sep)
+    let $textRows := 
+        if ($distinct) then $textRows => distinct-values() 
+        else $textRows 
+    let $textRows :=
+        if ($sort or $sortd) then 
+            let $sorted := $textRows => sort()
+            return if ($sort) then $sorted else $sorted => reverse()
+        else $textRows
+    return (
+        if (empty($headers)) then () else $headers => string-join($sep),
+        $textRows
+    ) => string-join('&#xA;')
+};
+
+(:~
  : Maps each item of the input value to a pair of strings, the first 
  : containing each character of the original string, separated by 5 
  : blanks, the second containing the unicode codepoints, padded to a 
