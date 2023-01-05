@@ -4300,11 +4300,12 @@ declare function f:xwrap($items as item()*,
 declare function f:xsdValidate($docs as item()*,
                                $xsds as item()*,
                                $options as xs:string?)
-        as element() {
+        as item()* {
     if (empty($xsds)) then error(QName((), 'INVALID_CALL'), 'Function validate-xsd - no XSDs specified')
     else
 
-    let $ops := f:getOptions($options, ('fname'), 'xsd-validate')
+    let $ops := f:getOptions($options, ('fname', 'summary'), 'xsd-validate')
+    let $view := $ops[. = ('summary')]
     let $useFname := $ops = 'fname'    
     let $fnIdentAtt :=
         if ($useFname) then function($uri) {attribute file-name {replace($uri, '.*/', '')}}
@@ -4363,31 +4364,42 @@ declare function f:xsdValidate($docs as item()*,
                         <invalid count="{count($invalid)}">{
                             for $doc in $invalid 
                             let $ename := if ($doc/@nodePath) then 'node' else 'doc'
+                            order by $doc/@uri, $doc/@file-name, $doc/@nodePath
                             return element {$ename} {$doc/(@uri, @file-name, @nodePath, $doc/*)}
                         }</invalid>[count($invalid) gt 0],
                         <valid count="{count($valid)}">{
                             for $doc in $valid 
                             let $ename := if ($doc/@nodePath) then 'node' else 'doc'
+                            order by $doc/@uri, $doc/@file-name, $doc/@nodePath
                             return element {$ename} {$doc/(@uri, @file-name, @nodePath)}
                         }</valid>,
                         if (empty($nofind)) then () else
                         <nofind count="{count($nofind)}">{
                             for $doc in $nofind 
                             let $ename := if ($doc/@nodePath) then 'node' else 'doc'
+                            order by $doc/@uri, $doc/@file-name, $doc/@nodePath
                             return element {$ename} {$doc/(@uri, @file-name, @nodePath)}
                         }</nofind>,
                         <ambiguous count="{count($ambiguous)}">{
                             for $doc in $ambiguous 
                             let $ename := if ($doc/@nodePath) then 'node' else 'doc'
+                            order by $doc/@uri, $doc/@file-name, $doc/@nodePath
                             return element {$ename} {$doc/(@uri, @file-name,  @nodePath)}
                         }</ambiguous>
                     )
                 }</validationReports>
         else $reports
     return
-        copy $reports2_ := $reports2
-        modify delete nodes $reports2_//message/@url
-        return $reports2_
+        if ($view eq 'summary') then (
+            $reports2//invalid/('invalid (#'||@count||')', doc/(@uri, @file-name)/('  '||.)),
+            $reports2//nofind/('nofind (#'||@count||')', doc/(@uri, @file-name)/('  '||.)),            
+            $reports2//ambiguous/('ambiguous (#'||@count||')', doc/(@uri, @file-name)/('  '||.)),
+            $reports2//valid/('valid (#'||@count||')')
+        )
+        else    
+            copy $reports2_ := $reports2
+            modify delete nodes $reports2_//message/@url
+            return $reports2_
  };
  
 (:~

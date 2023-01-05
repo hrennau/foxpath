@@ -161,7 +161,7 @@ declare function f:compileGlorexPatternSet(
     return
         if (exists($literals)) then
             let $key := if ($addAnchors) then 'strings' else 'substrings'
-            return map:put($map, $key, $literals)
+            return map:put($map, $key, $useLiterals)
         else $map            
 };
 
@@ -363,7 +363,7 @@ declare function f:matchesGlorexPatternSet(
                                        $string as xs:string, 
                                        $stringFilter as map(xs:string, item()*)?)
         as xs:boolean {
-    let $stringCMP := if ($stringFilter?cmpIgnoreCase) then lower-case($string) else $string 
+    let $stringCMP := if ($stringFilter?cmpIgnoreCase) then lower-case($string) else $string
     return
         $stringFilter?empty 
         or $stringFilter?strings = $stringCMP

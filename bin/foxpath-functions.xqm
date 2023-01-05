@@ -144,7 +144,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             
        (: function `both-values` 
           ====================== :)
-        else if ($fname = ('both-values', 'bvalues')) then
+        else if ($fname = ('both-values', 'bvalues', 'value-intersect')) then
             let $leftValue := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $rightValue := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
@@ -276,7 +276,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $names := $call/*[$da + 3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $quotes := $call/*[$da + 4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             let $backslashes := $call/*[$da + 5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $_DEBUG := trace($header, '_HEADER: ')
             return
                 if ($parse) then
                     let $funcOps := map:merge((
@@ -286,12 +285,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
                         $quotes ! map:entry('quotes', .),
                         $backslashes ! map:entry('backslashes', .)
                     ))
-                    return csv:parse($text, $funcOps)
-                else if (empty($separator)) then i:fox-csv-doc($uri, $options)
-                else if (empty($header)) then i:fox-csv-doc($uri, $separator, $options)
-                else if (empty($names)) then i:fox-csv-doc($uri, $separator, $header, $options)
-                else if (empty($quotes)) then i:fox-csv-doc($uri, $separator, $header, $names, $options)
-                else i:fox-csv-doc($uri, $separator, $header, $names, $quotes, $backslashes, $options)
+                    return $text ! csv:parse(., $funcOps)
+                else if (empty($separator)) then $uri ! i:fox-csv-doc(., $options)
+                else if (empty($header)) then $uri ! i:fox-csv-doc(., $separator, $options)
+                else if (empty($names)) then $uri ! i:fox-csv-doc(., $separator, $header, $options)
+                else if (empty($quotes)) then $uri ! i:fox-csv-doc(., $separator, $header, $names, $options)
+                else $uri ! i:fox-csv-doc(., $separator, $header, $names, $quotes, $backslashes, $options)
                             
         (: function `dcat` 
            =============== :)
@@ -963,7 +962,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
        (: function `left-value-only` 
           ========================== :)
-        else if ($fname = ('left-value-only', 'left-value')) then
+        else if ($fname = ('left-value-only', 'left-value', 'value-except')) then
             let $leftValue := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $rightValue := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
@@ -1083,6 +1082,19 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 if (empty($nodes)) then () else 
                     foxf:namePath($nodes, $numSteps, $options)
+                    
+        (: function `indexed-name-path` 
+           ============================ :)
+        else if ($fname = ('indexed-name-path', 'indexed-name-path-ec')) then  
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0
+            let $nodes :=
+                if (not($da)) then $context 
+                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $numSteps := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
+            let $options := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                if (empty($nodes)) then () else 
+                    foxf:indexedNamePath($nodes, $numSteps, $options)
                     
         (: function `node-deep-equal` 
            ========================= :)
@@ -2368,6 +2380,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 if (not(count($arg) eq 1 and $arg[1] instance of node())) then ()
                 else namespace-uri($arg)
+
+        (: function `namespace-uri-for-prefix` 
+           =================================== :)
+        else if ($fname eq 'namespace-uri-for-prefix') then
+            let $arg1 := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                namespace-uri-for-prefix($arg1, $arg2)
 
         (: function `namespace-uri-from-QName` 
            =================================== :)
