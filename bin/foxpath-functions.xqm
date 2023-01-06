@@ -340,13 +340,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 replace($uri[1], '^(.*[/\\])?(.+?)[/\\][^/\\]*$', '$2')[not(. eq $uri)]
             
-        (: function `distinct` 
-           =================== :)
-        else if ($fname eq 'distinct') then
-            let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                count(distinct-values($values)) eq count($values)
-                            
         (: function `docx-ccount` 
            ====================== :)
         else if ($fname = ('docx-ccount')) then
@@ -1597,13 +1590,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 if (exists($value)) then $value else
                 $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                
+
         (: function `values-distinct` 
            ========================== :)
-        else if ($fname eq 'values-distinct') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+        else if ($fname = ('values-distinct', 'distinct')) then
+            let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                count(distinct-values($arg)) eq count($arg)                
+                count(distinct-values($values)) eq count($values)
             
         (: function `win.copy` 
            ===================== :)
