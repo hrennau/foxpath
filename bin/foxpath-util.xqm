@@ -18,6 +18,8 @@ declare variable $f:PREDECLARED_NAMESPACE_BINDINGS := map{
     "tei": "http://www.tei-c.org/ns/1.0",
     "wsdl": "http://schemas.xmlsoap.org/wsdl/",    
     "xml": "http://www.w3.org/XML/1998/namespace",
+    "xpl": "http://www.w3.org/ns/xproc",    
+    "xplc": "http://www.w3.org/ns/xproc-step",    
     "xs": "http://www.w3.org/2001/XMLSchema",
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",    
     "xsl": "http://www.w3.org/1999/XSL/Transform"

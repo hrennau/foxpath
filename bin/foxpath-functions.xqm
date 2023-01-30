@@ -634,6 +634,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 i:fox-file-size($uri, $options)
 
+       (: function `folder-size` 
+          ====================== :)
+        else if ($fname = ('folder-size', 'fosize', 'folder-size-ec', 'fosize-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $uri := if ($da) then $arg1 else $context
+            let $controlOptions := $call/*[1 + $da]/
+                f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:folderSize($uri, $controlOptions, $options)
+
         (: function `filter-items` 
            ======================= :)
         else if ($fname eq 'filter-items') then

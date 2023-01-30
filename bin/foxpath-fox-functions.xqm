@@ -773,6 +773,39 @@ declare function f:filterItems($items as item()*,
 };
 
 (:~
+ : Returns the folder size, defined as the sum of the sizes
+ : of contained files. Can also process multiple folders.
+ : By default, files at any level are considered, and sizes
+ : are rendered as number of bytes. Use options 'flat',
+ : 'mb' and 'kb' in order to ignore files in subfolders
+ : and have the size in megabytes or kilobytes, respectively.
+ :
+ : @param uris folder URIs
+ : @param options options controlling details of the execution
+ : @param processingOptions processing options
+ : @return the sum of file sizes
+ :)
+declare function f:folderSize($uris as xs:string*, 
+                              $options as xs:string?,
+                              $processingOptions as map(*)?)
+        as xs:decimal? {
+    let $ops := f:getOptions($options, ('flat', 'deep', 'mb', 'kb'), 'folder-size')  
+    let $fn :=
+        if ($ops = 'flat') 
+        then i:childUriCollectionAbsolute#2
+        else i:descendantUriCollectionAbsolute#2
+    let $files :=
+        for $uri in $uris return
+           $fn($uri, $processingOptions)[i:fox-is-file(., $processingOptions)]
+    let $size := ($files ! i:fox-file-size(., $processingOptions)) => sum()
+    let $sizeRep :=
+        if ($ops = 'mb') then ($size div 1000000) ! round(., 0)
+        else if ($ops = 'kb') then ($size div 1000) ! round(., 0)
+        else $size
+    return $sizeRep
+};
+
+(:~
  : Maps a URI to the URI resulting from a shift of a given ancestor folder. 
  : The result URI is reached from the ancestor specified by $shiftedAncestor 
  : by the same path as the input $uri s reached from the ancestor specified
@@ -1257,7 +1290,6 @@ declare function f:ftTokenize($text as item()*,
 
 declare function f:getRootUri($uris as xs:string*)
         as xs:string? {
-    let $_DEBUG := trace($uris, '_URIS: ')        
     let $schemas :=        
         for $uri in $uris
         group by $schema := string(replace($uri, '^(\S+?:/+)(.:/)?.*', '$1$2')[. ne $uri])
