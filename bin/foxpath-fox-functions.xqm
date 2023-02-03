@@ -3641,13 +3641,12 @@ declare function f:subsetFraction(
 declare function f:table($rows as item()*, 
                          $headers as xs:string*,
                          $options as xs:string?)
-        as xs:string {
-    let $ops := f:getOptions($options, ('sort', 'sortd', 'distinct'), 'table')        
+        as item() {
+    let $ops := f:getOptions($options, ('sort', 'sortd', 'distinct', 'xml'), 'table')        
     let $sort := $ops = 'sort'
     let $sortd := $ops = 'sortd'
     let $distinct := $ops = 'distinct'
-    let $sep := codepoints-to-string(30000) (:  ($sep, '#')[1] :)
-    let $headers :=
+    let $headersPlus :=
         if (count($headers) eq 1) then tokenize($headers, ',\s*') else $headers
     return if (($rows ! array:size(.)) => distinct-values() => count() gt 1) then
         error(QName((), 'INVALID_ARG'), concat('Invalid call of "table" - ',
@@ -3656,7 +3655,39 @@ declare function f:table($rows as item()*,
             'example: row(string(foo), string(bar))'))
         else
 
+    let $headers := $headersPlus[not(matches(., '^(table|row)='))]
     let $countCols := $rows[1] ! array:size(.)
+    return    
+        if ($ops = 'xml') then
+            let $tableName := ($headersPlus[starts-with(., 'table=')] 
+                              ! replace(., '^table=', ''), 'table')[1]
+            let $rowName := ($headersPlus[starts-with(., 'row=')] 
+                              ! replace(., '^row=', ''), 'row')[1]        
+            let $colnames :=
+                if (exists($headers)) then $headers
+                else 1 to $countCols ! ('col'||.)
+            let $rows :=
+                for $row in $rows return
+                    element {$rowName}{
+                        for $c in 1 to $countCols return 
+                            element {$colnames[$c]} {$row($c) ! string()}
+                    }
+            let $rows :=
+                if (not($ops = 'distinct')) then $rows else
+                for $row in $rows
+                group by $content := string-join($row/*, '~~~')
+                return $row
+            let $rows :=
+                if (not($ops = ('sort', 'sortd'))) then $rows 
+                else if ($ops = 'sort') then 
+                for $row in $rows order by string-join($row/*, '~~~') 
+                    return $row
+                else 
+                for $row in $rows order by string-join($row/*, '~~~') descending
+                    return $row
+            return
+                element {$tableName} {$rows}
+        else
     let $widths :=
         for $i in 1 to $countCols return
         ($rows?($i) ! string() ! string-length(.)) => max()
