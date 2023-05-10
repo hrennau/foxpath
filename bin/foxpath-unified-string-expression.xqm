@@ -72,7 +72,18 @@ declare function f:compileUnifiedStringExpression(
                     $uexpr as xs:string?, 
                     $addAnchorsDefault as xs:boolean?,
                     $qualifiedMatching as xs:boolean?,
-                    $namespaceBindings as map(*)?) 
+                    $namespaceBindings as map(*)?)
+        as map(xs:string, item()*)? {
+    f:compileUnifiedStringExpression($uexpr,
+        $addAnchorsDefault, $qualifiedMatching, $namespaceBindings, ())        
+};        
+
+declare function f:compileUnifiedStringExpression(
+                    $uexpr as xs:string?, 
+                    $addAnchorsDefault as xs:boolean?,
+                    $qualifiedMatching as xs:boolean?,
+                    $namespaceBindings as map(*)?,
+                    $options as xs:string?) 
         as map(xs:string, item()*)? {
     let $itemsAndFlags := f:splitStringIntoItemsAndFlags($uexpr)
     let $flags := $itemsAndFlags[1]    
@@ -81,7 +92,7 @@ declare function f:compileUnifiedStringExpression(
     let $isFulltext := $flags ! tokenize(.) = ('fulltext', 'ftext', 'ft')
     return
         if ($isFulltext) then  
-            let $fnFulltext := ft:fnContainsText($items[1], $flags, (), ())
+            let $fnFulltext := ft:fnContainsText($items[1], $flags, (), $options)
             return map{'contains-text': $fnFulltext}
         else
         
@@ -307,23 +318,23 @@ declare function f:compileGlorexPatternSetQualified(
  : @return true of false, if the string matches, does not match, the filter
  :) 
 declare function f:matchesUnifiedStringExpression(
-                   $string as xs:string+,                                               
+                   $items as item()+,                                               
                    $filter as map(xs:string, item()?)?)
         as xs:boolean {
-    if (count($string) gt 1) then 
-        f:matchesUnifiedStringExpressionQualified($string[1], $string[2], $filter)
+    if (count($items) gt 1) then 
+        f:matchesUnifiedStringExpressionQualified($items[1], $items[2], $filter)
     else
     
     let $fnContainsText := $filter?contains-text
     return
-        if (exists($fnContainsText)) then $fnContainsText($string) else
+        if (exists($fnContainsText)) then $fnContainsText($items) else
         
     if (empty($filter)) then true() else        
     let $include := $filter?include
     let $exclude := $filter?exclude
     return
-        (empty($include) or f:matchesGlorexPatternSet($string, $include)) and
-        (empty($exclude) or not(f:matchesGlorexPatternSet($string, $exclude)))        
+        (empty($include) or f:matchesGlorexPatternSet($items, $include)) and
+        (empty($exclude) or not(f:matchesGlorexPatternSet($items, $exclude)))        
 };
 
 (:~

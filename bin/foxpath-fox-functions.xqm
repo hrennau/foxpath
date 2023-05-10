@@ -198,7 +198,7 @@ declare function f:baseUriDirectories($item as item(), $distance as xs:integer?)
 declare function f:baseUriDirectory($item as item())
         as xs:string? {
     (if ($item instance of node()) then $item else i:fox-doc($item, ()))
-    ! base-uri(.) ! replace(., '.*[/\\](.*)[/\\][^/\\]*$', '$1')
+    ! base-uri(.) ! replace(., '/[^/]*$', '')
 };
 
 declare function f:baseUriFileName($item as item())
@@ -1673,10 +1673,11 @@ declare function f:matchesPattern($item as item()+,
                                   $controlOptions as map(*)?)
         as xs:boolean {
     let $cpattern := $pattern ! 
-        use:compileUnifiedStringExpression(., true(), count($item) gt 1, $controlOptions?NAMESPACE_BINDINGS)
+        use:compileUnifiedStringExpression(
+            ., true(), count($item) gt 1, $controlOptions?NAMESPACE_BINDINGS, $fnOptions)
     let $item :=
         if ($item instance of xs:anyAtomicType) then string($item) else $item
-    (: let $_DEBUG := trace($cpattern, '_CPATTERN: ') :)        
+    (: let $_DEBUG := trace($cpattern, '_CPATTERN: ') :)  
     return use:matchesUnifiedStringExpression($item, $cpattern)
 };
 

@@ -122,7 +122,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `base-dir-name` 
            ========================= :)
-        else if ($fname = ('base-dir-name', 'base-dname', 'bdname')) then
+        else if ($fname = ('base-dir-name', 'base-dname', 'bdname', 'folder')) then
             let $contextItem :=
                 if (empty($call/*)) then $context
                 else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -190,13 +190,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `clark-name` 
            ===================== :)
-        else if ($fname = ('clark-name', 'cname')) then
+        else if ($fname = ('clark-name', 'cname', 'aclark-name', 'acname')) then
             let $node := 
                 let $explicit := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return ($explicit, $context)[1]
+            let $prefix := '@'[starts-with($fname, 'a') and $node instance of attribute()]                
             return
                 if (not(count($node) eq 1 and $node[1] instance of node())) then ()
-                else 'Q{'||namespace-uri($node)||'}'||local-name($node)
+                else $prefix||'Q{'||namespace-uri($node)||'}'||local-name($node)
 
         (: function `contains-nonws` 
            ======================== :)
@@ -216,8 +217,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $text := if ($da) then $arg1 else $context
             let $query := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $flags := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
-            let $_DEBUG := trace($text, '_TEXT: ')
-            let $_DEBUG := trace($query, '_QUERY: ')
             return ft:containsText($text, $query, $flags)            
                 
         (: function `contains-text-expr` 
@@ -2009,9 +2008,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 avg($arg)
                 
-        (: function `base-uri` 
-           =================== :)
-        else if ($fname eq 'base-uri') then
+        (: function `base-uri`, `file` 
+           =========================== :)
+        else if ($fname = ('base-uri', 'file')) then
             let $contextItem :=
                 if (empty($call/*)) then $context
                 else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
