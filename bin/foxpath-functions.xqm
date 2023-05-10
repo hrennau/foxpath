@@ -197,7 +197,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $prefix := '@'[starts-with($fname, 'a') and $node instance of attribute()]                
             return
                 if (not(count($node) eq 1 and $node[1] instance of node())) then ()
-                else $prefix||'Q{'||namespace-uri($node)||'}'||local-name($node)
+                else $prefix||namespace-uri($node)[normalize-space()] ! ('Q{'||.||'}')||local-name($node)
 
         (: function `contains-nonws` 
            ======================== :)
