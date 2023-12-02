@@ -3831,7 +3831,7 @@ declare function f:parseItem_canonicalFoxnameTest($text as xs:string,
                 concat($FOXSTEP_NAME_DELIM, $FOXSTEP_NAME_DELIM),
                 $FOXSTEP_NAME_DELIM
             )
-            ! replace(., '[*?]', '~$0')
+            (: ! replace(., '[*?]', '~$0') :)
             ,
             substring($text, string-length($patternText) + 1)
         )

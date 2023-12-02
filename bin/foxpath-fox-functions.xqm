@@ -374,8 +374,9 @@ declare function f:docxDoc($uri as xs:string)
  : @return for each group an element containing the grouped items
  :)
 declare function f:groupItems($items as item()*,
-                              $groupKeyExpr as item(),
+                              $groupKeyExpr as item()?,
                               $groupProcExpr as item()?,
+                              $groupWhereExpr as item()?,
                               $wrapperName as item()?,
                               $keyName as xs:string?,
                               $options as xs:string?,
@@ -391,6 +392,9 @@ declare function f:groupItems($items as item()*,
         for $item in $items
         let $key := f:resolveFoxpath($item, $groupKeyExpr, $processingOptions)
         group by $key
+        where if (empty($groupWhereExpr)) then true() else
+            f:resolveFoxpath($key, $groupWhereExpr, map{$itemsQname: $item}, $processingOptions)
+            
         let $groupContent :=
             if (not($groupProcExpr)) then $item
             else f:resolveFoxpath($key, $groupProcExpr, map{$itemsQname: $item}, $processingOptions)
@@ -1702,7 +1706,7 @@ declare function f:median($values as xs:anyAtomicType*)
 };
 
 (:~
- : Returns name strings. Dependen on $nameKind, the name
+ : Returns name strings. Dependent on $nameKind, the name
  : string expresses the lexical name, the local name or
  : the JSON name. If the node is an attribute node, an
  : @ character is prepended.
@@ -1711,14 +1715,10 @@ declare function f:nameString($nodes as node()*,
                               $nameKind as xs:string?,
                               $options as xs:string?)
         as xs:string* {
-    (:
-    let $ops := $options ! tokenize(.)        
-    return
-     :)
-        switch($nameKind)
-        case 'name' return $nodes/concat(self::attribute()/'@', name(.))
-        case 'jname' return $nodes/concat(self::attribute()/'@', f:unescapeJsonName(local-name(.)))
-        default return $nodes/concat(self::attribute()/'@', local-name(.))
+    switch($nameKind)
+    case 'name' return $nodes/concat(self::attribute()/'@', name(.))
+    case 'jname' return $nodes/concat(self::attribute()/'@', f:unescapeJsonName(local-name(.)))
+    default return $nodes/concat(self::attribute()/'@', local-name(.))
 };        
 
 (:~
@@ -1759,12 +1759,12 @@ declare function f:namePath($nodes as node()*,
                             $numSteps as xs:integer?,
                             $options as xs:string?)
         as xs:string* {
-    let $ops := f:getOptions($options, ('name', 'lname', 'jname', 'base-uri', 'rel-base-uri', 'text'), 'name-path')
+    let $ops := f:getOptions($options, 
+      ('name', 'lname', 'jname', 'fname', 'fpath', 'rfpath', 'text', 'value', 'xsdcompname', 'noconcat'), 'name-path')
     let $nameKind := ($ops[. = ('lname', 'jname', 'name')][1], 'lname')[1]
-    let $noconcat := $ops = 'N'
-    let $withBaseUri := $ops[. = ('base-uri', 'rel-base-uri')][1] 
-    let $options := map:merge((map:entry('noconcat', true())[$noconcat]))
-
+    let $noconcat := $ops = 'noconcat'
+    let $withBaseUri := $ops[. = ('fpath', 'rfpath', 'fname')][1] 
+    
     for $node in $nodes return
     (: _TO_DO_ Remove hack when BaseX Bug is removed; return to: let $nodes := $node/ancestor-or-self::node() :)     
     let $kindMark := if ($node instance of attribute()) then '@' 
@@ -1774,30 +1774,31 @@ declare function f:namePath($nodes as node()*,
         let $dnode := $all[. instance of document-node()]
         return ($dnode, $all except $dnode)
     let $steps :=   
-        if ($nameKind eq 'lname') then $ancos/local-name() 
-            (: $ancos/concat(self::attribute()/'@', local-name(.)) :)
-        else if ($nameKind eq 'jname') then
-        (:
-            $ancos/concat(self::attribute()/'@', 
+        if ($nameKind eq 'lname') then 
+            $ancos/concat(local-name(), self::xs:*/@name/concat('(', ., ')')[$ops = 'xsdcompname'])
+        else if ($nameKind ne 'jname') then        
+            $ancos/concat(name(), self::xs:*/@name/concat('(', ., ')')[$ops = 'xsdcompname'])        
+        else
+            $ancos/( 
                 let $raw := f:unescapeJsonName(local-name(.))
                 return if (not(contains($raw, '/'))) then $raw else concat('"', $raw, '"')
             )
-         :)
-            $ancos/concat((), 
-                let $raw := f:unescapeJsonName(local-name(.))
-                return if (not(contains($raw, '/'))) then $raw else concat('"', $raw, '"')
-            )
-        else (:
-            $ancos/concat(self::attribute()/'@', name(.)):)
-            $ancos/name(.)
     let $steps := if (not($kindMark)) then $steps else ($steps[position() lt last()], $kindMark||$steps[last()])
     let $steps := if (empty($numSteps)) then $steps else subsequence($steps, count($steps) + 1 - $numSteps)
-    let $path := 
-        if ($options?noconcat) then $steps[string()]
-        else string-join($steps, '/')
-    return if (not($withBaseUri)) then $path
-           else if ($withBaseUri eq 'base-uri') then $node/i:fox-base-uri(.)||'#'||$path
-           else (uth:relUri(file:current-dir(), $node/i:fox-base-uri(.)))||'#'||$path
+    return         
+        if ($ops = 'noconcat') then $steps[string()]
+        else 
+            let $value := 
+                if (not($ops = 'value')) then () 
+                else if ($node/self::attribute()) then $node
+                else if ($node/self::text()) then $node
+                else if ($node/text()) then $node
+                else ()
+            let $path := string-join($steps, '/')||($value ! concat('=', .))
+            return if (not($withBaseUri) or $ops = 'noconcat') then $path
+                else if ($withBaseUri eq 'fpath') then $node/i:fox-base-uri(.)||'#'||$path
+                else if ($withBaseUri eq 'fname') then $node/(i:fox-base-uri(.) ! file:name(.))||'#'||$path
+                else (uth:relUri(file:current-dir(), $node/i:fox-base-uri(.)))||'#'||$path
            
 };        
 
@@ -1917,14 +1918,17 @@ declare function f:indexedNamePath(
  :)
 declare function f:nodesLocationReport($nodes as node()*,
                                        $nameKind as xs:string?,   (: name | lname | jname :)
-                                       $flags as xs:string?)
+                                       $options as xs:string?)
         as xs:string {
-    let $namePathFlags := string-join(('N'[contains($flags, 'a')]), '')
-    let $withValues := contains($flags, 'v')        
+    let $ops := f:getOptions($options, ('deep', 'f', 'f1', 'f2', 'f3', 'v', 'xsdcompname'), 'nodes-location')
+    let $namePathOptions := string-join(($ops[. = ('xsdcompname')], 'noconcat'[$ops = 'deep']), ' ')
+    let $withValues := $ops = 'v'        
     let $numberFsLevels := 
-        let $spec := $flags ! lower-case(.) ! replace(., '^.*?(f\d*).*', '$1')
-        return if (not(contains($spec, 'f'))) then () else 
-            (substring($spec, 2)[string()] ! xs:integer(.), 1)[1]
+        if ($ops = 'f') then 1
+        else if ($ops = 'f1') then 2
+        else if ($ops = 'f2') then 3
+        else if ($ops = 'f3') then 4
+        else ()
     let $withFileName := $numberFsLevels gt 0
     let $numberOfFolders := $numberFsLevels - 1
     let $fn_name := 
@@ -1939,9 +1943,9 @@ declare function f:nodesLocationReport($nodes as node()*,
         if ($numberOfFolders) then f:baseUriDirectories(., $numberOfFolders) else (),
         f:baseUriFileName(.)[$withFileName], 
         'Name: '||$fn_name(.), 
-        let $namePathOptions := string-join(($nameKind, $namePathFlags), ' ')
+        let $namePathOptions := string-join(($nameKind, $namePathOptions), ' ')
         let $steps := f:namePath(., (), $namePathOptions)
-        return if (contains($namePathFlags, 'N')) then ('/'||$steps[1], subsequence($steps, 2))
+        return if ($ops = 'a') then ('/'||$steps[1], subsequence($steps, 2))
                else $steps,
         .[self::attribute(), text()][$withValues]/concat('value: ', .)
         ))
@@ -2881,7 +2885,8 @@ declare function f:pathContent($context as item()*,
                                $innerNodeNameFilter as xs:string?,
                                $options as xs:string?)
         as xs:string* {
-    let $ops := f:getOptions($options, ('name', 'lname', 'jname', 'with-inner', 'text'), 'path-content')        
+    let $ops := f:getOptions($options, ('name', 'lname', 'jname', 'with-inner', 'text'), 'path-content')  
+    let $namePathOptions := $ops[not(. = 'with-inner')] => string-join(' ')
     let $alsoInnerNodes := $ops = 'with-inner'
     let $cLeafNameFilter := $leafNameFilter ! use:compileUnifiedStringExpression(., true(), (), ())    
     let $cInnerNodeNameFilter := $innerNodeNameFilter ! use:compileUnifiedStringExpression(., true(), (), ())
@@ -2899,11 +2904,11 @@ declare function f:pathContent($context as item()*,
             if ($ops = 'jname') then $cnode/descendant::*
             else $cnode/(@*, descendant::*/(., @*))
         else
-            let $excluded := $cnode//*[*][not(use:matchesUnifiedStringExpression($fnGetName(.), $cInnerNodeNameFilter))]
+            let $required := $cnode//*[*][use:matchesUnifiedStringExpression($fnGetName(.), $cInnerNodeNameFilter)]         
             let $unfiltered :=
                 if ($ops = 'jname') then $cnode/descendant::*
                 else $cnode/(@*, descendant::*/(., @*))
-            return $unfiltered[not(ancestor-or-self::* intersect $excluded)]
+            return $unfiltered[ancestor-or-self::* intersect $required]
     )[$alsoInnerNodes or not(*)]
     let $descendants2 :=
         if (empty($cLeafNameFilter)) then $descendants1
@@ -2912,14 +2917,14 @@ declare function f:pathContent($context as item()*,
         else 
             $descendants1[use:matchesUnifiedStringExpression($fnGetName(.), $cLeafNameFilter)]
     let $descendants2 := 
-        if (not($options = 'text')) then $descendants2
+        if (not($ops = 'text')) then $descendants2
         else 
             let $textNodes := $descendants2/text()[matches(., '\S')]
             return
                 if ($alsoInnerNodes) then ($descendants2, $textNodes)
                 else ($descendants2 except $textNodes/.., $textNodes)
     return
-        f:namePath($descendants2, $cnode, (), $options)
+        f:namePath($descendants2, $cnode, (), $namePathOptions)
         => sort()
 };        
 
@@ -2985,11 +2990,11 @@ declare function f:deleteNodes($items as item()*,
     let $keepWS := $ops = 'keepws'
     let $withBaseUri := $ops = 'base'
     for $item in $items        
-    let $node := if ($item instance of node()) then $item/root() else i:fox-doc($item, ())
+    let $node := if ($item instance of node()) then $item else i:fox-doc($item, ())
     let $resultDoc :=  
         copy $node_ := $node
         modify (
-            let $_DEBUG := trace($excludeExpr, '_EXCLUDE_EXPR: ')
+            (: let $_DEBUG := trace($excludeExpr, '_EXCLUDE_EXPR: ') :)
             let $delNodes := $excludeExpr !                 
                 f:resolveFoxpath($node_, ., $processingOptions)[. instance of node()]
             return 
@@ -3025,13 +3030,19 @@ declare function f:deleteNodes($items as item()*,
  : @param excludedNamePattern optional name patterns selecting child elements to be ignored
  : @return the names as a sequence, or as a concatenated string
  :)
-declare function f:relatedNames($nodes as node()*, 
+declare function f:relatedNames($nodesOrUris as item()*, 
                             $relationship as xs:string,
                             $nameKind as xs:string?,   (: name | lname | jname :)
                             $nameFilter as xs:string?,
                             $options as xs:string?)
         as xs:string* {
-    let $nosort := contains($options, 'nosort') 
+    let $ops := f:getOptions($options, ('nosort', 'duplicates'), 'child-names')        
+    let $nodes :=
+        for $item in $nodesOrUris return
+            if ($item instance of node()) then $item else 
+                i:fox-doc($item, ())        
+    let $nosort := $ops = 'nosort' 
+    let $duplicates := $ops = 'duplicates'    
     let $cnameFilter := $nameFilter ! use:compileUnifiedStringExpression(., true(), (), ())
     (:
     let $_DEBUG := trace($nameFilter, '_FILTER_STRING: ')    
@@ -3067,7 +3078,8 @@ declare function f:relatedNames($nodes as node()*,
         return 
             if (empty($cnameFilter)) then $unfiltered
             else $unfiltered[$fnName(.) ! replace(., '^@', '') ! use:matchesUnifiedStringExpression(., $cnameFilter)]
-    let $names := $items/$fnName(.) => distinct-values() 
+    let $names := $items/$fnName(.)
+    let $names := if ($duplicates) then $names else $names => distinct-values()
     let $names := if ($nosort) then $names else $names => sort()        
     let $nameseq := string-join($names, $separator)
     order by $nameseq        
@@ -3261,12 +3273,13 @@ declare function f:resolveFoxpath($context as item(),
             return i:resolveFoxpathExpr($exprTextOrTree, false(), $context, (), $useOptions)
 };
 
-declare function f:resolveFoxpath($context as item(), 
+declare function f:resolveFoxpath($context as item()?, 
                                   $exprTextOrTree as item(),
                                   $vars as map(xs:QName, item()*),
                                   $options as map(*))
         as item()* {
     (: let $_DEBUG := trace($exprTextOrTree, '_RESOLVEFOXPATH#4 EXPRESSION_TEXT_OR_TREE: ') :)
+    let $context := ($context, '')[1]
     let $isContextNode := $context instance of node()
     let $useOptions := map:put($options, 'IS_CONTEXT_URI', $isContextNode)
     return
@@ -4514,6 +4527,28 @@ declare function f:normalizeURIPath($uri as xs:string)
         else $uri
     return
         if ($uri eq $uri2) then $uri else f:normalizeURIPath($uri2)
+};
+
+(:~
+ : Normalizes file system path:
+ : - replaces \ with /
+ : - removes trailing /
+ : - removes "file://", if present
+ : The result is either a relative path, or a path starting
+ : with "/" (Unix), or a path starting with d:/ (Window,
+ : where "d" represents the drive letter).
+ :
+ : @param path a file system path, or a file URI
+ : @return the normalized path
+ :) 
+declare function f:normalizePath($path as xs:string)
+        as xs:string {
+    $path
+    ! replace(., '\\', '/')
+    ! replace(., '/$', '')
+    ! replace(., 
+      '^file:/*? ((/([a-zA-Z]:/.*))$  |  (/([^/].*)?$))', '$3$4', 'x')
+    ! replace(., '/$', '')
 };
 
 (:~

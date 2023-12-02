@@ -768,10 +768,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $items := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             let $groupKeyExpr := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $groupProcExpr := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $wrapperName := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $keyName := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $fnOptions := $call/*[6]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:groupItems($items, $groupKeyExpr, $groupProcExpr, $wrapperName, $keyName, $fnOptions, $options)
+            let $groupWhereExpr := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $wrapperName := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $keyName := $call/*[6]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $call/*[7]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:groupItems($items, $groupKeyExpr, $groupProcExpr, $groupWhereExpr,
+                $wrapperName, $keyName, $fnOptions, $options)
                         
 
         (: function `hlist` 
@@ -2093,7 +2095,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `current-dir` 
            ====================== :)
         else if ($fname eq 'current-dir') then
-            file:current-dir() ! file:path-to-uri(.) ! replace(., '[/\\]$', '')
+            file:current-dir() ! foxf:normalizePath(.)
                 
         (: function `date` 
            =============== :)
