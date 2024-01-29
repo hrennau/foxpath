@@ -166,7 +166,7 @@ declare function f:finalizeOptions($options as map(*)?,
         for $utreeDir in $utreeDirs return
             if (starts-with($utreeDir, 'basex://')) then
                 let $db := substring($utreeDir, 9)
-                let $docs := try {db:open($db)/*} catch * {()}
+                let $docs := try {db:get($db)/*} catch * {()}
                 return $docs
             else
                 try {
