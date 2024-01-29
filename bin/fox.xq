@@ -1,7 +1,8 @@
 import module namespace f="http://www.ttools.org/xquery-functions" 
 at "foxpath.xqm", 
    "foxpath-parser.xqm", 
-   "foxpath-processorDependent.xqm";
+   "foxpath-processorDependent.xqm",
+   "foxpath-uri-operations.xqm";
 
 import module namespace util="http://www.ttools.org/xquery-functions/util" 
 at  "foxpath-util.xqm";

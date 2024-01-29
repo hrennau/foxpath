@@ -154,10 +154,12 @@ set OPT_SER=-s indent=yes
 if not "%OFILE%"=="" (set OPT_OFILE=-o "%OFILE%")
 if not "%UTREE_DIRS%"=="" (set OPT_UTREE_DIRS=-b "utreeDirs=%UTREE_DIRS%")
 if not "%UGRAPH_ENDPOINTS%"=="" (set OPT_UGRAPH_ENDPOINTS=-b "ugraphEndpoints=%UGRAPH_ENDPOINTS%")
-set OPT_GITHUB_TOKEN=-b "{http://www.ttools.org/xquery-functions}githubToken=%GITHUB_TOKEN%"
+set OPT_GITHUB_TOKEN=-b "{http://www.ttools.org/xquery-functions}githubTokenLocation=%GITHUB_TOKEN%"
 if not "%CONTEXT_ITEM%"=="" (set OPT_CONTEXT_ITEM=-b "context=%CONTEXT_ITEM%")
 if "%DEBUG_TIME%"=="1" (set OPT_DEBUG_TIME=-b debugtime=1)
 if not "%CONSERVE_WS%"=="" (set OPT_CONSERVE_WS=-w)
 rem echo HERE=%HERE%
 rem if not "%CONSERVE_WS%"=="" (echo CONSERVE WHITESPACE)
-basex %OPT_SER% %OPT_CONSERVE_WS% %OPT_OFILE% -b isFile=%ISFILE% -b echo=%ECHO% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% %OPT_CONTEXT_ITEM% %OPT_DEBUG_TIME% -b "vars=%VARS%" %HERE%/fox.xq
+rem *** NOTE - parameter OPT_GITHUB_TOKEN temporarily removed because of BaseX issue
+rem basex %OPT_SER% %OPT_CONSERVE_WS% %OPT_OFILE% -b isFile=%ISFILE% -b echo=%ECHO% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% %OPT_CONTEXT_ITEM% %OPT_DEBUG_TIME% -b "vars=%VARS%" %HERE%/fox.xq
+    basex %OPT_SER% %OPT_CONSERVE_WS% %OPT_OFILE% -b isFile=%ISFILE% -b echo=%ECHO% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS%                    %OPT_CONTEXT_ITEM% %OPT_DEBUG_TIME% -b "vars=%VARS%" %HERE%/fox.xq
