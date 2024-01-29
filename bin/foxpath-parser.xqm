@@ -2598,7 +2598,7 @@ declare function f:parseContextExpr($text as xs:string, $context as map(*))
     (: let $_DEBUG := trace($containedExprEtc, '_CONTAINED_EXPR_ETC: ') :)
     let $containedExpr := $containedExprEtc[. instance of node()]
     let $textAfterRaw := $containedExprEtc[not(. instance of node())]
-    let $textAfter := f:skipWhitespace($textAfterRaw)
+    let $textAfter := $textAfterRaw ! f:skipWhitespace(.)
     let $exprText := substring-before($textAfterOpen, $textAfterRaw)
     return
         if (not(starts-with($textAfter, '}'))) then
