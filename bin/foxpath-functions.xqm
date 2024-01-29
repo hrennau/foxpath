@@ -769,10 +769,11 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $groupKeyExpr := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $groupProcExpr := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $groupWhereExpr := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $wrapperName := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $keyName := $call/*[6]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $fnOptions := $call/*[7]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:groupItems($items, $groupKeyExpr, $groupProcExpr, $groupWhereExpr,
+            let $orderBy := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $wrapperName := $call/*[6]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $keyName := $call/*[7]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $call/*[8]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:groupItems($items, $groupKeyExpr, $groupProcExpr, $groupWhereExpr, $orderBy,
                 $wrapperName, $keyName, $fnOptions, $options)
                         
 

@@ -377,6 +377,7 @@ declare function f:groupItems($items as item()*,
                               $groupKeyExpr as item()?,
                               $groupProcExpr as item()?,
                               $groupWhereExpr as item()?,
+                              $orderBy as xs:string?,
                               $wrapperName as item()?,
                               $keyName as xs:string?,
                               $options as xs:string?,
@@ -384,6 +385,7 @@ declare function f:groupItems($items as item()*,
         as node()* {
     if (empty($items)) then () else
     
+    let $groupKeyExpr := ($groupKeyExpr, '.')[1]
     let $wrapperNameExpr := $wrapperName[. instance of node()]
     let $wrapperName := if ($wrapperNameExpr) then () else ($wrapperName, 'group')[1]
     let $keyName := ($keyName, 'key')[1]
@@ -401,6 +403,12 @@ declare function f:groupItems($items as item()*,
         let $groupElemName := 
             if ($wrapperNameExpr) then f:resolveFoxpath($key, $wrapperNameExpr, map{$itemsQname: $item}, $processingOptions)
             else $wrapperName
+        order by if (not($orderBy)) then ()
+                 else
+                     switch($orderBy)
+                     case 's' return string($key)
+                     case 'n' return $key (:  ! try {number(.)} catch * {()} :)
+                     default return ()
         return
             element {$groupElemName} {
                 attribute {$keyName} {$key}[not($keyName eq '#none')],
