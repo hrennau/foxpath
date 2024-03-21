@@ -257,6 +257,109 @@ declare function f:bslash($arg as xs:string?)
     replace($arg, '/', '\\')        
 };      
 
+declare function f:charClassReport($items as item()*,
+                                   $classes as xs:string?,
+                                   $options as xs:string?)
+        as element(charClassReport) {
+    let $ops := f:getOptions($options, ('example', 'parent', 'fname', 'text', 'att'), 'char-class-report')
+    let $texts := $items ! string(.)
+    let $nodes := 
+        if (not($ops = 'example')) then ()
+        else if ($ops = 'text') then $items/descendant-or-self::text()
+        else if ($ops = 'att') then $items//@*
+        else (
+            $items/descendant-or-self::text(), $items//@*
+        )
+    
+    let $classes := $classes ! lower-case(.)
+    let $classes :=
+        let $letters :=
+            if ($classes and not(contains($classes, 'l'))) then () else
+            let $charStat :=
+                $texts ! replace(., '\P{L}', '') => f:charStat($nodes, $options)
+            return <letters>{$charStat}</letters>
+        let $marks :=
+            if ($classes and not(contains($classes, 'm'))) then () else
+            let $charStat :=
+                $texts ! replace(., '\P{M}', '') => f:charStat($nodes, $options)
+            return <marks>{$charStat}</marks>
+        let $numbers :=
+            if ($classes and not(contains($classes, 'n'))) then () else
+            let $charStat :=
+                $texts ! replace(., '\P{N}', '') => f:charStat($nodes, $options)
+            return <numbers>{$charStat}</numbers>
+        let $punctuation :=
+            if ($classes and not(contains($classes, 'p'))) then () else
+            let $charStat :=
+                $texts ! replace(., '\P{P}', '') => f:charStat($nodes, $options)
+            return <punctuation>{$charStat}</punctuation>
+        let $separators :=
+            if ($classes and not(contains($classes, 'z'))) then () else
+            let $charStat :=
+                $texts ! replace(., '\P{P}', '') => f:charStat($nodes, $options)
+            return <separators>{$charStat}</separators>
+        let $symbols :=
+            if ($classes and not(contains($classes, 's'))) then () else
+            let $charStat :=
+                $texts ! replace(., '\P{S}', '') => f:charStat($nodes, $options)
+            return <symbols>{$charStat}</symbols>
+        let $other :=
+            if ($classes and not(contains($classes, 'c'))) then () else
+            let $charStat :=
+                $texts ! replace(., '\P{C}', '') => f:charStat($nodes, $options)
+            return <other>{$charStat}</other>
+        return
+            <classes>{
+                $letters, $marks, $numbers, $punctuation,
+                $separators, $symbols, $other
+            }</classes>
+    return 
+        <charClassReport>{
+            $classes
+        }</charClassReport>
+};
+
+(:~
+ : Creates a simple character usage statistic. For each character
+ : the string representation, the unicode codepoint and the number
+ : of occurrences is given.
+ :)
+declare function f:charStat($texts as xs:string*,
+                            $nodes as node()*,
+                            $options as xs:string?) {
+    let $ops := f:getOptions($options, ('example', 'parent', 'fname'), 'char-stat')                            
+    let $fnGetExamples :=
+        if (not($ops = 'example')) then () else
+        let $size := 3 return
+        function($charval) {
+            for $node in $nodes[contains(., $charval)][position() le $size]
+            let $node := if ($ops = 'parent') then $node/../.. else $node
+            let $charpos := substring-before($node, $charval) ! (1 + string-length(.))
+            let $fname :=
+                if (not($ops = 'fname')) then () else
+                    $node ! base-uri(.) ! file:name(.) ! (attribute fname {.})
+            return
+                $node ! <example charpos="{$charpos}">{$fname, $node/string()}</example>
+        }
+    let $chars := 
+        for $text in $texts
+        for $i in 1 to string-length($text) 
+        return substring($text, $i, 1)  
+    let $charReports := 
+        for $char in $chars
+        let $charval := $char
+        group by $charval
+        order by $charval
+        return <char s="{$charval}" 
+                     code="{string-to-codepoints($charval)}" n="{count($char)}">{
+                   $fnGetExamples ! .($charval)                     
+               }</char>
+    return
+        <chars n="{count($charReports)}">{
+            $charReports
+        }</chars>
+};
+
 (:~
  : Checks if two or more nodes have deep-equal content. The content to be
  : compared can be restricted by the $scope parameter.

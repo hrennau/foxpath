@@ -150,6 +150,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:bothValues($leftValue, $rightValue)
 
+       (: function `char-class-report` 
+          =========================== :)
+        else if ($fname = ('char-class-report', 'char-class-report-ec', 'cclassrep', 'cclassrep-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $text := if ($da) then $arg1 else $context
+            let $classes := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            return
+                foxf:charClassReport($text, $classes, $fnOptions)
+
         (: function `child-names`, `att-names`, `content-names`, `parent-name`  
            =================================================================== :)
         else if ($fname = ('child-names', 'child-names-ec',
