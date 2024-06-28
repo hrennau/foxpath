@@ -257,20 +257,28 @@ declare function f:bslash($arg as xs:string?)
     replace($arg, '/', '\\')        
 };      
 
+(:~
+ : Creates a character class report.
+ :)
 declare function f:charClassReport($items as item()*,
                                    $classes as xs:string?,
                                    $options as xs:string?)
         as element(charClassReport) {
     let $ops := f:getOptions($options, ('example', 'parent', 'fname', 'text', 'att'), 'char-class-report')
-    let $texts := $items ! string(.)
     let $nodes := 
         if (not($ops = 'example')) then ()
-        else if ($ops = 'text') then $items/descendant-or-self::text()
-        else if ($ops = 'att') then $items//@*
-        else (
-            $items/descendant-or-self::text(), $items//@*
-        )
-    
+        else 
+            let $wrapperNodes := $items[. instance of node()]
+            return
+                if ($ops = 'att') then $wrapperNodes//@*
+                else $wrapperNodes/descendant-or-self::text()
+    let $texts :=
+        for $item in $items
+        return
+            if (not($item instance of node())) then string($item)
+            else if ($ops = 'att') then $item//@* => string-join('')
+            else if ($ops = 'anynode') then $item/string()||($item//@* => string-join(''))
+            else $item/string()
     let $classes := $classes ! lower-case(.)
     let $classes :=
         let $letters :=
@@ -296,7 +304,7 @@ declare function f:charClassReport($items as item()*,
         let $separators :=
             if ($classes and not(contains($classes, 'z'))) then () else
             let $charStat :=
-                $texts ! replace(., '\P{P}', '') => f:charStat($nodes, $options)
+                $texts ! replace(., '\P{Z}', '') => f:charStat($nodes, $options)
             return <separators>{$charStat}</separators>
         let $symbols :=
             if ($classes and not(contains($classes, 's'))) then () else
@@ -327,7 +335,7 @@ declare function f:charClassReport($items as item()*,
 declare function f:charStat($texts as xs:string*,
                             $nodes as node()*,
                             $options as xs:string?) {
-    let $ops := f:getOptions($options, ('example', 'parent', 'fname'), 'char-stat')                            
+    let $ops := f:getOptions($options, ('example', 'parent', 'fname', 'text', 'att'), 'char-stat')                            
     let $fnGetExamples :=
         if (not($ops = 'example')) then () else
         let $size := 3 return
@@ -3938,7 +3946,6 @@ declare function f:textToCodepoints($text as xs:string*) as xs:string+ {
     }
     
     for $line in $text
-    let $_DEBUG := trace($line, '_LINE: ')
     let $len := string-length($line)
     let $chars := for $i in 1 to $len return substring($line, $i, 1)
     return fold-left($chars, ('', ''), $fnFoldLeft) 
@@ -3965,6 +3972,32 @@ declare function f:truncate($string as xs:string?, $len as xs:integer?, $flags a
         else
             let $cutlen := if ($evenLength) then $len - 4 else $len
             return substring($string, 1, $cutlen) ||' ...'
+};        
+
+(:~
+ : Truncates a name path by replacing all element steps following
+ : the first step matching a name filter by '/*'
+ :)
+declare function f:truncateNamePath($paths as xs:string*, 
+                                    $lastElemFilter as xs:string?, 
+                                    $options as xs:string?)
+        as xs:string* {
+    let $leFilter := $lastElemFilter ! use:compileUnifiedStringExpression(., true(), (), ()) 
+    for $path in $paths
+    let $steps := tokenize($path, '/')
+    let $step := $steps[use:matchesUnifiedStringExpression(., $leFilter)][1]
+    return
+        if (not($step)) then $path else
+ 
+        let $stepNr := index-of($steps, $step)[1]
+        let $stepNrTruncate :=
+            let $try := $stepNr + 1
+            let $stepNext := $steps[$try]
+            return if (not($stepNext) or starts-with($stepNext, '@')) then ()
+                   else $try
+        return
+            if (not($stepNrTruncate)) then $path else
+                string-join(($steps[position() lt $stepNrTruncate], '*'), '/')
 };        
 
 (:~
@@ -5009,6 +5042,22 @@ declare function f:zzzAttNamesOld($nodes as node()*,
         if (exists($separator)) then string-join($names, $separator)
         else $names
 };  
+
+(:~
+ : Create a dcat document (document catalog).
+ :)
+declare function f:dcat($uris as xs:string*, 
+                        $basePath as xs:string?)
+        as element(dcat) {
+    let $_DEBUG := trace($basePath, '_BASE_PATH: ')
+    let $uris_ := $uris ! replace(., '^basex://', '')            
+    let $refs := 
+        if (not($basePath)) then $uris_
+        else $uris_ ! f:relPath($basePath, .)
+    let $docs := $refs ! <doc href="{.}"/>
+    return
+        <dcat count="{count($uris)}" t="{current-dateTime()}">{$docs}</dcat>
+};
 
 (:~
  : Concatenates the arguments into a string, using an "improbable"

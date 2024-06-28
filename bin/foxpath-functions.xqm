@@ -305,6 +305,11 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `dcat` 
            =============== :)
         else if ($fname eq 'dcat') then
+            let $uris := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $basePath := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:dcat($uris, $basePath)
+(:        
             let $items := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             (: remove prefix from basex URIs (should there be such URIs) :)
             let $items := $items ! replace(., '^basex://', '')            
@@ -319,7 +324,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                       count="{count($items)}"
                       t="{current-dateTime()}" 
                       onlyDocAvailable="{boolean($onlyDocAvailable)}">{$refs}</dcat>
-
+:)
         (: function `delete-nodes` 
            ======================= :)
         else if ($fname = ('delete-nodes', 'delete-nodes-ec')) then
@@ -1580,6 +1585,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:truncate($string, $len, $flags)
 
+        (: function `truncate-name-path` 
+           ============================= :)
+        else if ($fname = ('truncate-name-path', 'truncate-name-path-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $paths := if ($da) then $arg1 else $context
+            let $lastElemFilter := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $options := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                            
+            return
+                foxf:truncateNamePath($paths, $lastElemFilter, $options)
+
         (: function `unescape-json-name` 
            ============================= :)
         else if ($fname = 'unescape-json-name') then
@@ -2138,16 +2154,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 xs:dayTimeDuration($arg)
-
-        (: function `dcat` 
-           ============== :)
-        else if ($fname eq 'dcat') then
-            let $arg := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $docs := sort($arg [i:fox-doc-available(., $options)], lower-case#1) 
-            return
-                <docs count="{count($docs)}" t="{current-dateTime()}">{
-                    $docs ! <doc uri="{.}"/>
-                }</docs>
 
         (: function `decode-key` 
            ===================== :)
