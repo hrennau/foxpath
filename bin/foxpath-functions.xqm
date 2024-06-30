@@ -1105,6 +1105,20 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (empty($nodes)) then () else 
                     foxf:namePath($nodes, $numSteps, $options)
                     
+        (: function `name-path-attributed` 
+           =============================== :)
+        else if ($fname = ('name-path-attributed', 'name-path-attributed-ec')) then  
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0
+            let $nodes :=
+                if (not($da)) then $context 
+                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $attFilter := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
+            let $numSteps := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
+            let $options := $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                if (empty($nodes)) then () else 
+                    foxf:namePathAttributed($nodes, $attFilter, $numSteps, $options)
+                    
         (: function `indexed-name-path` 
            ============================ :)
         else if ($fname = ('indexed-name-path', 'indexed-name-path-ec')) then  
@@ -1891,13 +1905,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $name := normalize-space($name)
             let $name2 := normalize-space($name2)            
             let $qname := 
-                let $lname :=
+                let $lexname :=
                     if (not($name)) then () 
-                    else substring-before(concat($name, ' '), ' ') 
+                    else $name ! replace(., '^.*?\s+', '') 
                 let $ns := 
-                    if (not($name) or not(contains($name, ' '))) then () 
-                    else substring-after($name, ' ')
-                return QName($ns, $lname)            
+                    if ($name and contains($name, ' ')) then $name ! replace(., '\s.*', '') 
+                    else if (contains($name, ':')) then
+                        $util:PREDECLARED_NAMESPACE_BINDINGS(substring-before($name, ':'))
+                    else ()
+                return QName($ns, $lexname)            
             let $qname2 := 
                 if (not($name2)) then () else
                     let $lname2 :=

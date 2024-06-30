@@ -1856,7 +1856,30 @@ declare function f:namePath($nodes as node()*,
                             $numSteps as xs:integer?,
                             $options as xs:string?)
         as xs:string* {
-    f:namePath($nodes, (), $numSteps, $options)        
+    f:namePath($nodes, (), $numSteps, (), $options)        
+};        
+
+(:~
+ : Returns for given nodes their plain name paths, with attribute value 
+ : info appended to the step names.
+ :
+ : @param nodes a set of nodes
+ : @param nameKind identifies the kind of names to be used in the path -
+ :        name|lname|jname for lexical name, local name, JSON name
+ : @param numSteps truncate path to this number of steps by removing
+ :        leading steps
+ : @param attFilter a unified string expression selecting attributes
+ : @param options options controlling the evaluation;
+ :        noconcat - do not concatenate the path steps
+ : @return the parent name
+ :)
+declare function f:namePathAttributed(
+                            $nodes as node()*, 
+                            $attFilter as xs:string?,
+                            $numSteps as xs:integer?,                            
+                            $options as xs:string?)
+        as xs:string* {
+    f:namePath($nodes, (), $numSteps, $attFilter, $options)        
 };        
 
 (:~
@@ -1876,49 +1899,68 @@ declare function f:namePath($nodes as node()*,
 declare function f:namePath($nodes as node()*, 
                             $context as node()?,
                             $numSteps as xs:integer?,
+                            $attFilter as xs:string?,
                             $options as xs:string?)
         as xs:string* {
     let $ops := f:getOptions($options, 
-      ('name', 'lname', 'jname', 'fname', 'fpath', 'rfpath', 'text', 'value', 'xsdcompname', 'noconcat'), 'name-path')
+      ('name', 'lname', 'jname', 'fname', 'fpath', 'rfpath', 
+       'text', 'value', 'xsdcompname', 'noconcat', 'with-context'), 
+       'name-path')
     let $nameKind := ($ops[. = ('lname', 'jname', 'name')][1], 'lname')[1]
     let $noconcat := $ops = 'noconcat'
     let $withBaseUri := $ops[. = ('fpath', 'rfpath', 'fname')][1] 
     
+    let $attFilterC := $attFilter ! use:compileUnifiedStringExpression(., true(), (), ())
+        
     for $node in $nodes return
     (: _TO_DO_ Remove hack when BaseX Bug is removed; return to: let $nodes := $node/ancestor-or-self::node() :)     
     let $kindMark := if ($node instance of attribute()) then '@' 
                      else if ($node instance of text()) then '#text' else ()
     let $ancos := 
         let $all := $node/ancestor-or-self::node()[not($context) or . >> $context]
+        let $all := if ($context and $ops = 'with-context') then ($context, $all)
+                    else $all
         let $dnode := $all[. instance of document-node()]
         return ($dnode, $all except $dnode)
+    let $fnAddAtts :=
+        if (empty($attFilterC)) then () else
+        function($node) {
+            let $atts := $node/@*[use:matchesUnifiedStringExpression(local-name(.), $attFilterC)]
+            where $atts
+            return string-join($atts/concat('[', local-name(.), '=', .,']'), '')
+        }
     let $steps :=   
-        if ($nameKind eq 'lname') then 
-            $ancos/concat(local-name(), self::xs:*/@name/concat('(', ., ')')[$ops = 'xsdcompname'])
-        else if ($nameKind ne 'jname') then        
-            $ancos/concat(name(), self::xs:*/@name/concat('(', ., ')')[$ops = 'xsdcompname'])        
+        if ($nameKind eq 'lname') then $ancos/concat(local-name(),
+            if (empty($attFilterC)) then () else $fnAddAtts(.),
+            self::xs:*/@name/concat('(', ., ')')[$ops = 'xsdcompname'])
+        else if ($nameKind ne 'jname') then $ancos/concat(name(),
+            if (empty($attFilterC)) then () else $fnAddAtts(.),        
+            self::xs:*/@name/concat('(', ., ')')[$ops = 'xsdcompname'])        
         else
             $ancos/( 
                 let $raw := f:unescapeJsonName(local-name(.))
                 return if (not(contains($raw, '/'))) then $raw else concat('"', $raw, '"')
             )
-    let $steps := if (not($kindMark)) then $steps else ($steps[position() lt last()], $kindMark||$steps[last()])
-    let $steps := if (empty($numSteps)) then $steps else subsequence($steps, count($steps) + 1 - $numSteps)
+    let $steps := if (not($kindMark)) then $steps 
+                  else ($steps[position() lt last()], $kindMark||$steps[last()])
+    let $steps := if (empty($numSteps)) then $steps 
+                  else subsequence($steps, count($steps) + 1 - $numSteps)
     return         
-        if ($ops = 'noconcat') then $steps[string()]
-        else 
-            let $value := 
-                if (not($ops = 'value')) then () 
-                else if ($node/self::attribute()) then $node
-                else if ($node/self::text()) then $node
-                else if ($node/text()) then $node
-                else ()
-            let $path := string-join($steps, '/')||($value ! concat('=', .))
-            return if (not($withBaseUri) or $ops = 'noconcat') then $path
-                else if ($withBaseUri eq 'fpath') then $node/i:fox-base-uri(.)||'#'||$path
-                else if ($withBaseUri eq 'fname') then $node/(i:fox-base-uri(.) ! file:name(.))||'#'||$path
-                else (uth:relUri(file:current-dir(), $node/i:fox-base-uri(.)))||'#'||$path
-           
+        if ($ops = 'noconcat') then $steps[string()] else
+ 
+        let $value := 
+            if (not($ops = 'value')) then () 
+            else if ($node/self::attribute()) then $node
+            else if ($node/self::text()) then $node
+            else if ($node/text()) then $node
+            else ()
+        let $path := string-join($steps, '/')||($value ! concat('=', .))
+        return if (not($withBaseUri)) then $path
+            else if ($withBaseUri eq 'fpath') 
+                 then $node/i:fox-base-uri(.)||'#'||$path
+            else if ($withBaseUri eq 'fname') 
+                 then $node/(i:fox-base-uri(.) ! file:name(.))||'#'||$path
+            else (uth:relUri(file:current-dir(), $node/i:fox-base-uri(.)))||'#'||$path
 };        
 
 (:~
@@ -2900,7 +2942,7 @@ declare function f:pathMultiDiff($items as item()*,
     let $fnPath := 
         if ($indexed) then f:indexedNamePath#4
         else if ($reportNames) then f:nameString#3
-        else f:namePath#4
+        else f:namePath#5
         
     let $fnPathElem := 
         if ($reportNames) then function ($name) {<item name="{$name}"/>}
@@ -3004,7 +3046,9 @@ declare function f:pathContent($context as item()*,
                                $innerNodeNameFilter as xs:string?,
                                $options as xs:string?)
         as xs:string* {
-    let $ops := f:getOptions($options, ('name', 'lname', 'jname', 'with-inner', 'text'), 'path-content')  
+    let $ops := f:getOptions($options, ('name', 'lname', 'jname', 
+                                        'with-inner', 'text', 'with-context'), 
+                                        'path-content')  
     let $namePathOptions := $ops[not(. = 'with-inner')] => string-join(' ')
     let $alsoInnerNodes := $ops = 'with-inner'
     let $cLeafNameFilter := $leafNameFilter ! use:compileUnifiedStringExpression(., true(), (), ())    
@@ -3043,7 +3087,7 @@ declare function f:pathContent($context as item()*,
                 if ($alsoInnerNodes) then ($descendants2, $textNodes)
                 else ($descendants2 except $textNodes/.., $textNodes)
     return
-        f:namePath($descendants2, $cnode, (), $namePathOptions)
+        f:namePath($descendants2, $context, (), (), $namePathOptions)
         => sort()
 };        
 
@@ -3982,6 +4026,8 @@ declare function f:truncateNamePath($paths as xs:string*,
                                     $lastElemFilter as xs:string?, 
                                     $options as xs:string?)
         as xs:string* {
+    let $ops := f:getOptions($options, ('att'), 'truncate-name-path')
+    let $att := $ops = 'att'        
     let $leFilter := $lastElemFilter ! use:compileUnifiedStringExpression(., true(), (), ()) 
     for $path in $paths
     let $steps := tokenize($path, '/')
@@ -3993,11 +4039,14 @@ declare function f:truncateNamePath($paths as xs:string*,
         let $stepNrTruncate :=
             let $try := $stepNr + 1
             let $stepNext := $steps[$try]
-            return if (not($stepNext) or starts-with($stepNext, '@')) then ()
+            return if (not($stepNext) or (starts-with($stepNext, '@') and not($att))) then ()
                    else $try
         return
             if (not($stepNrTruncate)) then $path else
-                string-join(($steps[position() lt $stepNrTruncate], '*'), '/')
+                let $stepAfterTruncate := $steps[$stepNrTruncate + 1]
+                let $append := if (starts-with($stepAfterTruncate, '@')) then '*' else '*'
+                return
+                    string-join(($steps[position() lt $stepNrTruncate], $append), '/')
 };        
 
 (:~
@@ -4506,6 +4555,8 @@ declare function f:xwrap($items as item()*,
         group by $prefix := name($nn)
         let $nn1:= $nn[1]
         where $prefix ne 'xml' and $nn1
+        (: Default namespace is suppressed if $name is in no namespace :)
+        where $prefix or string(namespace-uri-from-QName($name))
         return $nn1
     return
         element {$name} {
