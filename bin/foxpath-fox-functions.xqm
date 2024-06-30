@@ -243,7 +243,7 @@ declare function f:baseUriRelative($item as item(), $contextName as xs:string)
 declare function f:bothValues($leftValue as item()*,
                               $rightValue as item()*)
     as item()* {
-    $leftValue[. = $rightValue] => distinct-values()
+    $leftValue[. = $rightValue] => distinct-values() => sort()
 };
 
 (:~
@@ -1764,7 +1764,7 @@ declare function f:jsonEffectiveValue($value as element())
 declare function f:leftValueOnly($leftValue as item()*,
                                  $rightValue as item()*)
     as item()* {
-    $leftValue[not(. = $rightValue)] => distinct-values()
+    $leftValue[not(. = $rightValue)] => distinct-values() => sort()
 };
 
 (:~
@@ -3044,6 +3044,7 @@ declare function f:pathMultiDiff($items as item()*,
 declare function f:pathContent($context as item()*, 
                                $leafNameFilter as xs:string?,
                                $innerNodeNameFilter as xs:string?,
+                               $excludedInnerNodeNameFilter as xs:string?,                               
                                $options as xs:string?)
         as xs:string* {
     let $ops := f:getOptions($options, ('name', 'lname', 'jname', 
@@ -3051,8 +3052,12 @@ declare function f:pathContent($context as item()*,
                                         'path-content')  
     let $namePathOptions := $ops[not(. = 'with-inner')] => string-join(' ')
     let $alsoInnerNodes := $ops = 'with-inner'
-    let $cLeafNameFilter := $leafNameFilter ! use:compileUnifiedStringExpression(., true(), (), ())    
-    let $cInnerNodeNameFilter := $innerNodeNameFilter ! use:compileUnifiedStringExpression(., true(), (), ())
+    let $cLeafNameFilter := $leafNameFilter 
+        ! use:compileUnifiedStringExpression(., true(), (), ())    
+    let $cInnerNodeNameFilter := $innerNodeNameFilter 
+        ! use:compileUnifiedStringExpression(., true(), (), ())
+    let $cExcludedInnerNodeNameFilter := $excludedInnerNodeNameFilter 
+        ! use:compileUnifiedStringExpression(., true(), (), ())
     let $fnGetName :=
         if ($ops = 'name') then function($node) {name($node)}
         else if ($ops = 'jname') then function($node) {$node ! name() ! convert:decode-key(.)} 
@@ -3064,30 +3069,38 @@ declare function f:pathContent($context as item()*,
     for $cnode in $context
     let $descendants1 := (
         if (empty($cInnerNodeNameFilter)) then    
-            if ($ops = 'jname') then $cnode/descendant::*
-            else $cnode/(@*, descendant::*/(., @*))
+            if ($ops = 'jname') then $cnode/descendant::*[not(*)]
+            else ($cnode//@*, $cnode//*[not(*)])
         else
-            let $required := $cnode//*[*][use:matchesUnifiedStringExpression($fnGetName(.), $cInnerNodeNameFilter)]         
-            let $unfiltered :=
-                if ($ops = 'jname') then $cnode/descendant::*
-                else $cnode/(@*, descendant::*/(., @*))
-            return $unfiltered[ancestor-or-self::* intersect $required]
-    )[$alsoInnerNodes or not(*)]
-    let $descendants2 :=
-        if (empty($cLeafNameFilter)) then $descendants1
-        else if ($alsoInnerNodes) then 
-            $descendants1[* or use:matchesUnifiedStringExpression($fnGetName(.), $cLeafNameFilter)]
-        else 
-            $descendants1[use:matchesUnifiedStringExpression($fnGetName(.), $cLeafNameFilter)]
-    let $descendants2 := 
-        if (not($ops = 'text')) then $descendants2
-        else 
-            let $textNodes := $descendants2/text()[matches(., '\S')]
+            let $inodes := $cnode//*[@*, *]
+              [use:matchesUnifiedStringExpression($fnGetName(.), $cInnerNodeNameFilter)]         
             return
-                if ($alsoInnerNodes) then ($descendants2, $textNodes)
-                else ($descendants2 except $textNodes/.., $textNodes)
+                if ($ops = 'jname') then $inodes/descendant::*[not(*)]
+                else ($inodes//@*, $inodes//*[not(*)])
+    )
+    let $descendants2 := (
+        if (empty($cExcludedInnerNodeNameFilter)) then $descendants1 
+        else
+            let $inodes := $cnode//*[@*, *]
+              [use:matchesUnifiedStringExpression($fnGetName(.), $cExcludedInnerNodeNameFilter)]
+            let $excludedLeaves := ($inodes//@*, $inodes//*[not(*)])
+            return
+                $descendants1 except $excludedLeaves
+    )
+    let $descendants3 :=
+        if (empty($cLeafNameFilter)) then $descendants2 else
+            $descendants2[use:matchesUnifiedStringExpression(
+                $fnGetName(.), $cLeafNameFilter)]
+    let $descendants4 := 
+        if (not($ops = 'text')) then $descendants3
+        else 
+            let $textNodes := $descendants3/text()[matches(., '\S')]
+            return ($descendants3, $textNodes)
+    let $descendants5 :=
+        if (not($alsoInnerNodes)) then $descendants4
+        else $descendants4/ancestor-or-self::node()[. >> $cnode] 
     return
-        f:namePath($descendants2, $context, (), (), $namePathOptions)
+        f:namePath($descendants5, $context, (), (), $namePathOptions)
         => sort()
 };        
 
@@ -3409,7 +3422,7 @@ declare function f:renameNodes($items as item()*,
 declare function f:rightValueOnly($leftValue as item()*,
                                   $rightValue as item()*)
     as item()* {
-    $rightValue[not(. = $leftValue)]  => distinct-values()
+    $rightValue[not(. = $leftValue)]  => distinct-values() => sort()
 };
 
 declare function f:resolveFoxpath($context as item(), 
@@ -4429,8 +4442,7 @@ declare function f:xqDoc($uri as xs:string, $options as map(*)?)
  :       copy of the attribute 
  :   (6) if flag 'A' is set, treatment as with flag 'a', but the constructed element
  :       has no namespace URI 
- :   (7) otherwise, the item is not modified
-
+ :   (7) otherwise, the item is not modified (except for possible pretty-printing, see (C))
  : (B) if an item is atomic: 
  :   (1) if flag 'd' is set, the item is interpreted as URI and it is attempted to be
  :       parsed into a document, with an @xml:base attribute added to the root element,
@@ -4445,6 +4457,8 @@ declare function f:xqDoc($uri as xs:string, $options as map(*)?)
  :       element name given by parameter $name2, default _text_
  :   (5) if none of the flags 'd', 'w', 't', 'c' is set: the item is not modified 
  :
+ : (C) if flag 'P' is set, the result document is pretty-printed
+ : 
  : @param items the items from which to create the content of the result document
  : @param name the name of the root element of the result document
  : @param flags flags controlling the representation of the items and possible sorting
@@ -4460,6 +4474,7 @@ declare function f:xwrap($items as item()*,
     (: name2 is the name of inner wrapper elements, wrapping an individual item :)
     let $name2 := if (empty($name2)) then '_text_' else $name2   
     
+    let $pretty := contains($flags, 'P')
     let $sortRule := if (contains($flags, 's')) then 's' else if (contains($flags, 'S')) then 'S' else ()        
     let $val :=
         for $item in $items 
@@ -4558,12 +4573,13 @@ declare function f:xwrap($items as item()*,
         (: Default namespace is suppressed if $name is in no namespace :)
         where $prefix or string(namespace-uri-from-QName($name))
         return $nn1
-    return
+    let $result :=
         element {$name} {
             $namespaces,        
             attribute countItems {count($val)},
             $val
         }
+    return if ($pretty) then $result/util:prettyNode(., ()) else $result        
 };
 
 (:~
