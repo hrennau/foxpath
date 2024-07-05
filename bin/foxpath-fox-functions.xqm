@@ -3072,7 +3072,8 @@ declare function f:pathContent($context as item()*,
                                $options as xs:string?)
         as xs:string* {
     let $ops := f:getOptions($options, ('name', 'lname', 'jname', 
-                                        'with-inner', 'text', 'with-context'), 
+                                        'with-inner', 'text', 'indexed',
+                                        'with-context'), 
                                         'path-content')  
     let $namePathOptions := $ops[not(. = 'with-inner')] => string-join(' ')
     let $alsoInnerNodes := $ops = 'with-inner'
