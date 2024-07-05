@@ -1920,11 +1920,12 @@ declare function f:namePath($nodes as node()*,
         as xs:string* {
     let $ops := f:getOptions($options, 
       ('name', 'lname', 'jname', 'fname', 'fpath', 'rfpath', 
-       'text', 'value', 'xsdcompname', 'noconcat', 'with-context'), 
+       'text', 'value', 'xsdcompname', 'noconcat', 'with-context', 'indexed'), 
        'name-path')
     let $nameKind := ($ops[. = ('lname', 'jname', 'name')][1], 'lname')[1]
     let $noconcat := $ops = 'noconcat'
     let $withBaseUri := $ops[. = ('fpath', 'rfpath', 'fname')][1] 
+    let $withIndex := $ops = 'indexed'
     
     let $attFilterC := $attFilter ! use:compileUnifiedStringExpression(., true(), (), ())
         
@@ -1945,11 +1946,18 @@ declare function f:namePath($nodes as node()*,
             where $atts
             return string-join($atts/concat('[', local-name(.), '=', .,']'), '')
         }
+    let $fnAddIndex :=
+        if (not($withIndex)) then () else
+        function($n) {
+            '['|| (1 + count($n/preceding-sibling::*[node-name() eq node-name($n)])) ||']'        
+        }
     let $steps :=   
         if ($nameKind eq 'lname') then $ancos/concat(local-name(),
+            if (not($withIndex) or not(self::*)) then () else $fnAddIndex(.),
             if (empty($attFilterC)) then () else $fnAddAtts(.),
             self::xs:*/@name/concat('(', ., ')')[$ops = 'xsdcompname'])
         else if ($nameKind ne 'jname') then $ancos/concat(name(),
+            if (not($withIndex) or not(self::*)) then () else $fnAddIndex(.),        
             if (empty($attFilterC)) then () else $fnAddAtts(.),        
             self::xs:*/@name/concat('(', ., ')')[$ops = 'xsdcompname'])        
         else
