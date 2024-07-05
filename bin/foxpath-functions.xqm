@@ -1581,6 +1581,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:csv($values, $headers, $options)
 
+        (: function `text-content` 
+           ======================= :)
+        else if ($fname = ('child-text', 'child-text-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0        
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $options := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $nodes := if ($da) then $arg1 else $context
+            return
+                foxf:childText($nodes, $options)
+
         (: function `text-to-codepoints` 
            ============================= :)
         else if ($fname eq 'text-to-codepoints') then

@@ -369,6 +369,22 @@ declare function f:charStat($texts as xs:string*,
 };
 
 (:~
+ : Returns the concatenated text nodes immediately contained by a
+ : given sequence of element nodes.
+ :
+ : If option 'ign-wsonly' is used, only text nodes containing non-WS
+ : are considered.
+ :)
+declare function f:childText($elems as element()*,
+                             $options as xs:string?) {
+    let $ops := f:getOptions($options, ('ign-wsonly'), 'child-text')
+    let $tnodes :=
+        if ($ops = 'ign-wsonly') then $elems/text()[normalize-space(.)]
+        else $elems/text()
+    return $tnodes => string-join('')        
+};
+
+(:~
  : Checks if two or more nodes have deep-equal content. The content to be
  : compared can be restricted by the $scope parameter.
  :
@@ -4171,7 +4187,7 @@ declare function f:writeDoc($urisOrNodes as item()*,
             let $_CHECK := if ($baseUri) then () else error(QName((), 'INVALID_ARG'),
                 'Function '||$extFuncName||' requires documents with a base URI, but '||
                 'received a document without one.')                
-            let $previousFileName := replace($baseUri, '.*/', '')
+            let $previousFileName := file:name($baseUri)
             return
                 if ($nameFrom) then
                     let $previousFileName := replace($baseUri, '.*/', '')
