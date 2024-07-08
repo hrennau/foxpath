@@ -1929,10 +1929,12 @@ declare function f:namePath($nodes as node()*,
     
     let $attFilterC := $attFilter ! use:compileUnifiedStringExpression(., true(), (), ())
         
-    for $node in $nodes return
+    let $acceptNodes :=
+        $nodes[not(self::text()) or not(../*) or matches(., '\S')]
+    for $node in $acceptNodes return
     (: _TO_DO_ Remove hack when BaseX Bug is removed; return to: let $nodes := $node/ancestor-or-self::node() :)     
     let $kindMark := if ($node instance of attribute()) then '@' 
-                     else if ($node instance of text()) then '#text' else ()
+                     else if ($node instance of text()) then 'text()' else ()
     let $ancos := 
         let $all := $node/ancestor-or-self::node()[not($context) or . >> $context]
         let $all := if ($context and $ops = 'with-context') then ($context, $all)
@@ -1949,11 +1951,13 @@ declare function f:namePath($nodes as node()*,
     let $fnAddIndex :=
         if (not($withIndex)) then () else
         function($n) {
-            '['|| (1 + count($n/preceding-sibling::*[node-name() eq node-name($n)])) ||']'        
+            let $nodes := if ($n instance of text()) then $n/preceding-sibling::text()
+                          else $n/preceding-sibling::*[node-name() eq node-name($n)]
+            return '['||(1 + count($nodes))||']'        
         }
     let $steps :=   
         if ($nameKind eq 'lname') then $ancos/concat(local-name(),
-            if (not($withIndex) or not(self::*)) then () else $fnAddIndex(.),
+            if (not($withIndex) or self::attribute()) then () else $fnAddIndex(.),
             if (empty($attFilterC)) then () else $fnAddAtts(.),
             self::xs:*/@name/concat('(', ., ')')[$ops = 'xsdcompname'])
         else if ($nameKind ne 'jname') then $ancos/concat(name(),
@@ -1974,9 +1978,11 @@ declare function f:namePath($nodes as node()*,
  
         let $value := 
             if (not($ops = 'value')) then () 
-            else if ($node/self::attribute()) then $node
-            else if ($node/self::text()) then $node
-            else if ($node/text()) then $node
+            else if ($node/self::attribute()) then $node/f:truncate(., 60, 't')
+            else if ($node/self::text()) then $node/f:truncate(., 60, ())
+            else if ($ops = 'text') then ()    (: when text nodes are included, the value
+                                                  is attached to them, not the element :)
+            else if ($node/text()) then $node/f:truncate(., 60, ())
             else ()
         let $path := string-join($steps, '/')||($value ! concat('=', .))
         return if (not($withBaseUri)) then $path
@@ -4052,8 +4058,11 @@ declare function f:truncate($string as xs:string?, $len as xs:integer?, $flags a
     return
         if ($actlen le $len) then $string
         else
-            let $cutlen := if ($evenLength) then $len - 4 else $len
-            return substring($string, 1, $cutlen) ||' ...'
+            let $cutlen := if ($evenLength) then $len - 4 else $len        
+            let $suffix := 
+                if (contains($flags, 't')) then ' ('||(string-length($string) - $cutlen)||' more chars)'
+                else ' ...'
+            return substring($string, 1, $cutlen) ||$suffix
 };        
 
 (:~
