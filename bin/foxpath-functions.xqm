@@ -301,7 +301,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 else if (empty($names)) then $uri ! i:fox-csv-doc(., $separator, $header, $options)
                 else if (empty($quotes)) then $uri ! i:fox-csv-doc(., $separator, $header, $names, $options)
                 else $uri ! i:fox-csv-doc(., $separator, $header, $names, $quotes, $backslashes, $options)
-                            
+
+        (: function `css-doc` 
+           ================== :)
+        else if ($fname = ('css-doc')) then
+            let $uri := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                i:fox-css-doc($uri, $options)
+
         (: function `dcat` 
            =============== :)
         else if ($fname eq 'dcat') then
@@ -1299,6 +1308,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $args := $call/*
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $nodes := if ($da eq 0) then $context else $arg1
+            let $options := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:pathContent($nodes, (), (), (), $options)
+                
+        (: function `path-content-filtered` 
+           =============================== :)
+        else if ($fname = ('path-content-filtered', 'path-content-filtered-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $args := $call/*
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $nodes := if ($da eq 0) then $context else $arg1
             let $leafNameFilter := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $innerNodeNameFilter := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $excludedInnerNodeNameFilter := $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
@@ -1483,13 +1503,28 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 $context ! foxf:resolveJsonRef($ref, ., $mode)            
 
-        (: function `resolve-link` 
-           ======================= :)
-        else if ($fname eq 'resolve-link') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+        (: function `resolve-link, resolve-link-ec` 
+           ======================================== :)
+        else if ($fname = ('resolve-link', 'resolve-link-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0        
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $links := if ($da) then $arg1 else $context    
+            let $options := if (not($da)) then $arg1 else
+                $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:resolveLink($arg1, $arg2)
+                foxf:resolveLink($links, (), (), $options)
+
+        (: function `resolve-link-sr, resolve-link-sr-ec` 
+           ============================================== :)
+        else if ($fname = ('resolve-link-sr', 'resolve-link-sr-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0        
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $links := if ($da) then $arg1 else $context   
+            let $replaceString := $call/*[$da + 1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $replaceWith := $call/*[$da + 2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $options := $call/*[$da + 3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:resolveLink($links, $replaceString, $replaceWith, $options)
 
         (: function `resolve-path` 
            ====================== :)
@@ -2828,7 +2863,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)          
             return
                 xs:string($arg1)
-                
+
+        (: function `parse-css` 
+           ==================== :)
+        else if ($fname eq 'parse-css') then
+            let $text := 
+                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(
+                    ., false(), $context, $position, $last, $vars, $options)
+                else $context
+            return foxf:parseCss($text)
+            
         else
         error(QName((), 'NOT_YET_IMPLEMENTED'),
             concat('Unexpected function name: ', $fname))

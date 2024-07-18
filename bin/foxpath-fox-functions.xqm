@@ -2700,6 +2700,16 @@ declare function f:nameDiff($docs as item()*,
 };
 
 (:~
+ : Parses a CSS record into a node tree.
+ :)
+declare function f:parseCss($text as xs:string)
+        as node() {
+    let $fn := util:getModuleFunction('parseCss')                
+    return
+        try {$fn($text, ())?parsed} catch * {()}
+};
+
+(:~
  : Compares two documents or nodes with respect to the data paths which
  : they contain. The paths use node names as specified by $nameKind. The comparison 
  : is defined by the comparison type ($cmpType). Supported types:
@@ -3716,29 +3726,41 @@ declare function f:resolveJsonRefSteps($steps as xs:string+,
 };
 
 (:~
- : Resolves a link to a resource. If $mediatype is specified, the
- : XML or JSON document is returned, otherwise the document text.
+ : Resolves a link to a resource. If the link cannot be resolved,
+ : the empty sequence is returned. 
  :
- : @param node node containing the link
- : @param mediatype mediatype expected
- : @return the resource, either as XDM root node, or as text
+ : Options:
+ : xml - the XML content is returned, not the URI
+ :
+ : @param nodes nodes containing the links
+ : @param replaceString if specified, this substring will be replaced
+ : @param replaceWith if specified, used as a replacement
+ : @param options options controlling the execution
+ : @return the resolved path or the XML document node
  :)
-declare function f:resolveLink($node as node(), $mediatype as xs:string?)
-        as item()? {
+declare function f:resolveLink($nodes as node()*,
+                               $replaceString as xs:string?,
+                               $replaceWith as xs:string?,
+                               $options as xs:string?)
+        as item()* {
+    let $ops := f:getOptions($options, ('xml'), 'resolve-link')
+    
+    for $node in $nodes
     let $base := $node/ancestor-or-self::*[1]        
-    let $uri := 
+    let $uriRaw := 
         if ($base) then resolve-uri($node, $base/base-uri(.))
         else resolve-uri($node)
-    return
-        if ($mediatype eq 'xml') then
-            if (doc-available($uri)) then doc($uri)
-            else ()
-        else if (not(unparsed-text-available($uri))) then ()
+    let $uri :=
+        if (not($replaceString)) then $uriRaw
         else
-            let $text := unparsed-text($uri)
-            return
-                if ($mediatype eq 'json') then try {json:parse($text)} catch * {()}
-                else $text
+            let $fname := file:name($uriRaw)
+            let $dir := file:parent($uriRaw)
+            let $fname2 := $fname ! replace(., $replaceString, $replaceWith)
+            return $dir||'/'||$fname2
+    where i:fox-file-exists($uri, ())            
+    return
+        if ($ops = 'xml') then $uri ! i:fox-doc(., ())
+        else $uri
 };        
 
 (:~

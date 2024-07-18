@@ -28,6 +28,8 @@ at  "foxpath-processorDependent.xqm",
     "foxpath-uri-operations-rdf.xqm",    
     "foxpath-uri-operations-utree.xqm",    
     "foxpath-uri-operations-archive.xqm";
+import module namespace foxf="http://www.foxpath.org/ns/fox-functions"
+at  "foxpath-fox-functions.xqm";
 
 import module namespace util="http://www.ttools.org/xquery-functions/util" 
 at  "foxpath-util.xqm";
@@ -443,6 +445,20 @@ declare function f:fox-doc-available($uri as xs:string, $options as map(*)?)
             exists(try {parse-xml($text)} catch * {()})
 :)            
     else doc-available($uri)
+};
+
+(:~
+ : Returns an XML representation of the CSS record identified by URI or file path.
+ :
+ : @param uri the URI or file path of the resource
+ : @param options currently not evaluated
+ : @return an XML document representing the CSS repord
+ :)
+declare function f:fox-css-doc($uri as xs:string,
+                               $options as map(*)?)
+        as document-node()? {
+    let $text := f:fox-unparsed-text($uri, (), $options)
+    return try {document{foxf:parseCss($text)}} catch * {}
 };
 
 (:~
