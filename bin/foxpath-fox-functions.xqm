@@ -2702,7 +2702,7 @@ declare function f:nameDiff($docs as item()*,
 (:~
  : Parses a CSS record into a node tree.
  :)
-declare function f:parseCss($text as xs:string)
+declare function f:cssParse($text as xs:string, $options as xs:string?)
         as node() {
     let $fn := util:getModuleFunction('parseCss')                
     return

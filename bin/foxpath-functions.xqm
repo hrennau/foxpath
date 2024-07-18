@@ -272,6 +272,20 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 file:create-dir($path)
 
+        (: function `css-doc` 
+           ================== :)
+        else if ($fname = ('css-doc', 'css-doc-ec', 'css-parse', 'css-parse-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0
+            let $parse := contains($fname, 'parse')
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(
+                ., false(), $context, $position, $last, $vars, $options)            
+            let $uriOrText := if ($da) then $arg1 else $context
+            let $uri := if ($parse) then () else $uriOrText
+            let $text := if (not($parse)) then () else $uriOrText
+            return
+                if ($parse) then $text ! foxf:cssParse(., ())
+                else $uri ! i:fox-css-doc(., ())
+
         (: function `csv-doc` 
            =================== :)
         else if ($fname = ('csv-doc', 'cdoc', 'csv-doc-ec', 'cdoc-ec', 'csv-parse', 'csv-parse-ec')) then
@@ -302,15 +316,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 else if (empty($quotes)) then $uri ! i:fox-csv-doc(., $separator, $header, $names, $options)
                 else $uri ! i:fox-csv-doc(., $separator, $header, $names, $quotes, $backslashes, $options)
 
-        (: function `css-doc` 
-           ================== :)
-        else if ($fname = ('css-doc')) then
-            let $uri := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]
-            return
-                i:fox-css-doc($uri, $options)
-
         (: function `dcat` 
            =============== :)
         else if ($fname eq 'dcat') then
@@ -318,22 +323,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $basePath := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:dcat($uris, $basePath)
-(:        
-            let $items := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            (: remove prefix from basex URIs (should there be such URIs) :)
-            let $items := $items ! replace(., '^basex://', '')            
-            let $onlyDocAvailable := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $refs :=
-                for $item in $items
-                return
-                    if ($onlyDocAvailable and not(i:fox-doc-available($item, $options))) then () 
-                    else <doc href="{$item}"/>
-            return
-                <dcat targetFormat="xml" 
-                      count="{count($items)}"
-                      t="{current-dateTime()}" 
-                      onlyDocAvailable="{boolean($onlyDocAvailable)}">{$refs}</dcat>
-:)
+                
         (: function `delete-nodes` 
            ======================= :)
         else if ($fname = ('delete-nodes', 'delete-nodes-ec')) then
@@ -2864,15 +2854,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 xs:string($arg1)
 
-        (: function `parse-css` 
-           ==================== :)
-        else if ($fname eq 'parse-css') then
-            let $text := 
-                if ($call/*) then $call/*[1]/f:resolveFoxpathRC(
-                    ., false(), $context, $position, $last, $vars, $options)
-                else $context
-            return foxf:parseCss($text)
-            
         else
         error(QName((), 'NOT_YET_IMPLEMENTED'),
             concat('Unexpected function name: ', $fname))

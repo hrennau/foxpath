@@ -458,7 +458,7 @@ declare function f:fox-css-doc($uri as xs:string,
                                $options as map(*)?)
         as document-node()? {
     let $text := f:fox-unparsed-text($uri, (), $options)
-    return try {document{foxf:parseCss($text)}} catch * {}
+    return try {document{foxf:cssParse($text, ())}} catch * {}
 };
 
 (:~
