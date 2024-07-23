@@ -684,6 +684,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $toplevelOr := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return ft:fnContainsText($selections, (), $toplevelOr, ())            
                 
+        (: function `inspect-module` 
+           ========================= :)
+        else if ($fname eq 'inspect-module') then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $uri := if ($da) then $arg1 else $context
+            return inspect:module($uri)            
+                
         (: function `map-items` 
            ==================== :)
         else if ($fname eq 'map-items') then
