@@ -454,15 +454,11 @@ declare function f:pValue($text as xs:string,
     let $TEST_PVALUE := 1 
     return if ($TEST_PVALUE eq 0) then f:pValue0($text, $options) else
     
-    let $sb := 
-        let $raw := substring-before($text, ';')[string()]
-        return
-            if (not(contains($raw, '}'))) then $raw
-            else substring-before($raw, '}')
+    let $sb := replace($text, '(^.*?)[;}].*', '$1', 's')
     return
-        if ($sb and not(matches($sb, '["'']|/\*'))) then (
+        if (not(matches($sb, '["'']|/\*'))) then (
             <value><t>{f:trimWS($sb)}</t></value>,
-            substring($text, string-length($sb) + 2)
+            substring($text, string-length($sb) + 1) ! replace(., '^;?\s*(.+)', '$1')
         ) else
         
     let $len := 300
