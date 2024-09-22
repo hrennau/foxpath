@@ -286,6 +286,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if ($parse) then $text ! foxf:cssParse(., ())
                 else $uri ! i:fox-css-doc(., ())
 
+        (: function `css-text` 
+           ==================== :)
+        else if ($fname = ('css-text', 'css-text-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0        
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(
+                ., false(), $context, $position, $last, $vars, $options)            
+            let $doc := if ($da) then $arg1 else $context
+            let $options := $call/*[$da + 1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) 
+            return $doc ! foxf:cssSerialize(., $options)
+
+
         (: function `csv-doc` 
            =================== :)
         else if ($fname = ('csv-doc', 'cdoc', 'csv-doc-ec', 'cdoc-ec', 'csv-parse', 'csv-parse-ec')) then
@@ -434,17 +445,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: functions `faxis, faxis-ec` 
            =========================== :)
         else if ($fname = ('fancestor', 'fancestor-ec', 
-                           'fancestor-or-self', 'ec-fancestor-or-self',
-                           'fparent', 'ec-fparent',
-                           'fself', 'ec-fself',
-                           'fchild', 'ec-fchild',
-                           'fdescendant', 'ec-fdescendant',
-                           'fdescendant-or-self', 'ec-fdescendant-or-self',
-                           'fpreceding-sibling', 'ec-fpreceding-sibling',
-                           'ffollowing-sibling', 'ec-ffollowing-sibling',
+                           'fancestor-or-self', 'fancestor-or-self-ec',
+                           'fparent', 'fparent-ec',
+                           'fself', 'fself-ec',
+                           'fchild', 'fchild-ec',
+                           'fdescendant', 'fdescendant-ec',
+                           'fdescendant-or-self', 'fdescendant-or-self-ec',
+                           'fpreceding-sibling', 'fpreceding-sibling-ec',
+                           'ffollowing-sibling', 'ffollowing-sibling-ec',
                            'fsibling', 'fsibling-ec',
-                           'fparent-sibling', 'ec-fparent-sibling',
-                           
+                           'fparent-sibling', 'fparent-sibling-ec',                           
                            'bsibling', 'bsibling-ec')) 
         then
             let $da := if (ends-with($fname, '-ec')) then 1 else 0
@@ -691,6 +701,25 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $uri := if ($da) then $arg1 else $context
             return inspect:module($uri)            
+                
+        (: function `inspect-functions` 
+           ============================ :)
+        else if ($fname eq 'inspect-functions') then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $uri := if ($da) then $arg1 else $context
+            return inspect:functions($uri)            
+                
+        (: function `function-infos` 
+           ============================ :)
+        else if ($fname eq 'function-infos') then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $uri := if ($da) then $arg1 else $context
+            return 
+                <function-infos>{
+                    inspect:functions($uri) ! inspect:function(.)
+                }</function-infos>
                 
         (: function `map-items` 
            ==================== :)

@@ -2171,7 +2171,6 @@ declare function f:parseNodeAxisStep($text as xs:string?, $context as map(*))
                 '(child|descendant|descendant-or-self|self|attribute|following-sibling|following',
                 '|parent|ancestor|ancestor-or-self|preceding-sibling|preceding)::).*'), '$1', 'sx')
             [not(. eq $text) or $text eq '..']
-
     let $axisName :=
         if (not($explicitAxis)) then 'child'
         else if ($explicitAxis eq '@') then 'attribute'
@@ -2501,7 +2500,7 @@ declare function f:parsePrimaryExpr($text as xs:string, $context as map(*))
     if (matches($text, '^(node|text|comment|processing-instruction|element|attribute|document-node)\s*\(')) then ()
     
     (: axis => not primary expression :)
-    else if (matches($text, '^\i+::')) then ()
+    else if (matches($text, '^\i\c*::')) then ()
     
     else if (starts-with($text, '$')) then f:parseVariableRef($text, $context)
     else if (starts-with($text, '(')) then f:parseParenthesizedExpr($text, $context)

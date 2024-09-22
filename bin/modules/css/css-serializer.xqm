@@ -1,18 +1,17 @@
 module namespace f="http://www.data2type.de/ns/octopus/css-serializer";
-import module namespace util="http://www.data2type.de/ns/octopus/ofx-util"
-    at "ofx-util.xqm";
 
 declare variable $f:INDENT := '    ';
 
 (:~
  : Serializes a CSS document.
  :)
-declare function f:serializeCss($tree as element(),
+declare function f:serializeCss($tree as node(),
                                 $options as map(xs:string, item()*)?)
         as item()? {
+    let $rootElem := $tree/descendant-or-self::*[1]
     let $options := ($options, map{})[1]
     let $options := map:put($options, 'comment-inline', false())    
-    let $serParts := f:serializeCssREC($tree, 0, $options)
+    let $serParts := f:serializeCssREC($rootElem, 0, $options)
     let $ser := $serParts => string-join('')
     let $ser := $ser ! replace(., '^\s*&#xA;+', '')
     return $ser
@@ -95,5 +94,12 @@ declare function f:serializeCssREC($node as element(),
 
 declare function f:indent($level as xs:integer)
         as xs:string {
-    util:repeatString($f:INDENT, $level - 1)        
+    f:repeatString($f:INDENT, $level - 1)        
 };        
+
+declare function f:repeatString($s as xs:string, $count as xs:integer)
+        as xs:string {
+    (for $i in 1 to $count return $s) => string-join('')        
+};
+
+

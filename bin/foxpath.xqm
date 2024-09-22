@@ -2046,7 +2046,8 @@ declare function f:resolveFunctionCall($call as element(),
             else
                 map:put($options, 'IS_CONTEXT_URI', true())
         return
-            i:resolveFoxpathExpr($expression, false(), $context, $useOptions, ())
+            (: i:resolveFoxpathExpr($expression, false(), $context, $useOptions, ()) :)
+            i:resolveFoxpathExpr($expression, false(), $context, $vars, $useOptions)
     else
         i:resolveStaticFunctionCall($call, $context, $position, $last, $vars, $options)
 };      

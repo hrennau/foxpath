@@ -2710,6 +2710,16 @@ declare function f:cssParse($text as xs:string, $options as xs:string?)
 };
 
 (:~
+ : Parses a CSS record into a node tree.
+ :)
+declare function f:cssSerialize($doc as node(), $options as xs:string?)
+        as xs:string {
+    let $fn := util:getModuleFunction('serializeCss')                
+    return
+        try {$fn($doc, ())} catch * {()}
+};
+
+(:~
  : Compares two documents or nodes with respect to the data paths which
  : they contain. The paths use node names as specified by $nameKind. The comparison 
  : is defined by the comparison type ($cmpType). Supported types:

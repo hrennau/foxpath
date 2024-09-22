@@ -37,6 +37,8 @@ declare function f:getModuleFunction($fname as xs:string)
         switch($fname)
         case 'parseCss' return
             'modules/css/css-parser.xqm'
+        case 'serializeCss' return
+            'modules/css/css-serializer.xqm'
         default return error()
     return
         inspect:functions($module)
