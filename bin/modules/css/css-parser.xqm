@@ -16,6 +16,10 @@ declare function f:parseCss($text as xs:string?,
     let $preComments := f:removeEtc($preCommentsEtc)
     let $etc := f:getEtc($preCommentsEtc)
 
+    let $varsEtc := f:pVars($etc, $options)
+    let $vars := f:removeEtc($varsEtc)
+    let $etc := f:getEtc($varsEtc)
+    
     let $importsEtc := f:pImports($etc, $options)
     let $imports := f:removeEtc($importsEtc)
     let $etc2 := f:getEtc($importsEtc)
@@ -31,11 +35,63 @@ declare function f:parseCss($text as xs:string?,
     let $cssParsed := 
         <css>{
             $preComments,
+            $vars,
             $imports,
             $rules,
             $postComments
         }</css>  
     return map{'parsed': $cssParsed, 'etc': $etc4}
+};
+
+(:~
+ : Parses a sequence of variable declarations.
+ :)
+declare function f:pVars($text as xs:string?,
+                         $options as map(xs:string, item()*))
+        as item()* {
+    let $varsEtc := f:pVarSeq($text, $options)
+    let $vars := f:removeEtc($varsEtc)
+    let $etc := f:getEtc($varsEtc)
+    return ($vars, $etc)
+};
+
+(:~
+ : Parses a sequence of variables.
+ :)
+declare function f:pVarSeq($text as xs:string?,
+                           $options as map(xs:string, item()*))
+        as item()* {
+    let $varEtc := f:pVar($text, $options)
+    let $var := f:removeEtc($varEtc)
+    let $etc := f:getEtc($varEtc)    
+    return if (not($var)) then $etc else
+    let $etc := $etc ! f:skipWS(.)
+    return ($var, $etc ! f:pVarSeq(., $options))        
+}; 
+
+(:~
+ : Parses a single variable.
+ :)
+declare function f:pVar($text as xs:string?,
+                        $options as map(xs:string, item()*))
+        as item()* {
+    let $preCommentsEtc := f:pComments($text, $options)
+    let $preComments := f:removeEtc($preCommentsEtc)
+    let $etc := f:getEtc($preCommentsEtc)
+    return
+        if (not(starts-with($etc, '@')) or starts-with($etc, '@import')) 
+        then ($preComments, $etc)
+        else
+        
+    let $name := replace($etc, '^(@\S+)(.*)', '$1', 'sx')
+    let $etc2 := replace($etc, '^@\S+\s+', '')
+    let $valueEtc := f:pValue($etc2, $options)
+    let $value := f:removeEtc($valueEtc)
+    let $etc3 := f:getEtc($valueEtc)
+    return 
+        if (not($value)) then ($preComments, $etc) 
+        else ($preComments, 
+              <var>{<name><t>{$name}</t></name>, $value}</var>, $etc3)
 };
 
 (:~
@@ -565,6 +621,7 @@ declare function f:pComments($text as xs:string?,
             let $comment := substring($tComment, 3, $len - 4)
             return (
                 <comment>{$comment}</comment>,
+                (: $emptyLine, :)
                 f:pComments($etc, $options)
             )                
 };

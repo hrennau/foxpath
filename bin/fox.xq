@@ -43,13 +43,10 @@ let $externalVariables :=
     else
         map:merge(
             for $item in tokenize($vars, '#######')[string()]
-            let $_DEBUG := trace($item, '___ITEM: ')
             let $name := replace($item, '^\s*(.*?)\s*[:=].*', '$1') 
             let $value := replace($item, '^.*?[:=]\s*(.*?)\s*$', '$1')
             let $value := xs:untypedAtomic($value)
             let $qname := QName((), $name) 
-            let $_DEBUG := trace($name, '___NAME: ')
-            let $_DEBUG := trace($value, '___VALUE: ')
             return map:entry($qname, $value)
         )
         

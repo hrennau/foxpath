@@ -2704,7 +2704,7 @@ declare function f:nameDiff($docs as item()*,
  :)
 declare function f:cssParse($text as xs:string, $options as xs:string?)
         as node() {
-    let $fn := util:getModuleFunction('parseCss')                
+    let $fn := util:getModuleFunction('parseCss') 
     return
         try {$fn($text, ())?parsed} catch * {()}
 };

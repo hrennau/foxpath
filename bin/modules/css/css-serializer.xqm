@@ -55,6 +55,9 @@ declare function f:serializeCssREC($node as element(),
         if (exists($node/(properties, rules))) then () else ' {}'
     )
     
+    case element(var) return(
+        '&#xA;'||$node/name||' '||$node/value||';'
+    )
     case element(selectors) return (
         f:indent($level),
         let $text := ($node/* ! f:serializeCssREC(., $level, $options))

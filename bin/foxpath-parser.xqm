@@ -210,7 +210,8 @@ declare function f:finalizeParseTree_namespacesRC($n as node(), $prolog as eleme
                         attribute namespace {$uri}
             else ()
         return
-            if ($namespace/self::error) then $namespace
+            (: if ($namespace/self::error) then $namespace :)
+            if ($namespace instance of element(error)) then $namespace 
             else
                 element {node-name($n)} {
                     for $a in $n/@* return 
