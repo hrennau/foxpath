@@ -2891,6 +2891,22 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 xs:string($arg1)
 
+        (: ################################################################
+         : p a r t  3:    m o d u l e    f u n c t i o n s
+         : ################################################################ :)
+
+        else if ($fname = ('check-unused-namespaces',
+                           'check-unused-namespaces-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0 
+            let $items := (
+                $context[$da eq 0],
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
+            let $format := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $flags := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                           
+            let $fn := util:getModuleFunction('checkUnusedNamespaces') 
+            return try {$fn($items, $format, $flags)} catch * {$err:code, $err:description}
+        
         else
         error(QName((), 'NOT_YET_IMPLEMENTED'),
             concat('Unexpected function name: ', $fname))

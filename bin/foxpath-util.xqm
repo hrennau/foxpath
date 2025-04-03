@@ -39,7 +39,9 @@ declare function f:getModuleFunction($fname as xs:string)
             'modules/css/css-parser.xqm'
         case 'serializeCss' return
             'modules/css/css-serializer.xqm'
-        default return error()
+        case 'checkUnusedNamespaces' return
+            'modules/check/check-namespaces.xqm'
+        default return error((), 'Unknown function name: '||$fname)
     return
         inspect:functions($module)
             [function-name(.) ! local-name-from-QName(.) eq $fname]
