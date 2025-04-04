@@ -41,6 +41,8 @@ declare function f:getModuleFunction($fname as xs:string)
             'modules/css/css-serializer.xqm'
         case 'checkUnusedNamespaces' return
             'modules/check/check-namespaces.xqm'
+        case 'replaceAndMarkChars' return
+            'modules/characters/char-marker.xqm'
         default return error((), 'Unknown function name: '||$fname)
     return
         inspect:functions($module)

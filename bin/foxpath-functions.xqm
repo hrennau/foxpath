@@ -2907,6 +2907,30 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $fn := util:getModuleFunction('checkUnusedNamespaces') 
             return try {$fn($items, $format, $flags)} catch * {$err:code, $err:description}
         
+        else if ($fname = ('replace-mark-chars',
+                           'replace-chars',
+                           'mark-chars',                           
+                           'replace-mark-chars-ec',
+                           'replace-chars-ec',
+                           'mark-chars-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $onlyReplace := $fname = ('replace-chars', 'replace-chars-ec')
+            let $onlyMark := $fname = ('marks-chars', 'mark-chars-ec')
+            let $pNrMark := if ($onlyMark) then $da + 1 else $da + 2
+            let $pNrReplace := if ($onlyReplace) then $da + 1 else $da + 1
+            let $pNrFlags := if ($onlyReplace or $onlyMark) then $da + 2 else $da + 3
+            
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $items := if ($da eq 1) then $arg1 else $context
+            let $mark := if ($onlyReplace) then () else
+                $call/*[$pNrMark]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $replace := if ($onlyMark) then () else
+                $call/*[$pNrReplace]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $flags := $call/*[$pNrFlags]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                           
+            let $fn := util:getModuleFunction('replaceAndMarkChars') 
+            return try {$fn($items, $replace, $mark, $flags, ())} catch * {$err:code, $err:description}
+        
         else
         error(QName((), 'NOT_YET_IMPLEMENTED'),
             concat('Unexpected function name: ', $fname))
