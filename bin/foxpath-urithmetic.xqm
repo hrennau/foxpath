@@ -233,7 +233,9 @@ declare function f:itemToNode($item as item())
 (:~
  : Writes a document resource to the file system.
  :)
-declare function f:writeDocResource($path as xs:string, $resource as map(*), $flags as xs:string?)
+declare function f:writeDocResource($path as xs:string, 
+                                    $resource as map(*), 
+                                    $flags as xs:string?)
         as empty-sequence() {
     let $doc := $resource?doc
     return if (not($doc)) then () else

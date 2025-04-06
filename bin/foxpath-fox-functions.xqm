@@ -758,6 +758,12 @@ declare function f:fileCopy($sourceUris as xs:string*,
 
 (:~
  : Copies resources as a file tree, preserving their folder structure.
+ :
+ : Errors:
+ : - INVALID_SOURCE_CONTEXT - the source context specified does not
+ :     contain all resources 
+ : - INVALID_SET_OF_RESOURCES - the resources are not all contained
+ :     by a single context
  :)
 declare function f:fileTreeCopy($resources as item()*,
                                 $targetUri as xs:string,
@@ -765,25 +771,13 @@ declare function f:fileTreeCopy($resources as item()*,
                                 $rename as xs:string?,
                                 $flags as xs:string?)
         as empty-sequence() {
-(:        
-    let $_DEBUG :=
-        for $r in $resources return typeswitch($r)
-        case map(*) return trace($r?uri, '_ doc resource uri: ')
-        case xs:anyAtomicType return trace($r, '_ uri: ')
-        default return trace('resource, type not recognized') 
-    return
-:)    
     if (empty($resources)) then () else     
     
-    (: Function mapping a resource item to a URI :)
-    let $fnUri := function($resource) {
-        if ($resource instance of map(*)) then $resource?uri else $resource}
-    
+    let $_DEBUG := trace($flags, '_flags: ')
     let $fnCopy := function($resource, $path) {
         if ($resource instance of map(*)) then
-            uth:writeDocResource($path, $resource, ())
-        else 
-            file:copy($resource, $path),
+            uth:writeDocResource($path, $resource, $flags)
+        else file:copy($resource, $path),
         'yes'    (: dummy return value, assuring execution :)
     }
     
@@ -791,27 +785,30 @@ declare function f:fileTreeCopy($resources as item()*,
        or it is determined as the closest common ancestor 
        (note that URI format is required, in order to
         support source locations not in the file system :)    
-    let $srcContextEff := 
-       if ($srcContext) then $srcContext ! uth:absoluteUri(.) 
-       else uth:commonContextUri($resources)
+    let $srcContextEff := (
+       if ($srcContext) then $srcContext else uth:commonContextUri($resources))
        ! uth:absoluteUri(.)
     return
         if (empty($srcContextEff)) then
-        error(QName((), 'INVALID_ARG'), 'INVALID_ARG - the resources do not '||
+        error(QName((), 'INVALID_SET_OF_RESOURCES'), 'The resources do not '||
             'have a common root URI') else
             
     (: The target context :)
     let $targetUriEff := $targetUri ! uth:absoluteUri(.)
-    let $_DEBUG := trace($srcContextEff, '_ srcContextEff: ')
-    let $_DEBUG := trace($targetUriEff, '_ targetContext: ')
     for $resource in $resources 
-    let $uri := $fnUri($resource) ! uth:absoluteUri(.)   (: Normalized URIs required :)
+    let $uri := uth:resourceUri($resource) ! uth:absoluteUri(.)   (: Normalized URIs required :)
+    return if (not(starts-with($uri, $srcContextEff||'/'))) then
+        error(QName((), 'INVALID_SOURCE_CONTEXT'), 
+          'Invalid argument - the source context ('||$srcContextEff||') must '||
+          'contain all '||'resources, but resource "'||$uri||'" is not contained.')
+        else
     let $relpath := uth:relPath($srcContextEff, $uri)
-    let $tpath := $targetUriEff||'/'||$relpath
-    let $folder := $tpath ! uth:parentPath(.)
-    let $_CREATE_DIR := if (file:exists($folder)) then () else file:create-dir($folder)
+    let $tpath := $targetUriEff||'/'||$relpath    
+    let $_CREATE_DIR := 
+        let $folder := $tpath ! uth:parentPath(.)
+        return if (file:exists($folder)) then () else file:create-dir($folder)
     let $_COPY := $fnCopy($resource, $tpath)
-    let $_CHECK := if ($_COPY eq 'NEVER') then error() else ()
+    let $_CHECK := if (($_COPY, $_CREATE_DIR) eq 'NEVER') then error() else ()
     return ()
 };
 
@@ -3206,10 +3203,14 @@ declare function f:prettyNode($items as item()*,
                               $options as xs:string?)
         as item()* {
     let $ops := $options ! tokenize(.)
-    let $nodes :=
-        for $item in $items return
-            if ($item instance of node()) then $item else i:fox-doc($item, ())
-    return $nodes ! util:prettyNode(., $ops)
+    for $item in $items
+    let $isDocResource := uth:instanceOfDocResource($item)
+    let $node := uth:itemToNode($item)
+    let $resultNode := $node ! util:prettyNode(., $ops)
+    let $result :=
+        if ($isDocResource) then uth:updateDocResourceContent($item, $resultNode)
+        else $resultNode
+    return $result
 };
 
 (:~
@@ -3457,13 +3458,12 @@ declare function f:renameNodes($items as item()*,
                                $nameExpr as item(),
                                $options as xs:string?,
                                $processingOptions as map(*))
-        as node()* {
-    let $nodes :=
-        for $item in $items
-        return if ($item instance of node()) then $item else i:fox-doc($item, ())
+        as item()* {
     let $ops := f:getOptions($options, ('base'), 'rename-nodes')
     let $withBaseUri := $ops = 'base'
-    for $node in $nodes
+    for $item in $items
+    let $isDocResource := uth:instanceOfDocResource($item)
+    let $node := uth:itemToNode($item)
     let $resultDoc :=  
         copy $node_ := $node
         modify (
@@ -3471,7 +3471,6 @@ declare function f:renameNodes($items as item()*,
                 f:resolveFoxpath($node_, ., $processingOptions)[. instance of node()]
             
             for $rnode in $targetNodes
-            (: let $newName := f:resolveFoxpath($rnode, $nameExpr, (), $processingOptions) :)
             let $newName := $nameExpr !
                 f:resolveFoxpath($rnode, ., $processingOptions)
             return rename node $rnode as $newName,
@@ -3483,7 +3482,10 @@ declare function f:renameNodes($items as item()*,
                         insert node attribute xml:base {$targetElem/base-uri(.)} into $targetElem              
             )                        
         return $node_
-    return $resultDoc
+    let $result :=
+        if ($isDocResource) then uth:updateDocResourceContent($item, $resultDoc)
+        else $resultDoc        
+    return $result
  };
 
 (:~
