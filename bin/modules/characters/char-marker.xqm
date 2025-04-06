@@ -2,6 +2,10 @@ module namespace f="http://www.foxpath.org/ns/fox-functions/char-marker";
 import module namespace i="http://www.ttools.org/xquery-functions" 
 at "../../foxpath-uri-operations.xqm";
 
+import module namespace uth="http://www.foxpath.org/ns/urithmetic" 
+at  "../../foxpath-urithmetic.xqm";
+ 
+
 (:~
  : Optionally replaces characters and marks them by inserting
  : unicode codepoint information immediately before it.
@@ -20,9 +24,9 @@ declare function f:replaceAndMarkChars(
                                $flags as xs:string?,                               
                                $cfgPath as xs:string?)
 
-        as node() {
+        as item() {
+    let $isDocResource := uth:instanceOfDocResource($item)        
     let $cfg := $cfgPath ! doc(.)
-    let $_DEBUG := trace($replace, '_ replace: ')
     let $markC :=
         if ($mark) then $mark else $cfg//mark => string-join(' ')
     let $replaceC := 
@@ -30,12 +34,7 @@ declare function f:replaceAndMarkChars(
         else $cfg//replaces/replace/concat(@from, '=', @to)
              => string-join(' ')
        
-    let $doc :=
-        $item ! ( 
-        typeswitch(.) 
-        case node() return root(.)/descendant-or-self::*[1]
-        default return i:fox-doc(., ())/*)
-       
+    let $doc := uth:itemToNode($item)
     let $edited :=
         if (not($replaceC)) then $doc else
             let $repls := $replaceC => f:editReplacements()
@@ -48,7 +47,10 @@ declare function f:replaceAndMarkChars(
         let $to := '#['||string($mcode)||']'||$from
         return map:entry($from, map{'from': $fromRegex, 'to': $to}))
     let $marked := $edited ! f:mark(., $mcodes, $markedTable)
-    return $marked        
+    let $result :=
+        if ($isDocResource) then uth:updateDocResourceContent($item, $marked)
+        else $marked 
+    return $result      
 };
 
 declare function f:char2codepoint($s as xs:string) as xs:integer {

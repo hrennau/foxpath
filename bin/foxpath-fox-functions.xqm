@@ -754,54 +754,66 @@ declare function f:fileCopy($sourceUris as xs:string*,
             else file:create-dir($targetParentUri)
         return
             file:copy($sourceUri, $targetUri)
-                
-(:                
-                if (not(i:fox-file-exists(file:parent($targetUri))) then file:copy($
-    let $targetFileExists :=
-        $targetResourceExists and (
-            i:fox-is-file($targetUri, ()) or
-            i:fox-file-exists($targetUri||'/'||file:name($fileUri), ()))
-    let $_CHECK := (
-        if (not($targetFileExists) or $options?overwrite) then () 
-        else
-            error(QName((), 'INVALID_CALL'), concat('Target file exists; use option "overwrite" ',
-                'if you want to overwrite existing files; file URI: ', $targetUri))
-        ,                
-        
-    if (i:fox-file-exists($targetUri, ())) then
-        let $_CHECK :=
-            if (i:fox-is-dir($targetDirUri)) then
-                let $targetFileUri := $targetUri || '/' || file:name($fileUri)
-                return
-                    if (i:fox-file-exists($targetFileUri, .)) then
-                if ($options?overwrite) then ()
-                else
-                    error(QName((), 'INVALID_CALL'), concat('Target file exists; use option "overwrite" ',
-                        'if you want to overwrite existing files; file URI: ', $targetUri))
-                        
-        return
-            file:copy($fileUri, $targetUri)
-                
-    else            
-    let $_CREATE_DIR :=
-        let $targetDirExists := i:fox-file-exists($targetDirUri, ())    
-        return
-            if ($targetDirExists) then ()
-            else if ($options?create) then file:create-dir($targetDirUri)
-            else
-                error(QName((), 'INVALID_CALL'), concat('Target directory does not ',
-                    'exists; use option "create" if you want automatic creation of ',
-                    'a non-existent target dir; target dir URI: ', $targetDirUri))
-    let $_CHECK_OVERWRITE :=
-        if ($options?overwrite) then ()
-        else if (not(i:fox-file-exists($targetDirUri || '/' || file:name($fileUri), ()))) then ()
-        else
-            error(QName((), 'INVALID_CALL'), concat('Target file exists; use option "overwrite" ',
-                'if you want to overwrite existing files; file URI: ', $fileUri))
-    return
-        file:copy($fileUri, $targetDirUri)
-:)        
 };        
+
+(:~
+ : Copies resources as a file tree, preserving their folder structure.
+ :)
+declare function f:fileTreeCopy($resources as item()*,
+                                $targetUri as xs:string,
+                                $srcContext as xs:string?,
+                                $rename as xs:string?,
+                                $flags as xs:string?)
+        as empty-sequence() {
+(:        
+    let $_DEBUG :=
+        for $r in $resources return typeswitch($r)
+        case map(*) return trace($r?uri, '_ doc resource uri: ')
+        case xs:anyAtomicType return trace($r, '_ uri: ')
+        default return trace('resource, type not recognized') 
+    return
+:)    
+    if (empty($resources)) then () else     
+    
+    (: Function mapping a resource item to a URI :)
+    let $fnUri := function($resource) {
+        if ($resource instance of map(*)) then $resource?uri else $resource}
+    
+    let $fnCopy := function($resource, $path) {
+        if ($resource instance of map(*)) then
+            uth:writeDocResource($path, $resource, ())
+        else 
+            file:copy($resource, $path),
+        'yes'    (: dummy return value, assuring execution :)
+    }
+    
+    (: The source context is either provided explicitly,
+       or it is determined as the closest common ancestor 
+       (note that URI format is required, in order to
+        support source locations not in the file system :)    
+    let $srcContextEff := 
+       if ($srcContext) then $srcContext ! uth:absoluteUri(.) 
+       else uth:commonContextUri($resources)
+       ! uth:absoluteUri(.)
+    return
+        if (empty($srcContextEff)) then
+        error(QName((), 'INVALID_ARG'), 'INVALID_ARG - the resources do not '||
+            'have a common root URI') else
+            
+    (: The target context :)
+    let $targetUriEff := $targetUri ! uth:absoluteUri(.)
+    let $_DEBUG := trace($srcContextEff, '_ srcContextEff: ')
+    let $_DEBUG := trace($targetUriEff, '_ targetContext: ')
+    for $resource in $resources 
+    let $uri := $fnUri($resource) ! uth:absoluteUri(.)   (: Normalized URIs required :)
+    let $relpath := uth:relPath($srcContextEff, $uri)
+    let $tpath := $targetUriEff||'/'||$relpath
+    let $folder := $tpath ! uth:parentPath(.)
+    let $_CREATE_DIR := if (file:exists($folder)) then () else file:create-dir($folder)
+    let $_COPY := $fnCopy($resource, $tpath)
+    let $_CHECK := if ($_COPY eq 'NEVER') then error() else ()
+    return ()
+};
 
 (:~
  : Returns a string describing a resource identified by a URI.
@@ -3204,7 +3216,13 @@ declare function f:prettyNode($items as item()*,
  : Creates a reduced copy of a node. Content nodes selected by the
  : expressions $excludeExprs are removed.
  :
- : @param doc document URI or node
+ : Input items which are strings are treated as document URIs, and the
+ : corresponding documents are processed.
+ :
+ : Input items which are doc-resources are updated as doc-resources, that 
+ : is the object field 'doc' is replaced with the updated document.
+ :
+ : @param doc document URI, node or doc-resource
  : @param excludeExprs expressions excluding nodes
  : @return a copy of the input doc in which the selected nodes have been removed
  :)
@@ -3212,12 +3230,14 @@ declare function f:deleteNodes($items as item()*,
                                $excludeExpr as item(),
                                $options as xs:string?,
                                $processingOptions as map(*))
-        as node()* {
+        as item()* {
     let $ops := f:getOptions($options, ('base', 'keepws'), 'delete-nodes')
     let $keepWS := $ops = 'keepws'
     let $withBaseUri := $ops = 'base'
-    for $item in $items        
-    let $node := if ($item instance of node()) then $item else i:fox-doc($item, ())
+    
+    for $item in $items   
+    let $isDocResource := uth:instanceOfDocResource($item)
+    let $node := uth:itemToNode($item)
     let $resultDoc :=  
         copy $node_ := $node
         modify (
@@ -3235,8 +3255,11 @@ declare function f:deleteNodes($items as item()*,
                         insert node attribute xml:base {$targetElem/base-uri(.)} into $targetElem              
         )   
         return $node_
-    let $resultDoc := if ($keepWS) then $resultDoc else $resultDoc ! util:prettyFoxPrint(.)        
-    return $resultDoc
+    let $resultDoc := if ($keepWS) then $resultDoc else $resultDoc ! util:prettyFoxPrint(.) 
+    let $result :=
+        if ($isDocResource) then uth:updateDocResourceContent($item, $resultDoc)
+        else $resultDoc
+    return $result
  };
 
 (:~

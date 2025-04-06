@@ -1,5 +1,8 @@
 module namespace f="http://www.foxpath.org/ns/urithmetic";
 
+import module namespace i="http://www.ttools.org/xquery-functions" 
+at "foxpath-uri-operations.xqm";
+
 (:~
  : Maps a URI or path to an absolute URI. 
  :
@@ -19,6 +22,33 @@ declare function f:absoluteUri($uriOrPath as xs:string?) as xs:string? {
     return (
         if (starts-with($apath, '/')) then 'file://' else 'file:///')
         ||$apath
+};
+
+(:~
+ : Returns a resource URI.
+ :)
+declare function f:resourceUri($resource as item()) as xs:string {
+    typeswitch($resource)
+    case map(*) return $resource?uri
+    case node() return $resource/base-uri(.)
+    default return $resource
+};
+
+(:~
+ : Returns the closest ancestor URI containing a sequence of URIs.
+ :)
+declare function f:commonContextUri($uris as item()*) as xs:string? {
+    let $uris := $uris ! f:resourceUri(.)
+    let $try := $uris[1] ! f:parentPath(.)
+    return f:commonContextUriREC($uris, $try)
+};
+
+declare function f:commonContextUriREC($uris as xs:string*, $try as xs:string) 
+        as xs:string? {
+    if (every $uri in $uris satisfies starts-with($uri, $try||'/')) then $try else
+    let $try2 := $try ! f:parentPath(.)
+    return
+        if ($try2 eq $try) then () else f:commonContextUriREC($uris, $try2)
 };
 
 (:~
@@ -88,6 +118,13 @@ declare function f:normalizePath($path as xs:string?) as xs:string? {
 };    
 
 (:~
+ : Returns the parent path of a given path.
+ :)
+declare function f:parentPath($path as xs:string?) as xs:string? {
+    $path ! f:normalizePath(.) ! replace(., '/[^/]*$', '')
+};
+
+(:~
  : Returns the relative path leading from $path1 to $path2.
  :
  : @param path1 a path
@@ -142,3 +179,70 @@ declare function f:removeUriScheme($uriOrPath as xs:string?) as xs:string? {
     replace($uriOrPath, '^[a-z][a-z]+:/+([a-zA-Z]:.*|/.*)', '$1')
 };
 
+(:~
+ : Returns a "doc resource", which is a map with entries
+ : '_objecttype', 'doc' and 'uri'.
+ :)
+declare function f:docResource($resource as item()?)
+        as map(*)? {
+    if ($resource instance of map(*)) then $resource else
+    
+    let $doc := 
+        if ($resource instance of node()) then $resource
+        else try {i:fox-doc($resource, ())} catch * {()}
+    return if (not($doc)) then () else
+    
+    let $uri := $doc/base-uri(.)
+    return map{'_objecttype': 'doc-resource', 'doc': $doc, 'uri': $uri}
+};  
+
+(:~
+ : Replaces a doc-resource's content node with another node.
+ :)
+declare function f:updateDocResourceContent($resource as map(*), 
+                                            $doc as node())
+        as map(*) {
+    map:put($resource, 'doc', $doc)            
+};        
+
+(:~
+ : Returns true if a given item is an instance of a doc-resource.
+ :)
+declare function f:instanceOfDocResource($item as item())
+        as xs:boolean {
+    if ($item instance of map(*)) then
+        if ($item?_objecttype eq 'doc-resource') then true()
+        else false()
+    else false()        
+};
+
+(:~
+ : Maps an item to a node. If the item is a node, the
+ : node is returned; it is a doc-resource, the resource's
+ : content node is returned; otherwise, the item is interpreted
+ : as a document URI and the corresponding document node is
+ : returned. 
+ :) 
+declare function f:itemToNode($item as item())
+        as node()? {
+    if ($item instance of node()) then $item 
+    else if (f:instanceOfDocResource($item))then $item?doc
+    else i:fox-doc($item, ())
+};        
+
+(:~
+ : Writes a document resource to the file system.
+ :)
+declare function f:writeDocResource($path as xs:string, $resource as map(*), $flags as xs:string?)
+        as empty-sequence() {
+    let $doc := $resource?doc
+    return if (not($doc)) then () else
+    
+    let $flagItems := $flags ! tokenize(.)        
+    let $ser := map:merge(
+        if (not($flagItems = 'indent')) then () else map:entry('indent', 'yes')
+    )
+    return file:write($path, $doc, $ser)
+};        
+
+        

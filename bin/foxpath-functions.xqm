@@ -4,6 +4,9 @@ import module namespace i="http://www.ttools.org/xquery-functions"
 at "foxpath-processorDependent.xqm",
    "foxpath-uri-operations.xqm";
    
+import module namespace uth="http://www.foxpath.org/ns/urithmetic" 
+at  "foxpath-urithmetic.xqm";
+ 
 import module namespace util="http://www.ttools.org/xquery-functions/util" 
 at  "foxpath-util.xqm";
 
@@ -15,9 +18,6 @@ at  "foxpath-unified-string-expression.xqm";
 
 import module namespace foxf="http://www.foxpath.org/ns/fox-functions" 
 at "foxpath-fox-functions.xqm";
-
-import module namespace urim="http://www.foxpath.org/ns/urithmetic" 
-at "foxpath-urithmetic.xqm";
 
 (: 
  : ===============================================================================
@@ -497,7 +497,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $uri := 
                 if ($call/*) then $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 else $context
-            return $uri ! urim:fileBaseName(.)
+            return $uri ! uth:fileBaseName(.)
             
         (: function `file-contains` 
            ======================= :)
@@ -546,7 +546,28 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $flags := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options) ! lower-case(.)
             return
                 foxf:fileCopy($file, $target, $flags)
-                
+
+        (: function `file-tree-copy` 
+           ========================= :)
+        else if ($fname = ('file-tree-copy', 'ftcopy')) then
+            let $resources := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $targetUri := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $sourceUri := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $rename := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $flags := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:fileTreeCopy($resources, $targetUri, $sourceUri, $rename, $flags)
+
+        (: function `doc-resource` 
+           ======================= :)
+        else if ($fname = ('doc-resource', 'doc-resource-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $resource := if ($da) then $arg1 else $context
+            return
+                uth:docResource($resource)
+
+
         (: function `file-create-dir` 
            ========================== :)
         else if ($fname eq 'file-create-dir') then
@@ -2907,7 +2928,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $fn := util:getModuleFunction('checkUnusedNamespaces') 
             return try {$fn($items, $format, $flags)} catch * {$err:code, $err:description}
         
-        else if ($fname = ('replace-mark-chars',
+        else if ($fname = ('replace-61554 66chars',
                            'replace-chars',
                            'mark-chars',                           
                            'replace-mark-chars-ec',
@@ -2915,7 +2936,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                            'mark-chars-ec')) then
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0
             let $onlyReplace := $fname = ('replace-chars', 'replace-chars-ec')
-            let $onlyMark := $fname = ('marks-chars', 'mark-chars-ec')
+            let $onlyMark := $fname = ('mark-chars', 'mark-chars-ec')
             let $pNrMark := if ($onlyMark) then $da + 1 else $da + 2
             let $pNrReplace := if ($onlyReplace) then $da + 1 else $da + 1
             let $pNrFlags := if ($onlyReplace or $onlyMark) then $da + 2 else $da + 3
