@@ -35,6 +35,10 @@ declare function f:getModuleFunction($fname as xs:string)
         as function(*) {
     let $module :=
         switch($fname)
+        case 'cssdocResource' return
+            'modules/css/css-util.xqm'
+        case 'writeCssdocResource' return
+            'modules/css/css-util.xqm'
         case 'parseCss' return
             'modules/css/css-parser.xqm'
         case 'serializeCss' return

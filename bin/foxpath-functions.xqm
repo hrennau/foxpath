@@ -567,6 +567,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 uth:docResource($resource)
 
+        (: function `textfile-resource` 
+           ============================ :)
+        else if ($fname = ('textfile-resource', 'textfile-resource-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $resource := if ($da) then $arg1 else $context
+            return
+                uth:textfileResource($resource)
+
+
 
         (: function `file-create-dir` 
            ========================== :)
@@ -2915,6 +2925,14 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: ################################################################
          : p a r t  3:    m o d u l e    f u n c t i o n s
          : ################################################################ :)
+
+        else if ($fname = ('cssdoc-resource', 'cssdoc-resource-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $resource := if ($da) then $arg1 else $context
+            return
+                let $fn := util:getModuleFunction('cssdocResource') 
+                return try {$fn($resource)} catch * {$err:code, $err:description}
 
         else if ($fname = ('check-unused-namespaces',
                            'check-unused-namespaces-ec')) then

@@ -197,6 +197,22 @@ declare function f:docResource($resource as item()?)
 };  
 
 (:~
+ : Returns a "textfile resource", which is a map with entries
+ : '_objecttype', 'content' and 'uri'.
+ :)
+declare function f:textfileResource($resource as item()?)
+        as map(*)? {
+    if ($resource instance of map(*)) then $resource else
+    
+    let $content :=
+        try {i:fox-unparsed-text($resource, (), ())} catch * {()}
+    return if (not($content)) then () else
+    
+    let $uri := $resource
+    return map{'_objecttype': 'textfile-resource', 'content': $content, 'uri': $uri}
+};  
+
+(:~
  : Replaces a doc-resource's content node with another node.
  :)
 declare function f:updateDocResourceContent($resource as map(*), 
@@ -212,6 +228,7 @@ declare function f:instanceOfDocResource($item as item())
         as xs:boolean {
     if ($item instance of map(*)) then
         if ($item?_objecttype eq 'doc-resource') then true()
+        else if ($item?_objecttype eq 'cssdoc-resource') then true()
         else false()
     else false()        
 };
@@ -245,6 +262,23 @@ declare function f:writeDocResource($path as xs:string,
         if (not($flagItems = 'indent')) then () else map:entry('indent', 'yes')
     )
     return file:write($path, $doc, $ser)
+};        
+
+(:~
+ : Writes a document resource to the file system.
+ :)
+declare function f:writeTextfileResource($path as xs:string, 
+                                         $resource as map(*), 
+                                         $flags as xs:string?)
+        as empty-sequence() {
+    if (not($resource?_objecttype eq 'textfile-resource')) then 
+        error(QName((), 'INVALID_ARG'), 'Invalid argument - not a textfile resource.')
+        else
+        
+    let $content := $resource?content
+    return 
+        if (not($content)) then ()
+        else file:write($path, $content)
 };        
 
         

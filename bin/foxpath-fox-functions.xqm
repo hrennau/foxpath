@@ -776,7 +776,14 @@ declare function f:fileTreeCopy($resources as item()*,
     let $_DEBUG := trace($flags, '_flags: ')
     let $fnCopy := function($resource, $path) {
         if ($resource instance of map(*)) then
-            uth:writeDocResource($path, $resource, $flags)
+                if ($resource?_objecttype eq 'doc-resource') then 
+                    uth:writeDocResource($path, $resource, $flags)
+                else if ($resource?_objecttype eq 'textfile-resource') then 
+                    uth:writeTextfileResource($path, $resource, $flags)
+                else if ($resource?_objecttype eq 'cssdoc-resource') then
+                    let $fn := util:getModuleFunction('writeCssdocResource') 
+                    return try {$fn($path, $resource, $flags)} catch * {$err:code, $err:description}
+                else error()
         else file:copy($resource, $path),
         'yes'    (: dummy return value, assuring execution :)
     }
@@ -795,6 +802,15 @@ declare function f:fileTreeCopy($resources as item()*,
             
     (: The target context :)
     let $targetUriEff := $targetUri ! uth:absoluteUri(.)
+    let $fnRename :=
+        if (not($rename)) then () else
+        let $from := $rename ! replace(., '\s*=.*', '')
+        let $to := $rename ! replace(., '.*?=\s*', '')
+        return 
+            function ($path) {
+                let $name := file:name($path)
+                let $name2 := $name ! replace(., $from, $to)
+                return ($path ! file:parent(.))||'/'||$name2}
     for $resource in $resources 
     let $uri := uth:resourceUri($resource) ! uth:absoluteUri(.)   (: Normalized URIs required :)
     return if (not(starts-with($uri, $srcContextEff||'/'))) then
@@ -804,10 +820,11 @@ declare function f:fileTreeCopy($resources as item()*,
         else
     let $relpath := uth:relPath($srcContextEff, $uri)
     let $tpath := $targetUriEff||'/'||$relpath    
+    let $tpath2 := if (empty($fnRename)) then $tpath else $tpath ! $fnRename(.)
     let $_CREATE_DIR := 
         let $folder := $tpath ! uth:parentPath(.)
         return if (file:exists($folder)) then () else file:create-dir($folder)
-    let $_COPY := $fnCopy($resource, $tpath)
+    let $_COPY := $fnCopy($resource, $tpath2)
     let $_CHECK := if (($_COPY, $_CREATE_DIR) eq 'NEVER') then error() else ()
     return ()
 };
@@ -3415,19 +3432,21 @@ declare function f:replaceValues($items as item()*,
                                  $valueExpr as item(),
                                  $options as xs:string?,
                                  $processingOptions as map(*))
-        as node()* {
-    let $nodes :=
-        for $item in $items
-        return if ($item instance of node()) then $item else i:fox-doc($item, ())
+        as item()* {
     let $ops := f:getOptions($options, ('base'), 'replace-values')
     let $withBaseUri := $ops = 'base'
-    for $node in $nodes
+    for $item in $items
+    let $isDocResource := uth:instanceOfDocResource($item)
+    let $node := uth:itemToNode($item)
+    
     let $resultDoc :=  
         copy $node_ := $node
         modify (
             let $replaceNodes := f:resolveFoxpath($node_, $replaceNodesExpr, $processingOptions)
+            (:
             let $_DEBUG := trace($replaceNodesExpr, '_REPLACE_NODES_EXPR: ')
             let $_DEBUG := trace(count($replaceNodes), '_#REPLACE_NODES: ')
+            :)
             for $rnode in $replaceNodes
             let $newValue := f:resolveFoxpath($rnode, $valueExpr, $processingOptions)
             return replace value of node $rnode with $newValue,
@@ -3439,7 +3458,10 @@ declare function f:replaceValues($items as item()*,
                         insert node attribute xml:base {$targetElem/base-uri(.)} into $targetElem              
             )                        
         return $node_
-    return $resultDoc
+    let $result :=
+        if ($isDocResource) then uth:updateDocResourceContent($item, $resultDoc)
+        else $resultDoc
+    return $result
  };
 
 (:~
