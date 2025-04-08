@@ -49,6 +49,9 @@ declare function f:parseCss($text as xs:string?,
 declare function f:pVars($text as xs:string?,
                          $options as map(xs:string, item()*))
         as item()* {
+    (: 20250408, hjr: for the time being, just avoid wrong processing of @page :)
+    if (starts-with($text, '@page')) then $text else
+    
     let $varsEtc := f:pVarSeq($text, $options)
     let $vars := f:removeEtc($varsEtc)
     let $etc := f:getEtc($varsEtc)
