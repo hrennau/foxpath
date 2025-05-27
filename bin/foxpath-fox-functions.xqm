@@ -119,12 +119,9 @@ declare function f:insertNodes($items as item()*,
                                $nodeName as xs:string?,
                                $options as xs:string?,
                                $processingOptions as map(*))
-        as node()* {
+        as item()* {
     if (empty($items)) then () else
-
-    let $nodes := 
-        for $item in $items
-        return if ($item instance of node()) then $item else i:fox-doc($item, ())
+    
     let $ops := $options ! tokenize(.)
     let $ops := f:getOptions($options, ('first', 'last', 'before', 'after', 'base', 'foreach'), 'insert-nodes')
     let $insertionPoint := ($ops[. = ('first', 'last', 'before', 'after')], 'last')[1]
@@ -132,7 +129,10 @@ declare function f:insertNodes($items as item()*,
     let $nodeName := $nodeName ! replace(., '^@', '')
     let $withBaseUri := $ops = 'base'
     let $foreach := $ops = 'foreach'
-    for $node in $nodes
+    
+    for $item in $items   
+    let $isDocResource := uth:instanceOfDocResource($item)
+    let $node := uth:itemToNode($item)
     let $resultDoc :=  
         copy $node_ := $node
         modify
@@ -163,7 +163,10 @@ declare function f:insertNodes($items as item()*,
                             insert node attribute xml:base {$targetElem/base-uri(.)} into $targetElem              
             )                        
         return $node_
-    return $resultDoc
+    let $result :=
+        if ($isDocResource) then uth:updateDocResourceContent($item, $resultDoc)
+        else $resultDoc
+    return $result
  };
 
 (:~
@@ -198,7 +201,7 @@ declare function f:baseUriDirectories($item as item(), $distance as xs:integer?)
 declare function f:baseUriDirectory($item as item())
         as xs:string? {
     (if ($item instance of node()) then $item else i:fox-doc($item, ()))
-    ! base-uri(.) ! replace(., '/[^/]*$', '')
+    ! base-uri(.) ! replace(., '(^|.*/)([^/]*)/[^/]*$', '$2', 'x')
 };
 
 declare function f:baseUriFileName($item as item())
@@ -504,17 +507,21 @@ declare function f:groupItems($items as item()*,
                               $groupKeyExpr as item()?,
                               $groupProcExpr as item()?,
                               $groupWhereExpr as item()?,
-                              $orderBy as xs:string?,
-                              $wrapperName as item()?,
                               $keyName as xs:string?,
+                              $groupElemSpec as item()?,
+                              $wrapperElemName as xs:string?,                              
+                              $orderBy as xs:string?,                              
                               $options as xs:string?,
                               $processingOptions as map(*))
         as node()* {
     if (empty($items)) then () else
     
     let $groupKeyExpr := ($groupKeyExpr, '.')[1]
-    let $wrapperNameExpr := $wrapperName[. instance of node()]
-    let $wrapperName := if ($wrapperNameExpr) then () else ($wrapperName, 'group')[1]
+    
+    let $groupElemNameExpr := $groupElemSpec[. instance of node()]
+    let $groupElemName := 
+        if ($groupElemNameExpr) then () else ($groupElemSpec, 'group')[1]
+    let $wrapperElemNameEff := ($wrapperElemName, 'groups')[1]    
     let $keyName := ($keyName, 'key')[1]
     let $itemsQname := QName((), 'items')
     let $groups :=
@@ -527,9 +534,10 @@ declare function f:groupItems($items as item()*,
         let $groupContent :=
             if (not($groupProcExpr)) then $item
             else f:resolveFoxpath($key, $groupProcExpr, map{$itemsQname: $item}, $processingOptions)
-        let $groupElemName := 
-            if ($wrapperNameExpr) then f:resolveFoxpath($key, $wrapperNameExpr, map{$itemsQname: $item}, $processingOptions)
-            else $wrapperName
+        let $groupElemNameEff := 
+            if ($groupElemNameExpr) then f:resolveFoxpath(
+                $key, $groupElemNameExpr, map{$itemsQname: $item}, $processingOptions)
+            else $groupElemName
         order by if (not($orderBy)) then ()
                  else
                      switch($orderBy)
@@ -537,7 +545,7 @@ declare function f:groupItems($items as item()*,
                      case 'n' return $key (:  ! try {number(.)} catch * {()} :)
                      default return ()
         return
-            element {$groupElemName} {
+            element {$groupElemNameEff} {
                 attribute {$keyName} {$key}[not($keyName eq '#none')],
                 for $item in $groupContent  return
                     typeswitch ($item) 
@@ -545,7 +553,11 @@ declare function f:groupItems($items as item()*,
                         case attribute() return $item
                         default return <item>{$item}</item>
             }
-    return $groups
+    return
+        element {$wrapperElemName} {
+            attribute count {count($groups)},
+            $groups
+        }
  };
 
 (:~
@@ -784,7 +796,7 @@ declare function f:fileTreeCopy($resources as item()*,
                     let $fn := util:getModuleFunction('writeCssdocResource') 
                     return try {$fn($path, $resource, $flags)} catch * {$err:code, $err:description}
                 else error()
-        else file:copy($resource, $path),
+        else try {file:copy($resource, $path)} catch * {trace((), '* Failed to copy resource: '||$path)},
         'yes'    (: dummy return value, assuring execution :)
     }
     
@@ -1841,7 +1853,9 @@ declare function f:matchesPattern($item as item()+,
         use:compileUnifiedStringExpression(
             ., true(), count($item) gt 1, $controlOptions?NAMESPACE_BINDINGS, $fnOptions)
     let $item :=
-        if ($item instance of xs:anyAtomicType) then string($item) else $item
+        (if ($item instance of xs:anyAtomicType) then string($item) else $item)
+        ! normalize-space(.)
+    (: let $_DEBUG := trace($item, '_ item: ') :)
     (: let $_DEBUG := trace($cpattern, '_CPATTERN: ') :)  
     return use:matchesUnifiedStringExpression($item, $cpattern)
 };
@@ -3283,7 +3297,7 @@ declare function f:deleteNodes($items as item()*,
 (:~
  : Returns the names of nodes structurally related to given nodes. Dependent 
  : on $nameKind, the local names (lname), the JSON names (jname) or the lexical 
- : names (name) are returned. Names are sorted.
+ : names (name) are returned. By default, names are sorted.
  :
  : When using $nameFilter, only those child elements are considered which have
  : a local name matching the pattern.
@@ -3346,7 +3360,7 @@ declare function f:relatedNames($nodesOrUris as item()*,
         return 
             if (empty($cnameFilter)) then $unfiltered
             else $unfiltered[$fnName(.) ! replace(., '^@', '') ! use:matchesUnifiedStringExpression(., $cnameFilter)]
-    let $names := $items/$fnName(.)
+    let $names := for $item in $items return $fnName($item)
     let $names := if ($duplicates) then $names else $names => distinct-values()
     let $names := if ($nosort) then $names else $names => sort()        
     let $nameseq := string-join($names, $separator)
@@ -3800,7 +3814,8 @@ declare function f:resolveLink($nodes as node()*,
                                $replaceWith as xs:string?,
                                $options as xs:string?)
         as item()* {
-    let $ops := f:getOptions($options, ('xml'), 'resolve-link')
+    let $ops := f:getOps($options, ('xml', 'ignore-nofind'), 'resolve-link')    
+    let $ignoreNofind := $ops?ignore-nofind
     
     for $node in $nodes
     let $base := $node/ancestor-or-self::*[1]        
@@ -3814,9 +3829,10 @@ declare function f:resolveLink($nodes as node()*,
             let $dir := file:parent($uriRaw)
             let $fname2 := $fname ! replace(., $replaceString, $replaceWith)
             return $dir||'/'||$fname2
-    where i:fox-file-exists($uri, ())            
+    let $uriRETR := $uri[not(starts-with(., 'news:/'))] ! replace(., '#.*', '')            
+    where empty($uriRETR) or $ignoreNofind or i:fox-file-exists($uriRETR, ())            
     return
-        if ($ops = 'xml') then $uri ! i:fox-doc(., ())
+        if ($ops?xml) then $uriRETR ! i:fox-doc(., ())
         else $uri
 };        
 
@@ -4719,7 +4735,14 @@ declare function f:xsdValidate($docs as item()*,
         for $doc in $docs
         let $docNode :=
             if ($doc instance of node()) then $doc
-            else doc($doc)/*
+            else try {doc($doc)/*} catch * {()}
+        return if (not($docNode)) then
+            <validationReport>{
+                $fnIdentAtt($doc),
+                <status>xml_not_wellformed</status>
+            }</validationReport>
+            else
+            
         let $uri := $docNode/namespace-uri(.)
         let $docPath := $doc[. instance of node()]/f:indexedNamePath($doc, (), ())
         let $lname := $docNode/local-name(.)
@@ -4732,7 +4755,8 @@ declare function f:xsdValidate($docs as item()*,
         let $result :=
             if (count($myxsds) gt 1) then <status>xsd_ambiguous</status>
             else if (not($myxsds)) then <status>xsd_nofind</status>
-            else validate:xsd-report($doc, $myxsds/base-uri(.))/*
+            else try {validate:xsd-report($doc, $myxsds/base-uri(.))/*} 
+                 catch * {<status>validation_failed</status>}
         let $docuri := if (not($doc instance of node())) then $doc else base-uri($doc)
         return 
             <validationReport>{
@@ -4766,26 +4790,26 @@ declare function f:xsdValidate($docs as item()*,
                             for $doc in $invalid 
                             let $ename := if ($doc/@nodePath) then 'node' else 'doc'
                             order by $doc/@uri, $doc/@file-name, $doc/@nodePath
-                            return element {$ename} {$doc/(@uri, @file-name, @nodePath, $doc/*)}
+                            return element {$ename} {$doc/(@uri, @file-name, @nodePath, @xsd, $doc/*)}
                         }</invalid>[count($invalid) gt 0],
                         <valid count="{count($valid)}">{
                             for $doc in $valid 
                             let $ename := if ($doc/@nodePath) then 'node' else 'doc'
                             order by $doc/@uri, $doc/@file-name, $doc/@nodePath
-                            return element {$ename} {$doc/(@uri, @file-name, @nodePath)}
+                            return element {$ename} {$doc/(@uri, @file-name, @nodePath, @xsd)}
                         }</valid>,
                         if (empty($nofind)) then () else
                         <nofind count="{count($nofind)}">{
                             for $doc in $nofind 
                             let $ename := if ($doc/@nodePath) then 'node' else 'doc'
                             order by $doc/@uri, $doc/@file-name, $doc/@nodePath
-                            return element {$ename} {$doc/(@uri, @file-name, @nodePath)}
+                            return element {$ename} {$doc/(@uri, @file-name, @nodePath, @xsd)}
                         }</nofind>,
                         <ambiguous count="{count($ambiguous)}">{
                             for $doc in $ambiguous 
                             let $ename := if ($doc/@nodePath) then 'node' else 'doc'
                             order by $doc/@uri, $doc/@file-name, $doc/@nodePath
-                            return element {$ename} {$doc/(@uri, @file-name,  @nodePath)}
+                            return element {$ename} {$doc/(@uri, @file-name,  @nodePath, @xsd)}
                         }</ambiguous>
                     )
                 }</validationReports>
@@ -5154,6 +5178,11 @@ declare function f:getUserInputAttributes($options as map(*)) as attribute()* {
     map:keys($options)[not(starts-with(., '_'))] ! attribute {.} {$options(.)}
 };
 
+(:~
+ : Returns the option values extracted from an $options
+ : parameter. The parameter value contains a whitespace-
+ : separated list of option values.
+ :) 
 declare function f:getOptions($options as xs:string*, 
                               $validOptions as xs:string*,
                               $functionName as xs:string)
@@ -5168,6 +5197,33 @@ declare function f:getOptions($options as xs:string*,
             return error(QName((), 'UNKNOWN_OPTION'), concat(
                 'Function "', $functionName, '" - ', $text1,  
                 '; valid options: ', string-join($validOptions, ', '), '.'))
+};        
+
+(:~
+ : Returns the options encoded by an $options parameter
+ : as a map.
+ :) 
+declare function f:getOps($optionsString as xs:string?, 
+                          $validOptions as xs:string*,
+                          $functionName as xs:string)
+        as map(*)? {
+    if (not(normalize-space($optionsString))) then () else
+    
+    let $o := $optionsString ! replace(., '\s*=\s*', '=')        
+    let $items := $o ! tokenize(.) ! lower-case(.)
+    let $entries :=
+        for $item in $items
+        let $name := $item ! replace(., '=.*', '')
+        return if (exists($validOptions) and not($name = $validOptions)) then
+            error(QName((), 'UNKNOWN_OPTION'), concat(
+                'Function "', $functionName, '" - invalid option ("'||$name||'")'||  
+                '; valid options: ', string-join($validOptions, ', '), '.'))
+            else
+        let $value := 
+            if (not(contains($item, '='))) then true() 
+            else $item ! replace(., '.*?=', '') ! replace(., '\\s', ' ')
+        return map:entry($name, $value)
+    return map:merge($entries)
 };        
 
 (:

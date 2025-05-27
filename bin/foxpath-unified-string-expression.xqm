@@ -86,7 +86,7 @@ declare function f:compileUnifiedStringExpression(
                     $options as xs:string?) 
         as map(xs:string, item()*)? {
     let $itemsAndFlags := f:splitStringIntoItemsAndFlags($uexpr)
-    let $flags := $itemsAndFlags[1]    
+    let $flags := $itemsAndFlags[1]  
     let $items := subsequence($itemsAndFlags, 2)
     
     let $isFulltext := $flags ! tokenize(.) = ('fulltext', 'ftext', 'ft')
@@ -149,7 +149,6 @@ declare function f:compileGlorexPatternSet(
         f:compileGlorexPatternSetQualified(
             $patterns, $ignoreCase, $patternIsRegex, $addAnchors, $namespaceBindings)
     else
-    
     let $patterns := $patterns ! normalize-space(.)[string()]
     return if (empty($patterns)) then () else
     
@@ -163,7 +162,8 @@ declare function f:compileGlorexPatternSet(
             f:patternToRegexAndFlags($pattern, $ignoreCase, $patternIsRegex, $addAnchors)
         return map{'expr': $regexAndFlags[1], 'flags': $regexAndFlags[2]}
         
-    let $flags := if ($ignoreCase) then 'i' else ''     
+    let $flags := if ($ignoreCase) then 'i' else ''   
+    let $flags := 'ys'||$flags    (: 20250414, hjr :)
     let $map := 
         map{'regexes': $regexes, 
             'empty': empty(($literals, $regexes)), 
@@ -199,7 +199,8 @@ declare function f:patternToRegexAndFlags(
             let $regexExpr := 
                 if ($patternIsRegex) then $usePattern 
                 else $usePattern ! f:globToRegex(., 'A'[not($addAnchors)])
-            let $useFlags := 'i'[$ignoreCase]                    
+            let $useFlags := 'i'[$ignoreCase] 
+            let $useFlags := 's'||$useFlags    (: 20250414, hjr :)
             return ($regexExpr, $useFlags) 
         else  
             let $useAddAnchors := 
@@ -215,6 +216,7 @@ declare function f:patternToRegexAndFlags(
                     if (contains($lflags, 'r')) then true() else false()
                 else $patternIsRegex
             let $useFlags := 'i'[$useIgnoreCase]
+            let $useFlags := 's'||$useFlags    (: 20250414, hjr :)
             let $regexExpr := 
                 if ($usePatternIsRegex) then $usePattern 
                 else $usePattern ! f:globToRegex(., 'A'[not($useAddAnchors)])

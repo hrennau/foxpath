@@ -186,12 +186,10 @@ declare function f:removeUriScheme($uriOrPath as xs:string?) as xs:string? {
 declare function f:docResource($resource as item()?)
         as map(*)? {
     if ($resource instance of map(*)) then $resource else
-    
     let $doc := 
         if ($resource instance of node()) then $resource
         else try {i:fox-doc($resource, ())} catch * {()}
     return if (not($doc)) then () else
-    
     let $uri := $doc/base-uri(.)
     return map{'_objecttype': 'doc-resource', 'doc': $doc, 'uri': $uri}
 };  

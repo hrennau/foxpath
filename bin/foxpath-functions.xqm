@@ -150,9 +150,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:bothValues($leftValue, $rightValue)
 
-       (: function `char-class-report` 
+       (: function `char-classes` 
           =========================== :)
-        else if ($fname = ('char-class-report', 'char-class-report-ec', 'cclassrep', 'cclassrep-ec')) then
+        else if ($fname = ('char-classes', 'char-classes-ec', 'char-class-report', 'char-class-report-ec')) then
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             let $text := if ($da) then $arg1 else $context
@@ -197,6 +197,28 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 else if (contains($fname, '-jname')) then 'jname' 
                 else 'lname'
             let $relationship := replace($fname, '^(.*?)-.*(-ec)?', '$1')                
+            return foxf:relatedNames($nodes, $relationship, $nameKind, $nameFilter, $flags)            
+
+        (: function `child-name-flow`  
+           ========================== :)
+        else if ($fname = ('child-name-flow', 'child-name-flow-ec',
+                           'child-lname-flow', 'child-lname-flow-ec',
+                           'child-jname-flow', 'child-jname-flow-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $narg := count($call/*)
+            let $args := $call/([
+               *[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 0],
+               *[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 1],
+               *[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)[$narg gt 2]
+            ])
+            let $nodes := if ($da) then $args(1) else $context
+            let $nameFilter := $args(1 + $da)
+            let $flags := ($args(2 + $da), 'NOSORT DUPLICATES') => string-join(' ')
+            let $nameKind := 
+                if (contains($fname, '-name')) then 'name' 
+                else if (contains($fname, '-jname')) then 'jname' 
+                else 'lname'
+            let $relationship := 'child'                
             return foxf:relatedNames($nodes, $relationship, $nameKind, $nameFilter, $flags)            
 
         (: function `clark-name` 
@@ -852,12 +874,13 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $groupKeyExpr := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $groupProcExpr := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $groupWhereExpr := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $orderBy := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $wrapperName := $call/*[6]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $keyName := $call/*[7]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $fnOptions := $call/*[8]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:groupItems($items, $groupKeyExpr, $groupProcExpr, $groupWhereExpr, $orderBy,
-                $wrapperName, $keyName, $fnOptions, $options)
+            let $keyName := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $groupElemName := $call/*[6]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $wrapperElemName := $call/*[7]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $orderBy := $call/*[8]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $fnOptions := $call/*[9]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:groupItems($items, $groupKeyExpr, $groupProcExpr, $groupWhereExpr,
+                $keyName, $groupElemName, $wrapperElemName, $orderBy, $fnOptions, $options)
                         
 
         (: function `hlist` 
@@ -1915,11 +1938,18 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `xatt` 
            ================== :)
-        else if ($fname eq 'xatt') then
-            let $contents := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+        else if ($fname = ('xatt', 'xatt-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $arg1 := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $items := if ($da) then $arg1 else $context 
+            let $name := $call/*[1 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $options := $call/*[2 + $da] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:xattribute($items, $name)
+(:
+let $contents := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $name := $call/*[2] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return foxf:xattribute($contents, $name)
-
+:)
         (: function `xelem` 
            ================ :)
         else if ($fname = ('xelem', 'xelem-ec')) then
