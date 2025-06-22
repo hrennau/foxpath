@@ -34,6 +34,10 @@ at  "foxpath-fox-functions.xqm";
 import module namespace util="http://www.ttools.org/xquery-functions/util" 
 at  "foxpath-util.xqm";
 
+import module namespace if="http://www.infofield.org/ns/xquery-functions"
+    at "ifield.xqm";
+
+declare variable $f:OLD_FOX_DOC := false();
 declare variable $f:UNAME external := 'hrennau';
 declare variable $f:githubTokenLocation external := 'github-token-location';   
    (: text file containing the location of a file containing the github token :)
@@ -362,6 +366,162 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
 };
 
 (:~
+ : Returns a string representation of a resource.
+ :
+ : @param uri the URI or file path of the resource
+ : @param options options controlling the evaluation
+ : @return the text of the resource, or the empty sequence if retrieval fails
+ :)
+declare function f:fox-unparsed-text($uri as xs:string)
+        as xs:string? {
+    f:fox-unparsed-text($uri, (), ())
+};    
+
+(:~
+ : Returns a string representation of a resource.
+ :
+ : @param uri the URI or file path of the resource
+ : @param options options controlling the evaluation
+ : @return the text of the resource, or the empty sequence if retrieval fails
+ :)
+declare function f:fox-unparsed-text($uri as xs:string, 
+                                     $encoding as xs:string?, 
+                                     $options as map(*)?)
+        as xs:string? {
+    let $uriDomain := f:uriDomain($uri, $options)
+    return switch($uriDomain)
+    
+    case 'REDIRECTING_URI_TREE' return f:fox-navURI-to-text_github($uri, $encoding, $options)    
+    case 'BASEX' return f:fox-unparsed-text_basex($uri, $encoding, $options)
+    case 'SVN' return f:fox-unparsed-text_svn($uri, $encoding, $options)
+    case 'RDF' return        
+        let $accessURI := f:fox-get-access-uri_rdf($uri, $options)
+        return $accessURI ! f:fox-unparsed-text(., $encoding, $options)        
+    case 'UTREE' return
+        let $accessURI := f:fox-get-access-uri_utree($uri, $options)
+        return $accessURI ! f:fox-unparsed-text(., $encoding, $options)
+    case 'GITHUB' return f:fox-unparsed-text_github($uri, $encoding, $options)        
+    case 'ARCHIVE' return
+            let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+            let $archiveURI := $archiveURIAndPath[1]
+            let $archivePath := $archiveURIAndPath[2]
+            let $archive := f:fox-binary($archiveURI, $options)
+            return
+                if (empty($archive)) then ()
+                else
+                    f:fox-unparsed-text_archive($archive, $archivePath, $encoding, $options)
+    default return 
+        let $uri := if (starts-with($uri, 'literal-')) then substring($uri, 9) else $uri 
+        return
+            try {
+                if ($encoding) then unparsed-text($uri, $encoding)
+                else unparsed-text($uri)
+            } catch * {()}
+};
+
+(:~
+ : Returns an XML document identified by URI or file path.
+ :
+ : @param uri the URI or file path of the resource
+ : @param options options controlling the evaluation
+ : @return the document, or the empty sequence if retrieval or parsing fails
+ :)
+declare function f:fox-xml-doc($uri as xs:string)
+        as document-node()? {
+    f:fox-xml-doc($uri, ())
+};    
+
+(:~
+ : Returns an XML document identified by URI or file path.
+ :
+ : @param uri the URI or file path of the resource
+ : @param options options controlling the evaluation
+ : @return the document, or the empty sequence if retrieval or parsing fails
+ :)
+declare function f:fox-xml-doc($uri as xs:string, $options as map(*)?)
+        as document-node()? {
+    let $uriDomain := f:uriDomain($uri, $options)
+    return
+
+    switch($uriDomain)
+    case 'BASEX' return f:fox-doc_basex($uri, $options)
+    case 'SVN' return f:fox-doc_svn($uri, $options)
+    case 'RDF' return
+        let $accessURI := f:fox-get-access-uri_rdf($uri, $options)
+        return $accessURI ! f:fox-doc(., $options)
+    case 'UTREE' return
+        let $accessURI := f:fox-get-access-uri_utree($uri, $options)
+        return $accessURI ! f:fox-doc(., $options)
+    case 'GITHUB' return
+        f:fox-doc_github($uri, $options)
+    case 'ARCHIVE' return
+        let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+        let $archiveURI := $archiveURIAndPath[1]
+        let $archivePath := $archiveURIAndPath[2]
+        let $archive := f:fox-binary($archiveURI, $options)
+        return
+            if (empty($archive)) then ()
+            else f:fox-doc_archive($uri, $archive, $archivePath, $options)
+    default return doc($uri)
+};
+
+(:~
+ : Returns an XML representation of the JSON record identified by URI or file path.
+ :
+ : @param uri the URI or file path of the resource
+ : @param options options controlling the evaluation
+ : @return an XML document representing JSON data, or the empty sequence if 
+ :     retrieval or parsing fails
+ :)
+declare function f:fox-json-doc($uri as xs:string)
+        as document-node()? {
+    f:fox-json-doc($uri, ())
+};
+
+(:~
+ : Returns an XML representation of the JSON record identified by URI or file path.
+ :
+ : @param uri the URI or file path of the resource
+ : @param options options controlling the evaluation
+ : @return an XML document representing JSON data, or the empty sequence if 
+ :     retrieval or parsing fails
+ :)
+declare function f:fox-json-doc($uri as xs:string,
+                                $options as map(*)?)
+        as document-node()? {
+    let $uriDomain := f:uriDomain($uri, $options)
+    return switch($uriDomain)
+
+    case 'REDIRECTING_URI_TREE' return  
+        let $text := f:fox-navURI-to-text_github($uri, (), $options)
+        return
+            try {$text ! json:parse(.)} catch * {()}  
+    case 'RDF' return        
+        let $accessURI := f:fox-get-access-uri_rdf($uri, $options)
+        return $accessURI ! f:fox-json-doc(., $options)       
+    case 'UTREE' return
+        let $accessURI := f:fox-get-access-uri_utree($uri, $options)
+        return $accessURI ! f:fox-json-doc(., $options)
+    case 'GITHUB' return f:fox-json-doc_github($uri, $options)
+    case 'ARCHIVE' return
+            let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+            let $archiveURI := $archiveURIAndPath[1]
+            let $archivePath := $archiveURIAndPath[2]
+            let $archive := f:fox-binary($archiveURI, $options)
+            return
+                if (empty($archive)) then ()
+                else
+                    f:fox-json-doc_archive($archive, $archivePath, (), $options)
+    default return 
+        let $jdoc := function-lookup(QName('http://basex.org/modules/json', 'doc'), 1)
+        return
+            try {
+                if (exists($jdoc)) then $jdoc($uri) else
+                    unparsed-text($uri) ! json:parse(.)
+            } catch * {()}        
+};
+
+(:~
  : Returns an XML document identified by URI or file path.
  :
  : @param uri the URI or file path of the resource
@@ -370,6 +530,11 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
  :)
 declare function f:fox-doc($uri as xs:string, $options as map(*)?)
         as document-node()? {
+    if (not($f:OLD_FOX_DOC) and $options?ISPACE) then
+        (: let $_DEBUG := trace('Call if:doc()') return :)
+        $options?ISPACE ! if:doc($uri, .)
+    else
+    
     let $uriDomain := f:uriDomain($uri, $options)
     return
 
@@ -448,6 +613,49 @@ declare function f:fox-doc-available($uri as xs:string, $options as map(*)?)
 };
 
 (:~
+ : Returns an XML representation of the HTML record identified by URI or file path.
+ :
+ : @param uri the URI or file path of the resource
+ : @param options options controlling the evaluation
+ : @return an XML document representing HTML data, or the empty sequence if 
+ :     retrieval or parsing fails
+ :)
+declare function f:fox-html-doc($uri as xs:string)
+        as document-node()? {
+    let $options := ()        
+    let $uriDomain := f:uriDomain($uri, $options)
+    return switch($uriDomain)
+
+    case 'REDIRECTING_URI_TREE' return  
+        let $text := f:fox-navURI-to-text_github($uri, (), $options)
+        return
+            try {$text ! html:parse(.)} catch * {()}  
+    case 'RDF' return        
+        let $accessURI := f:fox-get-access-uri_rdf($uri, $options)
+        return $accessURI ! f:fox-json-doc(., $options)       
+    case 'UTREE' return
+        let $accessURI := f:fox-get-access-uri_utree($uri, $options)
+        return $accessURI ! f:fox-html-doc(.)
+    case 'GITHUB' return f:fox-json-doc_github($uri, $options)
+    case 'ARCHIVE' return
+            let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+            let $archiveURI := $archiveURIAndPath[1]
+            let $archivePath := $archiveURIAndPath[2]
+            let $archive := f:fox-binary($archiveURI, $options)
+            return
+                if (empty($archive)) then ()
+                else
+                    f:fox-html-doc_archive($archive, $archivePath, (), $options)
+    default return 
+        let $hdoc := function-lookup(QName('http://basex.org/modules/html', 'doc'), 1)
+        return
+            try {
+                if (exists($hdoc)) then $hdoc($uri) else
+                    unparsed-text($uri) ! html:parse(.)
+            } catch * {()}        
+};
+
+(:~
  : Returns an XML representation of the CSS record identified by URI or file path.
  :
  : @param uri the URI or file path of the resource
@@ -459,52 +667,6 @@ declare function f:fox-css-doc($uri as xs:string,
         as document-node()? {
     let $text := f:fox-unparsed-text($uri, (), $options)
     return try {document{foxf:cssParse($text, ())}} catch * {}
-};
-
-(:~
- : Returns a string representation of a resource.
- :
- : @param uri the URI or file path of the resource
- : @param options options controlling the evaluation
- : @return the text of the resource, or the empty sequence if retrieval fails
- :)
-declare function f:fox-unparsed-text($uri as xs:string, 
-                                     $encoding as xs:string?, 
-                                     $options as map(*)?)
-        as xs:string? {
-    let $uriDomain := f:uriDomain($uri, $options)
-    return
-    
-    if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
-        f:fox-navURI-to-text_github($uri, $encoding, $options)    
-    else if ($uriDomain eq 'BASEX') then
-        f:fox-unparsed-text_basex($uri, $encoding, $options)
-    else if ($uriDomain eq 'SVN') then
-        f:fox-unparsed-text_svn($uri, $encoding, $options)
-    else if ($uriDomain eq 'RDF') then        
-        let $accessURI := f:fox-get-access-uri_rdf($uri, $options)
-        return $accessURI ! f:fox-unparsed-text(., $encoding, $options)        
-    else if ($uriDomain eq 'UTREE') then
-        let $accessURI := f:fox-get-access-uri_utree($uri, $options)
-        return $accessURI ! f:fox-unparsed-text(., $encoding, $options)
-    else if ($uriDomain eq 'GITHUB') then
-        f:fox-unparsed-text_github($uri, $encoding, $options)        
-    else if ($uriDomain eq 'ARCHIVE') then
-            let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
-            let $archiveURI := $archiveURIAndPath[1]
-            let $archivePath := $archiveURIAndPath[2]
-            let $archive := f:fox-binary($archiveURI, $options)
-            return
-                if (empty($archive)) then ()
-                else
-                    f:fox-unparsed-text_archive($archive, $archivePath, $encoding, $options)
-    else 
-        let $uri := if (starts-with($uri, 'literal-')) then substring($uri, 9) else $uri 
-        return
-            try {
-                if ($encoding) then unparsed-text($uri, $encoding)
-                else unparsed-text($uri)
-            } catch * {()}
 };
 
 (:~
@@ -563,6 +725,61 @@ declare function f:fox-file-lines($uri as xs:string,
                                   $options as map(*)?)
         as xs:string* {
     f:fox-unparsed-text-lines($uri, $encoding, $options)
+};
+
+(:~
+ : Returns an XML representation of the CSV record identified by URI or file path.
+ :
+ : @param uri the URI or file path of the resource
+ : @param separator the separator character (or token `comma` or token `semicolon`)
+ : @param withHeader if 'yes', the first row contains column headers
+ : @param names if 'direct', column names are used as element names;
+ :              if 'attributes', column names are provided by @name
+ : @param quotes if 'yes', quotes at start and end of field are treated as control characters
+ : @param options options controlling the evaluation
+ : @return an XML document representing JSON data, or the empty sequence if 
+ :     retrieval or parsing fails
+ :)
+declare function f:fox-csv-doc2($uri as xs:string,
+                                $csvOptions as map(*)?)
+        as document-node()? {
+    let $options := ()        
+    let $uriDomain := f:uriDomain($uri, $options)
+    let $separator := ($csvOptions?separator, ',')[1]
+    let $withHeader := ($csvOptions?header, 'no')[1]
+    let $names := ($csvOptions?names, 'no')[1]
+    let $quotes := ($csvOptions?quotes, 'yes')[1]
+    let $backslashes := ($csvOptions?backslashes, 'no')[1]
+    return switch($uriDomain)
+
+    case 'REDIRECTING_URI_TREE' return 
+        let $text := f:fox-navURI-to-text_github($uri, (), $options)
+        return
+            try {$text ! csv:parse(., $csvOptions)} catch * {()}  
+    case 'RDF' return        
+        let $accessURI := f:fox-get-access-uri_rdf($uri, $options)
+        return $accessURI ! f:fox-csv-doc(., $separator, $withHeader, $names, $quotes, $backslashes, $options)       
+    case 'UTREE' return
+        let $accessURI := f:fox-get-access-uri_utree($uri, $options)
+        return $accessURI ! f:fox-csv-doc(., $separator, $withHeader, $names, $quotes, $backslashes, $options)
+    case 'GITHUB' return
+        error(QName((), 'NOT_YET_IMPLEMENTED'), 'Not yet implemented: csv@github') (: f:fox-json-doc_github($uri, $options) :)
+    case 'ARCHIVE' return
+            let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+            let $archiveURI := $archiveURIAndPath[1]
+            let $archivePath := $archiveURIAndPath[2]
+            let $archive := f:fox-binary($archiveURI, $options)
+            return
+                if (empty($archive)) then ()
+                else
+                    f:fox-csv-doc_archive($archive, $archivePath, (), $csvOptions, $options)        
+    default return 
+        let $cdoc := function-lookup(QName('http://basex.org/modules/csv', 'doc'), 2)
+        return
+            try {
+                if (exists($cdoc)) then (:$cdoc:) csv:doc($uri, $csvOptions) 
+                else unparsed-text($uri) ! csv:parse(., $csvOptions)
+            } catch * {()}        
 };
 
 (:~
@@ -695,50 +912,6 @@ declare function f:fox-csv-doc($uri as xs:string,
             } catch * {()}        
 };
 
-
-(:~
- : Returns an XML representation of the JSON record identified by URI or file path.
- :
- : @param uri the URI or file path of the resource
- : @param options options controlling the evaluation
- : @return an XML document representing JSON data, or the empty sequence if 
- :     retrieval or parsing fails
- :)
-declare function f:fox-json-doc($uri as xs:string,
-                                $options as map(*)?)
-        as document-node()? {
-    let $uriDomain := f:uriDomain($uri, $options)
-    return
-
-    if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
-        let $text := f:fox-navURI-to-text_github($uri, (), $options)
-        return
-            try {$text ! json:parse(.)} catch * {()}  
-    else if ($uriDomain eq 'RDF') then        
-        let $accessURI := f:fox-get-access-uri_rdf($uri, $options)
-        return $accessURI ! f:fox-json-doc(., $options)       
-    else if ($uriDomain eq 'UTREE') then
-        let $accessURI := f:fox-get-access-uri_utree($uri, $options)
-        return $accessURI ! f:fox-json-doc(., $options)
-    else if ($uriDomain eq 'GITHUB') then
-        f:fox-json-doc_github($uri, $options)
-    else if ($uriDomain eq 'ARCHIVE') then
-            let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
-            let $archiveURI := $archiveURIAndPath[1]
-            let $archivePath := $archiveURIAndPath[2]
-            let $archive := f:fox-binary($archiveURI, $options)
-            return
-                if (empty($archive)) then ()
-                else
-                    f:fox-json-doc_archive($archive, $archivePath, (), $options)
-    else 
-        let $jdoc := function-lookup(QName('http://basex.org/modules/json', 'doc'), 1)
-        return
-            try {
-                if (exists($jdoc)) then $jdoc($uri) else
-                    unparsed-text($uri) ! json:parse(.)
-            } catch * {()}        
-};
 
 (:~
  : Returns true if a given URI or file path points to a valid JSON record.

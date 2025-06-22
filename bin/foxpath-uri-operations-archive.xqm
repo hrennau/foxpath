@@ -259,6 +259,25 @@ declare function f:fox-json-doc_archive($archive as xs:base64Binary,
 };
 
 (:~
+ : Returns an XML representation of an HTML record contained by an archive.
+ :
+ : @param archive an archive file
+ : @param archivePath a within-archive data path (e.g. a/b/c)
+ : @param encoding the encoding of the file to be retrieved
+ : @param options options controlling the evaluation
+ : @return the document, or the empty sequence if retrieval or parsing fails
+ :)
+declare function f:fox-html-doc_archive($archive as xs:base64Binary, 
+                                        $archivePath as xs:string?, 
+                                        $encoding as xs:string?,
+                                        $options as map(*)?)
+        as document-node() {                                             
+    let $text := f:fox-unparsed-text_archive($archive, $archivePath, $encoding, $options)
+    return
+        try {$text ! html:parse(.)} catch * {()}
+};
+
+(:~
  : Returns an XML representation of a CSV record contained by an archive.
  :
  : @param archive an archive file

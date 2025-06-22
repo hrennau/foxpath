@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ifield>
+    <!-- Available resource types -->
+    <rtypes>
+        <rtype name="xml">
+            <docFn>doc#1</docFn>
+            <parseFn>parse-xml#1</parseFn>            
+        </rtype>
+        <rtype name="json">
+            <docFn>json:doc#1</docFn>
+            <parseFn>json:parse#1</parseFn>            
+        </rtype>
+        <rtype name="html">
+            <docFn>html:doc#1</docFn>
+            <parseFn>html:parse#1</parseFn>            
+        </rtype>
+        <rtype name="csv">
+            <docFn>csv:doc#2</docFn>
+            <parseFn>csv:parse#2</parseFn>            
+        </rtype>
+        <rtype name="css">
+            <grammarUri grammarType="ixml">../grammar/css.ixml.xml</grammarUri>
+        </rtype>
+        <rtype name="words.ixml">
+            <grammarUri grammarType="ixml">../grammar/words.ixml</grammarUri>
+        </rtype>
+    </rtypes>
+    <!-- Resource type uses -->
+    <rtypeUses>
+        <!-- .xml etc. -->
+        <case>
+            <condition>
+                <file name="*.xml *.xsd *.xsl *.xslt *.dita *.ditamap"/>
+            </condition>
+            <rtypeUse rtype="xml" final="yes"/>
+        </case>
+        <!-- *.json -->
+        <case>
+            <condition>
+                <file name="*.json"/>
+            </condition>
+            <rtypeUse rtype="json" final="no"/>            
+        </case>
+        <!-- *.html *.htm -->
+        <case>
+            <condition>
+                <file name="*.html *.htm"/>
+            </condition>
+            <case>
+                <condition>
+                    <isXml>yes</isXml>
+                </condition>
+                <iftrue>
+                    <rtypeUse rtype="xml"/>
+                </iftrue>
+                <else>
+                    <rtypeMap rtype="html" final="yes"/>
+                </else>
+            </case>
+        </case>
+        <!-- *.csv -->
+        <case>
+            <condition>
+                <file name="*.csv"/>
+            </condition>
+            <case>
+                <condition>
+                    <file parentName="text"/>
+                </condition>
+                <iftrue>
+                    <rtypeUse rtype="csv">
+                        <options>
+                            <option name="header" value="yes"/> 
+                            <option name="separator" value=","/>
+                        </options>
+                    </rtypeUse>
+                </iftrue>
+                <else>
+                    <rtypeUse rtype="csv">
+                        <options>
+                            <option name="header" value="no"/> 
+                            <option name="separator" value=","/>
+                        </options>                        
+                    </rtypeUse>
+                </else>
+            </case>
+        </case>
+        <!-- *.words.txt -->
+        <case>
+            <condition>
+                <file name="README.txt"/>
+            </condition>
+            <rtypeUse rtype="words.ixml" final="yes"/>
+        </case>
+        
+        <!-- default -->
+        <default>
+            <rtypeMap rtype="xml"/>
+        </default>
+    </rtypeUses>
+</ifield>

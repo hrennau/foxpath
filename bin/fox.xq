@@ -19,6 +19,7 @@ declare variable $echo as xs:boolean? external := false();
 declare variable $mode as xs:string? external := 'eval';   (: eval | parse :)
 declare variable $sep as xs:string? external := '/';       (: / | \ :)
 declare variable $debugtime as xs:boolean? external := ();
+declare variable $ispace as xs:string? external := resolve-uri('../ispace/ifield.xml');
 
 let $options := map:merge((
     map:entry('IS_CONTEXT_URI', true()),
@@ -35,7 +36,8 @@ let $options := map:merge((
     if (not($utreeDirs)) then () else
         map:entry('UTREE_DIRS', $utreeDirs),
     if (not($ugraphEndpoints)) then () else
-        map:entry('UGRAPH_ENDPOINTS', $ugraphEndpoints)
+        map:entry('UGRAPH_ENDPOINTS', $ugraphEndpoints),
+    $ispace ! map:entry('ISPACE', .)
 ))
 
 let $externalVariables :=

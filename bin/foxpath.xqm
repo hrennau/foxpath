@@ -8,6 +8,9 @@ at  "foxpath-functions.xqm",
 import module namespace util="http://www.ttools.org/xquery-functions/util" 
 at  "foxpath-util.xqm";
 
+import module namespace if="http://www.infofield.org/ns/xquery-functions"
+        at "ifield.xqm";
+
 (:~
  : Resolves a foxpath query text to a value.
  :
@@ -30,6 +33,8 @@ declare function f:resolveFoxpathQuery(
     let $DEBUG := util:trace($queryText, 'parse.resolve_foxpath_query', 'INTEXT_RESOLVE_FOXPATH_QUERY: ')
     let $context := f:editInitialContext($context)
     let $tree := util:trace(i:parseFoxpath($queryText, $options), 'parse', 'FOXPATH_ELEM: ')
+    let $ifieldC := $options?ISPACE ! if:compileIfield(.)
+    let $options := if (not($ifieldC)) then $options else map:put($options, 'ISPACE', $ifieldC)
     return f:resolveFoxpathQueryTree($tree, $ebvMode, $context, $externalVariableBindings, $options)
 };
 
