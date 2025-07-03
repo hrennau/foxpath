@@ -183,12 +183,13 @@ declare function f:removeUriScheme($uriOrPath as xs:string?) as xs:string? {
  : Returns a "doc resource", which is a map with entries
  : '_objecttype', 'doc' and 'uri'.
  :)
-declare function f:docResource($resource as item()?)
+declare function f:docResource($resource as item()?,
+                               $options as map(*))
         as map(*)? {
     if ($resource instance of map(*)) then $resource else
     let $doc := 
         if ($resource instance of node()) then $resource
-        else try {i:fox-doc($resource, ())} catch * {()}
+        else try {i:fox-doc($resource, $options)} catch * {()}
     return if (not($doc)) then () else
     let $uri := $doc/base-uri(.)
     return map{'_objecttype': 'doc-resource', 'doc': $doc, 'uri': $uri}
@@ -238,11 +239,11 @@ declare function f:instanceOfDocResource($item as item())
  : as a document URI and the corresponding document node is
  : returned. 
  :) 
-declare function f:itemToNode($item as item())
+declare function f:itemToNode($item as item(), $options as map(*))
         as node()? {
     if ($item instance of node()) then $item 
     else if (f:instanceOfDocResource($item))then $item?doc
-    else i:fox-doc($item, ())
+    else i:fox-doc($item, $options)
 };        
 
 (:~

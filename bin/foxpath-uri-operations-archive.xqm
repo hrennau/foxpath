@@ -149,6 +149,36 @@ declare namespace fox="http://www.foxpath.org/ns/annotations";
  : @return the document node, if the resource exists and is a well-formed XML document
  :)
  declare function f:fox-doc_archive($uri as xs:string,
+                                    $options as map(*)?)
+        as document-node()? {    
+    let $text := f:fox-unparsed-text_archive($uri, (), $options)
+    return    
+        let $doc := try {$text ! parse-xml(.)} catch * {()}
+        return if (not($doc)) then () else
+        
+        (: Check if must add @xml:base :)
+        let $addXmlBase := $options ! .?addXmlBase
+        return
+            if (not($addXmlBase)) then $doc
+            else
+                (: Add @xml:base :)
+                copy $doc_ := $doc
+                modify (
+                    insert node attribute xml:base {$uri ! file:path-to-uri(.)} into $doc_/*,
+                    insert node attribute fox:base-added {true()} into $doc_/*
+                )
+        return $doc_
+};
+
+(:~
+ : Returns the XML document obtained by parsing a resource contained by an archive.
+ :
+ : @param archive an archive file
+ : @param archivePath a within-archive data path (e.g. a/b/c)
+ : @param options options controlling the evaluation
+ : @return the document node, if the resource exists and is a well-formed XML document
+ :)
+ declare function f:fox-doc_archive($uri as xs:string,
                                     $archive as xs:base64Binary, 
                                     $archivePath as xs:string?, 
                                     $options as map(*)?)
@@ -184,6 +214,22 @@ declare namespace fox="http://www.foxpath.org/ns/annotations";
  : @param options options controlling the evaluation
  : @return the document node, if the resource exists and is a well-formed XML document
  :)
+ declare function f:fox-doc-available_archive($uri as xs:string, 
+                                              $options as map(*)?)
+        as xs:boolean {    
+    let $doc := $uri ! (try {f:fox-doc(., $options)} catch * {})
+    return exists($doc)
+};
+
+(:~
+ : Returns true if an archive contains at a within-archive data path a well-formed 
+ : XML document.
+ :
+ : @param archive an archive file
+ : @param archivePath a within-archive data path (e.g. a/b/c)
+ : @param options options controlling the evaluation
+ : @return the document node, if the resource exists and is a well-formed XML document
+ :)
  declare function f:fox-doc-available_archive($archive as xs:base64Binary, 
                                               $archivePath as xs:string?, 
                                               $options as map(*)?)
@@ -193,6 +239,26 @@ declare namespace fox="http://www.foxpath.org/ns/annotations";
         exists(
             try {$text ! parse-xml(.)} catch * {()}
         )
+};
+
+(:~
+ : Returns a string representation of a resource contained by an archive.
+ :
+ : @param uri the URI or file path of the resource
+ : @param archivePath a within-archive data path (e.g. a/b/c)
+ : @param encoding the encoding of the file to be retrieved
+ : @param options options controlling the evaluation
+ : @return the document, or the empty sequence if retrieval or parsing fails
+ :)
+declare function f:fox-unparsed-text_archive($uri as xs:string, 
+                                             $encoding as xs:string?,
+                                             $options as map(*)?)
+        as xs:string? {
+    let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
+    let $archiveURI := $archiveURIAndPath[1]
+    let $archivePath := $archiveURIAndPath[2]
+    let $archive := f:fox-binary($archiveURI, $options)
+    return $archive ! f:fox-unparsed-text_archive(., $archivePath, $encoding, $options)
 };
 
 (:~
@@ -248,6 +314,24 @@ declare function f:fox-unparsed-text-lines_archive($archive as xs:base64Binary,
  : @param options options controlling the evaluation
  : @return the document, or the empty sequence if retrieval or parsing fails
  :)
+declare function f:fox-json-doc_archive($uri as xs:string, 
+                                        $encoding as xs:string?,
+                                        $options as map(*)?)
+        as document-node() {                                             
+    let $text := f:fox-unparsed-text_archive($uri, $encoding, $options)
+    return try {$text ! json:parse(.)} catch * {()}
+};
+
+(:
+(:~
+ : Returns an XML representation of the JSON record  contained by an archive.
+ :
+ : @param archive an archive file
+ : @param archivePath a within-archive data path (e.g. a/b/c)
+ : @param encoding the encoding of the file to be retrieved
+ : @param options options controlling the evaluation
+ : @return the document, or the empty sequence if retrieval or parsing fails
+ :)
 declare function f:fox-json-doc_archive($archive as xs:base64Binary, 
                                         $archivePath as xs:string?, 
                                         $encoding as xs:string?,
@@ -257,7 +341,25 @@ declare function f:fox-json-doc_archive($archive as xs:base64Binary,
     return
         try {$text ! json:parse(.)} catch * {()}
 };
+:)
 
+(:~
+ : Returns an XML representation of the JSON record  contained by an archive.
+ :
+ : @param uri URI or file path
+ : @param encoding the encoding of the file to be retrieved
+ : @param options options controlling the evaluation
+ : @return the document, or the empty sequence if retrieval or parsing fails
+ :)
+declare function f:fox-html-doc_archive($uri as xs:string, 
+                                        $encoding as xs:string?,
+                                        $options as map(*)?)
+        as document-node() {                                             
+    let $text := f:fox-unparsed-text_archive($uri, $encoding, $options)
+    return try {$text ! html:parse(.)} catch * {()}
+};
+
+(:
 (:~
  : Returns an XML representation of an HTML record contained by an archive.
  :
@@ -273,9 +375,9 @@ declare function f:fox-html-doc_archive($archive as xs:base64Binary,
                                         $options as map(*)?)
         as document-node() {                                             
     let $text := f:fox-unparsed-text_archive($archive, $archivePath, $encoding, $options)
-    return
-        try {$text ! html:parse(.)} catch * {()}
+    return try {$text ! html:parse(.)} catch * {()}
 };
+:)
 
 (:~
  : Returns an XML representation of a CSV record contained by an archive.

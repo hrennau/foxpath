@@ -135,6 +135,24 @@ declare function f:fox-json-doc_github($uri as xs:string,
 };
 
 (:~
+ : Returns an XML representation of the HTML document identified by a github URI.
+ :
+ : @param uri the URI or file path of the resource
+ : @param options options controlling the evaluation
+ : @return an XML document representing JSON data, or the empty sequence if 
+ :     retrieval or parsing fails
+ :)
+declare function f:fox-html-doc_github($uri as xs:string,
+                                       $options as map(*)?)
+        as document-node()? {
+    let $useUri := replace($uri, '^github-', '')
+    let $binary := f:get-request_github($useUri, $f:TOKEN)
+    let $text := $binary//content/convert:binary-to-string(xs:base64Binary(.))  
+    return
+        try {html:parse($text)} catch * {()}        
+};
+
+(:~
  : Returns true if a given github URI points to a valid JSON record.
  :
  : @param uri the URI or file path of the resource

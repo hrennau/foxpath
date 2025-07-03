@@ -78,7 +78,7 @@ declare function f:fnContainsText($selections as xs:string+,
             f:parseFt($item, $options)    
     let $sels :=
         $selTrees ! f:serializeFt(.)  
-    (: let $_DEBUG := trace($sels, '_SELS: ') :)        
+    let $_DEBUG := trace($sels, '_SELS: ')        
     let $_DEBUG := 
         trace($sels, '### QUERY MAPPED TO FULLTEXT EXPR: ')[$TRACE]  
     let $expr := 
@@ -214,7 +214,7 @@ declare function f:parseFt($text as xs:string?, $options as xs:string?)
         if ($rest) then error(QName((), 'SYNTAX_ERROR'), 
             concat('Full text syntax error - unexpected rest: ', $rest))
         else
-        
+    
     let $isFtWords := count($tree) eq 1 and $tree/self::words     
     let $optionsAtts :=
         $optionsText
@@ -225,12 +225,12 @@ declare function f:parseFt($text as xs:string?, $options as xs:string?)
         else
             let $treeAtts := $tree/@*
             let $treeAttNames := $treeAtts/name()
-            return
+            return trace(
                 <words text="{$text}">{
                     $treeAtts,
                     $optionsAtts[not(name() = $treeAttNames)],
                     $tree/string()
-                }</words>
+                }</words> , '_ words: ')
 };
 
 (:~

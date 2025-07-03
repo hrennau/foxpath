@@ -19,7 +19,10 @@ declare variable $echo as xs:boolean? external := false();
 declare variable $mode as xs:string? external := 'eval';   (: eval | parse :)
 declare variable $sep as xs:string? external := '/';       (: / | \ :)
 declare variable $debugtime as xs:boolean? external := ();
-declare variable $ispace as xs:string? external := resolve-uri('../ispace/ifield.xml');
+declare variable $ispace as xs:string? external := ();
+
+let $ispace := if (not($ispace)) then resolve-uri('../ispace/ifield.xml')
+               else $ispace
 
 let $options := map:merge((
     map:entry('IS_CONTEXT_URI', true()),

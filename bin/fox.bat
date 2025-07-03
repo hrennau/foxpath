@@ -25,6 +25,7 @@ set GITHUB_TOKEN=/git/token
 set DEBUG_TIME=0
 set CONSERVE_WS=
 set ECHO=
+set ISPACE=
 
 REM echo "Expression: %1%"
 
@@ -71,13 +72,16 @@ if "%name%"=="-p" (
  ) else if "%name%"=="-h" (
    set GITHUB_TOKEN=!VALUE!
    shift   
+ ) else if "%name%"=="-s" (
+   set ISPACE=!VALUE!
+   shift   
  ) else if "%name%"=="-v" (
    set VARS=!VARS!#######!VALUE!   
    shift
 ) else (
    echo Unknown option: %name%
    echo Supported options: 
-   echo    -b -c -e -f -g -t -v -D -w -o
+   echo    -b -c -e -f -g -s -t -v -D -w -o
    echo Aborted.
    exit /b
 )
@@ -88,7 +92,7 @@ REM echo foxpath=%foxpath%
 if %foxpath%=="?" echo NO else (echo YES)
 
 if %FOXPATH%=="?" (
-    echo Usage: fox [-f] [-e] [-p] [-b] [-c] [-w] [-o] [-t utree-dirs] [-g ugraph-endpoints] [-h github-token] [-D] [-v name=value]* foxpath
+    echo Usage: fox [-f] [-e] [-p] [-b] [-c] [-w] [-o] [-t utree-dirs] [-g ugraph-endpoints] [-h github-token] [-s infospace-dir] [-D] [-v name=value]* foxpath
     echo foxpath : a foxpath expression, or a file containing a foxpath expression
     echo.
     echo -f      : the foxpath parameter is not a foxpath expression, but the path or URI of 
@@ -135,6 +139,8 @@ if %FOXPATH%=="?" (
     echo             endpoints are whitespace-separated
     echo -i context-dir : 
     echo           a folder to be used as initial context item  
+    echo -s infospace-dir : 
+    echo           a folder containing the infospace definition ispace.xml  
     echo -D :      write execution time to stderr //e.g.: time consumed: 8.612 s   
     echo -v "name=value    ( note that using Powershell, the '=' must be framed by whitespace )" 
     echo -v "name:value    ( some consoles have problems with '=', hence alternative syntax using ':' )"
@@ -150,6 +156,7 @@ set OPT_UGRAPH_ENDPOINTS=
 set OPT_CONTEXT_ITEM=
 set OPT_DEBUG_TIME=
 set OPT_CONSERVE_WS=
+set OPT_ISPACE=
 set OPT_SER=-s indent=yes
 if not "%OFILE%"=="" (set OPT_OFILE=-o "%OFILE%")
 if not "%UTREE_DIRS%"=="" (set OPT_UTREE_DIRS=-b "utreeDirs=%UTREE_DIRS%")
@@ -158,6 +165,7 @@ set OPT_GITHUB_TOKEN=-b "Q{http://www.ttools.org/xquery-functions}githubTokenLoc
 if not "%CONTEXT_ITEM%"=="" (set OPT_CONTEXT_ITEM=-b "context=%CONTEXT_ITEM%")
 if "%DEBUG_TIME%"=="1" (set OPT_DEBUG_TIME=-b debugtime=1)
 if not "%CONSERVE_WS%"=="" (set OPT_CONSERVE_WS=-w)
+if not "%ISPACE%"=="" (set OPT_ISPACE=-b "ispace=%ISPACE%")
 rem echo HERE=%HERE%
 rem if not "%CONSERVE_WS%"=="" (echo CONSERVE WHITESPACE)
-basex %OPT_SER% %OPT_CONSERVE_WS% %OPT_OFILE% -b isFile=%ISFILE% -b echo=%ECHO% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% %OPT_CONTEXT_ITEM% %OPT_DEBUG_TIME% -b "vars=%VARS%" %HERE%/fox.xq
+basex %OPT_SER% %OPT_CONSERVE_WS% %OPT_OFILE% %OPT_ISPACE% -b isFile=%ISFILE% -b echo=%ECHO% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% %OPT_CONTEXT_ITEM% %OPT_DEBUG_TIME% -b "vars=%VARS%" %HERE%/fox.xq

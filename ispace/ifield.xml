@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ifield>
-    <!-- Available resource types -->
+    <!-- Grammars -->
+    <grammars baseURI="../grammar">
+        <grammar name="css" uri="css.ixml" type="ixml"/>
+        <grammar name="words" uri="words.ixml" type="ixml"/>
+    </grammars>
+    
+    <!-- Resource types -->
     <rtypes>
         <rtype name="xml">
             <docFn>doc#1</docFn>
@@ -19,9 +25,11 @@
             <parseFn>csv:parse#2</parseFn>            
         </rtype>
         <rtype name="css">
+            <grammar ref="css" type="ixml"/>
             <grammarUri grammarType="ixml">../grammar/css.ixml.xml</grammarUri>
         </rtype>
         <rtype name="words.ixml">
+            <grammar ref="words"/>
             <grammarUri grammarType="ixml">../grammar/words.ixml</grammarUri>
         </rtype>
     </rtypes>
@@ -46,17 +54,8 @@
             <condition>
                 <file name="*.html *.htm"/>
             </condition>
-            <case>
-                <condition>
-                    <isXml>yes</isXml>
-                </condition>
-                <iftrue>
-                    <rtypeUse rtype="xml"/>
-                </iftrue>
-                <else>
-                    <rtypeMap rtype="html" final="yes"/>
-                </else>
-            </case>
+            <rtypeUse rtype="xml"/>
+            <rtypeUse rtype="html" final="yes"/>
         </case>
         <!-- *.csv -->
         <case>
@@ -65,7 +64,7 @@
             </condition>
             <case>
                 <condition>
-                    <file parentName="text"/>
+                    <file parentName="data"/>
                 </condition>
                 <iftrue>
                     <rtypeUse rtype="csv">
@@ -88,14 +87,13 @@
         <!-- *.words.txt -->
         <case>
             <condition>
-                <file name="README.txt"/>
+                <file name="*words*.txt"/>
             </condition>
             <rtypeUse rtype="words.ixml" final="yes"/>
         </case>
         
-        <!-- default -->
-        <default>
-            <rtypeMap rtype="xml"/>
-        </default>
+        <case>
+            <rtypeUse rtype="xml"/>
+        </case>
     </rtypeUses>
 </ifield>

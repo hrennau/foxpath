@@ -117,13 +117,12 @@ declare function f:insertNodes($items as item()*,
                                $insertWhereExpr as item(),
                                $insertWhatExpr as item(),
                                $nodeName as xs:string?,
-                               $options as xs:string?,
-                               $processingOptions as map(*))
+                               $fnOptions as xs:string?,
+                               $options as map(*))
         as item()* {
     if (empty($items)) then () else
     
-    let $ops := $options ! tokenize(.)
-    let $ops := f:getOptions($options, ('first', 'last', 'before', 'after', 'base', 'foreach'), 'insert-nodes')
+    let $ops := f:getOptions($fnOptions, ('first', 'last', 'before', 'after', 'base', 'foreach'), 'insert-nodes')
     let $insertionPoint := ($ops[. = ('first', 'last', 'before', 'after')], 'last')[1]
     let $nodeKind := $nodeName ! (if (starts-with(., '@')) then 'att' else 'elem')
     let $nodeName := $nodeName ! replace(., '^@', '')
@@ -132,13 +131,13 @@ declare function f:insertNodes($items as item()*,
     
     for $item in $items   
     let $isDocResource := uth:instanceOfDocResource($item)
-    let $node := uth:itemToNode($item)
+    let $node := uth:itemToNode($item, $options)
     let $resultDoc :=  
         copy $node_ := $node
         modify
-            let $receivingNodes := f:resolveFoxpath($node_, $insertWhereExpr, $processingOptions)
+            let $receivingNodes := f:resolveFoxpath($node_, $insertWhereExpr, $options)
             for $rnode in $receivingNodes
-            let $ivalue := f:resolveFoxpath($rnode, $insertWhatExpr, $processingOptions)
+            let $ivalue := f:resolveFoxpath($rnode, $insertWhatExpr, $options)
             let $inodes :=
                 if (not($nodeName)) then 
                     for $item in $ivalue
@@ -372,6 +371,15 @@ declare function f:charStat($texts as xs:string*,
 };
 
 (:~
+ : Maps a string to a sequence of characters, represented
+ : by strings of length 1.
+ :)
+declare function f:chars($string as xs:string?)
+        as xs:string* {
+    for $i in 1 to string-length($string) return substring($string, $i, 1)                  
+};
+
+(:~
  : Returns the concatenated text nodes immediately contained by a
  : given sequence of element nodes.
  :
@@ -385,6 +393,29 @@ declare function f:childText($elems as element()*,
         if ($ops = 'ign-wsonly') then $elems/text()[normalize-space(.)]
         else $elems/text()
     return $tnodes => string-join('')        
+};
+
+(:~
+ : Concatenates values.
+ :
+ : Options:
+ : - 'distinct': use distinct values.
+ : - 'sort': sort values
+ :
+ : @param values the values to be concatenated
+ : @param sep the separator
+ : @options options
+ :)
+declare function f:concatValues($values as item()*,
+                                $sep as xs:string?,                                
+                                $options as xs:string?) {
+    let $ops := f:getOptions($options, ('distinct', 'sort', 'numsort'), 'concat-values')
+    let $val := if ($ops = 'distinct') then $values => distinct-values() else $values
+    let $val := 
+        if ($ops = 'sort') then $val => sort()
+        else if ($ops = 'numsort') then $val => sort((), function($item) {try{$item ! number(.)} catch * {}})
+        else $val
+    return $val ! string(.) => string-join($sep)
 };
 
 (:~
@@ -785,7 +816,6 @@ declare function f:fileTreeCopy($resources as item()*,
         as empty-sequence() {
     if (empty($resources)) then () else     
     
-    let $_DEBUG := trace($flags, '_flags: ')
     let $fnCopy := function($resource, $path) {
         if ($resource instance of map(*)) then
                 if ($resource?_objecttype eq 'doc-resource') then 
@@ -1393,11 +1423,11 @@ declare function f:frequencies($values as item()*,
             return $item
         case 'n' return 
             for $item in $itemsUnordered 
-            order by $item/@text/number(.) ascending 
+            order by try {$item/@text/number(.)} catch * {} ascending 
             return $item
         case 'N' return 
             for $item in $itemsUnordered 
-            order by $item/@text/number(.) descending 
+            order by try {$item/@text/number(.)} catch * {} descending 
             return $item
         default return 
             for $item in $itemsUnordered 
@@ -3135,9 +3165,11 @@ declare function f:pathContent($context as item()*,
                                $leafNameFilter as xs:string?,
                                $innerNodeNameFilter as xs:string?,
                                $excludedInnerNodeNameFilter as xs:string?,                               
-                               $options as xs:string?)
+                               $processingOptions as xs:string?,
+                               $options as map(*))
         as xs:string* {
-    let $ops := f:getOptions($options, ('name', 'lname', 'jname', 
+    let $ops := f:getOptions($processingOptions, (
+                                        'name', 'lname', 'jname', 
                                         'with-inner', 'text', 'indexed',
                                         'with-context'), 
                                         'path-content')  
@@ -3155,7 +3187,8 @@ declare function f:pathContent($context as item()*,
         else function($node) {local-name($node)}
     let $context := (
         $context[. instance of node()],
-        $context[not(. instance of node())] ! (try {i:fox-doc(., ())} catch * {try {json:doc(.)} catch * {}})
+        $context[not(. instance of node())] 
+            ! (try {i:fox-doc(., $options)} catch * {try {json:doc(.)} catch * {}})
     ) 
     for $cnode in $context
     let $descendants1 := (
@@ -3231,12 +3264,13 @@ declare function f:pfilterItems($items as item()*,
 };
 
 declare function f:prettyNode($items as item()*, 
-                              $options as xs:string?)
+                              $processingOptions as xs:string?,
+                              $options as map(*))
         as item()* {
-    let $ops := $options ! tokenize(.)
+    let $ops := $processingOptions ! tokenize(.)
     for $item in $items
     let $isDocResource := uth:instanceOfDocResource($item)
-    let $node := uth:itemToNode($item)
+    let $node := uth:itemToNode($item, $options)
     let $resultNode := $node ! util:prettyNode(., $ops)
     let $result :=
         if ($isDocResource) then uth:updateDocResourceContent($item, $resultNode)
@@ -3260,22 +3294,23 @@ declare function f:prettyNode($items as item()*,
  :)
 declare function f:deleteNodes($items as item()*,
                                $excludeExpr as item(),
-                               $options as xs:string?,
-                               $processingOptions as map(*))
+                               $fnOptions as xs:string?,
+                               $options as map(*))
         as item()* {
-    let $ops := f:getOptions($options, ('base', 'keepws'), 'delete-nodes')
+    let $ops := f:getOptions($fnOptions, ('base', 'keepws'), 'delete-nodes')
     let $keepWS := $ops = 'keepws'
     let $withBaseUri := $ops = 'base'
     
     for $item in $items   
     let $isDocResource := uth:instanceOfDocResource($item)
-    let $node := uth:itemToNode($item)
+    let $_DEBUG := trace($isDocResource, '_ isDocResource: ')
+    let $node := uth:itemToNode($item, $options)
     let $resultDoc :=  
         copy $node_ := $node
         modify (
             (: let $_DEBUG := trace($excludeExpr, '_EXCLUDE_EXPR: ') :)
             let $delNodes := $excludeExpr !                 
-                f:resolveFoxpath($node_, ., $processingOptions)[. instance of node()]
+                f:resolveFoxpath($node_, ., $options)[. instance of node()]
             return 
             if (empty($delNodes))then () else
                 delete nodes $delNodes
@@ -3451,7 +3486,7 @@ declare function f:replaceValues($items as item()*,
     let $withBaseUri := $ops = 'base'
     for $item in $items
     let $isDocResource := uth:instanceOfDocResource($item)
-    let $node := uth:itemToNode($item)
+    let $node := uth:itemToNode($item, $options)
     
     let $resultDoc :=  
         copy $node_ := $node
@@ -3499,7 +3534,7 @@ declare function f:renameNodes($items as item()*,
     let $withBaseUri := $ops = 'base'
     for $item in $items
     let $isDocResource := uth:instanceOfDocResource($item)
-    let $node := uth:itemToNode($item)
+    let $node := uth:itemToNode($item, $options)
     let $resultDoc :=  
         copy $node_ := $node
         modify (
@@ -5011,6 +5046,7 @@ declare function f:ftreeSelective(
         else if (exists($uris)) then f:getRootUri($uris)
         else error(QName((), 'INVALID_ARG'), 'Writing ftrees - either root folders or URIs must be specified')
     let $useOptions := map:merge((
+        $processingOptions,
         $options,
         $cfolderNamesFilter ! map:entry('_folderNames', .),
         $filePropertiesMap ! map:entry('_file-properties', $filePropertiesMap)

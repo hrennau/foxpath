@@ -161,6 +161,11 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:charClassReport($text, $classes, $fnOptions)
 
+        else if ($fname eq 'chars') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $text := ($arg1, $context)[1]
+            return foxf:chars($text)
+            
         (: function `child-names`, `att-names`, `content-names`, `parent-name`  
            =================================================================== :)
         else if ($fname = ('child-names', 'child-names-ec',
@@ -232,6 +237,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (not(count($node) eq 1 and $node[1] instance of node())) then ()
                 else $prefix||namespace-uri($node)[normalize-space()] ! ('Q{'||.||'}')||local-name($node)
 
+        (: function `concat-values` 
+           ================================= :)
+        else if ($fname = ('concat-values')) then
+            let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $sep := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $options := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return 
+                foxf:concatValues($values, $sep, $options)
+                
         (: function `contains-nonws` 
            ======================== :)
         else if ($fname = ('contains-nonws', 'contains-nonws-ec', 'nonws', 'nonws-ec')) then
@@ -587,7 +601,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $resource := if ($da) then $arg1 else $context
             return
-                uth:docResource($resource)
+                uth:docResource($resource, $options)
 
         (: function `textfile-resource` 
            ============================ :)
@@ -913,7 +927,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return ($explicit, $context)[1]
             return
                 exists(f:fox-unparsed-text($uri, (), $options))
-                            
+
+        (: function `idoc` 
+           ================ :)
+        else if ($fname = ('idoc')) then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $uri := if ($arg2) then $arg1 else $context
+            let $grammar := ($arg2, $arg1)[1]
+            return
+                i:fox-ixml-doc($uri, $grammar, $options)
+                
        (: function `indent` 
           ===================== :)
         else if ($fname = ('indent', 'indent-ec')) then
@@ -989,6 +1013,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 return ($explicit, $context)[1]
             return
                 i:fox-doc-available($uri, $options)
+            
+        (: function `ivalid` 
+           ================= :)
+        else if ($fname = ('ivalid')) then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $text := if ($arg2) then $arg1 else $context
+            let $grammar := ($arg2, $arg1)[1]
+            return
+                i:fox-ixml-valid($text, $grammar, $options)
+                
             
         (: function `jschema-keywords` 
            ========================== :)
@@ -1389,9 +1424,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $args := $call/*
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $nodes := if ($da eq 0) then $context else $arg1
-            let $options := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $functionOptions := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:pathContent($nodes, (), (), (), $options)
+                foxf:pathContent($nodes, (), (), (), $functionOptions, $options)
                 
         (: function `path-content-filtered` 
            =============================== :)
@@ -1403,10 +1438,11 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $leafNameFilter := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $innerNodeNameFilter := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $excludedInnerNodeNameFilter := $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
-            let $options := $call/*[4 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $processingOptions := 
+                $call/*[4 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:pathContent($nodes, $leafNameFilter, $innerNodeNameFilter, 
-                    $excludedInnerNodeNameFilter, $options)
+                    $excludedInnerNodeNameFilter, $processingOptions, $options)
 
         (: function `percent` 
            ================== :)
@@ -1442,9 +1478,10 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $doc := if ($da) then $arg1 else $context        
-            let $options := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $processingOptions := 
+                $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:prettyNode($doc, $options)
+                foxf:prettyNode($doc, $processingOptions, $options)
 
         (: function `ps.copy` 
            ===================== :)
@@ -1635,7 +1672,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `row` 
            ============== :)
-        else if ($fname = 'row') then
+        else if ($fname = ('row', 'tuple')) then
             let $items :=
                 for $c in $call/*
                 let $item := $c ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -2253,7 +2290,6 @@ let $contents := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position
         (: function `current-date` 
            ====================== :)
         else if ($fname eq 'current-date') then
-            let $_DEBUG := trace($options, '___OPTIONS: ') return
             current-date()
                 
         (: function `current-date-string` 
@@ -2341,7 +2377,9 @@ let $contents := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position
         (: function `doc` 
            ============== :)
         else if ($fname eq 'doc') then
-            let $uri := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $uri := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
             return
                 i:fox-doc($uri, $options)
                 
@@ -2624,6 +2662,16 @@ let $contents := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position
             return
                 try {html:parse($text)} catch * {()}
 
+        (: function `parse-ixml` 
+           ==================== :)
+        else if ($fname = ('iparse', 'parse-ixml')) then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg2 := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $text := if ($arg2) then $arg1 else $context
+            let $grammar := ($arg2, $arg1)[1]
+            return
+                i:fox-ixml-parse($text, $grammar, $options)
+                
         (: function `parse-xml` 
            =================== :)
         else if ($fname eq 'parse-xml') then
