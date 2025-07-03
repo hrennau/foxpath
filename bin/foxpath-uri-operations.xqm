@@ -34,8 +34,8 @@ at  "foxpath-fox-functions.xqm";
 import module namespace util="http://www.ttools.org/xquery-functions/util" 
 at  "foxpath-util.xqm";
 
-import module namespace if="http://www.infofield.org/ns/xquery-functions"
-    at "ifield.xqm";
+import module namespace is="http://www.foxpath.org/ns/ispace"
+    at "foxpath-ispace.xqm";
     
 declare namespace ixml="http://invisiblexml.org/NS";
 declare variable $f:OLD_FOX_DOC := false();
@@ -446,16 +446,6 @@ declare function f:fox-html-doc($uri as xs:string,
         f:fox-get-access-uri_utree($uri, $options) ! f:fox-html-doc(.)
     case 'GITHUB' return f:fox-html-doc_github($uri, $options)
     case 'ARCHIVE' return f:fox-html-doc_archive($uri, (), $options)
-(:    
-            let $archiveURIAndPath := f:parseArchiveURI($uri, $options)
-            let $archiveURI := $archiveURIAndPath[1]
-            let $archivePath := $archiveURIAndPath[2]
-            let $archive := f:fox-binary($archiveURI, $options)
-            return
-                if (empty($archive)) then ()
-                else
-                    f:fox-html-doc_archive($archive, $archivePath, (), $options)
-:)                    
     default return 
         let $hdoc := function-lookup(QName('http://basex.org/modules/html', 'doc'), 1)
         return
@@ -608,7 +598,7 @@ declare function f:fox-ixml-valid($text as xs:string,
 declare function f:fox-doc($uri as xs:string, $options as map(*)?)
         as document-node()? {
     if ($f:OLD_FOX_DOC) then f:fox-doc_old($uri, $options) else
-    $options?ISPACE ! if:doc($uri, ., $options)
+    $options?ISPACE ! is:doc($uri, ., $options)
 };
 
 declare function f:fox-doc_old($uri as xs:string, $options as map(*)?)
@@ -636,12 +626,6 @@ declare function f:fox-doc_old($uri as xs:string, $options as map(*)?)
         return
             if (empty($archive)) then ()
             else f:fox-doc_archive($uri, $archive, $archivePath, $options)
-(:                
-    else if ($uriDomain eq 'REDIRECTING_URI_TREE') then 
-        let $text := f:fox-navURI-to-text_github($uri, (), $options)
-        return
-            try {parse-xml($text)} catch * {()}
-:)            
     else if (doc-available($uri)) then doc($uri)
     (: If not parsable as XML, try JSON :)
     else if (unparsed-text-available($uri)) then try {json:doc($uri)} catch * {()}
@@ -1000,6 +984,20 @@ declare function f:fox-binary($uri as xs:string,
         else
             try {fetch:binary($uri)} catch * {()}
 };
+
+(:~
+ : Returns the XML representation of a docx document.
+ :
+ : @param uri the URI of the .docxfile
+ : @return the XML document
+ :)
+declare function f:docx-doc($uri as xs:string)
+        as document-node()? {
+    archive:extract-text(i:fox-binary($uri, ()), 'word/document.xml')   
+    ! parse-xml(.)
+};
+
+
 
 (: 
  : ===============================================================================

@@ -21,7 +21,7 @@ declare variable $sep as xs:string? external := '/';       (: / | \ :)
 declare variable $debugtime as xs:boolean? external := ();
 declare variable $ispace as xs:string? external := ();
 
-let $ispace := if (not($ispace)) then resolve-uri('../ispace/ifield.xml')
+let $ispace := if (not($ispace)) then resolve-uri('../ispace/ispace.xml')
                else $ispace
 
 let $options := map:merge((

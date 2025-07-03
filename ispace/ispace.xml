@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ifield>
+<ispace>
     <!-- Grammars -->
     <grammars baseURI="../grammar">
         <grammar name="css" uri="css.ixml" type="ixml"/>
@@ -23,6 +23,9 @@
         <rtype name="csv">
             <docFn>csv:doc#2</docFn>
             <parseFn>csv:parse#2</parseFn>            
+        </rtype>
+        <rtype name="docx">
+            <docFn>docx:doc#1</docFn>
         </rtype>
         <rtype name="css">
             <grammar ref="css" type="ixml"/>
@@ -56,6 +59,13 @@
             </condition>
             <rtypeUse rtype="xml"/>
             <rtypeUse rtype="html" final="yes"/>
+        </case>
+        <!-- *.docx -->
+        <case>
+            <condition>
+                <file name="*.docx"/>
+            </condition>
+            <rtypeUse rtype="docx" final="no"/>            
         </case>
         <!-- *.csv -->
         <case>
@@ -91,9 +101,9 @@
             </condition>
             <rtypeUse rtype="words.ixml" final="yes"/>
         </case>
-        
+        <!-- Last attempt - parse as XML -->
         <case>
             <rtypeUse rtype="xml"/>
         </case>
     </rtypeUses>
-</ifield>
+</ispace>

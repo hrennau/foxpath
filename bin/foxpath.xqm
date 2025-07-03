@@ -11,8 +11,8 @@ at  "foxpath-util.xqm";
 import module namespace uth="http://www.foxpath.org/ns/urithmetic" 
 at  "foxpath-urithmetic.xqm";
 
-import module namespace if="http://www.infofield.org/ns/xquery-functions"
-        at "ifield.xqm";
+import module namespace is="http://www.foxpath.org/ns/ispace"
+        at "foxpath-ispace.xqm";
 
 (:~
  : Resolves a foxpath query text to a value.
@@ -36,12 +36,12 @@ declare function f:resolveFoxpathQuery(
     let $DEBUG := util:trace($queryText, 'parse.resolve_foxpath_query', 'INTEXT_RESOLVE_FOXPATH_QUERY: ')
     let $context := f:editInitialContext($context)
     let $tree := util:trace(i:parseFoxpath($queryText, $options), 'parse', 'FOXPATH_ELEM: ')
-    let $ifieldC := 
+    let $ispaceC := 
         let $ispace := $options?ISPACE ! util:fpath(.)
-        let $ispaceF := if (file:is-dir($ispace)) then $ispace||'/ifield.xml' else $ispace
-        return $ispaceF ! if:compileIfield(.)
-    (: let $_DEBUG := file:write('ISPACE_COMPILED.xml', $ifieldC) :)        
-    let $options := if (not($ifieldC)) then $options else map:put($options, 'ISPACE', $ifieldC)
+        let $ispaceF := if (file:is-dir($ispace)) then $ispace||'/ispace.xml' else $ispace
+        return $ispaceF ! is:compileIspace(.)
+    (: let $_DEBUG := file:write('ISPACE_COMPILED.xml', $ispaceC) :)        
+    let $options := if (not($ispaceC)) then $options else map:put($options, 'ISPACE', $ispaceC)
     return f:resolveFoxpathQueryTree($tree, $ebvMode, $context, $externalVariableBindings, $options)
 };
 
