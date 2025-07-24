@@ -1,4 +1,3 @@
-
 { A grammar for ISBN-13, ISBN-10, and ISSN book and serial numbers. 
   Effectively we use the nonterminals to keep track of the calculation
   of the check digit.  Each nonterminal of the form dX_Y handles 

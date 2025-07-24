@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ispace>
-    <!-- Grammars -->
+    <!-- ======== 
+         Grammars 
+         ======== -->
     <grammars baseURI="../grammar">
         <grammar name="css" uri="css.ixml" type="ixml"/>
+        <grammar name="isbn" uri="isbn.ixml" type="ixml"/>        
+        <grammar name="iso8601" uri="iso8601.ixml" type="ixml"/>
         <grammar name="words" uri="words.ixml" type="ixml"/>
+        <grammar name="xpath31" uri="xpath31.ixml" type="ixml"/>
     </grammars>
     
-    <!-- Resource types -->
+    <!-- ============== 
+         Resource types 
+         ============== -->
     <rtypes>
         <rtype name="xml">
             <docFn>doc#1</docFn>
@@ -29,26 +36,33 @@
         </rtype>
         <rtype name="css">
             <grammar ref="css" type="ixml"/>
-            <grammarUri grammarType="ixml">../grammar/css.ixml.xml</grammarUri>
+        </rtype>
+        <rtype name="isbn.ixml">
+            <grammar ref="isbn" type="ixml"/>
+        </rtype>
+        <rtype name="iso8601.ixml">
+            <grammar ref="iso8601" type="ixml"/>
         </rtype>
         <rtype name="words.ixml">
             <grammar ref="words"/>
-            <grammarUri grammarType="ixml">../grammar/words.ixml</grammarUri>
         </rtype>
     </rtypes>
-    <!-- Resource type uses -->
+    <!-- ==================
+         Resource type uses 
+         ================== -->
     <rtypeUses>
         <!-- .xml etc. -->
         <case>
             <condition>
-                <file name="*.xml *.xsd *.xsl *.xslt *.dita *.ditamap"/>
+                <file name="*.dita *.ditamap *.docbook *.tei *.xml *.xsd *.xsl *.xslt"/>
             </condition>
-            <rtypeUse rtype="xml" final="yes"/>
+            <rtypeUse rtype="xml" final="no"/>
+            <rtypeUse rtype="html" final="yes"/>
         </case>
         <!-- *.json -->
         <case>
             <condition>
-                <file name="*.json"/>
+                <file name="*.json *.jschema"/>
             </condition>
             <rtypeUse rtype="json" final="no"/>            
         </case>
@@ -74,7 +88,7 @@
             </condition>
             <case>
                 <condition>
-                    <file parentName="data"/>
+                    <file parentName="/data//*.csv"/>
                 </condition>
                 <iftrue>
                     <rtypeUse rtype="csv">
@@ -100,6 +114,20 @@
                 <file name="*words*.txt"/>
             </condition>
             <rtypeUse rtype="words.ixml" final="yes"/>
+        </case>
+        <!-- *.isbn*.txt -->
+        <case>
+            <condition>
+                <file name="isbn*.txt"/>
+            </condition>
+            <rtypeUse rtype="isbn.ixml" final="yes"/>
+        </case>
+        <!-- *.iso8601*.txt -->
+        <case>
+            <condition>
+                <file name="iso8601*.txt"/>
+            </condition>
+            <rtypeUse rtype="iso8601.ixml" final="yes"/>
         </case>
         <!-- Last attempt - parse as XML -->
         <case>

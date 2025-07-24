@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ispace>
+    <rtypeUses>
+        <case>
+            <condition>
+                <file name="*.jschema"/>
+            </condition>
+            <rtypeUse rtype="json"/>
+        </case>
+        <case>
+            <condition>
+                <file path="countries//*.csv"/>
+            </condition>
+            <rtypeUse rtype="csv">
+                <options>
+                    <option name="header" value="yes"/> 
+                    <option name="separator" value=";"/>
+                </options>                        
+            </rtypeUse>
+        </case>
+    </rtypeUses>
+</ispace>

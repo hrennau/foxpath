@@ -58,9 +58,11 @@ declare function is:compileIspaceREC($n as node(),
     typeswitch($n)
     case document-node() return document {$n/node() ! is:compileIspaceREC(., $options)}
     case element(grammars) return
-        let $contextDir := ($n/@dir/replace(., '[^/]$', '$0/') ! resolve-uri(., $n/base-uri(.)),
+        let $contextDir := ($n/(@dir, @baseURI, @xml:base)[1]/
+                            replace(., '[^/]$', '$0/') 
+                            ! resolve-uri(., $n/base-uri(.)),
                             $n/base-uri(.))[1]
-        let $optionsUpd := map:put($options, 'grammarContextDir', $contextDir)                            
+        let $optionsUpd := map:put($options, 'grammarContextDir', $contextDir)
         return
             element {node-name($n)} {
                 attribute dir {$contextDir},
@@ -69,11 +71,10 @@ declare function is:compileIspaceREC($n as node(),
             } 
     case element(grammar) return
         let $contextDir := $options?grammarContextDir
-        let $uri :=
-            ($n/@fpath, $n/@fname)[1] ! resolve-uri(., $contextDir)
+        let $uri := $n/@uri ! resolve-uri(., $contextDir)
         return
             element {node-name($n)} {
-                $n/@* ! is:compileIspaceREC(., $options),
+                $n/(@* except @uri) ! is:compileIspaceREC(., $options),
                 $uri ! attribute uri {.},
                 $n/node() ! is:compileIspaceREC(., $options)
             }
@@ -197,7 +198,6 @@ declare function is:docForRtypeName($uri as xs:string,
                 catch * {trace((), 'docx:doc() failed; uri='||$uri||'; code='||$err:code||
                                    '; description='||$err:description)}
             case 'html:doc#1' return
-                let $_DEBUG := trace($uri, '_ try html:doc#1: ') return            
                 try {$is:DOCLIB($docFn)($uri)} 
                 catch * {trace((), 'html:doc() failed; uri='||$uri||'; code='||$err:code||
                                    '; description='||$err:description)}
@@ -207,7 +207,6 @@ declare function is:docForRtypeName($uri as xs:string,
                     let $ops := $rtypeUse/options
                     return if (not($ops)) then () else
                         map:merge($ops/option/map:entry(@name, @value/string()))
-                let $_DEBUG := trace($csvOptions, '_ csvOptions: ')                        
                 return
                 $is:DOCLIB($docFn)($uri, $csvOptions)
                 (:
@@ -232,10 +231,11 @@ declare function is:docForRtypeName($uri as xs:string,
             default return
                 error((), 'Unknown parse function: '||$parseFn)
         else        
-    let $grammar := $rtypeDef/grammarUri
+    let $grammar := $rtypeDef/grammar
     return
         if ($grammar) then
-            let $grammarUri := $grammar ! resolve-uri(., base-uri(.))
+            let $grammarUri := 
+                $rtypeDef/ancestor::ispace/grammars/grammar[@name eq $grammar/@ref]/@uri
             let $grammarText := $grammarUri ! unparsed-text(.)            
             let $fnParse := $grammarText ! invisible-xml(.)
             return $uri ! $is:DOCLIB('unparsed-text#1')(.) ! $fnParse(.)

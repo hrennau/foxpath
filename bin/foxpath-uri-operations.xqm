@@ -562,7 +562,11 @@ declare function f:fox-ixml-parse($text as xs:string,
                                   $grammar as xs:string,
                                   $options as map(*)?)
         as document-node()? {
-    let $grammarText := $grammar ! f:fox-unparsed-text(.)            
+    let $grammarUri :=
+        if (starts-with($grammar, '#')) then 
+            $options?ISPACE//grammars/grammar[@name eq substring($grammar, 2)]/@uri 
+        else $grammar
+    let $grammarText := $grammarUri ! f:fox-unparsed-text(.)            
     let $fnParse := $grammarText ! invisible-xml(.)
     return $text ! $fnParse(.)
 };

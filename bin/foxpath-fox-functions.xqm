@@ -13,6 +13,10 @@ at  "foxpath-util.xqm";
 import module namespace use="http://www.foxpath.org/ns/unified-string-expression" 
 at  "foxpath-unified-string-expression.xqm";
 
+import module namespace const="http://www.foxpath.org/ns/constants" 
+at  "foxpath-constants.xqm";
+
+
 (:~
  : Writes a set of standard attributes. Can be useful when working
  : with `xelement`.
@@ -2256,11 +2260,11 @@ declare function f:nodeNavigation(
                        $contextItems as item()*,
                        $axis as xs:string,
                        $namesFilter as xs:string?,
-                       $options as xs:string?,
+                       $fnOptions as xs:string?,
                        $extFuncName as xs:string,
-                       $processingOptions as map(*))                       
+                       $options as map(*))                       
         as node()* {
-    let $ops := f:getOptions($options, ('name', 'lname', 'jname', 'qname', 'first', 'first2', 'last', 'last2'), $extFuncName)   
+    let $ops := f:getOptions($fnOptions, ('name', 'lname', 'jname', 'qname', 'first', 'first2', 'last', 'last2'), $extFuncName)   
     let $pselector :=
         if ($ops = 'first') then 1
         else if ($ops = 'first2') then 2
@@ -2270,9 +2274,9 @@ declare function f:nodeNavigation(
     let $contextNodes :=
         for $item in $contextItems return
             if ($item instance of node()) then $item else 
-                i:fox-doc($item, ())
+                i:fox-doc($item, $options)
     let $cNamesFilter := $namesFilter ! 
-        use:compileUnifiedStringExpression(., true(), $ops = 'qname', $processingOptions?NAMESPACE_BINDINGS)
+        use:compileUnifiedStringExpression(., true(), $ops = 'qname', $options?NAMESPACE_BINDINGS)
     let $fn_nodes :=
         switch($axis)
         case 'child' return function($c) {$c/*}
@@ -3514,6 +3518,62 @@ declare function f:replaceValues($items as item()*,
  };
 
 (:~
+ : Parses text nodes or attribute values and inserts the parse tree as a child element.
+ :
+ : @param items the documents to be modified, as nodes or document URIs
+ : @param replaceNodesExpr a Foxpath expression selecting the nodes which to modify 
+ : @param valueExpr a Foxpath expression returning the new value of the node; the expression
+ :   is evaluated in the context of the node to be changed
+ : @param options options controling processing details
+ : @param processingOptions options controling the Foxpath processor 
+ : @return the edited input item
+ :)
+declare function f:iexpandNodes($items as item()*,
+                                $targetNodesExpr as item(),
+                                $grammar as xs:string,
+                                $options as xs:string?,
+                                $processingOptions as map(*))
+        as item()* {
+    let $ops := f:getOptions($options, ('base'), 'iexpand-nodes')
+    let $withBaseUri := $ops = 'base'
+    for $item in $items
+    let $isDocResource := uth:instanceOfDocResource($item)
+    let $node := uth:itemToNode($item, $processingOptions)
+    
+    let $resultDoc :=  
+        copy $node_ := $node
+        modify (
+            let $replaceNodes := 
+                f:resolveFoxpath($node_, $targetNodesExpr, $processingOptions)
+            for $rnode in $replaceNodes
+            let $ptree := string($rnode) ! 
+                i:fox-ixml-parse(., $grammar, $processingOptions)
+            where $ptree
+            let $insertionTarget := 
+                typeswitch($rnode)
+                case attribute() return $rnode/..
+                case text() return $rnode/..
+                default return $rnode
+            let $newElem := 
+                let $lname := $insertionTarget/local-name()
+                let $qname := QName($const:NS_FOX, 'fox:'||$lname)
+                return element {$qname} {$ptree}
+            return insert node $newElem as first into $insertionTarget
+            ,
+            if (not($withBaseUri)) then () else
+                let $targetElem := $node_/root()/descendant-or-self::*[1] (: /ancestor-or-self::*[last()] :)
+                return
+                    if ($targetElem/@xml:base) then () else
+                        insert node attribute xml:base {$targetElem/base-uri(.)} into $targetElem              
+            )                        
+        return $node_
+    let $result :=
+        if ($isDocResource) then uth:updateDocResourceContent($item, $resultDoc)
+        else $resultDoc
+    return $result
+ };
+
+(:~
  : Renames selected nodes.
  :
  : @param items the documents to be modified, as nodes or document URIs
@@ -3854,9 +3914,11 @@ declare function f:resolveLink($nodes as node()*,
     
     for $node in $nodes
     let $base := $node/ancestor-or-self::*[1]        
-    let $uriRaw := 
+    let $uriRaw := try {
         if ($base) then resolve-uri($node, $base/base-uri(.))
         else resolve-uri($node)
+        } catch * {}
+    where $uriRaw
     let $uri :=
         if (not($replaceString)) then $uriRaw
         else
@@ -4597,16 +4659,17 @@ declare function f:xqDoc($uri as xs:string, $options as map(*)?)
  : Before copying into the result document, every item from $items is processed as follows:
  : (A) if an item is a node:
  :   (1) if flag 'b' is set, a copy enhanced by an @xml:base attribute is created
- :   (2) if flag 'p' is set, a copy enhanced by a @fox:path attribute is created
- :   (3) if flag 'j' is set, a copy enhanced by a @fox:jpath attribute is created
- :   (4) if flag 'f' is set, the copy is "flattened" - child nodes are discarded  
- :   (5) if flag 'a' is set, the item is not modified if it is not an attribute;
+ :   (2) if flag 'n' is set, a copy enhanced by a @fileName attribute is created 
+ :   (3) if flag 'p' is set, a copy enhanced by a @fox:path attribute is created
+ :   (4) if flag 'j' is set, a copy enhanced by a @fox:jpath attribute is created
+ :   (5) if flag 'f' is set, the copy is "flattened" - child nodes are discarded  
+ :   (6) if flag 'a' is set, the item is not modified if it is not an attribute;
  :       if it is an attribute, it is mapped to an element which has a name 
  :       equal to the name of the parent of the attribute, and which contains a 
  :       copy of the attribute 
- :   (6) if flag 'A' is set, treatment as with flag 'a', but the constructed element
+ :   (7) if flag 'A' is set, treatment as with flag 'a', but the constructed element
  :       has no namespace URI 
- :   (7) otherwise, the item is not modified (except for possible pretty-printing, see (C))
+ :   (8) otherwise, the item is not modified (except for possible pretty-printing, see (C))
  : (B) if an item is atomic: 
  :   (1) if flag 'd' is set, the item is interpreted as URI and it is attempted to be
  :       parsed into a document, with an @xml:base attribute added to the root element,
@@ -4642,8 +4705,9 @@ declare function f:xwrap($items as item()*,
     let $sortRule := if (contains($flags, 's')) then 's' else if (contains($flags, 'S')) then 'S' else ()        
     let $val :=
         for $item in $items 
-        (: let $_DEBUG := trace($item, '_ITEM: ') :)
-        order by if ($sortRule eq 's') then $item else if ($sortRule eq 'S') then lower-case($item) else ()
+        order by if ($sortRule eq 's') then $item 
+                 else if ($sortRule eq 'S') then lower-case($item) 
+                 else ()
         return 
 
         typeswitch($item)
@@ -4654,10 +4718,12 @@ declare function f:xwrap($items as item()*,
             let $additionalAtts := (
                 if (not(contains($flags, 'b'))) then () else
                     attribute xml:base {$item/base-uri(.)},
+                if (not(contains($flags, 'n'))) then () else
+                    attribute {QName($const:NS_FOX, 'fox:fileName')} {$item/base-uri(.) ! replace(., '.*/', '')},
                 if (not(contains($flags, 'p'))) then () else
-                    attribute path {$item/f:namePath(., (), 'name')},
+                    attribute {QName($const:NS_FOX, 'fox:path')} {$item/f:indexedNamePath(., (), 'name')},
                 if (not(contains($flags, 'j'))) then () else
-                    attribute jpath {$item/f:namePath(., (), 'jname')}
+                    attribute {QName($const:NS_FOX, 'fox:jpath')} {$item/f:namePath(., (), 'jname')}
             )
             let $atts :=
                 if (empty($additionalAtts) or empty($item/@*)) then $item/@*
@@ -4723,10 +4789,7 @@ declare function f:xwrap($items as item()*,
                 element {$name2} {$item}
             
             else $item
-(:            
-    let $_DEBUG := trace($val, '_VAL: ')
-    let $_DEBUG := trace(count($val), '_COUNT: ')
- :)    
+            
     (: Write wrapper :)            
     let $namespaces :=  
         let $nns := f:extractNamespaceNodes($val[. instance of element()])
@@ -4861,7 +4924,109 @@ declare function f:xsdValidate($docs as item()*,
             modify delete nodes $reports2_//message/@url
             return $reports2_
  };
- 
+
+(:~
+ : Validates a set of documents against a DTD.
+ :)
+declare function f:dtdValidate($docs as item()*,
+                               $dtd as item()?,
+                               $options as xs:string?)
+        as item()* {
+    if (empty($dtd)) then error(QName((), 'INVALID_CALL'), 'Function dtd-validate - no DTD specified')
+    else
+
+    let $ops := f:getOptions($options, ('fname', 'summary'), 'dtd-validate')
+    let $view := $ops[. = ('summary')]
+    let $useFname := $ops = 'fname'    
+    let $fnIdentAtt :=
+        if ($useFname) then function($uri) {attribute file-name {replace($uri, '.*/', '')}}
+        else function($uri) {attribute uri {$uri}}
+    (:
+    let $xsdNodes :=
+        for $xsd in $xsds return 
+            if ($xsd instance of node()) then $xsd/descendant-or-self::xs:schema[1]
+            else doc($xsd)/*
+     :)
+    let $reports := 
+        for $doc in $docs
+        let $docNode :=
+            if ($doc instance of node()) then $doc
+            else try {doc($doc)/*} catch * {()}
+        return if (not($docNode)) then
+            <validationReport>{
+                $fnIdentAtt($doc),
+                <status>xml_not_wellformed</status>
+            }</validationReport>
+            else
+            
+        let $uri := $docNode/namespace-uri(.)
+        let $docPath := $doc[. instance of node()]/f:indexedNamePath($doc, (), ())
+        let $lname := $docNode/local-name(.)
+        let $result :=
+            try {validate:dtd-report($doc, $dtd)} 
+            catch * {<status>validation_failed</status>}
+        let $docuri := if (not($doc instance of node())) then $doc else base-uri($doc)
+        return 
+            <validationReport>{
+                $fnIdentAtt($docuri),
+                $docPath ! attribute nodePath {.}, 
+                attribute dtd {$dtd},
+                $result
+            }</validationReport>
+    let $messagesDistinct :=
+        for $message in $reports//message
+        group by $text := string($message)
+        return <message count="{count($message)}">{$text}</message>
+    let $reports2 :=
+        if (count($reports) gt 1) then 
+            let $invalid := $reports[status eq 'invalid']
+            let $nofind := $reports[status eq 'dtd_nofind']
+            let $valid := $reports except ($invalid, $nofind)
+
+            return
+                <validationReports countDocs="{count($reports)}"
+                                   countValid="{count($valid)}"
+                                   countInvalid="{count($invalid)}"
+                                   countNofind="{count($nofind)}">{
+                    if (not($messagesDistinct)) then () else
+                    <distinctMessages count="{count($messagesDistinct)}">{$messagesDistinct}</distinctMessages>,
+                    if (count($reports) eq 1) then $reports
+                    else (
+                        <invalid count="{count($invalid)}">{
+                            for $doc in $invalid 
+                            let $ename := if ($doc/@nodePath) then 'node' else 'doc'
+                            order by $doc/@uri, $doc/@file-name, $doc/@nodePath
+                            return element {$ename} {$doc/(@uri, @file-name, @nodePath, @xsd, $doc/*)}
+                        }</invalid>[count($invalid) gt 0],
+                        <valid count="{count($valid)}">{
+                            for $doc in $valid 
+                            let $ename := if ($doc/@nodePath) then 'node' else 'doc'
+                            order by $doc/@uri, $doc/@file-name, $doc/@nodePath
+                            return element {$ename} {$doc/(@uri, @file-name, @nodePath, @xsd)}
+                        }</valid>,
+                        if (empty($nofind)) then () else
+                        <nofind count="{count($nofind)}">{
+                            for $doc in $nofind 
+                            let $ename := if ($doc/@nodePath) then 'node' else 'doc'
+                            order by $doc/@uri, $doc/@file-name, $doc/@nodePath
+                            return element {$ename} {$doc/(@uri, @file-name, @nodePath, @xsd)}
+                        }</nofind>
+                    )
+                }</validationReports>
+        else $reports
+    return
+        if ($view eq 'summary') then (
+            $reports2//invalid/('invalid (#'||@count||')', doc/(@uri, @file-name)/('  '||.)),
+            $reports2//nofind/('nofind (#'||@count||')', doc/(@uri, @file-name)/('  '||.)),            
+            $reports2//ambiguous/('ambiguous (#'||@count||')', doc/(@uri, @file-name)/('  '||.)),
+            $reports2//valid/('valid (#'||@count||')')
+        )
+        else    
+            copy $reports2_ := $reports2
+            modify delete nodes $reports2_//message/@url
+            return $reports2_
+ };
+
 (:~
  :
  : ===    U t i l i t i e s ===
@@ -4943,6 +5108,7 @@ declare function f:normalizePath($path as xs:string)
  :)
 declare function f:extractNamespaceNodes($elems as element()*)
         as namespace-node()* {
+    let $elems := $elems/descendant-or-self::*        
     let $nspairs := (
         for $elem in $elems
         let $prefixes := in-scope-prefixes($elem)
@@ -4951,10 +5117,11 @@ declare function f:extractNamespaceNodes($elems as element()*)
     ) => distinct-values()
 
     for $nspair in $nspairs
-    group by $nsuri := substring-after($nspair, '#')
+    group by $prefix := substring-before($nspair, '#')
+    where not($prefix eq 'xml')
     where 1 eq ($nspair => distinct-values() => count())
     return
-        let $prefix := $nspair[1] ! substring-before(., '#')
+        let $nsuri := $nspair[1] ! substring-after(., '#')
         return
             if ($prefix eq '' and 
                 (some $elem in $elems satisfies not('' = in-scope-prefixes($elem)))) 

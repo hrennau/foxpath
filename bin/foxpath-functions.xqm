@@ -928,6 +928,21 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 exists(f:fox-unparsed-text($uri, (), $options))
 
+        (: function `iexpand-nodesr` 
+           ======================== :)
+        else if ($fname = ('iexpand-nodes', 'iexpand-nodes-ec')) then
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0        
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $doc := if ($da) then $arg1 else $context
+            let $targetNodesExpr :=
+                if (not($da)) then $arg1 else                
+                $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $grammar :=
+                $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions :=
+                $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:iexpandNodes($doc, $targetNodesExpr, $grammar, $fnOptions, $options)
+                        
         (: function `idoc` 
            ================ :)
         else if ($fname = ('idoc')) then
@@ -2065,6 +2080,18 @@ let $contents := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position
                          $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $fnOptions := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return foxf:xsdValidate($docs, $xsds, $fnOptions)
+            
+        (: function `dtd-validate` 
+           ===================== :)
+        else if ($fname = ('dtd-validate', 'dval', 'dtd-validate-ec', 'dval-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $docs := if ($da) then $arg1 else $context
+            let $dtd := if (not($da)) then $arg1 else
+                        $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $_DEBUG := trace($dtd, '_ dtd: ')
+            return foxf:dtdValidate($docs, $dtd, $fnOptions)
             
         (: function `xwrap` 
            ==================== :)
