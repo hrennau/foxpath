@@ -599,7 +599,7 @@ declare function f:fox-ixml-valid($text as xs:string,
  : @param options options controlling the evaluation
  : @return the document, or the empty sequence if retrieval or parsing fails
  :)
-declare function f:fox-doc($uri as xs:string, $options as map(*)?)
+declare function f:fox-doc($uri as xs:string, $options as map(*))
         as document-node()? {
     if ($f:OLD_FOX_DOC) then f:fox-doc_old($uri, $options) else
     $options?ISPACE ! is:doc($uri, ., $options)

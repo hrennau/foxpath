@@ -1207,9 +1207,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $contextNodes := if ($da eq 0) then $context else 
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $namesFilter := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $options := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:nameContent($contextNodes, $namesFilter, $options)
+                foxf:nameContent($contextNodes, $namesFilter, $fnOptions, $options)
 
         (: function `name-diff` 
            ==================== :)

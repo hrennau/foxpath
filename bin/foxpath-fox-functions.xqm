@@ -1994,7 +1994,8 @@ declare function f:namePath($nodes as node()*,
         as xs:string* {
     let $ops := f:getOptions($options, 
       ('name', 'lname', 'jname', 'fname', 'fpath', 'rfpath', 
-       'text', 'value', 'xsdcompname', 'noconcat', 'with-context', 'indexed'), 
+       'text', 'value', 'xsdcompname', 'noconcat', 'with-context', 'indexed',
+       'text*'), 
        'name-path')
     let $nameKind := ($ops[. = ('lname', 'jname', 'name')][1], 'lname')[1]
     let $noconcat := $ops = 'noconcat'
@@ -2323,13 +2324,15 @@ declare function f:nodeNavigation(
 declare function f:nameContent(
                        $contextItems as item()*,
                        $namesFilter as xs:string?,
-                       $options as xs:string?)                       
-        as xs:string* {
-    let $ops := $options ! tokenize(.)        
+                       $fnOptions as xs:string?,
+                       $options as map(*))                       
+        as item()* {
+    let $ops := $fnOptions ! tokenize(.)   
+    
     let $inputNodes :=
         for $item in $contextItems return
             if ($item instance of node()) then $item 
-            else i:fox-doc($item, ())
+            else i:fox-doc($item, $options)
     let $cNamesFilter := $namesFilter ! use:compileUnifiedStringExpression($namesFilter, true(), (), ())
 
     let $fn_name := 
@@ -3154,8 +3157,16 @@ declare function f:pathMultiDiff($items as item()*,
  : - ignore leaf nodes not matching $leafNamesFilter
  : - ignore nodes with an ancestor matching $excludedInnerNamesFilter
  :
- : Options - currently one option:
+ : Options:
+ : - scope options -
  : with-inner - also the paths of inner nodes are returned
+ : - output format options -
+ : text - no padding between path and frequency info
+ : text* - padding aligned with longest path 
+ : textNN - padding to length NN
+ : xml - XML format
+ : json - JSON format
+ : csv - CSV format 
  :
  : @param context nodes and or document URIs
  : @param nameKind the kind of name used as path steps: 
@@ -3169,14 +3180,20 @@ declare function f:pathContent($context as item()*,
                                $leafNameFilter as xs:string?,
                                $innerNodeNameFilter as xs:string?,
                                $excludedInnerNodeNameFilter as xs:string?,                               
-                               $processingOptions as xs:string?,
+                               $fnOptions as xs:string?,
                                $options as map(*))
-        as xs:string* {
-    let $ops := f:getOptions($processingOptions, (
+        as item()* {
+    let $ops := f:getOptions($fnOptions, (
                                         'name', 'lname', 'jname', 
                                         'with-inner', 'text', 'indexed',
-                                        'with-context'), 
+                                        'with-context',
+                                        'text*', 'csv', 'json', 'xml'), 
                                         'path-content')  
+    let $opsFormat := 
+        $ops[not(. eq 'text') and (starts-with(., 'text') or . = ('csv', 'json', 'xml'))]
+    let $ops := $ops[not(. = $opsFormat)]
+    let $outputIsText := not($opsFormat = ('csv', 'json', 'xml'))
+    
     let $namePathOptions := $ops[not(. = 'with-inner')] => string-join(' ')
     let $alsoInnerNodes := $ops = 'with-inner'
     let $cLeafNameFilter := $leafNameFilter 
@@ -3194,6 +3211,8 @@ declare function f:pathContent($context as item()*,
         $context[not(. instance of node())] 
             ! (try {i:fox-doc(., $options)} catch * {try {json:doc(.)} catch * {}})
     ) 
+    let $paths :=
+    
     for $cnode in $context
     let $descendants1 := (
         if (empty($cInnerNodeNameFilter)) then    
@@ -3222,14 +3241,20 @@ declare function f:pathContent($context as item()*,
     let $descendants4 := 
         if (not($ops = 'text')) then $descendants3
         else 
-            let $textNodes := $descendants3/text()[matches(., '\S')]
+            let $textNodes :=
+                ($cnode/text(), $descendants3/text())[matches(., '\S')]
             return ($descendants3, $textNodes)
     let $descendants5 :=
         if (not($alsoInnerNodes)) then $descendants4
         else $descendants4/ancestor-or-self::node()[. >> $cnode] 
     return
-        f:namePath($descendants5, $context, (), (), $namePathOptions)
-        => sort()
+        f:namePath($descendants5, $cnode, (), (), $namePathOptions)
+
+    return (
+        '=== path-content ==============================='[$outputIsText],
+        f:frequencies($paths, (), (), (), (), $opsFormat),
+        '================================================'[$outputIsText]
+    )        
 };        
 
 (:~
@@ -3531,42 +3556,49 @@ declare function f:replaceValues($items as item()*,
 declare function f:iexpandNodes($items as item()*,
                                 $targetNodesExpr as item(),
                                 $grammar as xs:string,
-                                $options as xs:string?,
-                                $processingOptions as map(*))
+                                $fnOptions as xs:string?,
+                                $options as map(*))
         as item()* {
-    let $ops := f:getOptions($options, ('base'), 'iexpand-nodes')
+    let $ops := f:getOptions($fnOptions, ('base', 'pretty'), 'iexpand-nodes')
     let $withBaseUri := $ops = 'base'
     for $item in $items
     let $isDocResource := uth:instanceOfDocResource($item)
-    let $node := uth:itemToNode($item, $processingOptions)
+    let $node := uth:itemToNode($item, $options)
     
     let $resultDoc :=  
         copy $node_ := $node
         modify (
             let $replaceNodes := 
-                f:resolveFoxpath($node_, $targetNodesExpr, $processingOptions)
+                f:resolveFoxpath($node_, $targetNodesExpr, $options)
             for $rnode in $replaceNodes
-            let $ptree := string($rnode) ! 
-                i:fox-ixml-parse(., $grammar, $processingOptions)
+            let $ptree := string($rnode) ! i:fox-ixml-parse(., $grammar, $options)
             where $ptree
             let $insertionTarget := 
                 typeswitch($rnode)
                 case attribute() return $rnode/..
                 case text() return $rnode/..
                 default return $rnode
+            let $elemName := 
+                if ($rnode instance of text()) then $insertionTarget/local-name(.)
+                else $rnode/local-name(.)
             let $newElem := 
-                let $lname := $insertionTarget/local-name()
-                let $qname := QName($const:NS_FOX, 'fox:'||$lname)
+                let $qname := QName($const:NS_FOX, 'fox:'||$elemName)
                 return element {$qname} {$ptree}
             return insert node $newElem as first into $insertionTarget
-            ,
-            if (not($withBaseUri)) then () else
-                let $targetElem := $node_/root()/descendant-or-self::*[1] (: /ancestor-or-self::*[last()] :)
-                return
-                    if ($targetElem/@xml:base) then () else
-                        insert node attribute xml:base {$targetElem/base-uri(.)} into $targetElem              
-            )                        
-        return $node_
+        )
+        return $node_/*
+    let $baseAtt := if (not($withBaseUri)) then () else 
+        let $targetElem := $node/root()/descendant-or-self::*[1]
+        return $targetElem[not(@xml:base)] ! attribute xml:base {base-uri(.)}        
+    let $resultDoc :=
+        if (deep-equal($node,$resultDoc)) then $resultDoc else
+            element {node-name($resultDoc)} {
+                namespace {'fox'} {$const:NS_FOX},
+                $baseAtt,
+                $resultDoc/(@*, node())
+            }
+    let $resultDoc := if ($ops = 'pretty') then $resultDoc/util:prettyNode(., ()) 
+                      else $resultDoc        
     let $result :=
         if ($isDocResource) then uth:updateDocResourceContent($item, $resultDoc)
         else $resultDoc
@@ -5385,13 +5417,22 @@ declare function f:getUserInputAttributes($options as map(*)) as attribute()* {
  : Returns the option values extracted from an $options
  : parameter. The parameter value contains a whitespace-
  : separated list of option values.
+ :
+ : @param options option values
+ : @param validOptions valid option values; a trailing *
+ :   is interpreted as wildcard
+ : @functionName the name of the function whose options are evaluated
+ : @return the option values
  :) 
 declare function f:getOptions($options as xs:string*, 
                               $validOptions as xs:string*,
                               $functionName as xs:string)
         as xs:string* {
-    let $ops := $options ! tokenize(.) ! lower-case(.)        
-    let $invalid := $ops[not(. = $validOptions)]
+    let $ops := $options ! tokenize(.) ! lower-case(.) 
+    let $voNames := $validOptions[not(ends-with(., '*'))]
+    let $voPrefixes := $validOptions[ends-with(., '*')] ! replace(., '\*$', '')
+    let $invalid := $ops[not(. = $validOptions or 
+        (some $prefix in $voPrefixes satisfies starts-with(., $prefix)))]
     return
         if (empty($invalid)) then $ops else
             let $text1 :=
