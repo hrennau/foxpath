@@ -9,7 +9,7 @@
         </case>
         <case>
             <condition>
-                <file path="countries//*.csv"/>
+                <file name="*.sem.csv"/>
             </condition>
             <rtypeUse rtype="csv">
                 <options>

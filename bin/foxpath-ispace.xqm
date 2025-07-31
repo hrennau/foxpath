@@ -37,12 +37,18 @@ declare variable $is:DOCLIB := map{
  : are accompanied by attributes containing the corresponding regular 
  : expressions.
  :) 
-declare function is:compileIspace($ispace as xs:string) 
+declare function is:compileIspace($ispace as xs:string,
+                                  $ispaceext as xs:string?) 
         as element() {
     let $path := util:fpath($ispace)
+    let $pathext := $ispaceext ! util:fpath(.)
     let $doc := try {doc($path)/*} 
                 catch * {<err:error code="{$err:code}" description="{$err:description}"/>}
-    let $ops := map{}
+    let $docext := try {$pathext ! doc(.)/*}
+                   catch * {<err:error code="{$err:code}" description="{$err:description}"/>}
+    let $ops := map:merge((
+                    $docext ! map:entry('ispaceext', .)
+                ))
     return
         if ($doc/self::err:error) then $doc/error(QName((), 'ISPACE_NOFIND'), 
             'Cannot read ispace definition; code='||@code||'; description: '||@description)
@@ -57,17 +63,30 @@ declare function is:compileIspaceREC($n as node(),
         as node()* {
     typeswitch($n)
     case document-node() return document {$n/node() ! is:compileIspaceREC(., $options)}
-    case element(grammars) return
-        let $contextDir := ($n/(@dir, @baseURI, @xml:base)[1]/
-                            replace(., '[^/]$', '$0/') 
-                            ! resolve-uri(., $n/base-uri(.)),
-                            $n/base-uri(.))[1]
-        let $optionsUpd := map:put($options, 'grammarContextDir', $contextDir)
+    case $grammars as element(grammars) return
+        let $fnContextDir := 
+            function($elem) {
+              ($elem/(@dir, @baseURI, @xml:base)[1]/replace(., '[^/]$', '$0/') 
+               ! resolve-uri(., $elem/base-uri(.)), $elem/base-uri(.))[1]        
+        }
+        let $grammarsExt := $options?ispaceext//grammars
+        let $grammarsExtCh := $grammarsExt/*
+        let $grammarsExtChResolved := if (empty($grammarsExtCh)) then () else
+            let $optionsUpd := map:put($options, 'grammarContextDir', $grammarsExt/$fnContextDir(.))
+            return $grammarsExtCh ! is:compileIspaceREC(., $optionsUpd)
+        let $grammarsExtNames := $grammarsExtCh/@name
+        
+        let $grammarsCh := $grammars/*[not(self::grammar/@name = $grammarsExtNames)]
+        let $contextDir := $grammars/$fnContextDir(.) 
+        let $grammarsChResolved :=
+            let $optionsUpd := map:put($options, 'grammarContextDir', $contextDir)
+            return $grammarsCh ! is:compileIspaceREC(., $optionsUpd)
         return
-            element {node-name($n)} {
+            element {node-name($grammars)} {
                 attribute dir {$contextDir},
-                $n/(@* except @dir) ! is:compileIspaceREC(., $optionsUpd),
-                $n/node() ! is:compileIspaceREC(., $optionsUpd)
+                $grammars/(@* except @dir) ! is:compileIspaceREC(., $options),
+                $grammarsExtChResolved,
+                $grammarsChResolved
             } 
     case element(grammar) return
         let $contextDir := $options?grammarContextDir
@@ -95,6 +114,22 @@ declare function is:compileIspaceREC($n as node(),
                 $n/node() ! is:compileIspaceREC(., $options)
             }
                
+    case $rtypes as element(rtypes) return
+        let $rtypesExt := $options?ispaceext//rtypes
+        let $rtypesExtNames := $rtypesExt/*/@name
+        let $children := ($rtypesExt/*, $rtypes/*[not(self::rtype/@name = $rtypesExtNames)])
+        return
+            element {node-name($rtypes)} {
+                $rtypes/@* ! is:compileIspaceREC(., $options),
+                $children ! is:compileIspaceREC(., $options)
+            }
+    case $rtypeUses as element(rtypeUses) return
+        let $children := ($options?ispaceext//rtypeUses/node(), $rtypeUses/node())
+        return
+            element {node-name($rtypeUses)} {
+                $rtypeUses/@* ! is:compileIspaceREC(., $options),
+                $children ! is:compileIspaceREC(., $options)
+            }
     case element() return
         element {node-name($n)} {
             $n/@* ! is:compileIspaceREC(., $options),
