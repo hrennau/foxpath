@@ -3,11 +3,11 @@ Reference implementation of Foxpath 3.0, an extended version of XPath 3.0 suppor
 XPath has been extended by the new Foxpath expression, which allows you to navigate the file system in a way 
 which is very similar to node tree navigation supported by the familiar path expression. For example, the 
 following expression
-<pre>\xsdbase\niem*\\*.xsd[file-size() le 900]</pre>
-returns the file paths of all XSD documents found at any depth under any folder niem* under folder xsdbase, 
+<pre>/xsdbase/niem*//*.xsd[file-size() le 900]</pre>
+returns the file paths of all XSD documents found at any depth under any folder `niem*` under folder `xsdbase`, 
 excluding all XSDs with a size greater than 900 bytes.
 
-The XQuery modules are accompanied by the shell script fox. The script is used with a single parameter, 
+The XQuery modules are accompanied by the shell script `fox.bat` (`fox.sh`). The script is used with a single parameter, 
 which is a Foxpath expression, or a file containing a Foxpath expression. The script returns the value 
 of the expression. Unless option -b is used, the path operator (standard: /) and the Foxpath operator 
 (standard: \\) are swapped, so that the following two calls would be equivalent:  
@@ -19,7 +19,8 @@ parameters.
 
 Foxpath contains a great number of utility functions available alongside with the functions defined
 by the XPath 3.0 standard. Example: the following call returns the frequency distribution of document
-root names in Clark notation, found in the XML documents contained by the Oxygen folder $oxygen/frameworks/dita:
+root names in Clark notation, found in the XML documents contained by the Oxygen folder `$oxygen/frameworks/dita`,
+excluding documents with a root element without namespace URI:
 <pre>fox "/programm*/*oxy*/frameworks/dita//*.xml\*[namespace-uri(.)]\cname() => freq()"</pre>
 Result:
 <pre>
@@ -35,9 +36,9 @@ Q{https://www.dita-ot.org/project}project ......................................
 Q{urn:oasis:names:tc:entity:xmlns:xml:catalog}catalog ............................. (81)
 Q{urn:public:dita4publishers.org:namespaces:word2dita:style2tagmap}style2tagmap ... (2)
 </pre>
-Take a look at doc/foxpath-intro.pdf for a general introduction to Foxpath: concepts, relationship to XPath 3.0 
+Take a look at `doc/foxpath-intro.pdf` for a general introduction to Foxpath: concepts, relationship to XPath 3.0 
 and many examples of increasing complexity. The library of extension functions is described by 
-doc/foxpath-extension-functions.docx.
+`doc/foxpath-extension-functions.pdf`.
 
 The implementation is written in the XQuery language, version 3.1. The current version of the language requires 
-the use of the BaseX processor ( http://basex.org/products/download/all-downloads/ ), version 9.6 or higher.
+the use of the BaseX processor ( https://basex.org/download/ ), version 11 or higher.
