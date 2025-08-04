@@ -207,14 +207,15 @@ declare function f:baseUriDirectory($item as item())
     ! base-uri(.) ! replace(., '(^|.*/)([^/]*)/[^/]*$', '$2', 'x')
 };
 
-declare function f:baseUriFileName($item as item())
+declare function f:baseUriFileName($item as item(), $options as map(*))
         as xs:string {
-    (if ($item instance of node()) then $item else i:fox-doc($item, ()))
+    (if ($item instance of node()) then $item else i:fox-doc($item, $options))
     ! base-uri(.) ! file:name(.)
 };
 
 (:~
- : Returns the base URI relative to a context.
+ : Returns the base URI or the base URI parent relative to a context.
+ : The context defaults to the current working dir.
  :
  : This is an early version where the context can only be
  : specified by a name pattern identifying the name of
@@ -224,12 +225,28 @@ declare function f:baseUriFileName($item as item())
  : @param context as xs:string*
  : @return relative URI
  :)
-declare function f:baseUriRelative($item as item(), $contextName as xs:string)
+declare function f:baseUriRelative($item as item(), 
+                                   $contextName as xs:string?,
+                                   $baseUriParent as xs:boolean?,
+                                   $options as map(*))
         as xs:string* {
-    let $regex := util:glob2regex($contextName)        
-    let $baseUri := 
-        (if ($item instance of node()) then $item else i:fox-doc($item, ()))
-         ! base-uri(.) ! replace(., '\\', '/')        
+    let $baseUri :=
+        (if ($item instance of node()) then $item 
+         else i:fox-doc($item, $options)) !
+         base-uri(.) ! 
+         (if (not($baseUriParent)) then . else replace(., '/[^/]*$', '')) ! 
+         replace(., '\\', '/') ! f:normalizePath(.)        
+    return
+      if (not($contextName)) then
+         let $context := 
+             file:current-dir() ! 
+             file:path-to-native(.) !
+             file:path-to-uri(.) 
+             ! f:normalizePath(.)
+         return f:relPath($context, $baseUri)
+      else
+      
+    let $regex := $contextName ! util:glob2regex(.)
     let $steps := tokenize($baseUri, '/')
     let $countSteps := count($steps)
     let $lastMatchingStep := (for $i in 1 to $countSteps return $steps[$i][matches(., $regex, 'i')] ! $i)[last()]
@@ -1596,12 +1613,22 @@ declare function f:grepObsolete($uris as xs:string*,
  :)
 declare function f:hlist($values as array(*)*, 
                          $headers as xs:string*,
-                         $emptyLines as xs:string?)
+                         $fnOptions as xs:string?)
         as xs:string {
+    let $opsmap := f:getOps($fnOptions, ('emptylines','char', 'nodot'), 'hlist') 
+    let $_DEBUG := trace($opsmap, '_ opsmap: ')
+    let $emptyLines := $opsmap?emptylines
+    let $char := 
+        if ($opsmap?nodot) then ' ' else
+        let $value := $opsmap?char
+        return if ($value = ('', 'none')) then ' ' 
+               else if (empty($value)) then '.'
+               else $value ! substring(., 1, 1)
+    
     let $headers :=
         if (count($headers) eq 1) then tokenize($headers, ',\s*') else $headers    
     let $values := $values => sort()
-    let $emptyLineFns :=
+    let $fnEmptyLines :=
         if (not($emptyLines)) then () else
 
         map:merge(
@@ -1611,9 +1638,10 @@ declare function f:hlist($values as array(*)*,
             return
                 map:entry($i - 1, function() {for $j in 1 to $lineCount return ''})
         )                    
-            
+    let $optionsRec := map{'char': $char, 'fnEmptyLines': $fnEmptyLines}
+    
     return
-        let $lines := f:hlistRC(0, $values, $emptyLineFns)
+        let $lines := f:hlistRC(0, $values, $optionsRec)
         return (
             if (empty($headers)) then () else 
                 let $maxLen := min(( (($lines ! string-length(.) => max()), 80)[1], 100))
@@ -1621,7 +1649,7 @@ declare function f:hlist($values as array(*)*,
                 return (
                     $sepline,        
                     for $header at $pos in $headers
-                    let $prefix := (for $i in 1 to $pos - 1 return '.  ') => string-join('')
+                    let $prefix := (for $i in 1 to $pos - 1 return $char||'  ') => string-join('')
                     return $prefix || $header,
                     $sepline,
                     ''                    
@@ -1631,9 +1659,12 @@ declare function f:hlist($values as array(*)*,
 
 declare function f:hlistRC($level as xs:integer, 
                            $rows as array(*)*, 
-                           $emptyLineFns as map(*)?)
+                           $optionsRec as map(*))
         as xs:string* {
-    let $prefix := (for $i in 1 to $level return '.  ') => string-join('')
+    let $char := $optionsRec?char
+    let $fnEmptyLines := $optionsRec?fnEmptyLines
+    
+    let $prefix := (for $i in 1 to $level return $char||'  ') => string-join('')
     return
         (: All rows with at most one member :)
         if (not(some $row in $rows satisfies array:size($row) gt 1)) then
@@ -1654,9 +1685,8 @@ declare function f:hlistRC($level as xs:integer,
             return (
                 if (count($parts) eq 1) then concat($prefix, $groupValue)
                 else for $part in $parts return ($prefix || $part),
-                f:hlistRC($level + 1, $contentValue, $emptyLineFns),
-                $emptyLineFns ! map:get(., $level) ! .()
-                (:''[$level eq 0] :)
+                f:hlistRC($level + 1, $contentValue, $optionsRec),
+                $fnEmptyLines ! map:get(., $level) ! .()
             )
 };
 
@@ -1993,9 +2023,13 @@ declare function f:namePath($nodes as node()*,
                             $options as xs:string?)
         as xs:string* {
     let $ops := f:getOptions($options, 
-      ('name', 'lname', 'jname', 'fname', 'fpath', 'rfpath', 
-       'text', 'value', 'xsdcompname', 'noconcat', 'with-context', 'indexed',
-       'text*'), 
+      ('name', 'lname', 'jname', 
+       'fname', 'fpath', 'rfpath', 
+       'text', 'textns', 'value', 'text*',
+       'indexed',
+       'xsdcompname', 
+       'noconcat', 
+       'with-context'), 
        'name-path')
     let $nameKind := ($ops[. = ('lname', 'jname', 'name')][1], 'lname')[1]
     let $noconcat := $ops = 'noconcat'
@@ -2004,8 +2038,7 @@ declare function f:namePath($nodes as node()*,
     
     let $attFilterC := $attFilter ! use:compileUnifiedStringExpression(., true(), (), ())
         
-    let $acceptNodes :=
-        $nodes[not(self::text()) or not(../*) or matches(., '\S')]
+    let $acceptNodes := $nodes[not(self::text()) or not(../*) or matches(., '\S')]
     for $node in $acceptNodes return
     (: _TO_DO_ Remove hack when BaseX Bug is removed; return to: let $nodes := $node/ancestor-or-self::node() :)     
     let $kindMark := if ($node instance of attribute()) then '@' 
@@ -2032,7 +2065,7 @@ declare function f:namePath($nodes as node()*,
         }
     let $steps :=   
         if ($nameKind eq 'lname') then $ancos/concat(local-name(),
-            if (not($withIndex) or self::attribute()) then () else $fnAddIndex(.),
+            if (not($withIndex) or self::attribute() or self::document-node()) then () else $fnAddIndex(.),
             if (empty($attFilterC)) then () else $fnAddAtts(.),
             self::xs:*/@name/concat('(', ., ')')[$ops = 'xsdcompname'])
         else if ($nameKind ne 'jname') then $ancos/concat(name(),
@@ -2053,18 +2086,19 @@ declare function f:namePath($nodes as node()*,
  
         let $value := 
             if (not($ops = 'value')) then () 
-            else if ($node/self::attribute()) then $node/f:truncate(., 60, 't')
-            else if ($node/self::text()) then $node/f:truncate(., 60, ())
+            else if ($node/self::attribute()) then $node/f:truncate(normalize-space(.), 60, 't')
+            else if ($node/self::text()) then $node/f:truncate(normalize-space(.), 60, ())
             else if ($ops = 'text') then ()    (: when text nodes are included, the value
                                                   is attached to them, not the element :)
-            else if ($node/text()) then $node/f:truncate(., 60, ())
+            else if (exists($node/text()[normalize-space(.)])) then 
+                $node/f:truncate(normalize-space(.), 60, ())
             else ()
         let $path := string-join($steps, '/')||($value ! concat('=', .))
         return if (not($withBaseUri)) then $path
             else if ($withBaseUri eq 'fpath') 
                  then $node/i:fox-base-uri(.)||'#'||$path
             else if ($withBaseUri eq 'fname') 
-                 then $node/(i:fox-base-uri(.) ! file:name(.))||'#'||$path
+                 then $node/(i:fox-base-uri(.) ! (try {file:name(.)} catch * {.}))||'#'||$path
             else (uth:relUri(file:current-dir(), $node/i:fox-base-uri(.)))||'#'||$path
 };        
 
@@ -2207,7 +2241,7 @@ declare function f:nodesLocationReport($nodes as node()*,
     
     $nodes/f:row((
         if ($numberOfFolders) then f:baseUriDirectories(., $numberOfFolders) else (),
-        f:baseUriFileName(.)[$withFileName], 
+        f:baseUriFileName(., $options)[$withFileName], 
         'Name: '||$fn_name(.), 
         let $namePathOptions := string-join(($nameKind, $namePathOptions), ' ')
         let $steps := f:namePath(., (), $namePathOptions)

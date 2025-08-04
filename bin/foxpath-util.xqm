@@ -18,7 +18,9 @@ declare variable $f:PREDECLARED_NAMESPACE_BINDINGS := map{
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "svrl": "http://purl.oclc.org/dsdl/svrl",
     "tei": "http://www.tei-c.org/ns/1.0",
+    "w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main", 
     "wsdl": "http://schemas.xmlsoap.org/wsdl/",    
+    "xlink": "http://www.w3.org/1999/xlink",
     "xml": "http://www.w3.org/XML/1998/namespace",
     "xpl": "http://www.w3.org/ns/xproc",    
     "xplc": "http://www.w3.org/ns/xproc-step",    
@@ -563,5 +565,19 @@ declare function f:rpad($s as xs:anyAtomicType?,
             return
                 concat($s, $pad)
 };
+
+declare function f:WRITE_DEBUG_FILE($path as xs:string, 
+                                    $content as item(), 
+                                    $debuglevel as xs:integer?)
+        as empty-sequence() {
+    ()
+    (:
+    if (not($debuglevel)) then () else
+    if ($content instance of node()) then 
+        $content ! f:prettyNode(., ()) ! 
+            file:write($path, ., map{'indent': 'yes'})
+    else file:write($path, $content)
+    :)
+};        
 
 

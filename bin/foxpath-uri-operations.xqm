@@ -37,6 +37,9 @@ at  "foxpath-util.xqm";
 import module namespace is="http://www.foxpath.org/ns/ispace"
     at "foxpath-ispace.xqm";
     
+import module namespace uth="http://www.foxpath.org/ns/urithmetic"
+    at "foxpath-urithmetic.xqm";
+
 declare namespace ixml="http://invisiblexml.org/NS";
 declare variable $f:OLD_FOX_DOC := false();
 declare variable $f:UNAME external := 'hrennau';
@@ -319,7 +322,8 @@ declare function f:uriDomain($uri as xs:string, $options as map(*)?)
  :)
  declare function f:fox-base-uri($node as node())
         as xs:string? {  
-    let $buri := $node/base-uri(.)
+    let $buri := try {$node/base-uri(.)} catch * {()}
+    where $buri
     return
         if (i:isDbNode($node)) then 'basex://'||$buri else $buri
 };
@@ -469,7 +473,7 @@ declare function f:fox-html-doc($uri as xs:string,
     let $uriDomain := f:uriDomain($uri, $options)
     return
     
-    if ($uriDomain eq 'FILE_SYSTEM') then file:exists($uri)
+    if ($uriDomain eq 'FILE_SYSTEM') then uth:fileExists($uri)
     else if ($uriDomain eq 'BASEX') then f:fox-file-exists_basex($uri, $options)   
     else if ($uriDomain eq 'SVN') then f:fox-file-exists_svn($uri, $options)
     else if ($uriDomain eq 'RDF') then f:fox-file-exists_rdf($uri, $options)

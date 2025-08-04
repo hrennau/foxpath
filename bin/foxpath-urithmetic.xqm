@@ -247,6 +247,15 @@ declare function f:itemToNode($item as item(), $options as map(*))
 };        
 
 (:~
+ : Returns true if a file exists, false otherwise.
+ : Wraps the file:exists function, catching exceptions.
+ :)
+declare function f:fileExists($uri as xs:string)
+        as xs:boolean {
+    try {file:exists($uri)} catch * {false()}        
+};
+
+(:~
  : Writes a document resource to the file system.
  :)
 declare function f:writeDocResource($path as xs:string, 

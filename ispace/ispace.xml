@@ -54,7 +54,7 @@
         <!-- .xml etc. -->
         <case>
             <condition>
-                <file name="*.dita *.ditamap *.docbook *.tei *.xml *.xsd *.xsl *.xslt"/>
+                <file name="*.dita *.ditamap *.docbook *.nvdl *.odd *.tei *.xml *.xsd *.xsl *.xslt"/>
             </condition>
             <rtypeUse rtype="xml" final="no"/>
             <rtypeUse rtype="html" final="yes"/>
@@ -62,7 +62,7 @@
         <!-- *.json -->
         <case>
             <condition>
-                <file name="*.json *.jschema"/>
+                <file name="*.json *.jsonld *.jschema *.jsonschema"/>
             </condition>
             <rtypeUse rtype="json" final="no"/>            
         </case>
@@ -71,8 +71,8 @@
             <condition>
                 <file name="*.html *.htm"/>
             </condition>
-            <rtypeUse rtype="xml"/>
-            <rtypeUse rtype="html" final="yes"/>
+            <rtypeUse rtype="xml"/>              <!-- try to parse as XML -->
+            <rtypeUse rtype="html" final="yes"/> <!-- parse as HTML -->
         </case>
         <!-- *.docx -->
         <case>
@@ -88,24 +88,31 @@
             </condition>
             <case>
                 <condition>
-                    <file parentName="/data//*.csv"/>
+                    <file parentName="data.sem"/>
                 </condition>
-                <iftrue>
-                    <rtypeUse rtype="csv">
-                        <options>
-                            <option name="header" value="yes"/> 
-                            <option name="separator" value=","/>
-                        </options>
-                    </rtypeUse>
-                </iftrue>
-                <else>
-                    <rtypeUse rtype="csv">
-                        <options>
-                            <option name="header" value="no"/> 
-                            <option name="separator" value=","/>
-                        </options>                        
-                    </rtypeUse>
-                </else>
+                <rtypeUse rtype="csv">
+                    <options>
+                        <option name="separator" value=";"/>
+                    </options>
+                </rtypeUse>
+            </case>
+            <case>
+                <condition>
+                    <file parentName="data.head"/>
+                </condition>
+                <rtypeUse rtype="csv">
+                    <options>
+                        <option name="header" value="yes"/>
+                    </options>
+                </rtypeUse>
+            </case>
+            <case>
+                <rtypeUse rtype="csv">
+                    <options>
+                        <option name="header" value="no"/> 
+                        <option name="separator" value=","/>
+                    </options>                        
+                </rtypeUse>
             </case>
         </case>
         <!-- *.words.txt -->

@@ -41,7 +41,7 @@ declare function f:resolveFoxpathQuery(
         let $ispaceF := if (file:is-dir($ispace)) then $ispace||'/ispace.xml' else $ispace
         let $ispaceext := $options?ISPACEEXT ! util:fpath(.)
         return $ispaceF ! is:compileIspace(., $ispaceext)
-     let $_DEBUG := file:write('ISPACE_COMPILED.xml', $ispaceC ! util:prettyNode(., ()), map{'indent': 'yes'})         
+    let $_DEBUG := util:WRITE_DEBUG_FILE('ISPACE_COMPILED.xml', $ispaceC, $options?DEBUGLEVEL)         
     let $options := if (not($ispaceC)) then $options else map:put($options, 'ISPACE', $ispaceC)
     return f:resolveFoxpathQueryTree($tree, $ebvMode, $context, $externalVariableBindings, $options)
 };

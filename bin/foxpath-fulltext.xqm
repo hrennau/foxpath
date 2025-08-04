@@ -78,7 +78,6 @@ declare function f:fnContainsText($selections as xs:string+,
             f:parseFt($item, $options)    
     let $sels :=
         $selTrees ! f:serializeFt(.)  
-    let $_DEBUG := trace($sels, '_SELS: ')        
     let $_DEBUG := 
         trace($sels, '### QUERY MAPPED TO FULLTEXT EXPR: ')[$TRACE]  
     let $expr := 
@@ -225,12 +224,12 @@ declare function f:parseFt($text as xs:string?, $options as xs:string?)
         else
             let $treeAtts := $tree/@*
             let $treeAttNames := $treeAtts/name()
-            return trace(
+            return
                 <words text="{$text}">{
                     $treeAtts,
                     $optionsAtts[not(name() = $treeAttNames)],
                     $tree/string()
-                }</words> , '_ words: ')
+                }</words>
 };
 
 (:~

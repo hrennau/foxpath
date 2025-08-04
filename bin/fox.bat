@@ -27,6 +27,7 @@ set CONSERVE_WS=
 set ECHO=
 set ISPACE=
 set ISPACEEXT=
+set DEBUGLEVEL=
 
 REM echo "Expression: %1%"
 
@@ -78,6 +79,9 @@ if "%name%"=="-p" (
    shift   
  ) else if "%name%"=="-x" (
    set ISPACEEXT=!VALUE!
+   shift   
+ ) else if "%name%"=="-Z" (
+   set DEBUGLEVEL=!VALUE!
    shift   
  ) else if "%name%"=="-v" (
    set VARS=!VARS!#######!VALUE!   
@@ -164,6 +168,7 @@ set OPT_DEBUG_TIME=
 set OPT_CONSERVE_WS=
 set OPT_ISPACE=
 set OPT_ISPACEEXT=
+set OPT_DEBUGLEVEL=
 set OPT_SER=-s indent=yes
 if not "%OFILE%"=="" (set OPT_OFILE=-o "%OFILE%")
 if not "%UTREE_DIRS%"=="" (set OPT_UTREE_DIRS=-b "utreeDirs=%UTREE_DIRS%")
@@ -174,6 +179,7 @@ if "%DEBUG_TIME%"=="1" (set OPT_DEBUG_TIME=-b debugtime=1)
 if not "%CONSERVE_WS%"=="" (set OPT_CONSERVE_WS=-w)
 if not "%ISPACE%"=="" (set OPT_ISPACE=-b "ispace=%ISPACE%")
 if not "%ISPACEEXT%"=="" (set OPT_ISPACEEXT=-b "ispaceext=%ISPACEEXT%")
+if not "%DEBUGLEVEL%"=="" (set OPT_DEBUGLEVEL=-b "debuglevel=%DEBUGLEVEL%")
 rem echo HERE=%HERE%
 rem if not "%CONSERVE_WS%"=="" (echo CONSERVE WHITESPACE)
-basex %OPT_SER% %OPT_CONSERVE_WS% %OPT_OFILE% %OPT_ISPACE% %OPT_ISPACEEXT% -b isFile=%ISFILE% -b echo=%ECHO% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% %OPT_CONTEXT_ITEM% %OPT_DEBUG_TIME% -b "vars=%VARS%" %HERE%/fox.xq
+basex %OPT_SER% %OPT_CONSERVE_WS% %OPT_OFILE% %OPT_ISPACE% %OPT_ISPACEEXT% %OPT_DEBUGLEVEL% -b isFile=%ISFILE% -b echo=%ECHO% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% %OPT_CONTEXT_ITEM% %OPT_DEBUG_TIME% -b "vars=%VARS%" %HERE%/fox.xq

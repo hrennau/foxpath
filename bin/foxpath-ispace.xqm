@@ -196,13 +196,10 @@ declare function is:doc_case($uri as xs:string,
     return
         (: Condition satisfied :)
         if ($test) then
-            if ($case/iftrue) then 
-                is:doc_cases($uri, $case/iftrue/*, $options)
-            else if ($case/condition) then
+            if ($case/condition) then
                 is:doc_cases($uri, $case/condition/following-sibling::*, $options)
             else is:doc_cases($uri, $case/*, $options)
-        else 
-            $case/else/is:doc_cases($uri, *, $options)
+        else () 
 };        
 
 declare function is:docForRtypeName($uri as xs:string, 

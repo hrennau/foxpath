@@ -128,19 +128,33 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return foxf:baseUriDirectory($contextItem)                
 
+        (: function `base-dir-relpath` 
+           ========================== :)
+        else if ($fname = ('base-dir-relpath', 'base-drp')) then
+            let $contextItem :=
+                if (empty($call/*)) then $context
+                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:baseUriDirectory($contextItem)                
+
         (: function `base-file-name` 
            ========================= :)
         else if ($fname = ('base-file-name', 'base-fname', 'bfname')) then
             let $contextItem :=
                 if (empty($call/*)) then $context
                 else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:baseUriFileName($contextItem)
+            return foxf:baseUriFileName($contextItem, $options)
             
         (: function `base-uri-relative` 
            ============================ :)
         else if ($fname = ('base-uri-relative', 'buri-relative', 'burirel')) then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
-            return foxf:baseUriRelative($context, $arg1)
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:baseUriRelative($context, $arg1, false(), $options)
+            
+        (: function `base-dir-relative` 
+           ============================ :)
+        else if ($fname = ('base-dir-relative', 'base-dir-rel')) then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:baseUriRelative($context, $arg1, true(), $options)
             
        (: function `both-values` 
           ====================== :)
@@ -287,6 +301,11 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $controlOptions := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:contentDeepEqual($items, $scope, $controlOptions)
+
+        (: function `current-dir` 
+           ====================== :)
+        else if ($fname eq 'current-dir') then
+            file:current-dir()
 
         (: function `count-chars` 
            ====================== :)
@@ -903,9 +922,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $headers := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                             (: ! normalize-space(.) ! tokenize(.) :)
-            let $emptyLines := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $options := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:hlist($values, $headers, $emptyLines)
+                foxf:hlist($values, $headers, $options)
 
         (: function `html-doc` 
            =================== :)
@@ -1524,6 +1543,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 <rcat t="{current-dateTime()}" count="{count($refs)}">{$refs}</rcat>
                         
+        (: function `read-binary` 
+           ===================== :)
+        else if ($fname = ('read-binary')) then
+            let $uri := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return
+                i:fox-binary($uri, $options)
+                            
         (: function `resolve-fox` 
            ====================== :)
         else if ($fname =  ('resolve-fox', 'resolve-fox-ec')) then
@@ -1552,7 +1580,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 if (empty($arg2)) then foxf:relPath($context, $arg1)
                 else foxf:relPath($arg1, $arg2)
-
 
         (: function `remove-prefix` 
            ======================= :)
@@ -2030,6 +2057,14 @@ let $contents := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position
             return
                 foxf:xitemElems($items, $name, $options)
 
+        (: function `xml-doc` 
+           ================= :)
+        else if ($fname eq 'xml-doc') then
+            let $uri := 
+                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return try {doc($uri)} catch* {()}
+                
         (: function `xroot-matches` 
            ======================== :)
         else if ($fname = ('xroot-matches', 'xroot')) then
@@ -2180,40 +2215,6 @@ let $contents := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position
                 )
                 return
                     concat($elemSelector, $attSelector)                  
-            return
-                i:xquery($xpath, map{'':$doc})
-
-        (: function `zzz-has-xelem` 
-           ======================== :)
-        else if ($fname eq 'zzz-has-xelem' or $fname eq 'xelem') then
-            let $uri := 
-                let $explicit := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return
-                    ($explicit, $context)[1]
-            let $doc := i:fox-doc($uri, $options)
-            return
-                if (not($doc)) then () else
-            
-            let $name := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $val := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            
-            let $name := normalize-space($name)
-            let $lname :=
-                if (empty($name)) then () else
-                    let $pattern := substring-before(concat($name, ' '), ' ') 
-                    return util:pattern2Regex($pattern)
-            let $ns := 
-                if (empty($name) or not(contains($name, ' '))) then () else
-                    let $pattern := substring-after($name, ' ') 
-                    return util:pattern2Regex($pattern)
-            let $val := $val ! util:pattern2Regex(.)
-            let $xpath :=
-                let $itemSelector := concat(
-                    concat('[matches(local-name(.), "', $lname, '", "i")]')[$lname],
-                    concat('[matches(namespace-uri(.), "', $ns, '", "i")]')[$ns], 
-                    concat('[not(*)][matches(., "', $val, '", "i")]')[$val]
-                )
-                return concat('//*', $itemSelector)                       
             return
                 i:xquery($xpath, map{'':$doc})
 
@@ -2369,15 +2370,6 @@ let $contents := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position
             return
                 xs:dayTimeDuration($arg)
 
-        (: function `decode-key` 
-           ===================== :)
-        else if ($fname eq 'decode-key') then
-            let $arg := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]
-            return
-                convert:decode-key($arg)
-                
         (: function `decode-url` 
            ===================== :)
         else if ($fname eq 'decode-url') then
@@ -2435,15 +2427,6 @@ let $contents := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)         
             return
                 empty($arg1)
-                
-        (: function `encodeKey` 
-           ==================== :)
-        else if ($fname eq 'encode-key') then
-            let $arg := 
-                let $explicit := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return ($explicit, $context)[1]
-            return
-                convert:encode-key($arg)
                 
         (: function `encode-url` 
            ===================== :)
@@ -3028,7 +3011,30 @@ let $contents := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position
                 xs:string($arg1)
 
         (: ################################################################
-         : p a r t  3:    m o d u l e    f u n c t i o n s
+         : p a r t  3:    b a s e x    f u n c t i o n s
+         : ################################################################ :)
+
+        (: function `decode-key` 
+           ===================== :)
+        else if ($fname eq 'decode-key') then
+            let $arg := 
+                let $explicit := 
+                  $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return convert:decode-key($arg)
+                
+        (: function `encode-key` 
+           ==================== :)
+        else if ($fname eq 'encode-key') then
+            let $arg := 
+                let $explicit := 
+                  $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                return ($explicit, $context)[1]
+            return convert:encode-key($arg)
+                
+
+        (: ################################################################
+         : p a r t  4:    m o d u l e    f u n c t i o n s
          : ################################################################ :)
 
         else if ($fname = ('cssdoc-resource', 'cssdoc-resource-ec')) then
