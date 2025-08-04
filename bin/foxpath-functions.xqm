@@ -1718,8 +1718,11 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $items :=
                 for $c in $call/*
                 let $item := $c ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-                return if (empty($item)) then '' else $item
-            return foxf:row($items)
+                return 
+                    if (empty($item)) then ''
+                    else if (count($item) gt 1) then array{$item}
+                    else $item
+            return foxf:tuple($items)
 
         (: function `rpad` 
            =============== :)

@@ -1615,12 +1615,11 @@ declare function f:hlist($values as array(*)*,
                          $headers as xs:string*,
                          $fnOptions as xs:string?)
         as xs:string {
-    let $opsmap := f:getOps($fnOptions, ('emptylines','char', 'nodot'), 'hlist') 
-    let $_DEBUG := trace($opsmap, '_ opsmap: ')
-    let $emptyLines := $opsmap?emptylines
+    let $ops := f:getOpsMap($fnOptions, ('emptylines','char', 'nochar'), 'hlist') 
+    let $emptyLines := $ops?emptylines
     let $char := 
-        if ($opsmap?nodot) then ' ' else
-        let $value := $opsmap?char
+        if ($ops?nochar) then ' ' else
+        let $value := $ops?char
         return if ($value = ('', 'none')) then ' ' 
                else if (empty($value)) then '.'
                else $value ! substring(., 1, 1)
@@ -1628,9 +1627,7 @@ declare function f:hlist($values as array(*)*,
     let $headers :=
         if (count($headers) eq 1) then tokenize($headers, ',\s*') else $headers    
     let $values := $values => sort()
-    let $fnEmptyLines :=
-        if (not($emptyLines)) then () else
-
+    let $fnEmptyLines := if (not($emptyLines)) then () else
         map:merge(
             for $i in 1 to string-length($emptyLines)
             let $lineCount := substring($emptyLines, $i, 1) ! xs:integer(.)
@@ -1664,29 +1661,43 @@ declare function f:hlistRC($level as xs:integer,
     let $char := $optionsRec?char
     let $fnEmptyLines := $optionsRec?fnEmptyLines
     
-    let $prefix := (for $i in 1 to $level return $char||'  ') => string-join('')
+    let $fnItem1 := function($tuple) {
+        let $i1 := $tuple(1) return 
+            if ($i1 instance of array(*)) then 
+                $i1 ! array:flatten(.) => string-join('~~~')
+            else $i1    
+    }
+    
+    (: The prefix is an indentation :)
+    let $prefix := 
+        (for $i in 1 to $level return $char||'  ') => string-join('')
     return
         (: All rows with at most one member :)
         if (not(some $row in $rows satisfies array:size($row) gt 1)) then
             for $row in $rows[array:size(.) gt 0]
-            group by $v := $row(1) ! string()
+            let $groupValue := $fnItem1($row)
+            group by $groupValue
             let $suffix := count($row)[. ne 1] ! concat(' (', ., ')')
-            let $parts := tokenize($v, '~~~')
-            return 
-                if (count($parts) eq 1) then $prefix || $v || $suffix
+            let $parts := tokenize($groupValue, '~~~')
+            return (
+                $fnEmptyLines ! map:get(., $level) ! .(),            
+                if (count($parts) eq 1) then $prefix || $groupValue || $suffix
                 else for $part in $parts return $prefix || $part
+            )
         (: Some rows with more than one member :)                
         else
             for $row in $rows
-            group by $groupValue := $row(1)
+            let $groupValue := $fnItem1($row)            
+            group by $groupValue
             let $contentValue := $row ! array:subarray(., 2)           
             order by $groupValue
+            (: The group value is possibly a concatenated list of items :)
             let $parts := tokenize($groupValue, '~~~')
             return (
+                $fnEmptyLines ! map:get(., $level) ! .()            ,
                 if (count($parts) eq 1) then concat($prefix, $groupValue)
                 else for $part in $parts return ($prefix || $part),
-                f:hlistRC($level + 1, $contentValue, $optionsRec),
-                $fnEmptyLines ! map:get(., $level) ! .()
+                f:hlistRC($level + 1, $contentValue, $optionsRec)
             )
 };
 
@@ -2239,7 +2250,7 @@ declare function f:nodesLocationReport($nodes as node()*,
         default return error(QName((), 'INVALID_ARG'), concat('Invalid "nameKind": ', $nameKind))
     return
     
-    $nodes/f:row((
+    $nodes/f:tuple((
         if ($numberOfFolders) then f:baseUriDirectories(., $numberOfFolders) else (),
         f:baseUriFileName(., $options)[$withFileName], 
         'Name: '||$fn_name(.), 
@@ -3975,7 +3986,7 @@ declare function f:resolveLink($nodes as node()*,
                                $replaceWith as xs:string?,
                                $options as xs:string?)
         as item()* {
-    let $ops := f:getOps($options, ('xml', 'ignore-nofind'), 'resolve-link')    
+    let $ops := f:getOpsMap($options, ('xml', 'ignore-nofind'), 'resolve-link')    
     let $ignoreNofind := $ops?ignore-nofind
     
     for $node in $nodes
@@ -4055,7 +4066,7 @@ declare function f:resolveXsdTypeRefRC($refNs as xs:string,
                     return $resultSNL                                
 };        
 
-declare function f:row($items as item()*)
+declare function f:tuple($items as item()*)
         as array(*) {
     array{$items}
 };
@@ -4115,7 +4126,7 @@ declare function f:subsetFraction(
 
 (:~
  : Transforms a sequence of values into a table. Each value is a concatenated 
- : list of items, created using function row().
+ : list of items, created using function tuple().
  :)
 declare function f:table($rows as item()*, 
                          $headers as xs:string*,
@@ -4131,7 +4142,7 @@ declare function f:table($rows as item()*,
         error(QName((), 'INVALID_ARG'), concat('Invalid call of "table" - ',
             'all rows must contain the same number of columns; use string(...) ',
             'in order to enforce a column in case of an empty column value; ',
-            'example: row(string(foo), string(bar))'))
+            'example: tuple(string(foo), string(bar))'))
         else
 
     let $headers := $headersPlus[not(matches(., '^(table|row)='))]
@@ -4242,7 +4253,7 @@ declare function f:csv($rows as item()*,
         error(QName((), 'INVALID_ARG'), concat('Invalid call of "table" - ',
             'all rows must contain the same number of columns; use string(...) ',
             'in order to enforce a column in case of an empty column value; ',
-            'example: row(string(foo), string(bar))'))
+            'example: tuple(string(foo), string(bar))'))
         else
 
     let $textRows :=
@@ -5481,9 +5492,9 @@ declare function f:getOptions($options as xs:string*,
  : Returns the options encoded by an $options parameter
  : as a map.
  :) 
-declare function f:getOps($optionsString as xs:string?, 
-                          $validOptions as xs:string*,
-                          $functionName as xs:string)
+declare function f:getOpsMap($optionsString as xs:string?, 
+                             $validOptions as xs:string*,
+                             $functionName as xs:string)
         as map(*)? {
     if (not(normalize-space($optionsString))) then () else
     
@@ -5573,13 +5584,3 @@ declare function f:dcat($uris as xs:string*,
         <dcat count="{count($uris)}" t="{current-dateTime()}">{$docs}</dcat>
 };
 
-(:~
- : Concatenates the arguments into a string, using an "improbable"
- : separator (codepoint 30000)
- :)
-declare function f:xxxRow($items as item()*)
-        as xs:string {
-    let $sep := codepoints-to-string(30000)
-    return
-        string-join($items, $sep)
-};
