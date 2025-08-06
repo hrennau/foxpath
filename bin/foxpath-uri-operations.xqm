@@ -826,10 +826,12 @@ declare function f:fox-csv-doc($uri as xs:string,
  :     retrieval or parsing fails
  :)
 declare function f:fox-csv-doc($uri as xs:string,
-                               $separator as xs:string,
+                               $separator as xs:string?,
                                $options as map(*)?)
         as document-node()? {
-    f:fox-csv-doc($uri, $separator, 'no', 'direct', 'yes', 'no', $options)        
+    let $separator := ($separator, ',')[1]
+    return        
+        f:fox-csv-doc($uri, $separator, 'no', 'direct', 'yes', 'no', $options)        
 };
 
 (:~
@@ -842,11 +844,15 @@ declare function f:fox-csv-doc($uri as xs:string,
  :     retrieval or parsing fails
  :)
 declare function f:fox-csv-doc($uri as xs:string,
-                               $separator as xs:string,
-                               $withHeader as xs:string,
+                               $separator as xs:string?,
+                               $withHeader as xs:string?,
                                $options as map(*)?)
         as document-node()? {
-    f:fox-csv-doc($uri, $separator, $withHeader, 'direct', 'yes', 'no', $options)        
+    let $separator := ($separator, ',')[1]
+    let $withHeader := ($withHeader, 'no')[1]
+    return        
+        f:fox-csv-doc(
+            $uri, $separator, $withHeader, 'direct', 'yes', 'no', $options)        
 };
 
 (:~
@@ -862,9 +868,9 @@ declare function f:fox-csv-doc($uri as xs:string,
  :     retrieval or parsing fails
  :)
 declare function f:fox-csv-doc($uri as xs:string,
-                               $separator as xs:string,
-                               $withHeader as xs:string,
-                               $names as xs:string,
+                               $separator as xs:string?,
+                               $withHeader as xs:string?,
+                               $names as xs:string?,
                                $options as map(*)?)
         as document-node()? {
     f:fox-csv-doc($uri, $separator, $withHeader, $names, 'yes', 'no', $options)        
@@ -883,11 +889,11 @@ declare function f:fox-csv-doc($uri as xs:string,
  :     retrieval or parsing fails
  :)
 declare function f:fox-csv-doc($uri as xs:string,
-                               $separator as xs:string,
-                               $withHeader as xs:string,
-                               $names as xs:string,
-                               $quotes as xs:string,
-                               $backslashes as xs:string,
+                               $separator as xs:string?,
+                               $withHeader as xs:string?,
+                               $names as xs:string?,
+                               $quotes as xs:string?,
+                               $backslashes as xs:string?,
                                $options as map(*)?)
         as document-node()? {
     let $uriDomain := f:uriDomain($uri, $options)

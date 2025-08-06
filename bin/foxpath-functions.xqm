@@ -122,7 +122,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `base-dir-name` 
            ========================= :)
-        else if ($fname = ('base-dir-name', 'base-dname', 'bdname', 'folder')) then
+        else if ($fname = ('base-dir-name', 'base-dname', 'bdname', 'folder-name')) then
             let $contextItem :=
                 if (empty($call/*)) then $context
                 else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -220,9 +220,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `child-name-flow`  
            ========================== :)
-        else if ($fname = ('child-name-flow', 'child-name-flow-ec',
-                           'child-lname-flow', 'child-lname-flow-ec',
-                           'child-jname-flow', 'child-jname-flow-ec')) then
+        else if ($fname = ('child-name-seq', 'child-name-seq-ec',
+                           'child-lname-seq', 'child-lname-seq-ec',
+                           'child-jname-seq', 'child-jname-seq-ec')) then
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0
             let $narg := count($call/*)
             let $args := $call/([
@@ -376,8 +376,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
                         $backslashes ! map:entry('backslashes', .)
                     ))
                     return $text ! csv:parse(., $funcOps)
-                else if (empty($separator)) then $uri ! i:fox-csv-doc(., $options)
-                else if (empty($header)) then $uri ! i:fox-csv-doc(., $separator, $options)
                 else if (empty($names)) then $uri ! i:fox-csv-doc(., $separator, $header, $options)
                 else if (empty($quotes)) then $uri ! i:fox-csv-doc(., $separator, $header, $names, $options)
                 else $uri ! i:fox-csv-doc(., $separator, $header, $names, $quotes, $backslashes, $options)
@@ -610,6 +608,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $sourceUri := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $rename := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $flags := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $_DEBUG := trace($resources?uri, '_ resources: ') 
             return
                 foxf:fileTreeCopy($resources, $targetUri, $sourceUri, $rename, $flags)
 

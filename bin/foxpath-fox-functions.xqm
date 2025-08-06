@@ -3377,7 +3377,6 @@ declare function f:deleteNodes($items as item()*,
     
     for $item in $items   
     let $isDocResource := uth:instanceOfDocResource($item)
-    let $_DEBUG := trace($isDocResource, '_ isDocResource: ')
     let $node := uth:itemToNode($item, $options)
     let $resultDoc :=  
         copy $node_ := $node
@@ -4736,17 +4735,19 @@ declare function f:xqDoc($uri as xs:string, $options as map(*)?)
  : Before copying into the result document, every item from $items is processed as follows:
  : (A) if an item is a node:
  :   (1) if flag 'b' is set, a copy enhanced by an @xml:base attribute is created
- :   (2) if flag 'n' is set, a copy enhanced by a @fileName attribute is created 
- :   (3) if flag 'p' is set, a copy enhanced by a @fox:path attribute is created
- :   (4) if flag 'j' is set, a copy enhanced by a @fox:jpath attribute is created
- :   (5) if flag 'f' is set, the copy is "flattened" - child nodes are discarded  
- :   (6) if flag 'a' is set, the item is not modified if it is not an attribute;
+ :   (2) if flag 'B' is set, a copy enhanced by an @xml:base attribute is created; 
+ :       the attribute value if relative to the current working directory 
+ :   (3) if flag 'n' is set, a copy enhanced by a @fileName attribute is created 
+ :   (4) if flag 'p' is set, a copy enhanced by a @fox:path attribute is created
+ :   (5) if flag 'j' is set, a copy enhanced by a @fox:jpath attribute is created
+ :   (6) if flag 'f' is set, the copy is "flattened" - child nodes are discarded  
+ :   (7) if flag 'a' is set, the item is not modified if it is not an attribute;
  :       if it is an attribute, it is mapped to an element which has a name 
  :       equal to the name of the parent of the attribute, and which contains a 
  :       copy of the attribute 
- :   (7) if flag 'A' is set, treatment as with flag 'a', but the constructed element
+ :   (8) if flag 'A' is set, treatment as with flag 'a', but the constructed element
  :       has no namespace URI 
- :   (8) otherwise, the item is not modified (except for possible pretty-printing, see (C))
+ :   (9) otherwise, the item is not modified (except for possible pretty-printing, see (C))
  : (B) if an item is atomic: 
  :   (1) if flag 'd' is set, the item is interpreted as URI and it is attempted to be
  :       parsed into a document, with an @xml:base attribute added to the root element,
@@ -4773,7 +4774,8 @@ declare function f:xqDoc($uri as xs:string, $options as map(*)?)
 declare function f:xwrap($items as item()*, 
                          $name as xs:QName, 
                          $flags as xs:string?, 
-                         $name2 as xs:QName?, $options as map(*)?) 
+                         $name2 as xs:QName?, 
+                         $options as map(*)?) 
         as element()? {
     (: name2 is the name of inner wrapper elements, wrapping an individual item :)
     let $name2 := if (empty($name2)) then '_text_' else $name2   
@@ -4793,8 +4795,11 @@ declare function f:xwrap($items as item()*,
         case element() | attribute() | document-node() return
             let $item := if ($item/self::document-node()) then $item/* else $item
             let $additionalAtts := (
-                if (not(contains($flags, 'b'))) then () else
-                    attribute xml:base {$item/base-uri(.)},
+                if (not(matches($flags, '[bB]'))) then () else
+                    if (contains($flags, 'B')) then
+                        let $baseUriRel := f:baseUriRelative($item, (), false(), $options)
+                        return attribute xml:base {$baseUriRel}
+                    else attribute xml:base {$item/base-uri(.)},
                 if (not(contains($flags, 'n'))) then () else
                     attribute {QName($const:NS_FOX, 'fox:fileName')} {$item/base-uri(.) ! replace(., '.*/', '')},
                 if (not(contains($flags, 'p'))) then () else
@@ -4867,19 +4872,25 @@ declare function f:xwrap($items as item()*,
             
             else $item
             
-    (: Write wrapper :)            
-    let $namespaces :=  
+    (: Write wrapper :)    
+    let $baseAtt := if (not(contains($flags, 'B'))) then () else 
+        attribute xml:base {file:current-dir() ! f:normalizePath(.)}
+    let $namespaces :=
+        let $nnsUsed := 
+            $val/descendant-or-self::node()/(., @*)/namespace-uri(.) 
+            => distinct-values()
         let $nns := f:extractNamespaceNodes($val[. instance of element()])
         for $nn in $nns        
         group by $prefix := name($nn)
         let $nn1:= $nn[1]
-        where $prefix ne 'xml' and $nn1
+        where $nn1 = $nnsUsed and $prefix ne 'xml'
         (: Default namespace is suppressed if $name is in no namespace :)
         where $prefix or string(namespace-uri-from-QName($name))
         return $nn1
     let $result :=
         element {$name} {
             $namespaces,        
+            $baseAtt,
             attribute countItems {count($val)},
             $val
         }
