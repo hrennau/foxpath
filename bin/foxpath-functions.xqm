@@ -2109,7 +2109,8 @@ let $contents := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position
             
         (: function `xsd-validate` 
            ===================== :)
-        else if ($fname = ('xsd-validate', 'xval', 'xsd-validate-ec', 'xval-ec')) then
+        else if ($fname = ('xsd-validate', 'xvalidate', 'xval', 
+                           'xsd-validate-ec', 'xvalidate-ec', 'xval-ec')) then
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $docs := if ($da) then $arg1 else $context

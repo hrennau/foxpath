@@ -35,7 +35,13 @@
             <docFn>docx:doc#1</docFn>
         </rtype>
         <rtype name="css">
-            <grammar ref="css" type="ixml"/>
+            <!-- ixml grammar has still some issues;
+                 for the time being, we use an own parser function. -->
+            <!--
+            <grammar ref="css" type="ixml"/>            
+            -->
+            <docFn>css:doc#2</docFn>
+            <parseFn>css:parse#2</parseFn>            
         </rtype>
         <rtype name="isbn.ixml">
             <grammar ref="isbn" type="ixml"/>
@@ -135,6 +141,12 @@
                 <file name="iso8601*.txt"/>
             </condition>
             <rtypeUse rtype="iso8601.ixml" final="yes"/>
+        </case>
+        <case>
+            <condition>
+                <file name="*.css"/>
+            </condition>
+            <rtypeUse rtype="css"/>
         </case>
         <!-- Last attempt - parse as XML -->
         <case>

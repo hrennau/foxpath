@@ -14,6 +14,7 @@ declare variable $is:DOCLIB := map{
     'json:doc#1': fuo:fox-json-doc#1,
     'html:doc#1': fuo:fox-html-doc#1,
     'csv:doc#2': fuo:fox-csv-doc2#2,
+    'css:doc#2': fuo:fox-css-doc#2,    
     'docx:doc#1': fuo:docx-doc#1
 };
 
@@ -232,6 +233,11 @@ declare function is:docForRtypeName($uri as xs:string,
             case 'html:doc#1' return
                 try {$is:DOCLIB($docFn)($uri)} 
                 catch * {trace((), 'html:doc() failed; uri='||$uri||'; code='||$err:code||
+                                   '; description='||$err:description)}
+                                   
+            case 'css:doc#2' return
+                try {$is:DOCLIB($docFn)($uri, $options)} 
+                catch * {trace((), 'css:doc() failed; uri='||$uri||'; code='||$err:code||
                                    '; description='||$err:description)}
                                    
             case 'csv:doc#2' return

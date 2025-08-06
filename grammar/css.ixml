@@ -1,0 +1,160 @@
+{
+
+	CSS 2.1 Grammar
+
+	adapted (in a hurry) from
+	https://www.w3.org/TR/CSS2/grammar.html
+
+}
+
+stylesheet
+  : ( CHARSET_SYM, STRING, ';' )?,
+    (WS|CDO|CDC)*, ( import, ( CDO, WS* | CDC, WS* )* )*,
+    ( ( ruleset | media | page ), ( CDO, WS* | CDC, WS* )* )*
+  .
+import
+  : IMPORT_SYM, WS*,
+    (STRING|URI), WS*, media_list?, ';', WS*
+  .
+media
+  : MEDIA_SYM, WS*, media_list, '{', WS*, ruleset*, '}', WS*
+  .
+media_list
+  : medium, ( COMMA, WS*, medium)*
+  .
+medium
+  : IDENT, WS*
+  .
+page
+  : PAGE_SYM, WS*, pseudo_page?,
+    '{', WS*, declaration?, ( ';', WS*, declaration? )*, '}', WS*
+  .
+pseudo_page
+  : ':', IDENT, WS*
+  .
+operator
+  : '/', WS* | ',', WS*
+  .
+combinator
+  : '+', WS*
+  | '>', WS*
+  .
+unary_operator
+  : '-' | '+'
+  .
+property
+  : IDENT, WS*
+  .
+ruleset
+  : selector, ( ',', WS*, selector )*,
+    '{', WS*, declaration?, ( ';', WS*, declaration? )*, '}', WS*
+  .
+selector
+  : -simple_selector, ( combinator, selector | WS+, ( combinator?, selector )? )?
+  .
+simple_selector
+  : element_name, ( HASH | class | attrib | pseudo )*
+  | ( HASH | class | attrib | pseudo )+
+  .
+class
+  : '.', IDENT
+  .
+element_name
+  : IDENT | '*'
+  .
+attrib
+  : '[', WS*, IDENT, WS*, ( ( '=' | INCLUDES | DASHMATCH ), WS*,
+    ( IDENT | STRING ), WS* )?, ']'
+  .
+pseudo
+  : ':', ( IDENT | FUNCTION, WS*, (IDENT, WS*)?, ')' )
+  .
+declaration
+  : property, ':', WS*, expr, prio?
+  .
+prio
+  : IMPORTANT_SYM, WS*
+  .
+expr
+  : term, ( operator?, term )*
+  .
+term
+  : unary_operator?,
+    ( NUMBER, WS* | PERCENTAGE, WS* | LENGTH, WS* | EMS, WS* | EXS, WS* | ANGLE, WS* |
+      TIME, WS* | FREQ, WS* )
+  | STRING, WS* | IDENT, WS* | URI, WS* | hexcolor | function
+  .
+function
+  : FUNCTION, WS*, expr, ')', WS*
+  .
+{
+ * There is a constraint on the color that it must
+ * have either 3 or 6 hex-digits (i.e., [0-9a-fA-F])
+ * after the '#'; e.g., '#000' is OK, but '#abcd' is not.
+ }
+hexcolor
+  : HASH, WS*
+  .
+
+{ TODO verify/complete these }
+-WS: -' '|#9|#a|#d|comment .
+CHARSET_SYM: .
+STRING: #22, ~[#22]*, #22.
+CDO: '<!--'.
+CDC: '--!>'.
+IMPORT_SYM: '@',i,m,p,o,r,t .
+MEDIA_SYM: '@',m,e,d,i,a .
+PAGE_SYM: '@',p,a,g,e .
+IMPORTANT_SYM: '!',i,m,p,o,r,t,a,n,t . { TODO comments }
+URI: 'url(', ~[')']*, ')' . { TODO }
+COMMA: ','.
+-IDENT: ['a'-'z';'_';'A'-'Z'], ['a'-'z';'_-';'A'-'Z';'0'-'9']*.
+HASH: '#'.
+INCLUDES: '~='.
+DASHMATCH: '|='.
+FUNCTION: IDENT, '(' .
+NUMBER: '-'?, ['0'-'9']+ . { TODO }
+PERCENTAGE: NUMBER, '%' .
+LENGTH: NUMBER, -LENGTH_UNIT .
+LENGTH_UNIT: (p,x)|(c,m)|(m,m)|(i,n)|(p,t)|(p,c).
+EMS: NUMBER, e,m .
+EXS: NUMBER, e,x .
+ANGLE: NUMBER, -ANGLE_UNIT .
+ANGLE_UNIT: d,e,g | r,a,d | g,r,a,d .
+TIME:  NUMBER, -TIME_UNIT .
+TIME_UNIT: s | m,s .
+FREQ:  NUMBER, -FREQ_UNIT .
+FREQ_UNIT: h,z | k,h,z .
+comment: '/*', ('*',~['/'] | ~['*'] )*,  '*/' . { TODO is this correct? }
+
+-a: ["A"; "a"].
+-b: ["B"; "b"].
+-c: ["C"; "c"].
+-d: ["D"; "d"].
+-e: ["E"; "e"].
+-f: ["F"; "f"].
+-g: ["G"; "g"].
+-h: ["H"; "h"].
+-i: ["I"; "i"].
+-j: ["J"; "j"].
+-k: ["K"; "k"].
+-l: ["L"; "l"].
+-m: ["M"; "m"].
+-n: ["N"; "n"].
+-o: ["O"; "o"].
+-p: ["P"; "p"].
+-q: ["Q"; "q"].
+-r: ["R"; "r"].
+-s: ["S"; "s"].
+-t: ["T"; "t"].
+-u: ["U"; "u"].
+-v: ["V"; "v"].
+-w: ["W"; "w"].
+-x: ["X"; "x"].
+-y: ["Y"; "y"].
+-z: ["Z"; "z"].
+
+{ lexical rules }
+
+-num: ["0"-"9"]+ | ["0"-"9"]*, ".", ["0"-"9"]+ .
+-nl: #a | #d,#a | #d | #c.

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # ====================================================================================
 #
@@ -18,7 +18,9 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 SCRIPT_PATH="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-while getopts "?pbc" opt; do
+OPTS=()
+
+while getopts "?pbcs:x:" opt; do
     case "$opt" in
     p)
         MODE="parse"
@@ -27,14 +29,23 @@ while getopts "?pbc" opt; do
         ;;
     c)  SEP=%
         ;;
-    \?) 
-        echo Usage: foxpath [-p] [-b] [-c] foxpath
-        echo foxpath : a foxpath expression
-        echo -p      : show the parse tree, rather than evaluate the expression
-        echo -b      : within the foxpath expression path and foxpath operator are swapped;
-        echo           using the option: path operator = / , foxpath operator = \\
-        echo           without option:   path operator = \\ , foxpath operator = /
-        echo -c      : foxpath operator = / , path operator = %
+    s)  OPTS+=(-b "ispace=$2")
+        ;;
+    x)  OPTS+=(-b "ispaceext=$2")
+        ;;
+    \?)
+        echo   'Usage: foxpath [-p] [-b] [-c] foxpath'
+        echo   'foxpath : a foxpath expression'
+        echo   '-p      : show the parse tree, rather than evaluate the expression'
+        echo   '-b      : within the foxpath expression path and foxpath operator are swapped;'
+        echo   '          using the option: path operator = / , foxpath operator = \'
+        echo   '          without option:   path operator = \ , foxpath operator = /'
+        echo   '-c      : foxpath operator = / , path operator = %%\n'
+        echo   '-s infospace-dir :'
+        echo   '          file path of an infospace definition document replacing the standard definition'
+        echo   '-x infospaceext : '
+        echo   '          file path of an infospace definition document extending the standard definition'
+
         exit 0
         ;;
     esac
@@ -47,4 +58,6 @@ FOXPATH="${!OPTIND}"
 #     launch query
 #
 # ====================================================================================
-exec basex -b mode="$MODE" -b sep="$SEP" -b foxpath="$FOXPATH" "$SCRIPT_PATH/fox.xq" -q "'&#xa;'"
+exec basex -s indent=yes -b mode="$MODE" -b sep="$SEP" -b foxpath="$FOXPATH" \
+    "${OPTS[*]}" \
+    "$SCRIPT_PATH/fox.xq" -q "'&#xa;'"
