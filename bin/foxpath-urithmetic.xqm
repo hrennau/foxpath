@@ -13,24 +13,47 @@ at  "foxpath-util.xqm";
  : Returns the normalized path of the folder containing
  : a node.
  :)
-declare function f:baseDir($item as item(),
-                            $options as map(*))
+declare function f:baseDir($items as item()*,
+                           $options as map(*))
         as xs:string* {
-    $item ! f:baseFile(., $options) ! f:parentPath(.)
+    $items ! f:baseFile(., $options) ! f:parentPath(.)
+};
+
+(:~
+ : Returns the name of the folder containing a node.
+ :)
+declare function f:baseDirName($items as item()*,
+                               $options as map(*))
+        as xs:string* {
+    $items ! f:baseDir(., $options) ! f:parentPath(.) ! file:name(.)
 };
 
 (:~
  : Returns the normalized path of the file containing
  : a node.
  :)
-declare function f:baseFile($item as item(),
+declare function f:baseFile($items as item()*,
                             $options as map(*))
         as xs:string* {
-    (if ($item instance of node()) then $item 
-     else i:fox-doc($item, $options)) !
+    $items !
+    (if (. instance of node()) then . 
+     else i:fox-doc(., $options)) !
      base-uri(.) !
      file:path-to-native(.) !
      f:normalizedFilePath(.)
+};
+
+(:~
+ : Returns the name of the file containing a node.
+ :)
+declare function f:baseFileName($items as item()*,
+                                $options as map(*))
+        as xs:string* {
+    $items !    
+    (if (. instance of node()) then . 
+     else i:fox-doc(., $options)) !
+     base-uri(.) !
+     file:name(.)
 };
 
 (:~
@@ -40,21 +63,23 @@ declare function f:baseFile($item as item(),
  : a name pattern - the context is the closest containing
  : folder matching the pattern.
  :)
-declare function f:baseFileRelative($item as item(), 
+declare function f:baseFileRelative($items as item()*, 
                                     $contextName as xs:string?,
                                     $folder as xs:boolean?,
                                     $options as map(*))
         as xs:string* {
-    let $node := 
+    let $nodes :=
+        for $item in $items return
         if ($item instance of node()) then $item 
         else i:fox-doc($item, $options)         
-    let $baseUri := $node ! base-uri(.) ! file:path-to-native(.) ! (
+    let $baseUris := $nodes ! base-uri(.) ! file:path-to-native(.) ! (
         if (not($folder)) then f:normalizedFilePath(.)
         else f:parentPath(.))
     return
       if (not($contextName)) then
-         f:relPath(f:currentDir(), $baseUri)
-      else f:relPathToContext($contextName, $baseUri)
+         let $curDir := f:currentDir()
+         return $baseUris ! f:relPath($curDir, .)
+      else $baseUris ! f:relPathToContext($contextName, .)
 };
 
 (:~
@@ -70,21 +95,23 @@ declare function f:baseFileRelative($item as item(),
  : @param options the processing options
  : @return relative URI
  :)
-declare function f:baseUriRelative($item as item(), 
+declare function f:baseUriRelative($items as item()*, 
                                    $contextName as xs:string?,
                                    $folder as xs:boolean?,
                                    $options as map(*))
         as xs:string* {
-    let $node := 
+    let $nodes := 
+        for $item in $items return    
         if ($item instance of node()) then $item 
         else i:fox-doc($item, $options)        
-    let $baseUri :=
-         $node ! base-uri(.) ! (
+    let $baseUris :=
+         $nodes ! base-uri(.) ! (
          if (not($folder)) then . else f:parentPath(.))
     return    
       if (not($contextName)) then
-         f:relPath(f:currentUri(), $baseUri)
-      else f:relPathToContext($contextName, $baseUri)
+         let $curUri := f:currentUri()      
+         return $baseUris ! f:relPath($curUri, .)
+      else $baseUris ! f:relPathToContext($contextName, .)
 };
 
 (:~

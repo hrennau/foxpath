@@ -44,35 +44,71 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `base-dir 
            ================== :)
-        if ($fname = ('base-dir')) then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $item := ($arg1, $context)[1]
-            return uth:baseDir($item, $options)
+        if ($fname = ('base-dir', 'base-dir-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
+            let $args := $call/*
+            let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $items := if ($da) then $arg1 else $context
+            return uth:baseDir($items, $options)
             
-        (: function `base-dir-relative` 
-           ============================ :)
-        else if ($fname = ('base-dir-relative', 'base-dir-rel')) then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return uth:baseFileRelative($context, $arg1, true(), $options)
+        (: function `base-dir-name` 
+           ========================= :)
+        else if ($fname = ('base-dir-name', 'base-dname', 'bdname',
+                           'base-dir-name-ec', 'base-dname-ec', 'bdname-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
+            let $args := $call/*
+            let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $items := if ($da) then $arg1 else $context
+            return uth:baseDirName($items, $options)                
+
+        (: function `base-dir-rel` 
+           ======================= :)
+        else if ($fname = ('base-dir-rel', 'base-dir-rel-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
+            let $args := $call/*
+            let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $items := if ($da) then $arg1 else $context
+            let $ctxt := $args[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return uth:baseFileRelative($items, $ctxt, true(), $options)
             
         (: function `base-file 
            =================== :)
-        else if ($fname = ('base-file')) then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $item := ($arg1, $context)[1]
-            return uth:baseFile($item, $options)
+        else if ($fname = ('base-file', 'base-file-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
+            let $args := $call/*
+            let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $items := if ($da) then $arg1 else $context
+            return uth:baseFile($items, $options)
             
-        (: function `base-file-relative` 
-           ============================ :)
-        else if ($fname = ('base-file-relative', 'base-file-rel')) then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return uth:baseFileRelative($context, $arg1, false(), $options)
+        (: function `base-file-name` 
+           ========================= :)
+        else if ($fname = ('base-file-name', 'base-fname', 'bfname',
+                           'base-file-name-ec', 'base-fname-ec', 'bfname-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
+            let $args := $call/*
+            let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $items := if ($da) then $arg1 else $context
+            return uth:baseFileName($items, $options)
             
-        (: function `base-uri-relative` 
+        (: function `base-file-rel` 
+           ======================== :)
+        else if ($fname = ('base-file-rel', 'base-file-rel-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
+            let $args := $call/*
+            let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $items := if ($da) then $arg1 else $context
+            let $ctxt := $args[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return uth:baseFileRelative($items, $ctxt, false(), $options)
+            
+        (: function `base-uri-rel` 
            ============================ :)
-        else if ($fname = ('base-uri-relative', 'base-uri-rel')) then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return uth:baseUriRelative($context, $arg1, false(), $options)
+        else if ($fname = ('base-uri-rel', 'base-uri-rel-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
+            let $args := $call/*
+            let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $items := if ($da) then $arg1 else $context
+            let $ctxt := $args[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return uth:baseUriRelative($items, $ctxt, false(), $options)
 
         (: function `current-dir` 
            ====================== :)
@@ -212,14 +248,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:bslash($arg)
 
-        (: function `base-dir-name` 
-           ========================= :)
-        else if ($fname = ('base-dir-name', 'base-dname', 'bdname', 'folder-name')) then
-            let $contextItem :=
-                if (empty($call/*)) then $context
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:baseUriDirectory($contextItem)                
-
         (: function `base-dir-relpath` 
            ========================== :)
         else if ($fname = ('base-dir-relpath', 'base-drp')) then
@@ -228,14 +256,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return foxf:baseUriDirectory($contextItem)                
 
-        (: function `base-file-name` 
-           ========================= :)
-        else if ($fname = ('base-file-name', 'base-fname', 'bfname')) then
-            let $contextItem :=
-                if (empty($call/*)) then $context
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:baseUriFileName($contextItem, $options)
-            
        (: function `both-values` 
           ====================== :)
         else if ($fname = ('both-values', 'bvalues', 'value-intersect')) then
