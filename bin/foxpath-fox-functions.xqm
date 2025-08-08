@@ -4,6 +4,9 @@ at "foxpath-processorDependent.xqm",
    "foxpath-uri-operations.xqm",
    "foxpath-parser.xqm";
 
+import module namespace opt="http://www.foxpath.org/ns/fox-functions-options" 
+at "foxpath-fox-functions-options.xqm";
+
 import module namespace uth="http://www.foxpath.org/ns/urithmetic" 
 at  "foxpath-urithmetic.xqm";
 
@@ -16,6 +19,343 @@ at  "foxpath-unified-string-expression.xqm";
 import module namespace const="http://www.foxpath.org/ns/constants" 
 at  "foxpath-constants.xqm";
 
+declare variable $f:OPTION_MODELS := prof:time(opt:buildOptionMaps());
+
+declare function f:frequenciesNew($values as item()*, 
+                               $fnOptions as item()?,
+                               $options as map(*))
+        as item()* {
+    if (empty($values)) then () else
+    
+    let $ops := ($f:OPTION_MODELS?frequencies !
+                 f:getOpsMapC($fnOptions, ., 'frequencies'), map{})[1]
+    let $format :=
+        (('xml', 'json', 'txt', 'lines', 'csv')
+        [map:contains($ops, .)], 'txt')[1] 
+    let $_DEBUG := trace($format, '_ format: ')
+    let $width := 
+        if (not($format = ('txt', 'lines'))) then ()
+        else if (empty($ops?width)) then 1 + 
+            ($values ! string(.) ! string-length(.)) => max()
+        else $ops?width
+    
+    (: Function return the frequency representation :)
+    let $fnCountInfo :=
+        switch($ops?freq)
+        case 'fraction' return function($c, $nvalues) 
+          {($c div $nvalues) ! round(., 2) ! string(.) ! replace(., '^[^.]+$', '$0.0')}
+        case 'percent' return function($c, $nvalues) 
+          {($c div $nvalues * 100) ! round(., 1) ! string(.) ! replace(., '^[^.]+$', '$0.0')}
+        default return function($c, $nvalues) {$c}
+
+    (: Function item returning a term representation :)
+    let $fnItem :=
+        switch($format) 
+        case 'txt' 
+        case 'lines' return function($s, $c) {
+            if ($width eq 0) then ($s||' ('||$c||')') else
+                concat($s, ' ', 
+                  (1 to $width - string-length($s) - 1) ! '.' => string-join(''), 
+                   ' (', $c, ')')}
+        case 'json' return function($s, $c) {'"'||$s||'": '||$c}
+        case 'csv' return function($s, $c) {'"'||$s||'",'||$c}
+        case 'xml' return ()
+        default return error(QName((), 'MODEL_ERROR'), 'Model error - format "'||$format||'".')
+
+    let $nvalues := count($values)     
+    let $itemsUnordered :=        
+        for $value in $values
+        group by $s := string($value)
+        let $c := count($value)        
+        let $f := $fnCountInfo($c, $nvalues)
+        where (empty($ops?min) or not($c) or $c ge $ops?min) and
+              (empty($ops?max) or not($ops?max) or $c le $ops?max)
+        return <value text="{$s}" f="{$f}"/>
+    
+    let $items :=
+        switch($ops?order)
+        case 'a' return 
+            for $item in $itemsUnordered 
+            order by $item/@text/lower-case(.) 
+            return $item
+        case 'd' return 
+            for $item in $itemsUnordered 
+            order by $item/@text/lower-case(.) descending 
+            return $item
+        case 'f' return 
+            for $item in $itemsUnordered 
+            order by $item/@f/number(.), $item/@text/lower-case(.) 
+            return $item
+        case 'F' return 
+            for $item in $itemsUnordered 
+            order by $item/@f/number(.) descending, $item/@text/lower-case(.) 
+            return $item
+        case 'n' return 
+            for $item in $itemsUnordered 
+            order by try {$item/@text/number(.)} catch * {} ascending 
+            return $item
+        case 'N' return 
+            for $item in $itemsUnordered 
+            order by try {$item/@text/number(.)} catch * {} descending 
+            return $item
+        default return 
+            for $item in $itemsUnordered 
+            order by $item/@text/lower-case(.) 
+            return $item
+    return      
+        switch($format)
+        case 'xml' return 
+            let $min := $items/@f/number(.) => min()
+            let $max := $items/@f/number(.) => max()
+            return
+                <values>{
+                    switch($ops?freq)
+                    case 'percent' return (
+                        attribute minPercent {$min},
+                        attribute maxPercent {$max})
+                    case 'fraction' return (
+                        attribute minFraction {$min},
+                        attribute maxFraction {$max}) 
+                    default return (
+                        attribute minCount {$min},
+                        attribute maxCount {$max}),
+                    $items/<value text="{@text}">{attribute {$ops?freq} {@f}}</value>
+                }</values>
+        case 'json' return ('{', $items/$fnItem(@text, @f) ! concat('  ', .), '}') 
+                             => string-join('&#xA;')
+        case 'txt' 
+        case 'lines' return 
+            let $entries := $items/$fnItem(@text, @f) 
+            return if ($ops?lines) then $entries else $entries => string-join('&#xA;')
+        default return $items => string-join('&#xA;')
+};   
+
+(:~
+ : Returns for given nodes their name paths.
+ :
+ : @param nodes a set of nodes
+ : @param context if specified, the result path is the path
+ :   relative to this context
+ : @param fnOptions options controlling function behaviour:
+ : * name - use lexical names
+ : * jname - use JSON names
+ : * lname - use local namews
+ : * fname - insert file name before name path
+ : * fpath - insert file path before name path 
+ : * fpathrel - insert relative file path before name path 
+ : * steps=integer - number of steps to be considered
+ : * text - consider also text nodes
+ : * value - for leaves append data value
+ : @param options options
+ : @return the name paths
+ :)
+declare function f:namePathNew($nodes as node()*, 
+                               $context as node()?,
+                               $fnOptions as item(),
+                               $options as map(*))
+        as xs:string* {
+        
+    let $ops := ($f:OPTION_MODELS?namePath !
+                 f:getOpsMapC($fnOptions, ., 'namePath'), map{})[1]
+    let $nameKind := 
+        if ($ops?name) then 'name'
+        else if ($ops?jname) then 'jname'
+        else 'lname'
+    let $len := $ops?length
+    let $withBaseUri := $ops?fname or $ops?fpath or $ops?fpathrel        
+    let $attFilterC := $ops?atts ! use:compileUSE(., true())
+    let $acceptNodes := $nodes[not(self::text()) or not(../*) or matches(., '\S')]
+    for $node in $acceptNodes return
+    (: _TO_DO_ Remove hack when BaseX Bug is removed; return to: let $nodes := $node/ancestor-or-self::node() :)     
+    let $kindMark := if ($node instance of attribute()) then '@' 
+                     else if ($node instance of text()) then 'text()' 
+                     else ()
+    let $ancos := 
+        let $all := $node/ancestor-or-self::node()[not($context) or . >> $context]
+        let $all := if ($context and $ops?with-context) then ($context, $all)
+                    else $all
+        let $dnode := $all[. instance of document-node()]
+        return ($dnode, $all except $dnode)
+        
+    let $fnAddAtts :=
+        if (empty($attFilterC)) then () else
+        
+        function($node) {
+            let $atts := $node/@*[use:matchesUSE(local-name(.), $attFilterC)]
+            where $atts
+            return string-join($atts/concat('[@', local-name(.), '=', .,']'), '')
+        }
+        
+    let $fnAddIndex :=
+        if (not($ops?indexed)) then () else
+        
+        function($n) {
+            let $nodes := 
+                if ($n instance of text()) then $n/preceding-sibling::text()
+                else $n/preceding-sibling::*[node-name() eq node-name($n)]
+            return '['||(1 + count($nodes))||']'        
+        }
+    let $steps :=   
+        if ($nameKind eq 'lname') then $ancos/concat(
+            local-name(),
+            if (not($ops?indexed) 
+                or self::attribute() or self::document-node()) then () 
+            else $fnAddIndex(.),
+            $fnAddAtts(.)[exists($attFilterC)])
+        else if ($nameKind ne 'jname') then $ancos/concat(
+            name(),
+            if (not($ops?indexed) 
+                or not(self::*)) then () else $fnAddIndex(.),        
+            $fnAddAtts(.)[exists($attFilterC)])        
+        else
+            $ancos/( 
+                let $raw := f:unescapeJsonName(local-name(.))
+                return if (not(contains($raw, '/'))) 
+                       then $raw 
+                       else concat('"', $raw, '"')
+            )
+    let $steps := 
+        if (not($kindMark)) then $steps 
+        else ($steps[position() lt last()], $kindMark||$steps[last()])
+    let $steps := 
+        if (empty($ops?steps)) then $steps 
+        else subsequence($steps, count($steps) + 1 - $ops?steps)
+    return         
+        if ($ops?noconcat) then $steps[string()] else
+ 
+        let $value := 
+            if (not($ops?value)) then () 
+            else if ($node/self::attribute()) then 
+                $node/f:truncate(normalize-space(.), $len, 't')
+            else if ($node/self::text()) then 
+                $node/f:truncate(normalize-space(.), $len, ())
+            else if ($ops?text) then ()    (: when text nodes are included, the value
+                                              is attached to them, not the element :)
+            else if (exists($node/text()[normalize-space(.)])) then 
+                $node/f:truncate(normalize-space(.), $len, ())
+            else ()
+        let $path := string-join($steps, '/')||($value ! concat('=', .))
+        return if (not($withBaseUri)) then $path
+            else if ($ops?fpath) then $node/i:fox-base-uri(.)||'#'||$path
+            else if ($ops?fname) then $node/(i:fox-base-uri(.) ! 
+                     (try {file:name(.)} catch * {.}))||'#'||$path
+            else ($node/uth:baseFileRelative(., (), (), $options))||'#'||$path
+};        
+
+(:~
+ : Returns the paths leading from a context node to its descendants and their
+ : attributes. This may be regarded as a representation of the node's content, 
+ : hence the function name.
+ :
+ : The paths can be filtered in three ways:
+ : - ignore leaf nodes not matching $leafNamesFilter
+ : - ignore nodes which do not have an ancestor matching $innerNodeNameFilter 
+ : - ignore nodes with an ancestor matching $excludedInnerNameFilter
+ :
+ : Options:
+ : (a) scope options -
+ : with-inner - also the paths of inner nodes are returned
+ : (b) output format options -
+ : text - no padding between path and frequency info
+ : text* - padding aligned with longest path 
+ : textNN - padding to length NN
+ :
+ : (c) name kinds
+ : xml - XML format
+ : json - JSON format
+ : csv - CSV format 
+ :
+ : @param context nodes and or document URIs
+ : @param nameKind the kind of name used as path steps: 
+ :   jname - JSON names; lname - local names; name - lexical names
+ : @param leafNamesFilter - leaf nodes not matching this filter are ignored 
+ : @param excludedInnerNamesFilter - all nodes with a matching ancestor are ignored 
+ : @param options paraeters controling the execution 
+ : @return the parent name
+ :)
+declare function f:pathContent($context as item()*, 
+                               $leafNodeFilter as xs:string?,
+                               $innerNodeFilter as xs:string?,
+                               $excludedInnerNodeFilter as xs:string?,                               
+                               $fnOptions as item()?,
+                               $options as map(*))
+        as item()* {
+
+    let $ops := ($f:OPTION_MODELS?pathContent !
+                 f:getOpsMapC($fnOptions, ., 'pathPath'), map{})[1]
+    let $ops :=
+        let $opsModel := $f:OPTION_MODELS?pathContent
+        return f:getOpsMapC($fnOptions, $opsModel, 'pathContent')
+
+    let $isJ := $ops?jname
+    let $cLeafNodeFilter := $leafNodeFilter ! use:compileUSE(., true())    
+    let $cInnerNodeFilter := $innerNodeFilter ! use:compileUSE(., true())
+    let $cExcludedInnerNodeFilter := $excludedInnerNodeFilter ! use:compileUSE(., true())
+    let $fnGetName :=
+        if ($ops?name) then function($node) {name($node)}
+        else if ($isJ) then function($node) {$node ! name() ! convert:decode-key(.)} 
+        else function($node) {local-name($node)}
+    let $fnGetLeafContent :=
+        function ($nodes, $isJ) {$nodes//*[not(*)], if ($isJ) then () else $nodes//@*}
+    let $context := (
+        $context[. instance of node()],
+        $context[not(. instance of node())] ! (
+          try {i:fox-doc(., $options)} 
+          catch * {try {json:doc(.)} catch * {}})
+    ) 
+    let $paths :=    
+        for $cnode in $context
+        (: Descendants 1 - descendants passing the required inner node filter :) 
+        let $descendants1 := (
+            if (empty($cInnerNodeFilter)) then 
+                $cnode => $fnGetLeafContent($isJ)
+            else
+                let $inodes := $cnode//*[@*, *]
+                  [use:matchesUSE($fnGetName(.), $cInnerNodeFilter)]         
+                return
+                    $inodes => $fnGetLeafContent($isJ)
+        )
+        (: Descendants 2 - descendants passing the excluded inner node filter :)
+        let $descendants2 := (
+            if (empty($cExcludedInnerNodeFilter)) then $descendants1 
+            else
+                let $inodes := $cnode//*[@*, *]
+                  [use:matchesUSE(
+                       $fnGetName(.), $cExcludedInnerNodeFilter)]
+                let $excludedLeaves := $inodes => $fnGetLeafContent($isJ)
+                return
+                    $descendants1 except $excludedLeaves
+        )
+        (: Descendants 3 - descendants passing the leaf node filter :)
+        let $descendants3 :=
+            if (empty($cLeafNodeFilter)) then $descendants2 else
+                $descendants2[use:matchesUSE(
+                    $fnGetName(.), $cLeafNodeFilter)]
+                    
+        (: Descendants 4 - text nodes added :)
+        let $descendants4 := 
+            if (not($ops?text)) then $descendants3
+            else 
+                let $textNodes :=
+                    ($cnode/text(), $descendants3/text())[matches(., '\S')]
+                return ($descendants3, $textNodes)
+                
+        (: Descendants 5 - inner nodes added :)
+        let $descendants5 :=
+            if (not($ops?with-inner)) then $descendants4
+            else $descendants4/ancestor-or-self::node()[. >> $cnode] 
+        return
+            f:namePathNew($descendants5, $cnode, $ops, $options)
+        
+    let $frequencies := f:frequenciesNew($paths, $ops, $options)  
+    return
+        if ($ops?format eq 'text') then (
+        '=== path-content ===============================',
+        $frequencies,
+        '================================================'
+        ) => string-join('&#xA;')
+        else $frequencies
+};        
 
 (:~
  : Writes a set of standard attributes. Can be useful when working
@@ -211,49 +551,6 @@ declare function f:baseUriFileName($item as item(), $options as map(*))
         as xs:string {
     (if ($item instance of node()) then $item else i:fox-doc($item, $options))
     ! base-uri(.) ! file:name(.)
-};
-
-(:~
- : Returns the base URI or the base URI parent relative to a context.
- : The context defaults to the current working dir.
- :
- : This is an early version where the context can only be
- : specified by a name pattern identifying the name of
- : the context step. 
- :
- : @param item a node or a URI
- : @param context as xs:string*
- : @return relative URI
- :)
-declare function f:baseUriRelative($item as item(), 
-                                   $contextName as xs:string?,
-                                   $baseUriParent as xs:boolean?,
-                                   $options as map(*))
-        as xs:string* {
-    let $baseUri :=
-        (if ($item instance of node()) then $item 
-         else i:fox-doc($item, $options)) !
-         base-uri(.) ! 
-         (if (not($baseUriParent)) then . else replace(., '/[^/]*$', '')) ! 
-         replace(., '\\', '/') ! f:normalizePath(.)        
-    return
-      if (not($contextName)) then
-         let $context := 
-             file:current-dir() ! 
-             file:path-to-native(.) !
-             file:path-to-uri(.) 
-             ! f:normalizePath(.)
-         return f:relPath($context, $baseUri)
-      else
-      
-    let $regex := $contextName ! util:glob2regex(.)
-    let $steps := tokenize($baseUri, '/')
-    let $countSteps := count($steps)
-    let $lastMatchingStep := (for $i in 1 to $countSteps return $steps[$i][matches(., $regex, 'i')] ! $i)[last()]
-    return
-        if (empty($lastMatchingStep)) then $baseUri
-        else if ($lastMatchingStep eq $countSteps) then '.'
-        else string-join($steps[position() gt $lastMatchingStep], '/')
 };
 
 (:~
@@ -1164,7 +1461,7 @@ declare function f:foxNavigation(
         
     let $ops := $options ! tokenize(.)        
     let $useBaseUri := $ops = 'use-base-uri'
-    let $cNamesFilter := $namesFilter ! use:compileUnifiedStringExpression(., true(), (), ()) 
+    let $cNamesFilter := $namesFilter ! use:compileUSE(., true()) 
     let $contextUris :=
         if (not($useBaseUri)) then $contextUris else
             $contextUris ! (if (. instance of node()) then base-uri(.) else .)
@@ -1189,7 +1486,7 @@ declare function f:foxNavigation(
     let $result :=
         for $curi in $contextUris
         let $related := $curi ! $fn_uris(.)[$fn_name(.) 
-                        ! use:matchesUnifiedStringExpression(., $cNamesFilter)]
+                        ! use:matchesUSE(., $cNamesFilter)]
         return if (empty($pselector)) then $related else
 
         let $reverseAxis := $axis = ('ancestor', 'ancestor-or-self', 'parent', 'preceding-sibling')
@@ -1367,120 +1664,6 @@ declare function f:fractions($values as item()*,
 };        
 
 (:~
- : Returns a frequency distribution.
- :
- : @param values a sequence of terms
- : @param min if specified - return only terms with a frequency >= $min
- : @param max if specified - return only terms with a frequency >= $max
- : @param kind the kind of frequency value - count, relfreq (relative frequency), 
- :   percent (percent frequency)
- : @param orderBy sort order - "a" (order by frequency ascending, 
- -   "d" (order by frequency descending); default: alphabetically
- : @param format  the output format, one of xml|json|csv|text|text*, default = text;
- :   "text* denotes "text" followed by a number (e.g. text40) specifying the width 
- :   of the term column - shorter terms are padded to this width
- : @return the frequency distribution
- :)
-declare function f:frequencies($values as item()*, 
-                               $min as xs:integer?, 
-                               $max as xs:integer?, 
-                               $kind as xs:string?, (: count | relfreq | percent :)
-                               $orderBy as xs:string?,
-                               $format as xs:string?)
-        as item()? {
-    if (empty($values)) then () else
-       
-    let $width := 
-        if (not($format) or $format eq 'text*') then 1 + ($values ! string(.) ! string-length(.)) => max()
-        else if (matches($format, '^text\d')) then replace($format, '^text', '')[string()] ! xs:integer(.)
-        else ()
-    let $format := 
-        if (not($format)) then 'text'
-        else if (matches($format, '^text.')) then 'text'
-        else $format    
- 
-    let $freqAttName := ($kind, 'count')[1]
-    
-    (: Function return the frequency representation :)
-    let $fn_count2freq :=
-        switch($kind)
-        case 'freq' return function($c, $nvalues) {($c div $nvalues) ! round(., 1) ! string(.) ! replace(., '^[^.]+$', '$0.0')}
-        case 'percent' return function($c, $nvalues) {($c div $nvalues * 100) ! round(., 1) ! string(.) ! replace(., '^[^.]+$', '$0.0')}
-        default return function($c, $nvalues) {$c}
-
-    (: Function item returning a term representation :)
-    let $fn_itemText :=
-        switch($format) 
-        case 'text' return function($s, $c) {
-            if (empty($width)) then concat($s, ' (', $c, ')')
-            else 
-                concat($s, ' ', 
-                       string-join(for $i in 1 to $width - string-length($s) - 1 return '.', ''), 
-                       ' (', $c, ')')}
-        case 'json' return function($s, $c) {'"'||$s||'": '||$c}
-        case 'csv' return function($s, $c) {'"'||$s||'",'||$c}
-        case 'xml' return ()
-        default return error(QName((), 'INVALID_ARG'), 
-            concat('Unknown frequencies format, should be text|xml|json|csv; found: ', $format))
-
-    let $nvalues := count($values)     
-    let $itemsUnordered :=        
-        for $value in $values
-        group by $s := string($value)
-        let $c := count($value)        
-        let $f := $fn_count2freq($c, $nvalues)
-        where (empty($min) or not($c) or $c ge $min) and (empty($max) or not($max) or $c le $max)
-        return <value text="{$s}" f="{$f}"/>
-
-    let $items :=
-        switch($orderBy)
-        case 'a' return 
-            for $item in $itemsUnordered 
-            order by $item/@f/number(.), $item/@text/lower-case(.) 
-            return $item
-        case 'd' return 
-            for $item in $itemsUnordered 
-            order by $item/@f/number(.) descending, $item/@text/lower-case(.) 
-            return $item
-        case 'n' return 
-            for $item in $itemsUnordered 
-            order by try {$item/@text/number(.)} catch * {} ascending 
-            return $item
-        case 'N' return 
-            for $item in $itemsUnordered 
-            order by try {$item/@text/number(.)} catch * {} descending 
-            return $item
-        default return 
-            for $item in $itemsUnordered 
-            order by $item/@text/lower-case(.) 
-            return $item
-            
-    return  
-        switch($format)
-        case 'xml' return 
-            let $min := $items/@f/number(.) => min()
-            let $max := $items/@f/number(.) => max()
-            return
-                <values>{
-                    if ($kind eq 'percent') then (
-                        attribute minPercent {$min},
-                        attribute maxPercent {$max}
-                    ) else if ($kind eq 'freq') then (
-                        attribute minFreq {$min},
-                        attribute maxFreq {$max}
-                    ) else (
-                        attribute minCount {$min},
-                        attribute maxCount {$max}
-                    ),
-                    $items/<value text="{@text}">{attribute {$freqAttName} {@f}}</value>
-            }</values>
-        case 'json' return ('{', $items/$fn_itemText(@text, @f) ! concat('  ', .), '}') => string-join('&#xA;')
-        case 'csv' return $items/$fn_itemText(@text, @f) => string-join('&#xA;')
-        case 'text' return $items/$fn_itemText(@text, @f) => string-join('&#xA;')
-        default return $items => string-join('&#xA;')
-};      
-
-(:~
  : Perform full text tokenization.
  :
  : @param text text item(s) to be tokenized
@@ -1554,12 +1737,11 @@ declare function f:grep($uris as xs:string*,
                         $textFilter as xs:string?,
                         $flags as xs:string?)
         as item()* {                        
-    let $ctextFilter := use:compileUnifiedStringExpression($textFilter, false(), (), ())
+    let $ctextFilter := use:compileUSE($textFilter, false())
     for $uri in $uris
     where i:fox-is-file($uri, ())
     let $matchLines :=
-        i:fox-unparsed-text-lines($uri, (), ())
-        [use:matchesUnifiedStringExpression(., $ctextFilter)]
+        i:fox-unparsed-text-lines($uri, (), ())[use:matchesUSE(., $ctextFilter)]
     return
         if (contains($flags, 'n')) then count($matchLines)
         else
@@ -1820,7 +2002,7 @@ declare function f:jparse($text as xs:string*,
 declare function f:jschemaKeywords($nodes as node()*, 
                                    $nameFilter as xs:string?)
         as element()* {
-    let $cnameFilter := $nameFilter ! use:compileUnifiedStringExpression(., true(), (), ())
+    let $cnameFilter := $nameFilter ! use:compileUSE(., true())
     return
         $nodes/f:jschemaKeywordsRC(., $cnameFilter)
 };
@@ -1854,7 +2036,7 @@ declare function f:jschemaKeywordsRC($n as node(),
         if (empty($nameFilter)) then $unfiltered else
         for $node in $unfiltered
         let $jname := $node/local-name() ! convert:decode-key(.) ! lower-case(.)
-        where use:matchesUnifiedStringExpression($jname, $nameFilter)
+        where use:matchesUSE($jname, $nameFilter)
         return $node
 };        
 
@@ -1925,14 +2107,14 @@ declare function f:matchesPattern($item as item()+,
                                   $controlOptions as map(*)?)
         as xs:boolean {
     let $cpattern := $pattern ! 
-        use:compileUnifiedStringExpression(
+        use:compileUSE(
             ., true(), count($item) gt 1, $controlOptions?NAMESPACE_BINDINGS, $fnOptions)
     let $item :=
         (if ($item instance of xs:anyAtomicType) then string($item) else $item)
         ! normalize-space(.)
     (: let $_DEBUG := trace($item, '_ item: ') :)
     (: let $_DEBUG := trace($cpattern, '_CPATTERN: ') :)  
-    return use:matchesUnifiedStringExpression($item, $cpattern)
+    return use:matchesUSE($item, $cpattern)
 };
 
 (:~
@@ -2011,106 +2193,6 @@ declare function f:namePathAttributed(
                             $options as xs:string?)
         as xs:string* {
     f:namePath($nodes, (), $numSteps, $attFilter, $options)        
-};        
-
-(:~
- : Returns for given nodes their plain name paths.
- :
- : @param nodes a set of nodes
- : @param context if specified, the result path is the path
- :   relative to this context is determined
- : @param nameKind identifies the kind of names to be used in the path -
- :        name|lname|jname for lexical name, local name, JSON name
- : @param numSteps truncate path to this number of steps by removing
- :        leading steps
- : @param options options controlling the evaluation;
- :        noconcat - do not concatenate the path steps
- : @return the parent name
- :)
-declare function f:namePath($nodes as node()*, 
-                            $context as node()?,
-                            $numSteps as xs:integer?,
-                            $attFilter as xs:string?,
-                            $options as xs:string?)
-        as xs:string* {
-    let $ops := f:getOptions($options, 
-      ('name', 'lname', 'jname', 
-       'fname', 'fpath', 'rfpath', 
-       'text', 'textns', 'value', 'text*',
-       'indexed',
-       'xsdcompname', 
-       'noconcat', 
-       'with-context'), 
-       'name-path')
-    let $nameKind := ($ops[. = ('lname', 'jname', 'name')][1], 'lname')[1]
-    let $noconcat := $ops = 'noconcat'
-    let $withBaseUri := $ops[. = ('fpath', 'rfpath', 'fname')][1] 
-    let $withIndex := $ops = 'indexed'
-    
-    let $attFilterC := $attFilter ! use:compileUnifiedStringExpression(., true(), (), ())
-        
-    let $acceptNodes := $nodes[not(self::text()) or not(../*) or matches(., '\S')]
-    for $node in $acceptNodes return
-    (: _TO_DO_ Remove hack when BaseX Bug is removed; return to: let $nodes := $node/ancestor-or-self::node() :)     
-    let $kindMark := if ($node instance of attribute()) then '@' 
-                     else if ($node instance of text()) then 'text()' else ()
-    let $ancos := 
-        let $all := $node/ancestor-or-self::node()[not($context) or . >> $context]
-        let $all := if ($context and $ops = 'with-context') then ($context, $all)
-                    else $all
-        let $dnode := $all[. instance of document-node()]
-        return ($dnode, $all except $dnode)
-    let $fnAddAtts :=
-        if (empty($attFilterC)) then () else
-        function($node) {
-            let $atts := $node/@*[use:matchesUnifiedStringExpression(local-name(.), $attFilterC)]
-            where $atts
-            return string-join($atts/concat('[', local-name(.), '=', .,']'), '')
-        }
-    let $fnAddIndex :=
-        if (not($withIndex)) then () else
-        function($n) {
-            let $nodes := if ($n instance of text()) then $n/preceding-sibling::text()
-                          else $n/preceding-sibling::*[node-name() eq node-name($n)]
-            return '['||(1 + count($nodes))||']'        
-        }
-    let $steps :=   
-        if ($nameKind eq 'lname') then $ancos/concat(local-name(),
-            if (not($withIndex) or self::attribute() or self::document-node()) then () else $fnAddIndex(.),
-            if (empty($attFilterC)) then () else $fnAddAtts(.),
-            self::xs:*/@name/concat('(', ., ')')[$ops = 'xsdcompname'])
-        else if ($nameKind ne 'jname') then $ancos/concat(name(),
-            if (not($withIndex) or not(self::*)) then () else $fnAddIndex(.),        
-            if (empty($attFilterC)) then () else $fnAddAtts(.),        
-            self::xs:*/@name/concat('(', ., ')')[$ops = 'xsdcompname'])        
-        else
-            $ancos/( 
-                let $raw := f:unescapeJsonName(local-name(.))
-                return if (not(contains($raw, '/'))) then $raw else concat('"', $raw, '"')
-            )
-    let $steps := if (not($kindMark)) then $steps 
-                  else ($steps[position() lt last()], $kindMark||$steps[last()])
-    let $steps := if (empty($numSteps)) then $steps 
-                  else subsequence($steps, count($steps) + 1 - $numSteps)
-    return         
-        if ($ops = 'noconcat') then $steps[string()] else
- 
-        let $value := 
-            if (not($ops = 'value')) then () 
-            else if ($node/self::attribute()) then $node/f:truncate(normalize-space(.), 60, 't')
-            else if ($node/self::text()) then $node/f:truncate(normalize-space(.), 60, ())
-            else if ($ops = 'text') then ()    (: when text nodes are included, the value
-                                                  is attached to them, not the element :)
-            else if (exists($node/text()[normalize-space(.)])) then 
-                $node/f:truncate(normalize-space(.), 60, ())
-            else ()
-        let $path := string-join($steps, '/')||($value ! concat('=', .))
-        return if (not($withBaseUri)) then $path
-            else if ($withBaseUri eq 'fpath') 
-                 then $node/i:fox-base-uri(.)||'#'||$path
-            else if ($withBaseUri eq 'fname') 
-                 then $node/(i:fox-base-uri(.) ! (try {file:name(.)} catch * {.}))||'#'||$path
-            else (uth:relUri(file:current-dir(), $node/i:fox-base-uri(.)))||'#'||$path
 };        
 
 (:~
@@ -2322,7 +2404,7 @@ declare function f:nodeNavigation(
             if ($item instance of node()) then $item else 
                 i:fox-doc($item, $options)
     let $cNamesFilter := $namesFilter ! 
-        use:compileUnifiedStringExpression(., true(), $ops = 'qname', $options?NAMESPACE_BINDINGS)
+        use:compileUSE(., true(), $ops = 'qname', $options?NAMESPACE_BINDINGS)
     let $fn_nodes :=
         switch($axis)
         case 'child' return function($c) {$c/*}
@@ -2344,13 +2426,13 @@ declare function f:nodeNavigation(
         
     let $fn_matchesName := 
         if ($ops = 'name') then function($node) 
-            {$node/name(.)[string()]! use:matchesUnifiedStringExpression(., $cNamesFilter)}
+            {$node/name(.)[string()]! use:matchesUSE(., $cNamesFilter)}
         else if ($ops = 'jname') then function($node) 
-            {$node/local-name(.)[string()] ! convert:decode-key(.) ! use:matchesUnifiedStringExpression(., $cNamesFilter)}
+            {$node/local-name(.)[string()] ! convert:decode-key(.) ! use:matchesUSE(., $cNamesFilter)}
         else if ($ops = 'qname') then function($node) 
-            {$node/use:matchesUnifiedStringExpressionQualified(local-name(.), namespace-uri(.), $cNamesFilter)}
+            {$node/use:matchesUSEQualified(local-name(.), namespace-uri(.), $cNamesFilter)}
         else function($node) 
-            {$node/local-name(.)[string()] ! use:matchesUnifiedStringExpression(., $cNamesFilter)}
+            {$node/local-name(.)[string()] ! use:matchesUSE(., $cNamesFilter)}
 
     let $result :=
         for $node in $contextNodes
@@ -2378,7 +2460,7 @@ declare function f:nameContent(
         for $item in $contextItems return
             if ($item instance of node()) then $item 
             else i:fox-doc($item, $options)
-    let $cNamesFilter := $namesFilter ! use:compileUnifiedStringExpression($namesFilter, true(), (), ())
+    let $cNamesFilter := $namesFilter ! use:compileUSE($namesFilter, true())
 
     let $fn_name := 
         if ($ops = 'name') then function($node) {$node/name(.)}
@@ -2394,7 +2476,7 @@ declare function f:nameContent(
         for $inputNode in $inputNodes
         return
             $inputNode/descendant-or-self::*/(., @*)
-                [$fn_name(.) ! use:matchesUnifiedStringExpression(., $cNamesFilter)]
+                [$fn_name(.) ! use:matchesUSE(., $cNamesFilter)]
                 
     let $results :=
         for $node in $nodes
@@ -2527,7 +2609,7 @@ declare function f:oasJschemaKeywords($oasNodes as node()*,
 declare function f:oasKeywords($values as node()*, 
                                $nameFilter as xs:string?)
         as element()* {
-    let $cnameFilter := use:compileUnifiedStringExpression($nameFilter, true(), (), ())
+    let $cnameFilter := use:compileUSE($nameFilter, true())
     let $values := $values ! root()/descendant-or-self::*[1]        
     for $value in $values
     let $oasVersion := $value/ancestor-or-self::*[last()]/(
@@ -2625,7 +2707,7 @@ declare function f:oasKeywordsRC($n as node(),
         if (empty($nameFilter)) then $unfiltered else
         for $node in $unfiltered
         let $jname := $node/local-name() ! convert:decode-key(.) ! lower-case(.)
-        where use:matchesUnifiedStringExpression($jname, $nameFilter)
+        where use:matchesUSE($jname, $nameFilter)
         return $node
 };        
 
@@ -2744,7 +2826,7 @@ declare function f:parseGlorex($glorex as xs:string,
         as item() {
     let $ops := f:getOptions($options, ('qualified'), 'parse-glorex')
     let $qualified := $ops eq 'qualified'
-    return use:compileUnifiedStringExpression($glorex, true(), $qualified, $processingOptions?NAMESPACE_BINDINGS)
+    return use:compileUSE($glorex, true(), $qualified, $processingOptions?NAMESPACE_BINDINGS)
 };
 
 (:~
@@ -3195,114 +3277,6 @@ declare function f:pathMultiDiff($items as item()*,
 };
 
 (:~
- : Returns the paths leading from a context node to all descendants. This may be
- : regarded as a representation of the node's content, hence the function name.
- :
- : The paths can be filtered in two ways:
- : - ignore leaf nodes not matching $leafNamesFilter
- : - ignore nodes with an ancestor matching $excludedInnerNamesFilter
- :
- : Options:
- : - scope options -
- : with-inner - also the paths of inner nodes are returned
- : - output format options -
- : text - no padding between path and frequency info
- : text* - padding aligned with longest path 
- : textNN - padding to length NN
- : xml - XML format
- : json - JSON format
- : csv - CSV format 
- :
- : @param context nodes and or document URIs
- : @param nameKind the kind of name used as path steps: 
- :   jname - JSON names; lname - local names; name - lexical names
- : @param leafNamesFilter - leaf nodes not matching this filter are ignored 
- : @param excludedInnerNamesFilter - all nodes with a matching ancestor are ignored 
- : @param options paraeters controling the execution 
- : @return the parent name
- :)
-declare function f:pathContent($context as item()*, 
-                               $leafNameFilter as xs:string?,
-                               $innerNodeNameFilter as xs:string?,
-                               $excludedInnerNodeNameFilter as xs:string?,                               
-                               $fnOptions as xs:string?,
-                               $options as map(*))
-        as item()* {
-    let $ops := f:getOptions($fnOptions, (
-                                        'name', 'lname', 'jname', 
-                                        'with-inner', 'text', 'indexed',
-                                        'with-context',
-                                        'text*', 'csv', 'json', 'xml'), 
-                                        'path-content')  
-    let $opsFormat := 
-        $ops[not(. eq 'text') and (starts-with(., 'text') or . = ('csv', 'json', 'xml'))]
-    let $ops := $ops[not(. = $opsFormat)]
-    let $outputIsText := not($opsFormat = ('csv', 'json', 'xml'))
-    
-    let $namePathOptions := $ops[not(. = 'with-inner')] => string-join(' ')
-    let $alsoInnerNodes := $ops = 'with-inner'
-    let $cLeafNameFilter := $leafNameFilter 
-        ! use:compileUnifiedStringExpression(., true(), (), ())    
-    let $cInnerNodeNameFilter := $innerNodeNameFilter 
-        ! use:compileUnifiedStringExpression(., true(), (), ())
-    let $cExcludedInnerNodeNameFilter := $excludedInnerNodeNameFilter 
-        ! use:compileUnifiedStringExpression(., true(), (), ())
-    let $fnGetName :=
-        if ($ops = 'name') then function($node) {name($node)}
-        else if ($ops = 'jname') then function($node) {$node ! name() ! convert:decode-key(.)} 
-        else function($node) {local-name($node)}
-    let $context := (
-        $context[. instance of node()],
-        $context[not(. instance of node())] 
-            ! (try {i:fox-doc(., $options)} catch * {try {json:doc(.)} catch * {}})
-    ) 
-    let $paths :=
-    
-    for $cnode in $context
-    let $descendants1 := (
-        if (empty($cInnerNodeNameFilter)) then    
-            if ($ops = 'jname') then $cnode/descendant::*[not(*)]
-            else ($cnode//@*, $cnode//*[not(*)])
-        else
-            let $inodes := $cnode//*[@*, *]
-              [use:matchesUnifiedStringExpression($fnGetName(.), $cInnerNodeNameFilter)]         
-            return
-                if ($ops = 'jname') then $inodes/descendant::*[not(*)]
-                else ($inodes//@*, $inodes//*[not(*)])
-    )
-    let $descendants2 := (
-        if (empty($cExcludedInnerNodeNameFilter)) then $descendants1 
-        else
-            let $inodes := $cnode//*[@*, *]
-              [use:matchesUnifiedStringExpression($fnGetName(.), $cExcludedInnerNodeNameFilter)]
-            let $excludedLeaves := ($inodes//@*, $inodes//*[not(*)])
-            return
-                $descendants1 except $excludedLeaves
-    )
-    let $descendants3 :=
-        if (empty($cLeafNameFilter)) then $descendants2 else
-            $descendants2[use:matchesUnifiedStringExpression(
-                $fnGetName(.), $cLeafNameFilter)]
-    let $descendants4 := 
-        if (not($ops = 'text')) then $descendants3
-        else 
-            let $textNodes :=
-                ($cnode/text(), $descendants3/text())[matches(., '\S')]
-            return ($descendants3, $textNodes)
-    let $descendants5 :=
-        if (not($alsoInnerNodes)) then $descendants4
-        else $descendants4/ancestor-or-self::node()[. >> $cnode] 
-    return
-        f:namePath($descendants5, $cnode, (), (), $namePathOptions)
-
-    return (
-        '=== path-content ==============================='[$outputIsText],
-        f:frequencies($paths, (), (), (), (), $opsFormat),
-        '================================================'[$outputIsText]
-    )        
-};        
-
-(:~
  : Returns the percent value of a fraction
  :
  : The nominator is the first item of $values.
@@ -3333,8 +3307,8 @@ declare function f:percent($values as xs:numeric*, $value2 as xs:numeric?, $frac
 declare function f:pfilterItems($items as item()*, 
                                $pattern as xs:string)
         as item()* {
-    let $cpattern := $pattern ! use:compileUnifiedStringExpression(., true(), (), ())
-    return $items[use:matchesUnifiedStringExpression(string(.), $cpattern)]
+    let $cpattern := $pattern ! use:compileUSE(., true())
+    return $items[use:matchesUSE(string(.), $cpattern)]
 };
 
 declare function f:prettyNode($items as item()*, 
@@ -3433,7 +3407,7 @@ declare function f:relatedNames($nodesOrUris as item()*,
                 i:fox-doc($item, ())        
     let $nosort := $ops = 'nosort' 
     let $duplicates := $ops = 'duplicates'    
-    let $cnameFilter := $nameFilter ! use:compileUnifiedStringExpression(., true(), (), ())
+    let $cnameFilter := $nameFilter ! use:compileUSE(., true())
     (:
     let $_DEBUG := trace($nameFilter, '_FILTER_STRING: ')    
     let $_DEBUG := trace($cnameFilter, '_FILTER_ELEM: ')
@@ -3467,7 +3441,7 @@ declare function f:relatedNames($nodesOrUris as item()*,
             default return error(QName((), 'INVALID_ARG'), 'Unknown structure relationship: '||$relationship)
         return 
             if (empty($cnameFilter)) then $unfiltered
-            else $unfiltered[$fnName(.) ! replace(., '^@', '') ! use:matchesUnifiedStringExpression(., $cnameFilter)]
+            else $unfiltered[$fnName(.) ! replace(., '^@', '') ! use:matchesUSE(., $cnameFilter)]
     let $names := for $item in $items return $fnName($item)
     let $names := if ($duplicates) then $names else $names => distinct-values()
     let $names := if ($nosort) then $names else $names => sort()        
@@ -4343,10 +4317,10 @@ declare function f:truncateNamePath($paths as xs:string*,
         as xs:string* {
     let $ops := f:getOptions($options, ('att'), 'truncate-name-path')
     let $att := $ops = 'att'        
-    let $leFilter := $lastElemFilter ! use:compileUnifiedStringExpression(., true(), (), ()) 
+    let $leFilter := $lastElemFilter ! use:compileUSE(., true()) 
     for $path in $paths
     let $steps := tokenize($path, '/')
-    let $step := $steps[use:matchesUnifiedStringExpression(., $leFilter)][1]
+    let $step := $steps[use:matchesUSE(., $leFilter)][1]
     return
         if (not($step)) then $path else
  
@@ -4797,7 +4771,8 @@ declare function f:xwrap($items as item()*,
             let $additionalAtts := (
                 if (not(matches($flags, '[bB]'))) then () else
                     if (contains($flags, 'B')) then
-                        let $baseUriRel := f:baseUriRelative($item, (), false(), $options)
+                        let $baseUriRel := 
+                            uth:baseUriRelative($item, (), false(), $options)
                         return attribute xml:base {$baseUriRel}
                     else attribute xml:base {$item/base-uri(.)},
                 if (not(contains($flags, 'n'))) then () else
@@ -5264,7 +5239,7 @@ declare function f:ftreeREC($folder as xs:string, $options as map(*)) as element
                 let $pmap := $p($pname)
                 let $fileNameFilter := $pmap?fileName                
                 return
-                    if (not(use:matchesUnifiedStringExpression(util:fileName(.), $fileNameFilter))) then ()
+                    if (not(use:matchesUSE(util:fileName(.), $fileNameFilter))) then ()
                     else
                         let $itemElemName := $pmap?itemElemName[string()]
                         let $occs := $pmap?occs[string()]
@@ -5294,8 +5269,8 @@ declare function f:ftreeSelective(
                          $processingOptions as map(*)) as element()? {
     let $filePropertiesMap := 
         f:ftreeUtil_filePropertyMap($fileProperties, $processingOptions)    
-    let $cfileNamesFilter := $fileNamesFilter ! use:compileUnifiedStringExpression(., true(), (), ())     
-    let $cfolderNamesFilter := $folderNamesFilter! use:compileUnifiedStringExpression(., true(), (), ())
+    let $cfileNamesFilter := $fileNamesFilter ! use:compileUSE(., true())     
+    let $cfolderNamesFilter := $folderNamesFilter! use:compileUSE(., true())
     let $folders :=
         if (exists($folders)) then $folders
         else if (exists($uris)) then f:getRootUri($uris)
@@ -5312,7 +5287,7 @@ declare function f:ftreeSelective(
             if (exists($uris)) then $uris
             else
                 i:descendantUriCollection($folder, (), (), ()) ! concat($folder, '/', .)
-                [replace(., '.+/', '') ! use:matchesUnifiedStringExpression(., $cfileNamesFilter)]
+                [replace(., '.+/', '') ! use:matchesUSE(., $cfileNamesFilter)]
         let $descendants := $descendantUris ! replace(., '^'||$folder||'/', '')
         let $content := $folder ! f:ftreeSelectiveREC(., $descendants, $useOptions)
         let $rootAttributes := f:getFtreeAttributes($folder, $content, $options)
@@ -5331,7 +5306,7 @@ declare function f:ftreeSelectiveREC(
         $options as map(*)) as element()? {
     if ($folder 
         ! util:fileName(.) 
-        ! (not(use:matchesUnifiedStringExpression(., $options?_folderNames)))) then () else
+        ! (not(use:matchesUSE(., $options?_folderNames)))) then () else
     
     let $filePropertiesMap := $options?_file-properties    
     let $folderName := replace($folder, '.*/', '')
@@ -5351,7 +5326,7 @@ declare function f:ftreeSelectiveREC(
                         let $pmap := $p($pname)
                         let $fileNameFilter := $pmap?fileName
                         return
-                            if (not(use:matchesUnifiedStringExpression($childName, $fileNameFilter))) then ()
+                            if (not(use:matchesUSE($childName, $fileNameFilter))) then ()
                             else
                                 let $itemElemName := $pmap?itemElemName[string()]
                                 let $occs := $pmap?occs[string()]
@@ -5405,8 +5380,8 @@ declare function f:ftreeUtil_filePropertyMap($fileProperties as item()*,
         (: File name filter :)
         let $fname := (
             if (not($withFname)) then '*' 
-            else replace($fnameAndPname, '^(.*)\s.*', '$1')
-        ) ! use:compileUnifiedStringExpression(., true(), (), ())
+            else replace($fnameAndPname, '^(.*)\s.*', '$1') 
+            ) ! use:compileUSE(., true())
         (: Property name :)
         let $pnameRaw := 
             if (not($withFname)) then $fnameAndPname 
@@ -5510,7 +5485,7 @@ declare function f:getOpsMap($optionsString as xs:string?,
     if (not(normalize-space($optionsString))) then () else
     
     let $o := $optionsString ! replace(., '\s*=\s*', '=')        
-    let $items := $o ! tokenize(.) ! lower-case(.)
+    let $items := $o ! tokenize(.)
     let $entries :=
         for $item in $items
         let $name := $item ! replace(., '=.*', '')
@@ -5526,58 +5501,93 @@ declare function f:getOpsMap($optionsString as xs:string?,
     return map:merge($entries)
 };        
 
-(:
-##################################################################################################
- :)
- 
 (:~
- : Returns the attribute names of a node. If $separator is specified, the sorted
- : names are concatenated, using this separator, otherwise the names are returned
- : as a sequence. If $localNames is true, the local names are returned, otherwise 
- : the lexical names. 
- : 
- : When using $namePattern, only those child elements are considered which have
- : a local name matching the pattern.
- :
- : Example: .../foo/att-names(., ', ', false(), '*put')
- : Example: .../foo/att-names(., ', ', false(), 'input|output') 
- :
- : @param nodes a sequence of nodes (only element nodes contribute to the result)
- : @param separator if used, the names are concatenated, using this separator
- : @param localNames if true, the local names are returned, otherwise the lexical names 
- : @param namePattern an optional name pattern filtering the attributes to be considered 
- : @return the names as a sequence, or as a concatenated string
- :)
-declare function f:zzzAttNamesOld($nodes as node()*, 
-                            $concat as xs:boolean?, 
-                            $nameKind as xs:string?,   (: name | lname | jname :)
-                            $namePatterns as xs:string*,
-                            $excludedNamePatterns as xs:string*)
-        as xs:string* {
-    let $nameRegexes := $namePatterns 
-       ! replace(., '\*', '.*') ! replace(., '\?', '.') 
-       ! concat('^', ., '$')        
-    let $excludedNameRegexes := $excludedNamePatterns 
-       ! replace(., '\*', '.*') ! replace(., '\?', '.') 
-       ! concat('^', ., '$')    
-       
-    for $node in $nodes       
-    let $items := $node/@*
-       [empty($nameRegexes) or 
-            (some $r in $nameRegexes satisfies matches(local-name(.), $r, 'i'))]
-       [empty($excludedNameRegexes) or 
-            not(some $r in $excludedNameRegexes satisfies matches(local-name(.), $r, 'i'))]
-    let $separator := ', '[$concat]
-    let $names := 
-        if ($nameKind eq 'lname') then 
-            ($items/local-name(.)) => distinct-values() => sort()
-        else if ($nameKind eq 'jname') then 
-            ($items/f:unescapeJsonName(local-name(.))) => distinct-values() => sort()
-        else ($items/name(.)) => distinct-values() => sort()
-    return
-        if (exists($separator)) then string-join($names, $separator)
-        else $names
-};  
+ : Returns the options encoded by an $options parameter
+ : as a map.
+ :) 
+declare function f:getOpsMapC($options as item()?, 
+                              $model as map(*),
+                              $functionName as xs:string)
+        as map(*) {
+    let $names := map:keys($model)        
+    return if (empty($names)) then map{} else
+    
+    let $namesWD := 
+        for $name in $names
+        let $desc := $model($name)
+        where $desc instance of map(*)
+        where map:contains($desc, 'default')
+        return $name
+    return 
+        if (empty($namesWD) and (
+            $options instance of map(*) or empty($options))) then 
+                ($options, map{})[1]
+        else
+        
+    let $mapPrelim :=
+        if ($options instance of map(*)) then $options 
+        else if (empty($options)) then map{}
+        else
+        
+        let $o := $options ! replace(., '\s*=\s*', '=')        
+        let $items := $o ! tokenize(.)
+        let $entries :=
+            for $item in $items
+            let $name := $item ! replace(., '=.*', '')
+            return if (not($name = $names)) then
+                error(QName((), 'UNKNOWN_OPTION'), concat(
+                    'Function "', $functionName, '" - invalid option ("'||$name||'")'||  
+                    '; valid options: ', map:keys($model) => sort() => string-join(', '), '.'))
+                else
+
+            let $valModel := $model($name)?check
+            let $value := 
+                if (not(contains($item, '='))) then () 
+                else $item ! replace(., '.*?=', '') ! replace(., '\\s', ' ')
+            return 
+                if (empty($value)) then
+                    if (exists($valModel)) then
+                        error(QName((), 'INVALID_OPTION'), 'Option "'||$name||
+                            '" must have a value ('||$name||'=...)') 
+                    else map:entry($name, true())
+                else
+                    (: Constraints: type, values :)
+                    let $type := $valModel?type
+                    let $values := $valModel?values
+                    return
+                        let $valueT :=
+                            if (not($type)) then $value else
+                            try {
+                                switch($type)
+                                case 'integer' return xs:integer($value)
+                                case 'decimal' return xs:decimal($value)
+                                case 'text' return $value ! replace(., '\\s', ' ')
+                                case 'string' return $value ! replace(., '\\s', ' ')
+                                default return error(QName((), 'INVALID_MODEL'), 
+                                    'Invalid model, unknown type: '||$type)
+                            } catch * {error(QName((), 'INVALID_OPTION'), 'Cannot cast '||
+                                'value "'||$value||'" to type "'||$type||'".')}
+                        let $valueTC :=
+                            if (empty($values) or $valueT = $values) then $valueT 
+                            else
+                                error(QName((), 'INVALID_OPTION'), 'Invalid value '||
+                                '"'||$value||'"; must be one of: '||
+                                ($values => sort()) ! xs:string(.) => string-join(', '))
+                        return
+                            map:entry($name, $valueTC)
+        return map:merge($entries)
+        
+    let $onames := map:keys($mapPrelim)
+    let $namesMissing := $names[not(. = $onames)]
+    let $furtherEntries :=
+        for $name in $namesMissing[. = $namesWD]
+        let $default := $model($name)?default
+        return map:entry($name, $default)
+    let $mapFinal :=
+        if (empty($furtherEntries)) then $mapPrelim else
+            map:merge(($mapPrelim, $furtherEntries))
+    return $mapFinal
+};        
 
 (:~
  : Create a dcat document (document catalog).
@@ -5594,4 +5604,236 @@ declare function f:dcat($uris as xs:string*,
     return
         <dcat count="{count($uris)}" t="{current-dateTime()}">{$docs}</dcat>
 };
+
+(:
+ : ============================================================================
+ :
+ :     d e p r e c a t e d
+ :
+ : ============================================================================ :)
+ 
+declare function f:frequenciesOld($values as item()*, 
+                               $format as xs:string?)
+        as item()* {
+    if (empty($values)) then () else
+        f:frequenciesOld($values, (), (), (), (), $format)
+};
+
+(:~
+ : Returns a frequency distribution.
+ :
+ : @param values a sequence of terms
+ : @param min if specified - return only terms with a frequency >= $min
+ : @param max if specified - return only terms with a frequency >= $max
+ : @param kind the kind of frequency value - count, relfreq (relative frequency), 
+ :   percent (percent frequency)
+ : @param orderBy sort order - "a" (order by frequency ascending, 
+ -   "d" (order by frequency descending); default: alphabetically
+ : @param format  the output format, one of xml|json|csv|text|text*, default = text;
+ :   "text* denotes "text" followed by a number (e.g. text40) specifying the width 
+ :   of the term column - shorter terms are padded to this width
+ : @return the frequency distribution
+ :)
+declare function f:frequenciesOld($values as item()*, 
+                               $min as xs:integer?, 
+                               $max as xs:integer?, 
+                               $kind as xs:string?, (: count | relfreq | percent :)
+                               $orderBy as xs:string?,
+                               $format as xs:string?)
+        as item()* {
+    if (empty($values)) then () else
+       
+    let $width := 
+        if (not($format) or $format eq 'text*') then 1 + ($values ! string(.) ! string-length(.)) => max()
+        else if (matches($format, '^text\d')) then replace($format, '^text', '')[string()] ! xs:integer(.)
+        else ()
+    let $format := 
+        if (not($format)) then 'text'
+        else if (matches($format, '^text.')) then 'text'
+        else $format    
+ 
+    let $freqAttName := ($kind, 'count')[1]
+    
+    (: Function return the frequency representation :)
+    let $fn_count2freq :=
+        switch($kind)
+        case 'freq' return function($c, $nvalues) {($c div $nvalues) ! round(., 1) ! string(.) ! replace(., '^[^.]+$', '$0.0')}
+        case 'percent' return function($c, $nvalues) {($c div $nvalues * 100) ! round(., 1) ! string(.) ! replace(., '^[^.]+$', '$0.0')}
+        default return function($c, $nvalues) {$c}
+
+    (: Function item returning a term representation :)
+    let $fn_itemText :=
+        switch($format) 
+        case 'text' return function($s, $c) {
+            if (empty($width)) then concat($s, ' (', $c, ')')
+            else 
+                concat($s, ' ', 
+                       string-join(for $i in 1 to $width - string-length($s) - 1 return '.', ''), 
+                       ' (', $c, ')')}
+        case 'json' return function($s, $c) {'"'||$s||'": '||$c}
+        case 'csv' return function($s, $c) {'"'||$s||'",'||$c}
+        case 'xml' return ()
+        default return error(QName((), 'INVALID_ARG'), 
+            concat('Unknown frequencies format, should be text|xml|json|csv; found: ', $format))
+
+    let $nvalues := count($values)     
+    let $itemsUnordered :=        
+        for $value in $values
+        group by $s := string($value)
+        let $c := count($value)        
+        let $f := $fn_count2freq($c, $nvalues)
+        where (empty($min) or not($c) or $c ge $min) and (empty($max) or not($max) or $c le $max)
+        return <value text="{$s}" f="{$f}"/>
+    
+    let $items :=
+        switch($orderBy)
+        case 'a' return 
+            for $item in $itemsUnordered 
+            order by $item/@f/number(.), $item/@text/lower-case(.) 
+            return $item
+        case 'd' return 
+            for $item in $itemsUnordered 
+            order by $item/@f/number(.) descending, $item/@text/lower-case(.) 
+            return $item
+        case 'n' return 
+            for $item in $itemsUnordered 
+            order by try {$item/@text/number(.)} catch * {} ascending 
+            return $item
+        case 'N' return 
+            for $item in $itemsUnordered 
+            order by try {$item/@text/number(.)} catch * {} descending 
+            return $item
+        default return 
+            for $item in $itemsUnordered 
+            order by $item/@text/lower-case(.) 
+            return $item
+    return      
+        switch($format)
+        case 'xml' return 
+            let $min := $items/@f/number(.) => min()
+            let $max := $items/@f/number(.) => max()
+            return
+                <values>{
+                    if ($kind eq 'percent') then (
+                        attribute minPercent {$min},
+                        attribute maxPercent {$max}
+                    ) else if ($kind eq 'freq') then (
+                        attribute minFreq {$min},
+                        attribute maxFreq {$max}
+                    ) else (
+                        attribute minCount {$min},
+                        attribute maxCount {$max}
+                    ),
+                    $items/<value text="{@text}">{attribute {$freqAttName} {@f}}</value>
+            }</values>
+        case 'json' return ('{', $items/$fn_itemText(@text, @f) ! concat('  ', .), '}') => string-join('&#xA;')
+        case 'csv' return $items/$fn_itemText(@text, @f) => string-join('&#xA;')
+        case 'text' return $items/$fn_itemText(@text, @f) => string-join('&#xA;')
+        default return $items => string-join('&#xA;')
+};  
+
+(:~
+ : Returns for given nodes their plain name paths.
+ :
+ : @param nodes a set of nodes
+ : @param context if specified, the result path is the path
+ :   relative to this context is determined
+ : @param nameKind identifies the kind of names to be used in the path -
+ :        name|lname|jname for lexical name, local name, JSON name
+ : @param numSteps truncate path to this number of steps by removing
+ :        leading steps
+ : @param options options controlling the evaluation;
+ :        noconcat - do not concatenate the path steps
+ : @return the parent name
+ :)
+declare function f:namePath($nodes as node()*, 
+                            $context as node()?,
+                            $numSteps as xs:integer?,
+                            $attFilter as xs:string?,
+                            $options as xs:string?)
+        as xs:string* {
+        
+    let $ops := f:getOptions($options, 
+      ('name', 'lname', 'jname', 
+       'fname', 'fpath', 'rfpath', 
+       'text', 'textns', 'value', 'text*',
+       'indexed',
+       'xsdcompname', 
+       'noconcat', 
+       'with-context'), 
+       'name-path')
+    let $nameKind := ($ops[. = ('lname', 'jname', 'name')][1], 'lname')[1]
+    let $noconcat := $ops = 'noconcat'
+    let $withBaseUri := $ops[. = ('fpath', 'rfpath', 'fname')][1] 
+    let $withIndex := $ops = 'indexed'
+    
+    let $attFilterC := $attFilter ! use:compileUSE(., true())
+        
+    let $acceptNodes := $nodes[not(self::text()) or not(../*) or matches(., '\S')]
+    for $node in $acceptNodes return
+    (: _TO_DO_ Remove hack when BaseX Bug is removed; return to: let $nodes := $node/ancestor-or-self::node() :)     
+    let $kindMark := if ($node instance of attribute()) then '@' 
+                     else if ($node instance of text()) then 'text()' else ()
+    let $ancos := 
+        let $all := $node/ancestor-or-self::node()[not($context) or . >> $context]
+        let $all := if ($context and $ops = 'with-context') then ($context, $all)
+                    else $all
+        let $dnode := $all[. instance of document-node()]
+        return ($dnode, $all except $dnode)
+    let $fnAddAtts :=
+        if (empty($attFilterC)) then () else
+        function($node) {
+            let $atts := $node/@*[use:matchesUSE(local-name(.), $attFilterC)]
+            where $atts
+            return string-join($atts/concat('[', local-name(.), '=', .,']'), '')
+        }
+    let $fnAddIndex :=
+        if (not($withIndex)) then () else
+        function($n) {
+            let $nodes := if ($n instance of text()) then $n/preceding-sibling::text()
+                          else $n/preceding-sibling::*[node-name() eq node-name($n)]
+            return '['||(1 + count($nodes))||']'        
+        }
+    let $steps :=   
+        if ($nameKind eq 'lname') then $ancos/concat(local-name(),
+            if (not($withIndex) or self::attribute() or self::document-node()) then () else $fnAddIndex(.),
+            if (empty($attFilterC)) then () else $fnAddAtts(.),
+            self::xs:*/@name/concat('(', ., ')')[$ops = 'xsdcompname'])
+        else if ($nameKind ne 'jname') then $ancos/concat(name(),
+            if (not($withIndex) or not(self::*)) then () else $fnAddIndex(.),        
+            if (empty($attFilterC)) then () else $fnAddAtts(.),        
+            self::xs:*/@name/concat('(', ., ')')[$ops = 'xsdcompname'])        
+        else
+            $ancos/( 
+                let $raw := f:unescapeJsonName(local-name(.))
+                return if (not(contains($raw, '/'))) then $raw else concat('"', $raw, '"')
+            )
+    let $steps := if (not($kindMark)) then $steps 
+                  else ($steps[position() lt last()], $kindMark||$steps[last()])
+    let $steps := if (empty($numSteps)) then $steps 
+                  else subsequence($steps, count($steps) + 1 - $numSteps)
+    return         
+        if ($ops = 'noconcat') then $steps[string()] else
+ 
+        let $value := 
+            if (not($ops = 'value')) then () 
+            else if ($node/self::attribute()) then $node/f:truncate(normalize-space(.), 60, 't')
+            else if ($node/self::text()) then $node/f:truncate(normalize-space(.), 60, ())
+            else if ($ops = 'text') then ()    (: when text nodes are included, the value
+                                                  is attached to them, not the element :)
+            else if (exists($node/text()[normalize-space(.)])) then 
+                $node/f:truncate(normalize-space(.), 60, ())
+            else ()
+        let $path := string-join($steps, '/')||($value ! concat('=', .))
+        return if (not($withBaseUri)) then $path
+            else if ($withBaseUri eq 'fpath') 
+                 then $node/i:fox-base-uri(.)||'#'||$path
+            else if ($withBaseUri eq 'fname') 
+                 then $node/(i:fox-base-uri(.) ! (try {file:name(.)} catch * {.}))||'#'||$path
+            else (uth:relUri(file:current-dir(), $node/i:fox-base-uri(.)))||'#'||$path
+};        
+
+
+
+
 

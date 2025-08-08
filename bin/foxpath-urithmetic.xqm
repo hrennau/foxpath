@@ -3,6 +3,111 @@ module namespace f="http://www.foxpath.org/ns/urithmetic";
 import module namespace i="http://www.ttools.org/xquery-functions" 
 at "foxpath-uri-operations.xqm";
 
+import module namespace use="http://www.foxpath.org/ns/unified-string-expression" 
+at  "foxpath-unified-string-expression.xqm";
+
+import module namespace util="http://www.ttools.org/xquery-functions/util" 
+at  "foxpath-util.xqm";
+
+(:~
+ : Returns the normalized path of the folder containing
+ : a node.
+ :)
+declare function f:baseDir($item as item(),
+                            $options as map(*))
+        as xs:string* {
+    $item ! f:baseFile(., $options) ! f:parentPath(.)
+};
+
+(:~
+ : Returns the normalized path of the file containing
+ : a node.
+ :)
+declare function f:baseFile($item as item(),
+                            $options as map(*))
+        as xs:string* {
+    (if ($item instance of node()) then $item 
+     else i:fox-doc($item, $options)) !
+     base-uri(.) !
+     file:path-to-native(.) !
+     f:normalizedFilePath(.)
+};
+
+(:~
+ : Returns the relative path of the file or folder
+ : containing a node. The path context defaults to the 
+ : current working directory. It can be specified as 
+ : a name pattern - the context is the closest containing
+ : folder matching the pattern.
+ :)
+declare function f:baseFileRelative($item as item(), 
+                                    $contextName as xs:string?,
+                                    $folder as xs:boolean?,
+                                    $options as map(*))
+        as xs:string* {
+    let $node := 
+        if ($item instance of node()) then $item 
+        else i:fox-doc($item, $options)         
+    let $baseUri := $node ! base-uri(.) ! file:path-to-native(.) ! (
+        if (not($folder)) then f:normalizedFilePath(.)
+        else f:parentPath(.))
+    return
+      if (not($contextName)) then
+         f:relPath(f:currentDir(), $baseUri)
+      else f:relPathToContext($contextName, $baseUri)
+};
+
+(:~
+ : Returns the relative URI of the file or folder
+ : containing a node. The URI context defaults to the 
+ : current working directory. It can be specified as 
+ : a name pattern - the context is the closest containing
+ : folder matching the pattern.
+ :
+ : @param item a node or a URI
+ : @param contextName as xs:string?
+ : @param folder if true, the folder URI is returned, not the file URI
+ : @param options the processing options
+ : @return relative URI
+ :)
+declare function f:baseUriRelative($item as item(), 
+                                   $contextName as xs:string?,
+                                   $folder as xs:boolean?,
+                                   $options as map(*))
+        as xs:string* {
+    let $node := 
+        if ($item instance of node()) then $item 
+        else i:fox-doc($item, $options)        
+    let $baseUri :=
+         $node ! base-uri(.) ! (
+         if (not($folder)) then . else f:parentPath(.))
+    return    
+      if (not($contextName)) then
+         f:relPath(f:currentUri(), $baseUri)
+      else f:relPathToContext($contextName, $baseUri)
+};
+
+(:~
+ : Returns the normalized file path of the current directory.
+ :) 
+declare function f:currentDir()
+        as xs:string {
+    file:current-dir() ! 
+    file:path-to-native(.) !
+    f:normalizedFilePath(.)
+};
+
+(:~
+ : Returns the URI of the current directory.
+ :) 
+declare function f:currentUri()
+        as xs:string {
+    file:current-dir() ! 
+    file:path-to-native(.) !
+    file:path-to-uri(.) !
+    f:normalizePath(.)
+};
+
 (:~
  : Maps a URI or path to an absolute URI. 
  :
@@ -25,7 +130,9 @@ declare function f:absoluteUri($uriOrPath as xs:string?) as xs:string? {
 };
 
 (:~
- : Returns a resource URI.
+ : Returns a resource URI. The input may be a node or
+ : a "doc resource" wrapper, which is a map containing
+ : a node and a URI.
  :)
 declare function f:resourceUri($resource as item()) as xs:string {
     typeswitch($resource)
@@ -108,7 +215,10 @@ declare function f:isAbsoluteUri($uriOrPath as xs:string?) as xs:boolean {
 
 (:~
  : Normalizes a path, replacing backslash with slash and removing
- : trailing slash. 
+ : trailing slash.
+ :
+ : Note: a file URI remains a file URI, it is not transformed
+ : into a file path.
  :
  : @param path a path
  : @return the normalized path
@@ -118,10 +228,38 @@ declare function f:normalizePath($path as xs:string?) as xs:string? {
 };    
 
 (:~
+ : Normalizes file system path:
+ : - replaces \ with /
+ : - removes trailing /
+ : - removes "file://", if present
+ : The result is either a relative path, or a path starting
+ : with "/" (Unix), or a path starting with d:/ (Window,
+ : where "d" represents the drive letter).
+ :
+ : @param path a file system path, or a file URI
+ : @return the normalized path
+ :) 
+declare function f:normalizedFilePath($path as xs:string)
+        as xs:string {
+    $path
+    ! replace(., '\\', '/')
+    ! replace(.,
+      '^file:/*? ((/([a-zA-Z]:/.*))$  |  (/([^/].*)?$))', '$3$4', 'x')
+    ! replace(., '/$', '')
+};
+
+(:~
  : Returns the parent path of a given path.
  :)
 declare function f:parentPath($path as xs:string?) as xs:string? {
     $path ! f:normalizePath(.) ! replace(., '/[^/]*$', '')
+};
+
+(:~
+ : Returns the parent path of a given path, as a normalized path.
+ :)
+declare function f:parentFilePath($path as xs:string?) as xs:string? {
+    f:parentPath($path) ! f:normalizedFilePath(.)
 };
 
 (:~
@@ -137,6 +275,21 @@ declare function f:relPath($path1 as xs:string, $path2 as xs:string)
     let $path2 := f:normalizePath($path2)
     return if ($path1 eq $path2) then '.' else f:relPathREC($path1, $path2)
 };
+
+declare function f:relPathToContext($context as xs:string, 
+                                    $path as xs:string)
+        as xs:string {
+    let $filter := $context ! use:compileUSE(., true())
+    let $steps := tokenize($path, '/')
+    let $countSteps := count($steps)
+    let $lastMatchingStep := 
+        (for $i in 1 to $countSteps 
+         return $steps[$i][use:matchesUSE(., $filter)] ! $i)[last()]
+    return
+        if (empty($lastMatchingStep)) then $path
+        else if ($lastMatchingStep eq $countSteps) then '.'
+        else string-join($steps[position() gt $lastMatchingStep], '/')
+};        
 
 (:~
  : Recursive helper function of function 'relPath'.

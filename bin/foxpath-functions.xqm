@@ -3,7 +3,7 @@ module namespace f="http://www.ttools.org/xquery-functions";
 import module namespace i="http://www.ttools.org/xquery-functions" 
 at "foxpath-processorDependent.xqm",
    "foxpath-uri-operations.xqm";
-   
+
 import module namespace uth="http://www.foxpath.org/ns/urithmetic" 
 at  "foxpath-urithmetic.xqm";
  
@@ -42,9 +42,101 @@ declare function f:resolveStaticFunctionCall($call as element(),
          : p a r t  1:    e x t e n s i o n    f u n c t i o n s
          : ################################################################ :)
 
+        (: function `base-dir 
+           ================== :)
+        if ($fname = ('base-dir')) then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $item := ($arg1, $context)[1]
+            return uth:baseDir($item, $options)
+            
+        (: function `base-dir-relative` 
+           ============================ :)
+        else if ($fname = ('base-dir-relative', 'base-dir-rel')) then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return uth:baseFileRelative($context, $arg1, true(), $options)
+            
+        (: function `base-file 
+           =================== :)
+        else if ($fname = ('base-file')) then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $item := ($arg1, $context)[1]
+            return uth:baseFile($item, $options)
+            
+        (: function `base-file-relative` 
+           ============================ :)
+        else if ($fname = ('base-file-relative', 'base-file-rel')) then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return uth:baseFileRelative($context, $arg1, false(), $options)
+            
+        (: function `base-uri-relative` 
+           ============================ :)
+        else if ($fname = ('base-uri-relative', 'base-uri-rel')) then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return uth:baseUriRelative($context, $arg1, false(), $options)
+
+        (: function `current-dir` 
+           ====================== :)
+        else if ($fname eq 'current-dir') then
+            uth:currentDir()
+
+        (: function `current-uri` 
+           ====================== :)
+        else if ($fname eq 'current-uri') then
+            uth:currentUri()
+
+        (: function `parent-path` 
+           ===================== :)
+        else if ($fname eq 'parent-path') then
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $path := ($arg1, $context)[1]
+            return $path ! uth:parentPath(.)
+
+
+        (: function `frequencies` 
+           ====================== :)
+        else if ($fname = ('frequencies', 'f', 'freq')) then
+            let $args := $call/*
+            let $values := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $args[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:frequenciesNew($values, $fnOptions, $options)
+
+        (: function `path-content` 
+           ======================= :)
+        else if ($fname = ('path-content', 'path-content-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $args := $call/*
+            let $arg1 := $args[1]/
+                f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $nodes := if ($da eq 0) then $context else $arg1
+            let $functionOptions := $args[1 + $da]/
+                f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:pathContent($nodes, (), (), (), $functionOptions, $options)
+
+        (: function `path-content-filtered` 
+           =============================== :)
+        else if ($fname = ('path-content-filtered', 'path-content-filtered-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $args := $call/*
+            let $arg1 := $args[1]/
+              f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $nodes := if ($da eq 0) then $context else $arg1
+            let $leafNameFilter := $args[1 + $da]/
+              f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $innerNodeNameFilter := $args[2 + $da]/
+              f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $excludedInnerNodeNameFilter := $args[3 + $da]/
+              f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $processingOptions := $args[4 + $da]/
+              f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:pathContent($nodes, $leafNameFilter, $innerNodeNameFilter, 
+                    $excludedInnerNodeNameFilter, $processingOptions, $options)
+
         (: function `alname` 
            ================= :)
-        if ($fname = ('alname')) then  
+        else if ($fname = ('alname')) then  
             let $nodes := 
                 if ($call/*) then $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 else $context
@@ -143,18 +235,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (empty($call/*)) then $context
                 else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return foxf:baseUriFileName($contextItem, $options)
-            
-        (: function `base-uri-relative` 
-           ============================ :)
-        else if ($fname = ('base-uri-relative', 'buri-relative', 'burirel')) then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:baseUriRelative($context, $arg1, false(), $options)
-            
-        (: function `base-dir-relative` 
-           ============================ :)
-        else if ($fname = ('base-dir-relative', 'base-dir-rel')) then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return foxf:baseUriRelative($context, $arg1, true(), $options)
             
        (: function `both-values` 
           ====================== :)
@@ -301,11 +381,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $controlOptions := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:contentDeepEqual($items, $scope, $controlOptions)
-
-        (: function `current-dir` 
-           ====================== :)
-        else if ($fname eq 'current-dir') then
-            file:current-dir()
 
         (: function `count-chars` 
            ====================== :)
@@ -824,17 +899,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:fractions($values, $compareWith, $operator, $format, $compareAs)
 
-        (: function `frequencies` 
-           ====================== :)
-        else if ($fname = ('frequencies', 'f', 'freq')) then
-            let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
-            let $min := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $max := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $order := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
-            let $format := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                foxf:frequencies($values, $min, $max, 'count', $order, $format)
-
         else if ($fname = ('ftree', 'ftree-ec')) then  
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0
             let $arg1 := 
@@ -1254,14 +1318,16 @@ declare function f:resolveStaticFunctionCall($call as element(),
            =================== :)
         else if ($fname = ('name-path', 'name-path-ec')) then  
             let $da := if (ends-with($fname, '-ec')) then 1 else 0
+            let $args := $call/*
             let $nodes :=
                 if (not($da)) then $context 
-                else $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $numSteps := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                
-            let $options := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+                else $args[1]/f:resolveFoxpathRC(
+                    ., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $args[1 + $da]/
+                f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 if (empty($nodes)) then () else 
-                    foxf:namePath($nodes, $numSteps, $options)
+                    foxf:namePathNew($nodes, (), $fnOptions, $options)
                     
         (: function `name-path-attributed` 
            =============================== :)
@@ -1450,33 +1516,6 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return foxf:pathMultiDiff($items, $options, $fname)
 
-        (: function `path-content` 
-           ======================= :)
-        else if ($fname = ('path-content', 'path-content-ec')) then
-            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
-            let $args := $call/*
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $nodes := if ($da eq 0) then $context else $arg1
-            let $functionOptions := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                foxf:pathContent($nodes, (), (), (), $functionOptions, $options)
-                
-        (: function `path-content-filtered` 
-           =============================== :)
-        else if ($fname = ('path-content-filtered', 'path-content-filtered-ec')) then
-            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
-            let $args := $call/*
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $nodes := if ($da eq 0) then $context else $arg1
-            let $leafNameFilter := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $innerNodeNameFilter := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $excludedInnerNodeNameFilter := $call/*[3 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
-            let $processingOptions := 
-                $call/*[4 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            return
-                foxf:pathContent($nodes, $leafNameFilter, $innerNodeNameFilter, 
-                    $excludedInnerNodeNameFilter, $processingOptions, $options)
-
         (: function `percent` 
            ================== :)
         else if ($fname = ('percent')) then           
@@ -1493,7 +1532,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $pattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:pfilterItems($items, $pattern)
-
+(:
         (: function `pfrequencies` 
            ======================= :)
         else if ($fname = ('pfrequencies', 'pfreq', 'pf')) then
@@ -1504,7 +1543,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $format := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
                 foxf:frequencies($values, $min, $max, 'percent', $order, $format)
-
+:)
         (: function `pretty-node` 
            ===================== :)
         else if ($fname = ('pretty-node', 'pretty-node-ec')) then

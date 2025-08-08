@@ -68,17 +68,24 @@ import module namespace ft="http://www.foxpath.org/ns/fulltext" at "foxpath-full
  :   only if $qualifiedMatching is true
  : @return a map representation of the unified string expression 
  :)
-declare function f:compileUnifiedStringExpression(
+declare function f:compileUSE(
+                    $uexpr as xs:string?, 
+                    $addAnchorsDefault as xs:boolean?)
+        as map(xs:string, item()*)? {
+    f:compileUSE($uexpr,$addAnchorsDefault, (), (), ())        
+};        
+
+declare function f:compileUSE(
                     $uexpr as xs:string?, 
                     $addAnchorsDefault as xs:boolean?,
                     $qualifiedMatching as xs:boolean?,
                     $namespaceBindings as map(*)?)
         as map(xs:string, item()*)? {
-    f:compileUnifiedStringExpression($uexpr,
+    f:compileUSE($uexpr,
         $addAnchorsDefault, $qualifiedMatching, $namespaceBindings, ())        
 };        
 
-declare function f:compileUnifiedStringExpression(
+declare function f:compileUSE(
                     $uexpr as xs:string?, 
                     $addAnchorsDefault as xs:boolean?,
                     $qualifiedMatching as xs:boolean?,
@@ -319,12 +326,11 @@ declare function f:compileGlorexPatternSetQualified(
  : @param filter the compiled complex string filter
  : @return true of false, if the string matches, does not match, the filter
  :) 
-declare function f:matchesUnifiedStringExpression(
+declare function f:matchesUSE(
                    $items as item()+,                                               
                    $filter as map(xs:string, item()?)?)
         as xs:boolean {
-    if (count($items) gt 1) then 
-        f:matchesUnifiedStringExpressionQualified($items[1], $items[2], $filter)
+    if (count($items) gt 1) then f:matchesUSEQualified($items[1], $items[2], $filter)
     else
     
     let $fnContainsText := $filter?contains-text
@@ -347,7 +353,7 @@ declare function f:matchesUnifiedStringExpression(
  : @param filter the compiled complex string filter
  : @return true of false, if the string matches, does not match, the filter
  :) 
-declare function f:matchesUnifiedStringExpressionQualified(
+declare function f:matchesUSEQualified(
                    $string as xs:string,
                    $namespace as xs:string,
                    $filter as map(xs:string, item()?)?)
