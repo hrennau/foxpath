@@ -233,7 +233,7 @@ declare function f:namePathNew($nodes as node()*,
             case 'base-name' return $node/(i:fox-base-uri(.) ! 
                      (try {file:name(.)} catch * {.}))||'#'||$path
             default return
-                ($node/uth:baseFileRelative(., (), (), $options))||'#'||$path
+                ($node/uth:baseRelpath(., (), false(), $options))||'#'||$path
 };        
 
 (:~
@@ -4765,7 +4765,7 @@ declare function f:xwrap($items as item()*,
                 if (not(matches($flags, '[bB]'))) then () else
                     if (contains($flags, 'B')) then
                         let $baseUriRel := 
-                            uth:baseUriRelative($item, (), false(), $options)
+                            uth:baseReluri($item, (), false(), $options)
                         return attribute xml:base {$baseUriRel}
                     else attribute xml:base {$item/base-uri(.)},
                 if (not(contains($flags, 'n'))) then () else
