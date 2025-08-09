@@ -28,17 +28,8 @@ declare function f:frequenciesNew($values as item()*,
     if (empty($values)) then () else
     
     let $ops := ($f:OPTION_MODELS?frequencies !
-                 f:getOpsMapC($fnOptions, ., 'frequencies'), map{})[1]
-    let $format :=
-        (('xml', 'json', 'txt', 'lines', 'csv')
-        [map:contains($ops, .)], 'txt')[1] 
-    let $_DEBUG := trace($format, '_ format: ')
-    let $width := 
-        if (not($format = ('txt', 'lines'))) then ()
-        else if (empty($ops?width)) then 1 + 
-            ($values ! string(.) ! string-length(.)) => max()
-        else $ops?width
-    
+                 f:getOpsMapC2($fnOptions, ., 'frequencies'), map{})[1]
+    let $_DEBUG := trace($ops, '_ frequencies, ops: ')
     (: Function return the frequency representation :)
     let $fnCountInfo :=
         switch($ops?freq)
@@ -50,17 +41,17 @@ declare function f:frequenciesNew($values as item()*,
 
     (: Function item returning a term representation :)
     let $fnItem :=
-        switch($format) 
+        switch($ops?format) 
         case 'txt' 
-        case 'lines' return function($s, $c) {
-            if ($width eq 0) then ($s||' ('||$c||')') else
+        case 'lines' return function($s, $c, $w) {
+            if ($w eq 0) then ($s||' ('||$c||')') else
                 concat($s, ' ', 
-                  (1 to $width - string-length($s) - 1) ! '.' => string-join(''), 
+                  (1 to $w - string-length($s) - 1) ! '.' => string-join(''), 
                    ' (', $c, ')')}
         case 'json' return function($s, $c) {'"'||$s||'": '||$c}
         case 'csv' return function($s, $c) {'"'||$s||'",'||$c}
         case 'xml' return ()
-        default return error(QName((), 'MODEL_ERROR'), 'Model error - format "'||$format||'".')
+        default return error(QName((), 'MODEL_ERROR'), 'Model error - format "'||$ops?format||'".')
 
     let $nvalues := count($values)     
     let $itemsUnordered :=        
@@ -71,7 +62,13 @@ declare function f:frequenciesNew($values as item()*,
         where (empty($ops?min) or not($c) or $c ge $ops?min) and
               (empty($ops?max) or not($ops?max) or $c le $ops?max)
         return <value text="{$s}" f="{$f}"/>
-    
+
+    let $width := 
+        if (not($ops?format = ('txt', 'lines'))) then ()
+        else if (empty($ops?width)) then 1 + 
+            ($itemsUnordered/@text ! string-length(.)) => max()
+        else $ops?width
+
     let $items :=
         switch($ops?order)
         case 'a' return 
@@ -82,19 +79,19 @@ declare function f:frequenciesNew($values as item()*,
             for $item in $itemsUnordered 
             order by $item/@text/lower-case(.) descending 
             return $item
-        case 'f' return 
+        case 'af' return 
             for $item in $itemsUnordered 
             order by $item/@f/number(.), $item/@text/lower-case(.) 
             return $item
-        case 'F' return 
+        case 'df' return 
             for $item in $itemsUnordered 
             order by $item/@f/number(.) descending, $item/@text/lower-case(.) 
             return $item
-        case 'n' return 
+        case 'an' return 
             for $item in $itemsUnordered 
             order by try {$item/@text/number(.)} catch * {} ascending 
             return $item
-        case 'N' return 
+        case 'dn' return 
             for $item in $itemsUnordered 
             order by try {$item/@text/number(.)} catch * {} descending 
             return $item
@@ -103,7 +100,7 @@ declare function f:frequenciesNew($values as item()*,
             order by $item/@text/lower-case(.) 
             return $item
     return      
-        switch($format)
+        switch($ops?format)
         case 'xml' return 
             let $min := $items/@f/number(.) => min()
             let $max := $items/@f/number(.) => max()
@@ -121,12 +118,12 @@ declare function f:frequenciesNew($values as item()*,
                         attribute maxCount {$max}),
                     $items/<value text="{@text}">{attribute {$ops?freq} {@f}}</value>
                 }</values>
-        case 'json' return ('{', $items/$fnItem(@text, @f) ! concat('  ', .), '}') 
+        case 'json' return ('{', $items/$fnItem(@text, @f, $width) ! concat('  ', .), '}') 
                              => string-join('&#xA;')
         case 'txt' 
         case 'lines' return 
-            let $entries := $items/$fnItem(@text, @f) 
-            return if ($ops?lines) then $entries else $entries => string-join('&#xA;')
+            let $entries := $items/$fnItem(@text, @f, $width) 
+            return if ($ops?format eq 'lines') then $entries else $entries => string-join('&#xA;')
         default return $items => string-join('&#xA;')
 };   
 
@@ -151,18 +148,16 @@ declare function f:frequenciesNew($values as item()*,
  :)
 declare function f:namePathNew($nodes as node()*, 
                                $context as node()?,
-                               $fnOptions as item(),
+                               $fnOptions as item()?,
                                $options as map(*))
         as xs:string* {
         
     let $ops := ($f:OPTION_MODELS?namePath !
-                 f:getOpsMapC($fnOptions, ., 'namePath'), map{})[1]
-    let $nameKind := 
-        if ($ops?name) then 'name'
-        else if ($ops?jname) then 'jname'
-        else 'lname'
+                 f:getOpsMapC2($fnOptions, ., 'namePath'), map{})[1]
+    let $_DEBUG := trace($ops, '_ namePath, ops: ')                 
     let $len := $ops?length
-    let $withBaseUri := $ops?fname or $ops?fpath or $ops?fpathrel        
+       
+    let $withValue := $ops?post eq 'value'
     let $attFilterC := $ops?atts ! use:compileUSE(., true())
     let $acceptNodes := $nodes[not(self::text()) or not(../*) or matches(., '\S')]
     for $node in $acceptNodes return
@@ -172,7 +167,7 @@ declare function f:namePathNew($nodes as node()*,
                      else ()
     let $ancos := 
         let $all := $node/ancestor-or-self::node()[not($context) or . >> $context]
-        let $all := if ($context and $ops?with-context) then ($context, $all)
+        let $all := if ($context and $ops?withcontext) then ($context, $all)
                     else $all
         let $dnode := $all[. instance of document-node()]
         return ($dnode, $all except $dnode)
@@ -183,7 +178,7 @@ declare function f:namePathNew($nodes as node()*,
         function($node) {
             let $atts := $node/@*[use:matchesUSE(local-name(.), $attFilterC)]
             where $atts
-            return string-join($atts/concat('[@', local-name(.), '=', .,']'), '')
+            return string-join($atts/concat('[@', local-name(.), '=', normalize-space(.),']'), '')
         }
         
     let $fnAddIndex :=
@@ -195,19 +190,17 @@ declare function f:namePathNew($nodes as node()*,
                 else $n/preceding-sibling::*[node-name() eq node-name($n)]
             return '['||(1 + count($nodes))||']'        
         }
-    let $steps :=   
-        if ($nameKind eq 'lname') then $ancos/concat(
-            local-name(),
+    let $steps := switch($ops?namekind)  
+        case 'lname' return $ancos/concat(local-name(),
             if (not($ops?indexed) 
                 or self::attribute() or self::document-node()) then () 
             else $fnAddIndex(.),
             $fnAddAtts(.)[exists($attFilterC)])
-        else if ($nameKind ne 'jname') then $ancos/concat(
-            name(),
+        case 'name' return $ancos/concat(name(),
             if (not($ops?indexed) 
                 or not(self::*)) then () else $fnAddIndex(.),        
             $fnAddAtts(.)[exists($attFilterC)])        
-        else
+        default return
             $ancos/( 
                 let $raw := f:unescapeJsonName(local-name(.))
                 return if (not(contains($raw, '/'))) 
@@ -224,7 +217,7 @@ declare function f:namePathNew($nodes as node()*,
         if ($ops?noconcat) then $steps[string()] else
  
         let $value := 
-            if (not($ops?value)) then () 
+            if (not($withValue)) then () 
             else if ($node/self::attribute()) then 
                 $node/f:truncate(normalize-space(.), $len, 't')
             else if ($node/self::text()) then 
@@ -235,11 +228,12 @@ declare function f:namePathNew($nodes as node()*,
                 $node/f:truncate(normalize-space(.), $len, ())
             else ()
         let $path := string-join($steps, '/')||($value ! concat('=', .))
-        return if (not($withBaseUri)) then $path
-            else if ($ops?fpath) then $node/i:fox-base-uri(.)||'#'||$path
-            else if ($ops?fname) then $node/(i:fox-base-uri(.) ! 
+        return if (not($ops?pre)) then $path else switch($ops?pre)
+            case 'base-path' return $node/i:fox-base-uri(.)||'#'||$path
+            case 'base-name' return $node/(i:fox-base-uri(.) ! 
                      (try {file:name(.)} catch * {.}))||'#'||$path
-            else ($node/uth:baseFileRelative(., (), (), $options))||'#'||$path
+            default return
+                ($node/uth:baseFileRelative(., (), (), $options))||'#'||$path
 };        
 
 (:~
@@ -281,20 +275,19 @@ declare function f:pathContent($context as item()*,
                                $options as map(*))
         as item()* {
 
-    let $ops := ($f:OPTION_MODELS?pathContent !
-                 f:getOpsMapC($fnOptions, ., 'pathPath'), map{})[1]
     let $ops :=
         let $opsModel := $f:OPTION_MODELS?pathContent
-        return f:getOpsMapC($fnOptions, $opsModel, 'pathContent')
+        return f:getOpsMapC2($fnOptions, $opsModel, 'pathContent')
+    let $_DEBUG := trace($ops, '_ pathContent, ops: ')        
 
-    let $isJ := $ops?jname
+    let $isJ := $ops?format eq 'jname'
     let $cLeafNodeFilter := $leafNodeFilter ! use:compileUSE(., true())    
     let $cInnerNodeFilter := $innerNodeFilter ! use:compileUSE(., true())
     let $cExcludedInnerNodeFilter := $excludedInnerNodeFilter ! use:compileUSE(., true())
-    let $fnGetName :=
-        if ($ops?name) then function($node) {name($node)}
-        else if ($isJ) then function($node) {$node ! name() ! convert:decode-key(.)} 
-        else function($node) {local-name($node)}
+    let $fnGetName := switch($ops?namekind)
+        case 'name' return function($node) {name($node)}
+        case 'jname' return function($node) {$node ! name() ! convert:decode-key(.)} 
+        default return function($node) {local-name($node)}
     let $fnGetLeafContent :=
         function ($nodes, $isJ) {$nodes//*[not(*)], if ($isJ) then () else $nodes//@*}
     let $context := (
@@ -342,14 +335,14 @@ declare function f:pathContent($context as item()*,
                 
         (: Descendants 5 - inner nodes added :)
         let $descendants5 :=
-            if (not($ops?with-inner)) then $descendants4
+            if (not($ops?withinner)) then $descendants4
             else $descendants4/ancestor-or-self::node()[. >> $cnode] 
         return
             f:namePathNew($descendants5, $cnode, $ops, $options)
         
     let $frequencies := f:frequenciesNew($paths, $ops, $options)  
     return
-        if ($ops?format eq 'text') then (
+        if ($ops?format eq 'txt') then (
         '=== path-content ===============================',
         $frequencies,
         '================================================'
@@ -5588,6 +5581,141 @@ declare function f:getOpsMapC($options as item()?,
             map:merge(($mapPrelim, $furtherEntries))
     return $mapFinal
 };        
+
+(:~
+ : Returns the options encoded by an $options parameter
+ : as a map.
+ :) 
+declare function f:getOpsMapC2($options as item()?, 
+                              $model as map(*),
+                              $functionName as xs:string)
+        as map(*) {
+    let $omap := $model?options
+    let $vmap := $model?values
+    let $onames := map:keys($omap)
+    let $vnames := map:keys($vmap)
+    let $names := ($onames, $vnames) 
+    return if (empty($names)) then map{} else
+    
+    let $namesWD := 
+        for $name in $onames
+        let $desc := $omap($name) ?default
+        where exists($desc)
+        return $name
+    return 
+        if (empty($namesWD) and (
+            $options instance of map(*) or empty($options))) then 
+                ($options, map{})[1]
+        else
+        
+    let $mapPrelim :=
+        if ($options instance of map(*)) then $options 
+        else if (empty($options)) then map{}
+        else
+        
+        let $o := $options ! replace(., '\s*=\s*', '=')        
+        let $items := $o ! tokenize(.)
+        let $entries :=
+            for $item in $items
+            let $nameU := $item ! replace(., '=.*', '')
+            let $name := f:getOpsMap_getSelName($nameU, $names)
+            return 
+                if (count($name) gt 1) then
+                    error(QName((), 'AMBIGUOUS_OPTION'), concat(
+                    'Function "', $functionName, '" - abbreviated option ("'||$nameU||'")'||  
+                    '; ambiguous; matches: ', ($name => sort() => string-join(', '), '.')))
+                else if (count($name) eq 0) then                
+                    error(QName((), 'UNKNOWN_OPTION'), concat(
+                        'Function "', $functionName, '" - invalid option ("'||$nameU||'")'||  
+                        '; valid options: ', ($names => sort() => string-join(', '), '.')))
+                    else
+
+            let $valModel := $omap($name)?check
+            let $value := 
+                if (not(contains($item, '='))) then () 
+                else $item ! replace(., '.*?=', '') ! replace(., '\\s', ' ')
+            return 
+                if (empty($value)) then
+                    if (exists($valModel)) then
+                        error(QName((), 'INVALID_OPTION'), 'Option "'||$name||
+                            '" must have a value ('||$name||'=...)') 
+                    else map:entry($name, true())
+                else
+                    (: Constraints: type, values :)
+                    let $type := $valModel?type
+                    let $values := $valModel?values
+                    return
+                        let $valueE :=
+                            if (empty($values) or $value = $values) then $value 
+                            else
+                                let $selected := f:getOpsMap_getSelName($value, $values)
+                                return
+                                    if (count($selected) eq 1) then $selected
+                                    else if (count($selected) gt 1) then
+                                        error(QName((), 'AMBIGUOUS_OPTION_VALUE'), 
+                                            'Ambiguous value "'||$value||'" for option "'||
+                                            $name||'"; matches: '||
+                                            (($selected => sort()) ! xs:string(.) => string-join(', ')))
+                                    else
+                                        error(QName((), 'INVALID_OPTION_VALUE'), 
+                                            'Invalid value "'||$value||'" for option "'||
+                                            $name||'"; must be one of: '||
+                                            (($values => sort()) ! xs:string(.) => string-join(', ')))
+                        let $valueET :=
+                            if (not($type)) then $valueE else
+                            try {
+                                switch($type)
+                                case 'integer' return xs:integer($valueE)
+                                case 'decimal' return xs:decimal($valueE)
+                                case 'text' return $valueE ! replace(., '\\s', ' ')
+                                case 'string' return $valueE ! replace(., '\\s', ' ')
+                                default return error(QName((), 'INVALID_MODEL'), 
+                                    'Invalid model, unknown type: '||$type)
+                            } catch * {
+                                error(QName((), 'INVALID_OPTION'),
+                                    'Invalid value "'||$value||'" for option "'||
+                                    $name||'"; cannot cast to type "'||$type||'".')
+                            }
+                        return
+                            map:entry($name, $valueET)
+        return map:merge($entries)
+    
+    (: let $_DEBUG := trace($mapPrelim, '_ map prelim: ') :)
+    (: Finalize map :)
+    let $usedNames := map:keys($mapPrelim)
+    let $usedNamesV := $usedNames[. = $vnames]
+    let $usedNamesO := $usedNames[not(. = $usedNamesV)]
+    let $usedNames2 := (
+        $usedNamesO,
+        $usedNamesV ! $vmap(.)) => distinct-values()
+    let $namesMissing := $onames[not(. = $usedNames2)][. = $namesWD]
+    (:
+    let $_DEBUG := trace($usedNamesV, '_ used names V: ')
+    let $_DEBUG := trace($namesWD, '_ names WD: ')
+    let $_DEBUG := trace($namesMissing, '_ names missing: ')
+    :)
+    (: add entries #1: options which have been supplied as values :)
+    let $addEntries1 := $usedNamesV ! map:entry($vmap(.), .)
+    (: let $_DEBUG := trace($addEntries1, '_ addEntries1: ') :)
+    (: add entries #2: options missing, having a default value :)    
+    let $addEntries2 := $namesMissing ! map:entry(., $omap(.)('default'))
+    (: let $_DEBUG := trace($addEntries2, '_ addEntries2: ') :)
+    
+    (: Finalize map :)
+    let $addEntries := ($addEntries1, $addEntries2)
+    let $mapFinal :=
+        if (empty($addEntries) and empty($usedNamesV)) then $mapPrelim
+        else map:merge((
+            $usedNamesO ! map:entry(., $mapPrelim(.)),
+            $addEntries
+        ))
+    return $mapFinal
+};        
+
+declare function f:getOpsMap_getSelName($name, $names) {
+    if ($name = $names) then $name
+    else $names[starts-with(., $name)]
+};
 
 (:~
  : Create a dcat document (document catalog).
