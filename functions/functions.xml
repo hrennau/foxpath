@@ -1,6 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <functions>
-    <function name="frequencies">
+    <function name="basedir-name" alias="bdname" group="base" withEc="true">
+        <documentation>
+            <summary>Returns for each input node the name of the folder containing it.</summary>
+        </documentation>
+    </function>
+    <function name="basedir-path" alias="bdpath" group="base" withEc="true">
+        <documentation>
+            <summary>Returns for each input node the file path of the folder containing it.</summary>
+        </documentation>
+    </function>
+    <function name="basedir-relpath" alias="bdrpath" group="base" withEc="true">
+        <documentation>
+            <summary>Returns for each input node the relative file path of the folder containing it.</summary>
+        </documentation>
+    </function>
+    <function name="basedir-reluri" alias="bdruri" group="base" withEc="true">
+        <documentation>
+            <summary>Returns for each input node the relative file URI of the file containing it.</summary>
+        </documentation>
+    </function>
+    <function name="basedir-uri" alias="bduri" group="base" withEc="true">
+        <documentation>
+            <summary>Returns for each input node the file URI of the folder containing it.</summary>
+        </documentation>
+    </function>
+    <function name="base-name" alias="bname" group="base" withEc="true">
+        <documentation>
+            <summary>Returns for each input node the name of the file containing it.</summary>
+        </documentation>
+    </function>
+    <function name="base-path" alias="bpath" group="base" withEc="true">
+        <documentation>
+            <summary>Returns for each input node the file path of the file containing it.</summary>
+        </documentation>
+    </function>
+    <function name="base-relpath" alias="brpath" group="base" withEc="true">
+        <documentation>
+            <summary>Returns for each input node the relative file path of the file containing it.</summary>
+        </documentation>
+    </function>
+    <function name="base-reluri" alias="bruri" group="base" withEc="true">
+        <documentation>
+            <summary>Returns for each input node the relative URI of the file containing it.</summary>
+        </documentation>
+    </function>
+    <function name="base-uri" alias="buri" group="base" withEc="true">
+        <documentation>
+            <summary>Returns for each input node its base URI.</summary>
+        </documentation>
+    </function>
+    <function name="filter-items" group="matching">
+        <documentation>
+            <summary>Filters a sequence of items and retains only those with a string value 
+                matching a Unified String Expression.</summary>
+        </documentation>
+    </function>
+    <function name="frequencies" alias="freq f" group="statistics">
+        <documentation>
+            <summary>Returns distinct values and their frequences.</summary>
+            <params>
+                <param name="values" type="item()*" onlyEc="true"/>
+                <param name="options" type="xs:string?" optional="true"/>                                 
+            </params>
+        </documentation>
         <options>
             <option name="format" type="string" default="txt">
                 <documentation/>
@@ -41,7 +104,19 @@
             </option>
         </options>
     </function>
-    <function name="namePath">
+    <function name="matches-pattern" group="matching">
+        <documentation>
+            <summary>Checks if an item matches a Unified String Expression.</summary>
+        </documentation>
+    </function>
+    <function name="name-path" group="node-location" withEc="true">
+        <documentation>
+            <summary>Returns the name path of a node, consisting of slash-separated node names.</summary> 
+            <params>
+                <param name="nodes" type="node()*" onlyEc="true"/>
+                <param name="options" type="xs:string?" optional="true"/>
+            </params>
+        </documentation>
         <options>
             <option name="atts" type="string">
                 <documentation/>
@@ -87,7 +162,16 @@
             <option name="withcontext" type="boolean"/>
         </options>
     </function>
-    <function name="pathContent">
+    <function name="path-content" group="node-content" withEc="true">
+        <documentation>
+            <summary>Reports the relative paths from input nodes to their 
+                descendant nodes.</summary> 
+            <params>
+                <param name="nodes" type="node()*" onlyEc="true"/>
+                <param name="options" type="xs:string?" optional="true"/>
+            </params>
+        </documentation>
+        
         <options>
             <option name="atts" type="string">
                 <documentation/>

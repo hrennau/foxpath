@@ -22,9 +22,39 @@ at  "foxpath-constants.xqm";
 (: declare variable $f:OPTION_MODELS := prof:time(opt:buildOptionMaps()); :)
 declare variable $f:OPTION_MODELS := opt:buildOptionMaps();
 
+(:
+    c o n s o l i d a t e d
+    =======================
+ :)
+ 
+(:~
+ : Filters a sequence of items against a unified string expression.
+ :
+ : @param items the items to be filtered
+ : @param filter a unified string expression
+ : @param options processing options
+ : @return true or false
+ :)
+declare function f:filterItems($items as item()*, 
+                               $filter as xs:string?)
+        as item()* {
+    if (not($filter)) then $items else
+    let $filterC := $filter ! use:compileUSE(., true())        
+    return $items [use:matchesUSE(., $filterC)]        
+};
+
+(:~
+ : Reports distinct values and their frequencies.
+ :
+ : @param values the values to be reported
+ : @param fnOptions options controlling the function behaviour, supplied as a 
+ :   string or a map
+ : @param processing options
+ : @return the frequency distribution
+ :)
 declare function f:frequenciesNew($values as item()*, 
-                               $fnOptions as item()?,
-                               $options as map(*))
+                                  $fnOptions as item()?,
+                                  $options as map(*))
         as item()* {
     if (empty($values)) then () else
     
@@ -130,22 +160,40 @@ declare function f:frequenciesNew($values as item()*,
 };   
 
 (:~
- : Returns for given nodes their name paths.
+ : Returns true if an item matches a Unified String Expression.
  :
- : @param nodes a set of nodes
+ : If the value of $item is the empty sequence, the empty sequence is 
+ : returned.
+ : If the value of the pattern is the empty sequence, the value 'true' is 
+ : returned.
+ :
+ : Otherwise, the pattern is interpreted as a Unified String Expression. 
+ : The value 'true' is returned if the string value of the item matches 
+ : the pattern, false otherwise. 
+ :
+ : @param item the item to check
+ : @param pattern a complex string filter
+ : @return true or false
+ :)
+declare function f:matchesPattern($item as item()?, 
+                                  $pattern as xs:string?)
+        as xs:boolean? {
+    if (empty($item)) then ()        
+    else if (not($pattern)) then true() 
+    else 
+    
+    $pattern ! use:compileUSE(., true()) ! use:matchesUSE($item, .)
+};
+
+(:~
+ : Returns the name paths of nodes, consisting of slash-separated node names. 
+ :
+ : @param nodes the nodes to be reported
  : @param context if specified, the result path is the path
  :   relative to this context
- : @param fnOptions options controlling function behaviour:
- : * name - use lexical names
- : * jname - use JSON names
- : * lname - use local namews
- : * fname - insert file name before name path
- : * fpath - insert file path before name path 
- : * fpathrel - insert relative file path before name path 
- : * steps=integer - number of steps to be considered
- : * text - consider also text nodes
- : * value - for leaves append data value
- : @param options options
+ : @param fnOptions options controlling the function behaviour, supplied as a
+ :   string or a map
+ : @param options processing options
  : @return the name paths
  :)
 declare function f:namePathNew($nodes as node()*, 
@@ -240,35 +288,24 @@ declare function f:namePathNew($nodes as node()*,
 };        
 
 (:~
- : Returns the paths leading from a context node to its descendants and their
- : attributes. This may be regarded as a representation of the node's content, 
- : hence the function name.
+ : Reports the relative paths from input nodes to their descendant nodes and their attributes
+ :
+ : The relative paths may be regarded as a representation of the node's 
+ : content structure, hence the function name.
  :
  : The paths can be filtered in three ways:
  : - ignore leaf nodes not matching $leafNamesFilter
  : - ignore nodes which do not have an ancestor matching $innerNodeNameFilter 
  : - ignore nodes with an ancestor matching $excludedInnerNameFilter
  :
- : Options:
- : (a) scope options -
- : with-inner - also the paths of inner nodes are returned
- : (b) output format options -
- : text - no padding between path and frequency info
- : text* - padding aligned with longest path 
- : textNN - padding to length NN
- :
- : (c) name kinds
- : xml - XML format
- : json - JSON format
- : csv - CSV format 
- :
- : @param context nodes and or document URIs
- : @param nameKind the kind of name used as path steps: 
- :   jname - JSON names; lname - local names; name - lexical names
- : @param leafNamesFilter - leaf nodes not matching this filter are ignored 
- : @param excludedInnerNamesFilter - all nodes with a matching ancestor are ignored 
- : @param options paraeters controling the execution 
- : @return the parent name
+ : @param input nodes and or document URIs
+ : @param leafNamesFilter - filter of leaf nodes 
+ : @param innerNodeFilter - inclusive filter of inner nodes 
+ : @param excludedInnerNamesFilter - exclusive filter of inner nodes 
+ : @param fnOptions options, controlling the function behaviour, supplied as a
+ :   string or a map
+ : @param options processing options
+ : @return the report
  :)
 declare function f:pathContent($context as item()*, 
                                $leafNodeFilter as xs:string?,
@@ -352,6 +389,11 @@ declare function f:pathContent($context as item()*,
         ) => string-join('&#xA;')
         else $frequencies
 };        
+
+(:
+    t o    b e    c o n s o l i d a t e d
+    =====================================
+ :)
 
 (:~
  : Writes a set of standard attributes. Can be useful when working
@@ -1286,9 +1328,9 @@ declare function f:fileName($uri as xs:string?)
  : @param pattern a unified string pattern
  : @return true or false
  :)
-declare function f:filterItems($items as item()*, 
-                               $expr as xs:string,
-                               $processingOptions as map(*)?)
+declare function f:filterItemsByExpr($items as item()*, 
+                                     $expr as xs:string,
+                                     $processingOptions as map(*)?)
         as item()* {
     $items [f:resolveFoxpath(., $expr, (), $processingOptions)]        
 };
@@ -2088,29 +2130,6 @@ declare function f:mapItems($items as item()*,
                             $processingOptions as map(*)?)
         as item()* {
     $items ! f:resolveFoxpath(., $expr, (), $processingOptions)        
-};
-
-(:~
- : Returns true if an item matches a complex string filter, false otherwise.
- :
- : @param item the item to check
- : @param pattern a complex string filter
- : @return true or false
- :)
-declare function f:matchesPattern($item as item()+, 
-                                  $pattern as xs:string,
-                                  $fnOptions as xs:string?,
-                                  $controlOptions as map(*)?)
-        as xs:boolean {
-    let $cpattern := $pattern ! 
-        use:compileUSE(
-            ., true(), count($item) gt 1, $controlOptions?NAMESPACE_BINDINGS, $fnOptions)
-    let $item :=
-        (if ($item instance of xs:anyAtomicType) then string($item) else $item)
-        ! normalize-space(.)
-    (: let $_DEBUG := trace($item, '_ item: ') :)
-    (: let $_DEBUG := trace($cpattern, '_CPATTERN: ') :)  
-    return use:matchesUSE($item, $cpattern)
 };
 
 (:~

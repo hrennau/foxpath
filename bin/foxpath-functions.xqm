@@ -54,8 +54,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `basedir-path 
            ====================== :)
-        else if ($fname = ('basedir-path', 'basedir-path-ec',
-                           'bdpath', 'bdpath-ec')) then
+        else if ($fname = ('basedir-path', 'bdpath',
+                           'basedir-path-ec', 'bdpath-ec')) then
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
             let $args := $call/*
             let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
@@ -64,8 +64,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
             
         (: function `basedir-relpath 
            ========================= :)
-        else if ($fname = ('basedir-relpath', 'basedir-relpath-ec',
-                           'bdrelpath', 'bdrelpath-ec')) then
+        else if ($fname = ('basedir-relpath', 'bdrelpath',
+                           'basedir-relpath-ec', 'bdrelpath-ec')) then
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
             let $args := $call/*
             let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -76,8 +76,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
             
         (: function `basedir-reluri` 
            ========================= :)
-        else if ($fname = ('basedir-reluri', 'basedir-reluri-ec',
-                           'bdreluri', 'bdreluri-ec')) then
+        else if ($fname = ('basedir-reluri', 'bdreluri',
+                           'basedir-reluri-ec', 'bdreluri-ec')) then
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
             let $args := $call/*
             let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -88,8 +88,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `basedir-uri` 
            ====================== :)
-        else if ($fname = ('basedir-uri', 'basedir-uri-ec',
-                           'bduri', 'bduri')) then
+        else if ($fname = ('basedir-uri', 'bduri',
+                           'basedir-uri-ec', 'bduri-ec')) then
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
             let $args := $call/*
             let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
@@ -98,7 +98,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
             
         (: function `base-path 
            =================== :)
-        else if ($fname = ('base-path', 'base-path-ec')) then
+        else if ($fname = ('base-path', 'bpath',
+                           'base-path-ec', 'bpath-ec')) then
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
             let $args := $call/*
             let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
@@ -117,7 +118,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
             
         (: function `base-relpath` 
            ======================= :)
-        else if ($fname = ('base-relpath', 'base-relpath-ec')) then
+        else if ($fname = ('base-relpath', 'brelpath',
+                           'base-relpath-ec', 'brelpath-ec')) then
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
             let $args := $call/*
             let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -128,7 +130,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
             
         (: function `base-reluri` 
            ============================ :)
-        else if ($fname = ('base-reluri', 'base-reluri-ec')) then
+        else if ($fname = ('base-reluri', 'breluri',
+                           'base-reluri-ec', 'breluri-ec')) then
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
             let $args := $call/*
             let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
@@ -139,7 +142,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
 
         (: function `base-uri` 
            =================== :)
-        else if ($fname = ('base-uri', 'base-uri-ec')) then
+        else if ($fname = ('base-uri', 'buri',
+                           'base-uri-ec', 'buri-ec')) then
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
             let $args := $call/*
             let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
@@ -885,13 +889,21 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:folderSize($uri, $controlOptions, $options)
 
+        (: function `dyn-filter-items` 
+           =============================== :)
+        else if ($fname eq 'dyn-filter-items') then
+            let $items:= $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $expr := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:filterItemsByExpr($items, $expr, $options)
+
         (: function `filter-items` 
            ======================= :)
         else if ($fname eq 'filter-items') then
             let $items:= $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $pattern := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:filterItems($items, $pattern, $options)
+                foxf:filterItems($items, $pattern)
 
        (: function `filter-regex` 
           ======================= :)
@@ -1309,9 +1321,8 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             let $text := if ($da) then $arg1 else $context
             let $pattern := $call/*[$da + 1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $fnOptions := $call/*[$da + 2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:matchesPattern($text, $pattern, $fnOptions, $options)
+                foxf:matchesPattern($text, $pattern)
 
         (: function `matches-xpath` 
            ======================= :)
@@ -2534,6 +2545,14 @@ let $contents := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position
                 else $context
             return
                 web:encode-url($arg)
+
+        (: function `environment-variable` 
+           ============================== :)
+        else if ($fname eq 'environment-variable') then            
+            let $arg := 
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                $arg ! environment-variable(.)
 
         (: function `exists` 
            ================ :)
