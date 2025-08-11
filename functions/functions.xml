@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<functions>
+    <function name="frequencies">
+        <options>
+            <option name="format" type="string" default="txt">
+                <documentation/>
+                <values>
+                    <value string="txt"/>
+                    <value string="xml"/>
+                    <value string="json"/>
+                    <value string="lines"/>
+                </values>
+            </option>
+            <option name="freq" type="string" default="count">
+                <documentation/>
+                <values>
+                    <value string="count"/>
+                    <value string="fraction"/>
+                    <value string="percent"/>
+                </values>
+            </option>
+            <option name="order" type="string" default="a">
+                <documentation/>
+                <values>
+                    <value string="a"/>
+                    <value string="d"/>
+                    <value string="an"/>
+                    <value string="dn"/>
+                    <value string="af"/>
+                    <value string="df"/>
+                </values>
+            </option>
+            <option name="min" type="integer">
+                <documentation/>
+            </option>
+            <option name="max" type="integer">
+                <documentation/>
+            </option>
+            <option name="width" type="integer">
+                <documentation/>
+            </option>
+        </options>
+    </function>
+    <function name="namePath">
+        <options>
+            <option name="atts" type="string">
+                <documentation/>
+            </option>
+            <option name="format" type="string" default="txt">
+                <documentation/>
+                <values>
+                    <value string="txt"/>
+                    <value string="xml"/>
+                    <value string="json"/>
+                </values>
+            </option>
+            <option name="indexed" type="boolean">
+                <documentation/>
+            </option>
+            <option name="length" type="integer" default="60">
+                <documentation/>
+            </option>
+            <option name="namekind" type="string" default="lname">
+                <documentation/>
+                <values>
+                    <value string="name"/>
+                    <value string="lname"/>
+                    <value string="jname"/>
+                </values>
+            </option>
+            <option name="post" type="string">
+                <documentation/>
+                <values>
+                    <value string="value"/>
+                </values>
+            </option>
+            <option name="pre" type="string">
+                <documentation/>
+                <values>
+                    <value string="base-name"/>
+                    <value string="base-path"/>
+                    <value string="base-relpath"/>
+                </values>
+            </option>
+            <option name="steps" type="integer"/>
+            <option name="text" type="boolean"/>
+            <option name="withcontext" type="boolean"/>
+        </options>
+    </function>
+    <function name="pathContent">
+        <options>
+            <option name="atts" type="string">
+                <documentation/>
+            </option>
+            <option name="format">
+                <documentation/>
+                <values>
+                    <value string="txt"/>
+                    <value string="xml"/>
+                    <value string="json"/>
+                </values>                
+            </option>                
+            <option name="freq" type="string" default="count">
+                <documentation/>
+                <values>
+                    <value string="count"/>
+                    <value string="fraction"/>
+                    <value string="percent"/>
+                </values>
+            </option>
+            <option name="length" type="integer" default="60">
+                <documentation/>
+            </option>
+            <option name="min" type="integer">
+                <documentation/>
+            </option>
+            <option name="max" type="integer">
+                <documentation/>
+            </option>
+            <option name="namekind" type="string" default="lname">
+                <documentation/>
+                <values>
+                    <value string="name"/>
+                    <value string="lname"/>
+                    <value string="jname"/>
+                </values>
+            </option>
+            <option name="order" type="string" default="a">
+                <documentation/>
+                <values>
+                    <value string="a"/>
+                    <value string="d"/>
+                    <value string="an"/>
+                    <value string="dn"/>
+                    <value string="af"/>
+                    <value string="df"/>
+                </values>
+            </option>   
+            <option name="post" type="string">
+                <documentation/>
+                <values>
+                    <value string="value"/>
+                </values>
+            </option>
+            <option name="pre" type="string">
+                <documentation/>
+                <values>
+                    <value string="base-name"/>
+                    <value string="base-path"/>
+                    <value string="base-relpath"/>
+                </values>
+            </option>            
+            <option name="width" type="integer">
+                <documentation/>
+            </option>
+            <option name="withinner" type="boolean">
+                <documentation/>
+            </option>
+        </options>
+    </function>
+</functions>

@@ -5,7 +5,7 @@ at "foxpath-processorDependent.xqm",
    "foxpath-parser.xqm";
 
 import module namespace opt="http://www.foxpath.org/ns/fox-functions-options" 
-at "foxpath-fox-functions-options.xqm";
+at "foxpath-fox-functions-options.gen.xqm";
 
 import module namespace uth="http://www.foxpath.org/ns/urithmetic" 
 at  "foxpath-urithmetic.xqm";
@@ -19,7 +19,8 @@ at  "foxpath-unified-string-expression.xqm";
 import module namespace const="http://www.foxpath.org/ns/constants" 
 at  "foxpath-constants.xqm";
 
-declare variable $f:OPTION_MODELS := prof:time(opt:buildOptionMaps());
+(: declare variable $f:OPTION_MODELS := prof:time(opt:buildOptionMaps()); :)
+declare variable $f:OPTION_MODELS := opt:buildOptionMaps();
 
 declare function f:frequenciesNew($values as item()*, 
                                $fnOptions as item()?,
@@ -29,7 +30,8 @@ declare function f:frequenciesNew($values as item()*,
     
     let $ops := ($f:OPTION_MODELS?frequencies !
                  f:getOpsMapC2($fnOptions, ., 'frequencies'), map{})[1]
-    let $_DEBUG := trace($ops, '_ frequencies, ops: ')
+    (: let $_DEBUG := trace($ops, '_ frequencies, ops: ') :)
+    
     (: Function return the frequency representation :)
     let $fnCountInfo :=
         switch($ops?freq)
@@ -154,7 +156,8 @@ declare function f:namePathNew($nodes as node()*,
         
     let $ops := ($f:OPTION_MODELS?namePath !
                  f:getOpsMapC2($fnOptions, ., 'namePath'), map{})[1]
-    let $_DEBUG := trace($ops, '_ namePath, ops: ')                 
+    (: let $_DEBUG := trace($ops, '_ namePath, ops: ') :) 
+    
     let $len := $ops?length
        
     let $withValue := $ops?post eq 'value'
@@ -278,7 +281,7 @@ declare function f:pathContent($context as item()*,
     let $ops :=
         let $opsModel := $f:OPTION_MODELS?pathContent
         return f:getOpsMapC2($fnOptions, $opsModel, 'pathContent')
-    let $_DEBUG := trace($ops, '_ pathContent, ops: ')        
+    (: let $_DEBUG := trace($ops, '_ pathContent, ops: ') :)         
 
     let $isJ := $ops?format eq 'jname'
     let $cLeafNodeFilter := $leafNodeFilter ! use:compileUSE(., true())    
@@ -5591,7 +5594,7 @@ declare function f:getOpsMapC2($options as item()?,
                               $functionName as xs:string)
         as map(*) {
     let $omap := $model?options
-    let $vmap := $model?values
+    let $vmap := $model?optionValues
     let $onames := map:keys($omap)
     let $vnames := map:keys($vmap)
     let $names := ($onames, $vnames) 
@@ -5630,57 +5633,56 @@ declare function f:getOpsMapC2($options as item()?,
                         '; valid options: ', ($names => sort() => string-join(', '), '.')))
                     else
 
-            let $valModel := $omap($name)?check
+            let $omodel := $omap($name)
+            let $otype := $omodel?type
+            let $ovalues := $omodel?values
+            
             let $value := 
                 if (not(contains($item, '='))) then () 
                 else $item ! replace(., '.*?=', '') ! replace(., '\\s', ' ')
             return 
                 if (empty($value)) then
-                    if (exists($valModel)) then
+                    if (exists($omodel)) then
                         error(QName((), 'INVALID_OPTION'), 'Option "'||$name||
                             '" must have a value ('||$name||'=...)') 
                     else map:entry($name, true())
                 else
                     (: Constraints: type, values :)
-                    let $type := $valModel?type
-                    let $values := $valModel?values
+                    let $valueE :=
+                        if (empty($ovalues) or $value = $ovalues) then $value 
+                        else
+                            let $selected := f:getOpsMap_getSelName($value, $ovalues)
+                            return
+                                if (count($selected) eq 1) then $selected
+                                else if (count($selected) gt 1) then
+                                    error(QName((), 'AMBIGUOUS_OPTION_VALUE'), 
+                                        'Ambiguous value "'||$value||'" for option "'||
+                                        $name||'"; matches: '||
+                                        (($selected => sort()) ! xs:string(.) => string-join(', ')))
+                                else
+                                    error(QName((), 'INVALID_OPTION_VALUE'), 
+                                        'Invalid value "'||$value||'" for option "'||
+                                        $name||'"; must be one of: '||
+                                        (($ovalues => sort()) ! xs:string(.) => string-join(', ')))
+                    let $valueET :=
+                        if (not($otype)) then $valueE else
+                        try {
+                            switch($otype)
+                            case 'integer' return xs:integer($valueE)
+                            case 'decimal' return xs:decimal($valueE)
+                            case 'text' return $valueE ! replace(., '\\s', ' ')
+                            case 'string' return $valueE ! replace(., '\\s', ' ')
+                            default return error(QName((), 'INVALID_MODEL'), 
+                                'Invalid model, unknown type: '||$otype)
+                        } catch * {
+                            error(QName((), 'INVALID_OPTION'),
+                                'Invalid value "'||$value||'" for option "'||
+                                $name||'"; cannot cast to type "'||$otype||'".')
+                        }
                     return
-                        let $valueE :=
-                            if (empty($values) or $value = $values) then $value 
-                            else
-                                let $selected := f:getOpsMap_getSelName($value, $values)
-                                return
-                                    if (count($selected) eq 1) then $selected
-                                    else if (count($selected) gt 1) then
-                                        error(QName((), 'AMBIGUOUS_OPTION_VALUE'), 
-                                            'Ambiguous value "'||$value||'" for option "'||
-                                            $name||'"; matches: '||
-                                            (($selected => sort()) ! xs:string(.) => string-join(', ')))
-                                    else
-                                        error(QName((), 'INVALID_OPTION_VALUE'), 
-                                            'Invalid value "'||$value||'" for option "'||
-                                            $name||'"; must be one of: '||
-                                            (($values => sort()) ! xs:string(.) => string-join(', ')))
-                        let $valueET :=
-                            if (not($type)) then $valueE else
-                            try {
-                                switch($type)
-                                case 'integer' return xs:integer($valueE)
-                                case 'decimal' return xs:decimal($valueE)
-                                case 'text' return $valueE ! replace(., '\\s', ' ')
-                                case 'string' return $valueE ! replace(., '\\s', ' ')
-                                default return error(QName((), 'INVALID_MODEL'), 
-                                    'Invalid model, unknown type: '||$type)
-                            } catch * {
-                                error(QName((), 'INVALID_OPTION'),
-                                    'Invalid value "'||$value||'" for option "'||
-                                    $name||'"; cannot cast to type "'||$type||'".')
-                            }
-                        return
-                            map:entry($name, $valueET)
+                        map:entry($name, $valueET)
         return map:merge($entries)
     
-    (: let $_DEBUG := trace($mapPrelim, '_ map prelim: ') :)
     (: Finalize map :)
     let $usedNames := map:keys($mapPrelim)
     let $usedNamesV := $usedNames[. = $vnames]

@@ -1,19 +1,24 @@
 (: Function options models :)
 module namespace f="http://www.foxpath.org/ns/fox-functions-options";
 declare function f:buildOptionMaps() {
-    map{
-        'frequencies': map{
-            'options': map{
-                'format': map{'default': 'txt',
-                              'check': map{'values': ('txt', 'xml', 'json', 'lines')}},
-                'freq': map{'default': 'count', 
-                            'check': map{'values': ('count', 'fraction', 'percent')}},
-                'order': map{'default': 'a', 
-                             'check': map{'values': ('a', 'd', 'an', 'dn', 'af', 'df')}},
-                'min': map{'check': map{'type': 'integer'}},
-                'max': map{'check': map{'type': 'integer'}},
-                'width': map{'check': map{'type': 'integer'}}
-            },
+  map{
+    'frequencies': map{
+      'options': map{
+        'format': map{
+          'default': 'txt',
+          'check': map{
+            'values': ('txt', 'xml', 'json', 'lines')}},
+        'freq': map{
+          'default': 'count', 
+          'check': map{
+            'values': ('count', 'fraction', 'percent')}},
+        'order': 
+          map{'default': 'a', 
+              'check': map{'values': ('a', 'd', 'an', 'dn', 'af', 'df')}},
+        'min': map{'check': map{'type': 'integer'}},
+        'max': map{'check': map{'type': 'integer'}},
+        'width': map{'check': map{'type': 'integer'}}
+      },
             'values': map{
                 'txt': 'format',
                 'xml': 'format',
