@@ -28,6 +28,7 @@ set ECHO=
 set ISPACE=
 set ISPACEEXT=
 set DEBUGLEVEL=
+set SHOWFOX=
 
 REM echo "Expression: %1%"
 
@@ -49,6 +50,8 @@ if "%name%"=="-p" (
    set PARSE=Y
  ) else if "%name%"=="-f" (
    set ISFILE=Y
+ ) else if "%name%"=="-F" (
+   set SHOWFOX=Y
  ) else if "%name%"=="-e" (
    set ECHO=Y
  ) else if "%name%"=="-w" (
@@ -169,6 +172,7 @@ set OPT_CONSERVE_WS=
 set OPT_ISPACE=
 set OPT_ISPACEEXT=
 set OPT_DEBUGLEVEL=
+set OPS_DISPLAYFOX=
 set OPT_SER=-s indent=yes
 if not "%OFILE%"=="" (set OPT_OFILE=-o "%OFILE%")
 if not "%UTREE_DIRS%"=="" (set OPT_UTREE_DIRS=-b "utreeDirs=%UTREE_DIRS%")
@@ -176,10 +180,11 @@ if not "%UGRAPH_ENDPOINTS%"=="" (set OPT_UGRAPH_ENDPOINTS=-b "ugraphEndpoints=%U
 set OPT_GITHUB_TOKEN=-b "Q{http://www.ttools.org/xquery-functions}githubTokenLocation=%GITHUB_TOKEN%"
 if not "%CONTEXT_ITEM%"=="" (set OPT_CONTEXT_ITEM=-b "context=%CONTEXT_ITEM%")
 if "%DEBUG_TIME%"=="1" (set OPT_DEBUG_TIME=-b debugtime=1)
+if "%SHOWFOX%"=="Y" (set OPT_SHOWFOX=-b showfox=1)
 if not "%CONSERVE_WS%"=="" (set OPT_CONSERVE_WS=-w)
 if not "%ISPACE%"=="" (set OPT_ISPACE=-b "ispace=%ISPACE%")
 if not "%ISPACEEXT%"=="" (set OPT_ISPACEEXT=-b "ispaceext=%ISPACEEXT%")
 if not "%DEBUGLEVEL%"=="" (set OPT_DEBUGLEVEL=-b "debuglevel=%DEBUGLEVEL%")
 rem echo HERE=%HERE%
 rem if not "%CONSERVE_WS%"=="" (echo CONSERVE WHITESPACE)
-basex %OPT_SER% %OPT_CONSERVE_WS% %OPT_OFILE% %OPT_ISPACE% %OPT_ISPACEEXT% %OPT_DEBUGLEVEL% -b isFile=%ISFILE% -b echo=%ECHO% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% %OPT_CONTEXT_ITEM% %OPT_DEBUG_TIME% -b "vars=%VARS%" %HERE%/fox.xq
+basex %OPT_SER% %OPT_CONSERVE_WS% %OPT_OFILE% %OPT_ISPACE% %OPT_ISPACEEXT% %OPT_DEBUGLEVEL% %OPT_SHOWFOX% -b isFile=%ISFILE% -b echo=%ECHO% -b mode=%MODE% -b sep=%SEP% -b foxpath=%foxpath% %OPT_UTREE_DIRS% %OPT_UGRAPH_ENDPOINTS% %OPT_GITHUB_TOKEN% %OPT_CONTEXT_ITEM% %OPT_DEBUG_TIME% -b "vars=%VARS%" %HERE%/fox.xq

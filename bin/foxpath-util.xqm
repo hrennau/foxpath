@@ -491,12 +491,15 @@ declare function f:pattern2Regex($pattern as xs:string?)
  : @return the expression contained, or the empty sequence,
  :   if the string does not contain an expression
  :)
-declare function f:extractExpr($string as xs:string?)
-        as xs:string? {
+declare function f:extractExpr($item as item())
+        as element(contextExpression)? {
+    $item[. instance of element(contextExpression)]        
+(:        
     if (not($string)) then ()        
     else if (matches($string, '^\s*\{.*\}\s*$')) then
         replace($string, '^\s*\{\s*|\s*\}\s*$', '')
-    else ()        
+    else ()
+:)    
 };
 
 (:~
@@ -564,6 +567,65 @@ declare function f:rpad($s as xs:anyAtomicType?,
             let $pad := concat(' ', string-join(for $i in 1 to $width - $len - 1 return $char, ''), '')
             return
                 concat($s, $pad)
+};
+
+(:~
+ : Maps a text to a sequence of lines with a maximum length.
+ : If a regex is supplied, line breaks are only inserted
+ : within matching substrings, if possible. Otherwise, the
+ : line breaks are inserted after the maximum number of
+ : line characters, regardless of content.
+ :
+ : @param t the text
+ : @param width maximum line length
+ : @param regex an optional regex defining "breakable"
+ :   substrings
+ : return a sequence of lines, whose concatenation is
+ :   exactly equal to the original text
+ :) 
+declare function f:foldText($t as xs:string,
+                            $width as xs:string?,
+                            $regex as xs:string?)
+        as xs:string* {
+    if (not($width ne '*')) then $t else      
+    let $w := $width ! xs:integer(.) 
+    return $t ! f:foldTextREC(., $w, $regex)
+};
+
+(:~
+ : Recursive helper function of function `foldText`.
+ :)
+declare function f:foldTextREC($t as xs:string,
+                               $width as xs:integer,
+                               $regex as xs:string?)
+        as xs:string* {
+    if (string-length($t) le $width) then $t else
+    
+    if (not($regex)) then (
+        substring($t, 1, $width),
+        substring($t, $width + 1) => f:foldTextREC($width, $regex))
+    else
+        let $maxlineE := substring($t, 1, $width + 1)
+        let $as := analyze-string($maxlineE, $regex)
+        let $fnWritePositions :=
+            function($accum, $item) {
+                let $lenPreMatch := ($item/
+                  preceding-sibling::fn:match[1]/string-length(.), 0)[1]
+                let $curPos := ($accum[last()], 0)[1]                  
+                let $newPos := $curPos + $lenPreMatch + string-length($item)
+                return ($accum, $newPos)}
+        let $positions := fold-left($as/fn:non-match, (), $fnWritePositions)
+        let $countPos := count($positions)
+        let $numMatches := let $lastpos := $positions[$countPos] return 
+            if ($lastpos gt $width) then $countPos - 1 else $countPos
+        let $lastNonMatch := $as/fn:non-match[$numMatches]
+        let $nextMatch := $lastNonMatch/following-sibling::fn:match[1]
+        let $line := 
+          ($lastNonMatch/string-join((preceding-sibling::*, .), '') ||
+           $nextMatch) ! substring(., 1, $width)
+        let $line := if ($line) then $line else substring($t, 1, $width)
+        let $remainder := substring($t, string-length($line) + 1)
+        return ($line, $remainder => f:foldTextREC($width, $regex))
 };
 
 declare function f:WRITE_DEBUG_FILE($path as xs:string, 

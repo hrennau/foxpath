@@ -22,7 +22,15 @@ declare variable $debugtime as xs:boolean? external := ();
 declare variable $ispace as xs:string? external := ();
 declare variable $ispaceext as xs:string? external := ();
 declare variable $debuglevel as xs:integer? external := ();
+declare variable $showfox as xs:integer? external := ();
 
+if ($showfox) then 
+'
+Foxpath expression: 
+  '||$foxpath||'
+  ' 
+else
+    
 let $ispace := if (not($ispace)) then resolve-uri('../ispace/ispace.xml')
                else $ispace
 
@@ -86,7 +94,7 @@ let $foxpathExpr :=
                                     $lib//foxpath[@name eq $fragmentId]/replace(., '^\s+|\s$', '')
                                    
 let $startTime := prof:current-ms()[$debugtime]       
-let $_CONSOLE := trace($foxpath, '___Foxpath expression: ')[$echo]  
+let $_CONSOLE := trace($foxpath, 'Foxpath expression: ')[$echo]  
 let $context :=
     if ($context) then $context
     else f:currentDirectory()

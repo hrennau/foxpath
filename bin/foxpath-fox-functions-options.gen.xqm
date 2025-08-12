@@ -2,6 +2,50 @@
 module namespace f="http://www.foxpath.org/ns/fox-functions-options";
 declare function f:buildOptionMaps() {
   map{
+    'basedir-name': map{
+      'options': map{},
+      'optionValues': map{}
+    },
+    'basedir-path': map{
+      'options': map{},
+      'optionValues': map{}
+    },
+    'basedir-relpath': map{
+      'options': map{},
+      'optionValues': map{}
+    },
+    'basedir-reluri': map{
+      'options': map{},
+      'optionValues': map{}
+    },
+    'basedir-uri': map{
+      'options': map{},
+      'optionValues': map{}
+    },
+    'base-name': map{
+      'options': map{},
+      'optionValues': map{}
+    },
+    'base-path': map{
+      'options': map{},
+      'optionValues': map{}
+    },
+    'base-relpath': map{
+      'options': map{},
+      'optionValues': map{}
+    },
+    'base-reluri': map{
+      'options': map{},
+      'optionValues': map{}
+    },
+    'base-uri': map{
+      'options': map{},
+      'optionValues': map{}
+    },
+    'filter-items': map{
+      'options': map{},
+      'optionValues': map{}
+    },
     'frequencies': map{
       'options': map{
         'format': map{
@@ -45,15 +89,14 @@ declare function f:buildOptionMaps() {
         'df': 'order'
       }
     },
-    'namePath': map{
+    'matches-pattern': map{
+      'options': map{},
+      'optionValues': map{}
+    },
+    'name-path': map{
       'options': map{
         'atts': map{
           'type': 'string'
-        },
-        'format': map{
-          'type': 'string',
-          'default': 'txt',
-          'values': ('txt', 'xml', 'json')
         },
         'indexed': (),
         'length': map{
@@ -80,9 +123,6 @@ declare function f:buildOptionMaps() {
         'withcontext': ()
       },
       'optionValues': map{
-        'txt': 'format',
-        'xml': 'format',
-        'json': 'format',
         'name': 'namekind',
         'lname': 'namekind',
         'jname': 'namekind',
@@ -92,7 +132,7 @@ declare function f:buildOptionMaps() {
         'base-relpath': 'pre'
       }
     },
-    'pathContent': map{
+    'path-content': map{
       'options': map{
         'atts': map{
           'type': 'string'
@@ -158,6 +198,21 @@ declare function f:buildOptionMaps() {
         'base-name': 'pre',
         'base-path': 'pre',
         'base-relpath': 'pre'
+      }
+    },
+    'truncate': map{
+      'options': map{
+        'strict': (),
+        'info': map{
+          'type': 'string',
+          'default': 'dots',
+          'values': ('empty', 'dots', 'count')
+        }
+      },
+      'optionValues': map{
+        'empty': 'info',
+        'dots': 'info',
+        'count': 'info'
       }
     }
   }

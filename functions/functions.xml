@@ -121,14 +121,6 @@
             <option name="atts" type="string">
                 <documentation/>
             </option>
-            <option name="format" type="string" default="txt">
-                <documentation/>
-                <values>
-                    <value string="txt"/>
-                    <value string="xml"/>
-                    <value string="json"/>
-                </values>
-            </option>
             <option name="indexed" type="boolean">
                 <documentation/>
             </option>
@@ -239,6 +231,29 @@
             </option>
             <option name="withinner" type="boolean">
                 <documentation/>
+            </option>
+        </options>
+    </function>
+    <function name="truncate" group="string-processing" withEc="true">
+        <documentation>
+            <summary>Truncates a string.</summary> 
+            <params>
+                <param name="strings" type="xs:anyAtomicType*" onlyEc="true"/>
+                <param name="length" type="xs:string?integer"/>
+                <param name="options" type="xs:string?" optional="true"/>
+            </params>
+        </documentation>        
+        <options>
+            <option name="strict" type="boolean">
+                <documentation/>
+            </option>
+            <option name="info" default="dots" type="string">
+                <documentation/>
+                <values>
+                    <value string="empty"/>
+                    <value string="dots"/>
+                    <value string="count"/>
+                </values>
             </option>
         </options>
     </function>

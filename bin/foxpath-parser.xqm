@@ -1936,9 +1936,12 @@ declare function f:parseStep($text as xs:string?,
         else
             (: Try to parse as frog axis step :)
             let $frogAxisStepEtc := 
-                (: Note how an empty IS_CONTREXT_EMPTY may trigger parsing as frog step :) 
+                (: Note how an empty IS_CONTEXT_EMPTY may trigger parsing as frog step :) 
                 if ($precedingOperator or exists($context?IS_CONTEXT_URI)) then ()
-                else f:parseFrogAxisStep($text, $context)
+                else 
+                    (: PRELIMINARY FIX 20250812 :)
+                    if (matches($text, '^\i\c*~::')) then () else
+                        f:parseFrogAxisStep($text, $context)
             let $frogAxisStep := $frogAxisStepEtc[. instance of node()]
             return
                 if ($frogAxisStep) then
@@ -1946,7 +1949,7 @@ declare function f:parseStep($text as xs:string?,
                     return ($frogAxisStep, $textAfter)
                 else
                     (: Try to parse as fox axis step :)
-                    let $foxAxisStepEtc := f:parseFoxAxisStep($text, $context)
+                    let $foxAxisStepEtc := f:parseFoxAxisStep($text, $context)                    
                     let $foxAxisStep := $foxAxisStepEtc[. instance of node()]
                     return
                         if ($foxAxisStep) then
@@ -2039,6 +2042,7 @@ declare function f:parseFrogAxisStep($text as xs:string?, $context as map(*))
  :)
 declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
         as item()* {
+    (: let $_DEBUG := trace($text, '_YOGI_PARSE_FOX_AXIS_STEP_TEXT: ') :)
     let $DEBUG := util:trace($text, 'parse.fox_axis_step', 'INTEXT_FOX_AXIS_STEP: ')
     let $isContextUri := $context?IS_CONTEXT_URI    
     let $acceptAbbrevSyntax := $isContextUri
@@ -2068,7 +2072,7 @@ declare function f:parseFoxAxisStep($text as xs:string?, $context as map(*))
         else if (starts-with($text, 'preceding-sibling~::')) then 'preceding-sibling~::'        
         else ()
         (: note that the complete step may consist of only the axis (not possible with forward axes) :)
-        
+    
     let $forwardAxis := 
         if ($reverseAxis) then ()
         else if (starts-with($text, $FOXSTEP_SEPERATOR)) then $FOXSTEP_SEPERATOR        
@@ -2586,7 +2590,7 @@ declare function f:parseParenthesizedExpr($text as xs:string, $context as map(*)
  :)
 declare function f:parseContextExpr($text as xs:string, $context as map(*))
         as item()+ {
-    (: let $_DEBUG := trace($text, '_CONTEXT_EXPR_TEXT: ') :)
+    (: let $_DEBUG := trace($text, '_YOGI_CONTEXT_EXPR_TEXT: ') :)
     let $textAfterOpen := replace($text, '^E?\{\s*', '')
     let $containedExprEtc :=
         if (starts-with($textAfterOpen, '}')) then 
@@ -2595,7 +2599,7 @@ declare function f:parseContextExpr($text as xs:string, $context as map(*))
             (: Evaluate expr with IS_CONTEXT_URI set to empty sequence :)
             let $newContext := map:put($context, 'IS_CONTEXT_URI', ())
             return f:parseSeqExpr($textAfterOpen, $newContext)
-    (: let $_DEBUG := trace($containedExprEtc, '_CONTAINED_EXPR_ETC: ') :)
+    (: let $_DEBUG := trace($containedExprEtc, '_YOGI_CONTAINED_EXPR_ETC: ') :)
     let $containedExpr := $containedExprEtc[. instance of node()]
     let $textAfterRaw := $containedExprEtc[not(. instance of node())]
     let $textAfter := $textAfterRaw ! f:skipWhitespace(.)

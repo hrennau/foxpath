@@ -202,7 +202,7 @@ declare function f:namePathNew($nodes as node()*,
                                $options as map(*))
         as xs:string* {
         
-    let $ops := ($f:OPTION_MODELS?namePath !
+    let $ops := ($f:OPTION_MODELS?name-path !
                  f:getOpsMapC2($fnOptions, ., 'namePath'), map{})[1]
     (: let $_DEBUG := trace($ops, '_ namePath, ops: ') :) 
     
@@ -316,11 +316,11 @@ declare function f:pathContent($context as item()*,
         as item()* {
 
     let $ops :=
-        let $opsModel := $f:OPTION_MODELS?pathContent
-        return f:getOpsMapC2($fnOptions, $opsModel, 'pathContent')
+        let $opsModel := $f:OPTION_MODELS?path-content
+        return f:getOpsMapC2($fnOptions, $opsModel, 'path-content')
     (: let $_DEBUG := trace($ops, '_ pathContent, ops: ') :)         
 
-    let $isJ := $ops?format eq 'jname'
+    let $isJ := $ops?namekind eq 'jname'
     let $cLeafNodeFilter := $leafNodeFilter ! use:compileUSE(., true())    
     let $cInnerNodeFilter := $innerNodeFilter ! use:compileUSE(., true())
     let $cExcludedInnerNodeFilter := $excludedInnerNodeFilter ! use:compileUSE(., true())
@@ -389,6 +389,49 @@ declare function f:pathContent($context as item()*,
         ) => string-join('&#xA;')
         else $frequencies
 };        
+
+(:~
+ : Every input string is truncated if longer than a maximum length.
+ :
+ : By default, truncation is indicated by three dots (...) appended to the
+ : truncated string. The indicator of truncation is omitted if option 
+ : "empty" is specified.
+ :
+ : Option "count" requests additional information about the number
+ : of characters omitted because of the truncation: ... (n more chars).
+ :
+ : By default, the truncated string has the maximum number of characters,
+ : and the indicator of truncation is appended to this string. When using 
+ : option "strict", truncation ensures that the truncated string with the
+ : indicator of truncation appended does not exceed the maximum length.
+ :
+ : @param name a lexical QName
+ : @return the name with the prefix removed
+ :)
+declare function f:truncate($strings as xs:string*, 
+                            $len as xs:integer?, 
+                            $fnOptions as xs:string?)
+        as xs:string* {
+    let $ops :=
+        let $opsModel := $f:OPTION_MODELS?truncate
+        return f:getOpsMapC2($fnOptions, $opsModel, 'truncate')
+    (: let $_DEBUG := trace($ops, '_ pathContent, ops: ') :)         
+        
+    for $string in $strings
+    let $len := ($len, 80)[1]
+    let $actlen := string-length($string)
+    return
+        if ($actlen le $len) then $string
+        else if ($ops?info eq 'empty') then substring($string, 1, $len)
+        else        
+            let $cutlen := if ($ops?strict) then $len - 4 else $len        
+            let $suffix := 
+                if ($ops?info eq 'count') then 
+                    ' ('||(string-length($string) - $cutlen)||' more chars)'
+                else ()
+            return substring($string, 1, $cutlen)||' ...'||$suffix
+};        
+
 
 (:
     t o    b e    c o n s o l i d a t e d
@@ -952,16 +995,18 @@ declare function f:groupItems($items as item()*,
  : supplied as nodes or as document URI.
  :
  : @param items nodes and or document URIs
+ : @param options processing options
  : @return true if all nodes are deep-equal, false otherwise
  :)
-declare function f:nodesDeepEqual($items as item()*)
+declare function f:nodesDeepEqual($items as item()*,
+                                  $options as map(*))
         as xs:boolean? {
     let $count := count($items) return        
     if ($count lt 2) then () else
 
     let $nodes :=
         for $item in $items return 
-            if ($item instance of node()) then $item else i:fox-doc($item, ())
+            if ($item instance of node()) then $item else i:fox-doc($item, $options)
     return
         if ($count eq 2) then deep-equal($nodes[1], $nodes[2])
         else
@@ -1396,11 +1441,11 @@ declare function f:folderSize($uris as xs:string*,
  :) 
 declare function f:foxAncestorShifted(
                                   $uris as xs:string+, 
-                                  $ancestor as xs:string?, 
-                                  $shiftedAncestor as xs:string?,
+                                  $ancestor as item()?, 
+                                  $shiftedAncestor as item()?,
                                   $nameReplaceSubstring as xs:string?,
                                   $nameReplaceWith as xs:string?,
-                                  $processingOptions as map(*))
+                                  $options as map(*))
         as xs:string* {    
     if (not($shiftedAncestor)) then () else
     
@@ -1410,16 +1455,16 @@ declare function f:foxAncestorShifted(
         else
             let $expr := util:extractExpr($ancestor)
             return
-                if ($expr) then f:resolveFoxpath($uri, $expr, (), $processingOptions)
+                (: Expression evaluated in the context of the current URI :)
+                if ($expr) then f:resolveFoxpath($uri, $expr, $options)                
                 else f:foxNavigation($uri, 'ancestor', $ancestor, 1, ())
     return if (not(i:fox-file-exists($ancestorURI, ()))) then
         error(QName((), 'INVALID_ARG'), concat('No resource at ancestor URI: ', $ancestorURI)) 
         else
     let $shiftedAncestorURI := 
         let $expr := util:extractExpr($shiftedAncestor)
-        (: let $_DEBUG := trace($expr, '_EXPR: ') :)
         return
-            if ($expr) then f:resolveFoxpath($ancestorURI, $expr, (), $processingOptions)
+            if ($expr) then f:resolveFoxpath($ancestorURI, $expr, $options)
             else $shiftedAncestor
     return if (not($shiftedAncestorURI)) then
         error(QName((), 'INVALID_ARG'), concat('Shifted ancestor cannot be resolved to a URI: ', $shiftedAncestor)) 
@@ -4218,6 +4263,116 @@ declare function f:table($rows as item()*,
         ), '&#xA;')            
 };
 
+(:
+(:~
+ : Transforms a sequence of values into a table. Each value is a concatenated 
+ : list of items, created using function tuple().
+ :)
+declare function f:table2($rows as item()*, 
+                         $headers as xs:string*,
+                         $options as xs:string?)
+        as item() {
+    let $ops := f:getOptions($options, ('sort', 'sortd', 'distinct', 'xml'), 'table')        
+    let $sort := $ops = 'sort'
+    let $sortd := $ops = 'sortd'
+    let $distinct := $ops = 'distinct'
+    let $headersPlus :=
+        if (count($headers) eq 1) then tokenize($headers, ',\s*') else $headers
+    return if (($rows ! array:size(.)) => distinct-values() => count() gt 1) then
+        error(QName((), 'INVALID_ARG'), concat('Invalid call of "table" - ',
+            'all rows must contain the same number of columns; use string(...) ',
+            'in order to enforce a column in case of an empty column value; ',
+            'example: tuple(string(foo), string(bar))'))
+        else
+
+    let $countCols := $rows[1] ! array:size(.)
+    return    
+        if ($ops = 'xml' or true()) then
+            let $tableName := ($headersPlus[starts-with(., 'table=')] 
+                              ! replace(., '^table=', ''), 'table')[1]
+            let $rowName := ($headersPlus[starts-with(., 'row=')] 
+                              ! replace(., '^row=', ''), 'row')[1]        
+            let $colnames :=
+                if (exists($headers)) then $headers
+                else (1 to $countCols) ! ('col'||.)
+            let $rows :=
+                for $row in $rows return
+                    element {$rowName}{
+                        for $c in 1 to $countCols 
+                        let $colContent := $row($c) ! 
+                            util:foldText(., '80', '\s+') ! <line>{.}</line>
+                        return 
+                            element {$colnames[$c]} {$colContent}
+                    }
+            let $rows :=
+                if (not($ops = 'distinct')) then $rows else
+                for $row in $rows
+                group by $content := string-join($row/*, '~~~')
+                return $row
+            let $rows :=
+                if (not($ops = ('sort', 'sortd'))) then $rows 
+                else if ($ops = 'sort') then 
+                for $row in $rows order by string-join($row/*, '~~~') 
+                    return $row
+                else 
+                for $row in $rows order by string-join($row/*, '~~~') descending
+                    return $row
+            return
+                element {$tableName} {$rows}
+        else
+    let $widths :=
+        for $i in 1 to $countCols return
+        ($rows?($i) ! string() ! string-length(.)) => max()
+    let $startPos :=
+        for $i in 1 to $countCols
+        let $preColWidth := subsequence($widths, 1, $i - 1) => sum()
+        let $preSepWidth := 2 + 3 * ($i - 1)
+        return 1 + $preColWidth + $preSepWidth
+    let $rowLines :=        
+        for $row in $rows
+        return concat(
+            '| ',
+            string-join(
+                for $i in 1 to $countCols return 
+                    $row($i) ! util:rpad(., $widths[$i], ' '), ' | '),
+            ' |')
+    let $rowLines := 
+        if ($distinct) then $rowLines => distinct-values() 
+        else $rowLines 
+    let $rowLines :=
+        if ($sort or $sortd) then 
+            let $sorted := $rowLines => sort()
+            return if ($sort) then $sorted else $sorted => reverse()
+        else $rowLines
+    let $tableWidth := 4 + sum($widths) + ($countCols - 1) * 3
+    let $frameLine := '#'||f:repeat('-', $tableWidth - 2)||'#'
+    let $headLines :=
+        if (empty($headers)) then ()
+        else if (every $i in (1 to count($headers)) satisfies 
+                    string-length($headers[$i]) lt $widths[$i] + 1) then
+                concat(
+                    '| ', 
+                    string-join(
+                        for $header at $pos in $headers return 
+                            util:rpad($header, $widths[$pos] - 0, ' '), ' | '),
+                ' |')        
+        else ( 
+            for $header at $pos in $headers
+            let $prefix := f:repeat(' ', $startPos[$pos] - 3) ! replace(., '^.', '|')
+            return ($prefix || '| '||$header) ! (util:rpad(., $tableWidth - 1, ' ')||'|')
+        )
+   
+    return 
+        string-join((    
+            if (empty($headLines)) then () else        
+            ($frameLine, $headLines),
+            $frameLine,
+            $rowLines,
+            $frameLine
+        ), '&#xA;')            
+};
+:)
+
 (:~
  : Transforms a sequence of rows into a CSV text document.
  :)
@@ -4295,32 +4450,6 @@ declare function f:textToCodepoints($text as xs:string*) as xs:string+ {
     let $chars := for $i in 1 to $len return substring($line, $i, 1)
     return fold-left($chars, ('', ''), $fnFoldLeft) 
 };
-
-(:~
- : Truncates a string if longer than a maximum length, appending '...'.
- :
- : By default, a truncated string consists of the first $len characters,
- : followed by ' ...'. If option 'e' is used, the substring contains
- : ($len - 4) characters, so that the truncated string including the
- : indication of truncation has length $len.
- :
- : @param name a lexical QName
- : @return the name with the prefix removed
- :)
-declare function f:truncate($string as xs:string?, $len as xs:integer?, $flags as xs:string?)
-        as xs:string? {
-    let $len := ($len, 80)[1]
-    let $evenLength := $flags = 'e'
-    let $actlen := string-length($string)
-    return
-        if ($actlen le $len) then $string
-        else
-            let $cutlen := if ($evenLength) then $len - 4 else $len        
-            let $suffix := 
-                if (contains($flags, 't')) then ' ('||(string-length($string) - $cutlen)||' more chars)'
-                else ' ...'
-            return substring($string, 1, $cutlen) ||$suffix
-};        
 
 (:~
  : Truncates a name path by replacing all element steps following
