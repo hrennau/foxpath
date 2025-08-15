@@ -1846,16 +1846,17 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $options := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                            
             return
                 foxf:table($values, $headers, $options)
-(:
+
         (: function `table2` 
            ================ :)
         else if ($fname = ('table2')) then
             let $values := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $headers := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $options := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                            
+            let $colspecs := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $options := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                            
             return
-                foxf:table2($values, $headers, $options)
-:)
+                foxf:table2($values, $headers, $colspecs, $options)
+
         (: function `csv` 
            ============== :)
         else if ($fname = ('csv')) then

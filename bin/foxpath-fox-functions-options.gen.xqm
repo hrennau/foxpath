@@ -214,6 +214,54 @@ declare function f:buildOptionMaps() {
         'dots': 'info',
         'count': 'info'
       }
+    },
+    'table2': map{
+      'options': map{
+        'format': map{
+          'type': 'string',
+          'default': 'txt',
+          'values': ('txt', 'xml')
+        },
+        'hanging': map{
+          'type': 'integer'
+        },
+        'initial-prefix': map{
+          'type': 'integer'
+        },
+        'split': map{
+          'type': 'string'
+        },
+        'width': map{
+          'type': 'integer'
+        }
+      },
+      'optionValues': map{
+        'txt': 'format',
+        'xml': 'format'
+      }
+    }
+  }
+};
+declare function f:buildParamMaps() {
+  map{
+    'colspec': map{
+      'options': map{
+        'hanging': map{
+          'type': 'integer'
+        },
+        'items': (),
+        'leftalign': (),
+        'initial-prefix': map{
+          'type': 'string'
+        },
+        'split': map{
+          'type': 'string'
+        },
+        'width': map{
+          'type': 'integer'
+        }
+      },
+      'optionValues': map{}
     }
   }
 };

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<params>
+    <param name="colspec">
+        <documentation>
+            <summary>Under construction.</summary>
+        </documentation>
+        <options>
+            <option name="hanging" type="integer">
+                <documentation/>
+            </option>
+            <option name="items" type="boolean">
+                <documentation/>
+            </option>
+            <option name="leftalign" type="boolean">
+                <documentation/>
+            </option>
+            <option name="initial-prefix" type="string">
+                <documentation/>
+            </option>
+            <option name="split" type="string">
+                <documentation/>
+            </option>
+            <option name="width" type="integer">
+                <documentation/>
+            </option>
+        </options>
+    </param>
+</params>

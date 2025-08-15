@@ -63,7 +63,6 @@
                 <file name="*.dita *.ditamap *.docbook *.nvdl *.odd *.tei *.xml *.xsd *.xsl *.xslt"/>
             </condition>
             <rtypeUse rtype="xml" final="no"/>
-            <rtypeUse rtype="html" final="yes"/>
         </case>
         <!-- *.json -->
         <case>

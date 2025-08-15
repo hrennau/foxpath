@@ -21,6 +21,7 @@ at  "foxpath-constants.xqm";
 
 (: declare variable $f:OPTION_MODELS := prof:time(opt:buildOptionMaps()); :)
 declare variable $f:OPTION_MODELS := opt:buildOptionMaps();
+declare variable $f:PARAM_MODELS := opt:buildParamMaps();
 
 (:
     c o n s o l i d a t e d
@@ -4263,19 +4264,32 @@ declare function f:table($rows as item()*,
         ), '&#xA;')            
 };
 
-(:
 (:~
  : Transforms a sequence of values into a table. Each value is a concatenated 
  : list of items, created using function tuple().
  :)
 declare function f:table2($rows as item()*, 
                          $headers as xs:string*,
-                         $options as xs:string?)
+                         $colspecs as xs:string?,
+                         $fnOptions as xs:string?)
         as item() {
-    let $ops := f:getOptions($options, ('sort', 'sortd', 'distinct', 'xml'), 'table')        
-    let $sort := $ops = 'sort'
-    let $sortd := $ops = 'sortd'
-    let $distinct := $ops = 'distinct'
+    let $ops := ($f:OPTION_MODELS?table2 !
+                 f:getOpsMapC2($fnOptions, ., 'table2'), map{})[1]
+    (: let $_DEBUG := trace($ops, '_ namePath, ops: ') :)
+    
+    let $cspecs := $colspecs ! tokenize(., ',\s*')
+    let $cmodels :=
+        let $defaultValues := map:merge((
+            $ops?hanging ! map:entry('hanging', .),
+            $ops?initial-prefix ! map:entry('initial-prefix', .),
+            $ops?split ! map:entry('split', .),
+            $ops?width ! map:entry('width', .)))
+        for $cspec in $cspecs 
+        return map:merge((
+            $defaultValues,
+            $f:PARAM_MODELS?colspec !
+            f:getOpsMapC2($cspec, ., 'table2')))
+    (: let $_DEBUG := trace($cmodels, '_ cmodels: ') :)
     let $headersPlus :=
         if (count($headers) eq 1) then tokenize($headers, ',\s*') else $headers
     return if (($rows ! array:size(.)) => distinct-values() => count() gt 1) then
@@ -4286,40 +4300,120 @@ declare function f:table2($rows as item()*,
         else
 
     let $countCols := $rows[1] ! array:size(.)
-    return    
-        if ($ops = 'xml' or true()) then
-            let $tableName := ($headersPlus[starts-with(., 'table=')] 
-                              ! replace(., '^table=', ''), 'table')[1]
-            let $rowName := ($headersPlus[starts-with(., 'row=')] 
-                              ! replace(., '^row=', ''), 'row')[1]        
-            let $colnames :=
-                if (exists($headers)) then $headers
-                else (1 to $countCols) ! ('col'||.)
-            let $rows :=
-                for $row in $rows return
-                    element {$rowName}{
-                        for $c in 1 to $countCols 
-                        let $colContent := $row($c) ! 
-                            util:foldText(., '80', '\s+') ! <line>{.}</line>
-                        return 
-                            element {$colnames[$c]} {$colContent}
-                    }
-            let $rows :=
-                if (not($ops = 'distinct')) then $rows else
-                for $row in $rows
-                group by $content := string-join($row/*, '~~~')
+    let $maxLengths :=
+        for $i in 1 to $countCols return
+        ($rows?($i) ! util:flatten(.) ! string-length(.)) => max()
+    let $widths :=
+        for $i in 1 to $countCols return
+            ($cmodels[$i]?width, $maxLengths[$i])[1]
+    let $xtable :=    
+        let $tableName := ($headersPlus[starts-with(., 'table=')] 
+                          ! replace(., '^table=', ''), 'table')[1]
+        let $rowName := ($headersPlus[starts-with(., 'row=')] 
+                          ! replace(., '^row=', ''), 'row')[1]        
+        let $colnames :=
+            if (exists($headersPlus)) then $headersPlus
+            else (1 to $countCols) ! ('col'||.)
+        let $rows :=
+            for $row in $rows return element {$rowName}{
+                for $c in 1 to $countCols 
+                let $colModel := $cmodels[$c]
+                let $width := $colModel?width
+                let $items := $row($c) ! util:flatten(.)
+                let $nitems := count($items)
+                let $elemName := $colnames[$c] ! replace(., '\s', '_')
+                let $elemName := ($elemName, 'Column')[1]
+                return
+                    element {$elemName} {
+                        for $item at $inr in $items ! normalize-space(.)
+                        let $regex := ($colModel?split, $ops?split, '\s+')[1]
+                        let $itemContent := $item ! 
+                            util:foldText(., $width, $regex, $colModel) ! <line>{.}</line>
+                        let $itemContent2 :=
+                            for $line in $itemContent
+                            return tokenize($line, '&#xA;') ! <line>{.}</line>
+                        return
+                            <item>{$itemContent2}</item>
+                    }}
+        let $rows :=
+            if (not($ops?distinct)) then $rows else
+            for $row in $rows
+            group by $content := string-join($row/*, '~~~')
+            return $row
+        let $rows :=
+            if (not($ops?order = ('sort', 'sortd'))) then $rows 
+            else if ($ops = 'sort') then 
+            for $row in $rows order by string-join($row/*, '~~~') 
                 return $row
-            let $rows :=
-                if (not($ops = ('sort', 'sortd'))) then $rows 
-                else if ($ops = 'sort') then 
-                for $row in $rows order by string-join($row/*, '~~~') 
-                    return $row
-                else 
-                for $row in $rows order by string-join($row/*, '~~~') descending
-                    return $row
-            return
-                element {$tableName} {$rows}
-        else
+            else 
+            for $row in $rows order by string-join($row/*, '~~~') descending
+                return $row
+        return
+            element {$tableName} {$rows}
+    return if ($ops?format eq 'xml') then $xtable else
+
+    let $headersXml :=
+        for $header at $pos in $headersPlus
+        let $width := $widths[$pos]
+        let $lines := $header ! util:foldText(., $width, '\s+', ()) ! <line>{.}</line>
+        return
+            <header>{$lines}</header>
+    
+    let $frameline :=
+        concat('|', string-join(for $i in 1 to $countCols return 
+          f:repeat('-', $widths[$i] + 2), '|'), '|')
+
+    let $fnWriteLine := function($ncols, $cols, $widths) {
+        concat('| ', string-join(for $i in 1 to $ncols return 
+          $cols[$i] ! util:rpad(., $widths[$i], ' '), ' | '), ' |')
+    }
+    let $headLines :=
+        if (not($headersXml)) then () else
+        
+        let $nlines := $headersXml/count(line) => max()
+        for $lnr in 1 to $nlines
+        let $values := $headersXml/string(line[$lnr])
+        return $fnWriteLine($countCols, $values, $widths)
+        
+    let $rowLines :=
+        let $nrows := count($xtable/row)
+        for $row at $rnr in $xtable/row return (
+        let $nlines := $row/*/count(descendant::line) => max()
+        
+        for $lnr in 1 to $nlines
+        let $values := $row/*/string(descendant::line[$lnr])
+        return $fnWriteLine($countCols, $values, $widths),
+        $frameline[$rnr ne $nrows])
+            
+    let $rowLines := 
+        if ($ops?distinct) then $rowLines => distinct-values() 
+        else $rowLines 
+    let $rowLines :=
+        if ($ops?order = ('a', 'd')) then 
+            let $sorted := $rowLines => sort()
+            return if ($ops?order eq 'a') then $sorted else $sorted => reverse()
+        else $rowLines
+    let $tableWidth := 4 + sum($widths) + ($countCols - 1) * 3
+    let $frameLine := '#'||f:repeat('-', $tableWidth - 2)||'#'
+    return 
+        string-join((    
+            if (empty($headLines)) then () else        
+            ($frameLine, $headLines),
+            $frameLine,
+            $rowLines,
+            $frameLine
+        ), '&#xA;')
+            
+(:            
+        return concat(
+            '| ',
+            string-join(
+                for $i in 1 to $countCols return 
+                    $row($i) ! util:rpad(., $widths[$i], ' '), ' | '),
+            ' |')
+:)
+(:    
+    else
     let $widths :=
         for $i in 1 to $countCols return
         ($rows?($i) ! string() ! string-length(.)) => max()
@@ -4369,9 +4463,9 @@ declare function f:table2($rows as item()*,
             $frameLine,
             $rowLines,
             $frameLine
-        ), '&#xA;')            
+        ), '&#xA;')
+:)        
 };
-:)
 
 (:~
  : Transforms a sequence of rows into a CSV text document.
@@ -5768,6 +5862,15 @@ declare function f:getOpsMapC2($options as item()?,
         let $items := $o ! tokenize(.)
         let $entries :=
             for $item in $items
+            let $item :=
+                if (not(matches($item, '^\i\c*?\d+$'))) then $item else
+                    let $name := 
+                        replace($item, '^(\i\c*?)\d+$', '$1')
+                        ! f:getOpsMap_getSelName(., $names)
+                    let $itemName := $item !  f:getOpsMap_getSelName(., $names)
+                    return 
+                        if (not($name) or $itemName) then $item
+                        else replace($item, '^(\i\c*?)(\d+)$', '$1=$2')
             let $nameU := $item ! replace(., '=.*', '')
             let $name := f:getOpsMap_getSelName($nameU, $names)
             return 

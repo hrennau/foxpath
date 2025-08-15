@@ -1,8 +1,7 @@
 declare namespace f="http://www.foxpath.org/ns/generate-options";
 
 declare variable $format external := 'module';
-declare variable $fconfig external := '../../functions/functions.xml';
-declare variable $pconfig external := '../../functions/params.xml'; 
+declare variable $config external := '../../functions/functions.xml';
 declare variable $skipwrite as xs:boolean external := false();
 declare variable $moduleUri external := '../foxpath-fox-functions-options.gen.xqm'
     ! resolve-uri(.);
@@ -10,32 +9,19 @@ declare variable $moduleUri external := '../foxpath-fox-functions-options.gen.xq
 (:~
  : Generates the XQuery module providing the function option models.
  :)
-declare function f:writeModule($fconfig as element(),
-                               $pconfig as element()?)
+declare function f:writeModule($config as element())
     as item() {
-    let $fconfige := $fconfig/f:expandConfigREC(.)
-    let $pconfige := $pconfig/f:expandConfigREC(.)
-    let $fmapx := $fconfige/f:writeMapx(.)
-    let $pmapx := $pconfige/f:writeMapx(.)
-    let $ffunction :=
-'declare function f:buildOptionMaps() {
-'
-||'  '||($fmapx ! f:serializeMap(., '  '))
-||'&#xA;};'
-    let $pfunction := if (not($pconfig)) then () else
-'
-declare function f:buildParamMaps() {
-'
-||'  '||($pmapx ! f:serializeMap(., '  '))
-||'&#xA;};'
-    
+    let $confige := $config/f:expandConfigREC(.)
+    let $mapx := $confige/f:writeMapx(.)
     return 
-        if ($format eq 'mapx') then $fmapx
+        if ($format eq 'mapx') then $mapx
         else 
 '(: Function options models :)
 module namespace f="http://www.foxpath.org/ns/fox-functions-options";
-'||$ffunction
-||$pfunction
+declare function f:buildOptionMaps() {
+'
+||'  '||$mapx ! f:serializeMap(., '  ')
+||'&#xA;};'
 };
 
 (:~
@@ -53,7 +39,7 @@ declare function f:expandConfigREC($n as node())
         as node()? {
     typeswitch($n)
     case document-node() return document {$n/node() ! f:expandConfigREC(.)}
-    case element(function) | element(param) return
+    case element(function) return
         let $optionValues :=
             for $v in $n/options/option//value 
             let $oname := $v/ancestor::option/@name 
@@ -85,14 +71,8 @@ declare function f:expandConfigREC($n as node())
  :)
 declare function f:writeMapx($configExt as element())
         as element(map) {
-    let $entities := 
-        typeswitch($configExt)
-        case element(params) return $configExt//param
-        default return $configExt//function
-    return
-    
     <map>{
-        for $f in $entities
+        for $f in $configExt//function
         return
             <entry name="{$f/@name}" type="map">{
                 <map>{
@@ -173,11 +153,17 @@ declare function f:serializeMap($map as element(map), $indent as xs:string)
     )||'&#xA;'||$indent||'}'
 };
 
-let $docF := $fconfig ! doc(.)/*
-let $docP := $pconfig ! doc(.)/*
-let $module := f:writeModule($docF, $docP)
+let $doc := $config ! doc(.)/*
+let $module := f:writeModule($doc)
 let $_write :=
     if ($skipwrite) then () else
         file:write($moduleUri, $module)
 return
-    'Module generated: '||$moduleUri
+    $module
+(:
+let $doce := $doc/f:expandConfigREC(.)
+let $mapx := $doce/f:writeMapx(.)
+return 
+    if ($format eq 'mapx') then $mapx
+    else $mapx ! f:serializeMap(., '')
+:)

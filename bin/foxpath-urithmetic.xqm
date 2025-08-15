@@ -122,7 +122,7 @@ declare function f:baseUri($items as item()*,
         as xs:string* {
     $items ! (
     if (. instance of node()) then . else i:fox-doc(., $options)) !
-    base-uri(.)
+    trace(base-uri(.), '_ base-uri(): ')
 };
 
 (:~
