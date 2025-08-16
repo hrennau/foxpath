@@ -257,7 +257,7 @@
             </option>
         </options>
     </function>
-    <function name="table2" group="reporter" withEc="true">
+    <function name="table" group="reporter" withEc="true">
         <documentation>
             <summary>Writes a table.</summary> 
             <params>
@@ -277,10 +277,19 @@
             <option name="hanging" type="integer">
                 <documentation>Default value for column property 'hanging indent width'.</documentation>
             </option>
-            <option name="initial-prefix" type="integer">
+            <option name="initial-prefix" type="string">
                 <documentation>Default value for column property 'initial prefix'.</documentation>
             </option>
             <option name="nil" type="string">
+                <documentation>Default value for representing an absent column value.</documentation>
+            </option>
+            <option name="order" type="string" 
+                    pattern="^\d+(a|d|c|an|dn|ac|dc)?(\.\d+(a|d|c|an|dn|ac|dc)?)*$"
+                    patternExplanation="The value must consists of one or more dot-separated items, each one 
+                      consisting of a column number, optionally followed by a|d|n|c|an|dn|ac|dc,
+                      meaning ascending, descending, ascending numeric, descending numeric,
+                      ascending case-insensitive, descending case-insensitive. Examples: 
+                      3, 3.1, 3c.1c, 3dn.1c, 3dn.1c.4">
                 <documentation>Default value for representing an absent column value.</documentation>
             </option>
             <option name="split" type="string">

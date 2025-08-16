@@ -1,5 +1,8 @@
 module namespace f="http://www.ttools.org/xquery-functions/util";
 
+import module namespace op="http://www.foxpath.org/ns/fox-functions-options" 
+at "foxpath-fox-functions-options.gen.xqm";
+
 declare namespace fox="http://www.foxpath.org/ns/annotations";
 
 declare variable $f:DEBUG := ''; 
@@ -610,6 +613,7 @@ declare function f:foldText($t as xs:string,
                             $regex as xs:string?,
                             $options as map(*)?)
         as xs:string* {
+    let $options := ($options, map{})[1]        
     let $t := 
         switch($options?pre-edit)
         case 'normalize-space' return normalize-space($t)
@@ -697,6 +701,352 @@ declare function f:foldTextREC($t as xs:string,
         let $optionsNext := $fnUpdOps($options)
         return ($line, $remainder => f:foldTextREC($regex, $optionsNext))
 };
+
+(:~
+ : Returns the options encoded by an $options parameter
+ : as a map.
+ :) 
+declare function f:optionsMap($options as item()?, 
+                              $model as map(*),
+                              $functionName as xs:string)
+        as map(*) {
+    let $omap := $model?options
+    let $vmap := $model?optionValues
+    let $onames := map:keys($omap)
+    let $vnames := map:keys($vmap)
+    let $names := ($onames, $vnames) 
+    return if (empty($names)) then map{} else
+    
+    let $namesWD := 
+        for $name in $onames
+        let $desc := $omap($name) ?default
+        where exists($desc)
+        return $name
+    return 
+        if (empty($namesWD) and (
+            $options instance of map(*) or empty($options))) then 
+                ($options, map{})[1]
+        else
+        
+    let $mapPrelim :=
+        if ($options instance of map(*)) then $options 
+        else if (empty($options)) then map{}
+        else
+        
+        let $o := $options ! replace(., '\s*=\s*', '=')        
+        let $items := $o ! tokenize(.)
+        let $entries :=
+            for $item in $items
+            let $item :=
+                if (not(matches($item, '^\i\c*?\d+$'))) then $item else
+                    let $name := 
+                        replace($item, '^(\i\c*?)\d+$', '$1')
+                        ! f:optionsMap_getSelName(., $names)
+                    let $itemName := $item !  f:optionsMap_getSelName(., $names)
+                    return 
+                        if (not($name) or $itemName) then $item
+                        else replace($item, '^(\i\c*?)(\d+)$', '$1=$2')
+            let $nameU := $item ! replace(., '=.*', '')
+            let $name := f:optionsMap_getSelName($nameU, $names)
+            return 
+                if (count($name) gt 1) then
+                    error(QName((), 'AMBIGUOUS_OPTION'), concat(
+                    'Function "', $functionName, '" - abbreviated option ("'||$nameU||'")'||  
+                    '; ambiguous; matches: ', ($name => sort() => string-join(', '), '.')))
+                else if (count($name) eq 0) then                
+                    error(QName((), 'UNKNOWN_OPTION'), concat(
+                        'Function "', $functionName, '" - invalid option ("'||$nameU||'")'||  
+                        '; valid options: ', ($names => sort() => string-join(', '), '.')))
+                    else
+
+            let $omodel := $omap($name)
+            let $otype := $omodel?type
+            let $ovalues := $omodel?values
+            let $opattern := $omodel?pattern
+            let $opatternExplanation := $omodel?patternExplanation
+            
+            let $value := 
+                if (not(contains($item, '='))) then () 
+                else $item ! replace(., '.*?=', '') ! replace(., '\\s', ' ')
+            return 
+                if (empty($value)) then
+                    if (exists($omodel)) then
+                        error(QName((), 'INVALID_OPTION'), 'Option "'||$name||
+                            '" must have a value ('||$name||'=...)') 
+                    else map:entry($name, true())
+                else
+                    (: Constraints: type, values :)
+                    let $valueE :=
+                        if (empty($ovalues) or $value = $ovalues) then $value 
+                        else
+                            let $selected := f:optionsMap_getSelName($value, $ovalues)
+                            return
+                                if (count($selected) eq 1) then $selected
+                                else if (count($selected) gt 1) then
+                                    error(QName((), 'AMBIGUOUS_OPTION_VALUE'), 
+                                        'Ambiguous value "'||$value||'" for option "'||
+                                        $name||'"; matches: '||
+                                        (($selected => sort()) ! xs:string(.) => string-join(', ')))
+                                else
+                                    error(QName((), 'INVALID_OPTION_VALUE'), 
+                                        'Invalid value "'||$value||'" for option "'||
+                                        $name||'"; must be one of: '||
+                                        (($ovalues => sort()) ! xs:string(.) => string-join(', ')))
+                    let $valueET :=
+                        if (not($otype)) then $valueE else
+                        try {
+                            switch($otype)
+                            case 'integer' return xs:integer($valueE)
+                            case 'decimal' return xs:decimal($valueE)
+                            case 'text' return $valueE ! replace(., '\\s', ' ')
+                            case 'string' return $valueE ! replace(., '\\s', ' ')
+                            default return error(QName((), 'INVALID_MODEL'), 
+                                'Invalid model, unknown type: '||$otype)
+                        } catch * {
+                            error(QName((), 'INVALID_OPTION'),
+                                'Invalid value "'||$value||'" for option "'||
+                                $name||'"; cannot cast to type "'||$otype||'".')
+                        }
+                    let $valueETP :=
+                        if ($opattern) then
+                            let $matches := matches($valueET, $opattern)
+                            return
+                                if (not($matches)) then
+                                    error(QName((), 'INVALID_OPTION'),
+                                        'Invalid value "'||$value||'" '||
+                                        'for option "'||$name||'". '||
+                                        (if (not($opatternExplanation)) then 
+                                        'It must match the regular expression "'
+                                        ||$opattern||'".'
+                                        else ($opatternExplanation ! (' '||.))))
+                                else $valueET
+                         else $valueET
+                    return
+                        map:entry($name, $valueETP)
+        return map:merge($entries)
+    
+    (: Finalize map :)
+    let $usedNames := map:keys($mapPrelim)
+    let $usedNamesV := $usedNames[. = $vnames]
+    let $usedNamesO := $usedNames[not(. = $usedNamesV)]
+    let $usedNames2 := (
+        $usedNamesO,
+        $usedNamesV ! $vmap(.)) => distinct-values()
+    let $namesMissing := $onames[not(. = $usedNames2)][. = $namesWD]
+    (:
+    let $_DEBUG := trace($usedNamesV, '_ used names V: ')
+    let $_DEBUG := trace($namesWD, '_ names WD: ')
+    let $_DEBUG := trace($namesMissing, '_ names missing: ')
+    :)
+    (: add entries #1: options which have been supplied as values :)
+    let $addEntries1 := $usedNamesV ! map:entry($vmap(.), .)
+    (: let $_DEBUG := trace($addEntries1, '_ addEntries1: ') :)
+    (: add entries #2: options missing, having a default value :)    
+    let $addEntries2 := $namesMissing ! map:entry(., $omap(.)('default'))
+    (: let $_DEBUG := trace($addEntries2, '_ addEntries2: ') :)
+    
+    (: Finalize map :)
+    let $addEntries := ($addEntries1, $addEntries2)
+    let $mapFinal :=
+        if (empty($addEntries) and empty($usedNamesV)) then $mapPrelim
+        else map:merge((
+            $usedNamesO ! map:entry(., $mapPrelim(.)),
+            $addEntries
+        ))
+    return $mapFinal
+};        
+
+declare function f:optionsMap_getSelName($name, $names) {
+    if ($name = $names) then $name
+    else $names[starts-with(., $name)]
+};
+
+(:~
+ : Transforms a sequence of tuples into a table.
+ :)
+declare function f:table($rows as item()*, 
+                         $headers as xs:string*,
+                         $colspecs as xs:string?,
+                         $fnOptions as xs:string?)
+        as item() {
+    let $countCols := $rows ! array:size(.) => max()  
+    let $_DEBUG := trace($countCols, '_ count cols: ')
+    let $ops := ($op:OPTION_MODELS?table !
+                 f:optionsMap($fnOptions, ., 'table'), map{})[1]
+    (: let $_DEBUG := trace($ops, '_ namePath, ops: ') :)
+    
+    (: Column models :)
+    let $cspecs := $colspecs ! tokenize(., ',\s*')    
+    let $cmodels :=
+        let $defaultValues := map:merge((
+            $ops?leftalign ! map:entry('leftalign', .),        
+            $ops?hanging ! map:entry('hanging', .),
+            $ops?initial-prefix ! map:entry('initial-prefix', .),
+            $ops?nil ! map:entry('nil', .),            
+            $ops?split ! map:entry('split', .),
+            $ops?width ! map:entry('width', .)))
+        for $i in 1 to $countCols 
+        return map:merge((
+            $op:PARAM_MODELS?colspec ! f:optionsMap($cspecs[$i], ., 'table2'),        
+            $defaultValues))            
+    let $_DEBUG := trace($cmodels, '_ cmodels: ')
+    
+    (: Order models :)    
+    let $ospecs :=
+        let $parts := $ops?order ! tokenize(., '\.')
+        for $part in $parts
+        let $col := replace($part, '^(\d+).*', '$1') ! xs:integer(.)
+        let $spec := replace($part, '^\d+(.*)', '$1')[. ne $part]
+        return
+            map{'col': $col, 'spec': $spec}
+    let $omodels :=
+        for $ospec in $ospecs 
+        let $col := $ospec?col
+        let $spec := $ospec?spec[normalize-space(.)]
+        let $fn :=
+            if (ends-with($spec, 'n')) then
+                function($row) {
+                    try {$row/*[$col]/normalize-space(.)[1] 
+                         ! number(.)} catch * {()}}
+            else if (ends-with($spec, 'c')) then
+                function($row) {
+                     $row/*[$col]/normalize-space(.) ! lower-case(.) 
+                     => string-join(',')}
+            else function($row) {
+                     $row/*[$col]/normalize-space(.) 
+                     => string-join(',')}
+        let $direction :=
+            if (empty($spec) or $spec = ('n', 'c')) then 'a' 
+            else substring($spec, 1, 1)
+        return map{'fn': $fn, 'direction': $direction}
+    (:
+    let $_DEBUG := trace($ospecs, '_ ospecs: ')
+    let $_DEBUG := trace($omodels, '_ omodels: ')
+     :)
+    let $headersPlus :=
+        if (count($headers) eq 1) then tokenize($headers, ',\s*') else $headers
+    let $maxLengths :=
+        for $i in 1 to $countCols return
+        ($rows?($i) ! f:flatten(.) ! string-length(.)) => max()
+    let $widths :=
+        for $i in 1 to $countCols return
+            ($cmodels[$i]?width, $maxLengths[$i], 10)[1]
+    let $_DEBUG := trace($widths, '_ widths: ')            
+    let $xtable :=    
+        let $tableName := ($headersPlus[starts-with(., 'table=')] 
+                          ! replace(., '^table=', ''), 'table')[1]
+        let $rowName := ($headersPlus[starts-with(., 'row=')] 
+                          ! replace(., '^row=', ''), 'row')[1]        
+        let $colnames :=
+            if (exists($headersPlus)) then $headersPlus
+            else (1 to $countCols) ! ('col'||.)
+        let $rows :=
+            for $row in $rows return element {$rowName}{
+                let $size := array:size($row)            
+                for $c in 1 to $countCols 
+                let $colModel := $cmodels[$c]
+                let $width := $colModel?width
+                let $items := 
+                    if ($c gt $size) then () else $row($c) ! f:flatten(.)
+                let $items := 
+                    if (empty($items) or count($items) eq 1 and $items = '') then $colModel?nil else $items
+                let $nitems := count($items)
+                let $elemName := $colnames[$c] ! replace(., '\s', '_')
+                let $elemName := ($elemName, 'Column')[1]
+                return
+                    element {$elemName} {
+                        for $item at $inr in $items ! normalize-space(.)
+                        let $regex := ($colModel?split, $ops?split, '\s+')[1]
+                        let $itemContent := $item ! 
+                            f:foldText(., $width, $regex, $colModel) ! <line>{.}</line>
+                        let $itemContent2 :=
+                            for $line in $itemContent
+                            return tokenize($line, '&#xA;') ! <line>{.}</line>
+                        return
+                            <item>{$itemContent2}</item>
+                    }}
+        let $rows :=
+            if (empty($omodels)) then $rows else f:table_sort($rows, $omodels)
+        return
+            element {$tableName} {$rows}
+    return if ($ops?format eq 'xml') then $xtable else
+
+    let $headersXml :=
+        for $header at $pos in $headersPlus
+        let $width := $widths[$pos]
+        let $lines := $header ! f:foldText(., $width, '\s+', ()) ! <line>{.}</line>
+        return
+            <header>{$lines}</header>
+    
+    let $frameline :=
+        concat('|', string-join(for $i in 1 to $countCols return 
+          f:repeat('-', $widths[$i] + 2), '|'), '|')
+
+    let $fnWriteLine := function($ncols, $cols, $widths) {
+        concat('| ', string-join(for $i in 1 to $ncols return 
+          $cols[$i] ! f:rpad(., $widths[$i], ' '), ' | '), ' |')
+    }
+    let $headLines :=
+        if (not($headersXml)) then () else
+        
+        let $nlines := $headersXml/count(line) => max()
+        for $lnr in 1 to $nlines
+        let $values := $headersXml/string(line[$lnr])
+        return $fnWriteLine($countCols, $values, $widths)
+        
+    let $rowLines :=
+        let $nrows := count($xtable/row)
+        for $row at $rnr in $xtable/row return (
+        let $nlines := $row/*/count(descendant::line) => max()
+        
+        for $lnr in 1 to $nlines
+        let $values := $row/*/string(descendant::line[$lnr])
+        return $fnWriteLine($countCols, $values, $widths),
+        $frameline[$rnr ne $nrows])
+            
+    let $rowLines := 
+        if ($ops?distinct) then $rowLines => distinct-values() 
+        else $rowLines 
+    let $rowLines :=
+        if ($ops?order = ('a', 'd')) then 
+            let $sorted := $rowLines => sort()
+            return if ($ops?order eq 'a') then $sorted else $sorted => reverse()
+        else $rowLines
+    let $tableWidth := 4 + sum($widths) + ($countCols - 1) * 3
+    let $frameLine := '#'||f:repeat('-', $tableWidth - 2)||'#'
+    return 
+        string-join((    
+            if (empty($headLines)) then () else        
+            ($frameLine, $headLines),
+            $frameLine,
+            $rowLines,
+            $frameLine
+        ), '&#xA;')
+};
+
+(:~
+ : Helper function of function `table`. Recursive processes all
+ : sort models.
+ :)
+declare function f:table_sort($rows as element()*, $omodels as map(*)*)
+        as element()* {
+    let $omodel := head($omodels)
+    let $remainder := tail($omodels)
+    let $fn := $omodel?fn
+    let $direction := $omodel?direction
+    let $sorted := 
+        let $prelim := $rows => sort((), $fn)
+        return
+            if ($direction eq 'd') then reverse($prelim)
+            else $prelim
+    return if (empty($remainder)) then $sorted else
+        
+    for $row in $sorted
+    group by $key := $fn($row) => string-join(',')
+    return
+        if (count($row) eq 1) then $row
+        else $row => f:table_sort($remainder)
+}; 
 
 declare function f:WRITE_DEBUG_FILE($path as xs:string, 
                                     $content as item(), 

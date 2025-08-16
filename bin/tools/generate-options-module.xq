@@ -18,13 +18,13 @@ declare function f:writeModule($fconfig as element(),
     let $fmapx := $fconfige/f:writeMapx(.)
     let $pmapx := $pconfige/f:writeMapx(.)
     let $ffunction :=
-'declare function f:buildOptionMaps() {
+'declare function op:buildOptionMaps() {
 '
 ||'  '||($fmapx ! f:serializeMap(., '  '))
 ||'&#xA;};'
     let $pfunction := if (not($pconfig)) then () else
 '
-declare function f:buildParamMaps() {
+declare function op:buildParamMaps() {
 '
 ||'  '||($pmapx ! f:serializeMap(., '  '))
 ||'&#xA;};'
@@ -33,7 +33,12 @@ declare function f:buildParamMaps() {
         if ($format eq 'mapx') then $fmapx
         else 
 '(: Function options models :)
-module namespace f="http://www.foxpath.org/ns/fox-functions-options";
+module namespace op="http://www.foxpath.org/ns/fox-functions-options";
+
+(: declare variable $f:OPTION_MODELS := prof:time(opt:buildOptionMaps()); :)
+declare variable $op:OPTION_MODELS := op:buildOptionMaps();
+declare variable $op:PARAM_MODELS := op:buildParamMaps();
+        
 '||$ffunction
 ||$pfunction
 };
@@ -126,6 +131,11 @@ declare function f:writeMapx_option($o as element(option))
         else 
             let $entries := (
                 $o/@type ! <entry name="type" type="string" value="{.}"/>,
+                $o/@pattern ! <entry name="pattern" type="string" value="{.}"/>,
+                $o/@patternExplanation ! 
+                    <entry name="patternExplanation" 
+                           type="string" 
+                           value="{normalize-space(.)}"/>,
                 $o/@default ! <entry name="default" type="{$o/@type}" value="{.}"/>,
                 let $values := $o/values/value
                 where exists($values)

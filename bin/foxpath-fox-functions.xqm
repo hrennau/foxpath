@@ -4,7 +4,7 @@ at "foxpath-processorDependent.xqm",
    "foxpath-uri-operations.xqm",
    "foxpath-parser.xqm";
 
-import module namespace opt="http://www.foxpath.org/ns/fox-functions-options" 
+import module namespace op="http://www.foxpath.org/ns/fox-functions-options" 
 at "foxpath-fox-functions-options.gen.xqm";
 
 import module namespace uth="http://www.foxpath.org/ns/urithmetic" 
@@ -18,10 +18,6 @@ at  "foxpath-unified-string-expression.xqm";
 
 import module namespace const="http://www.foxpath.org/ns/constants" 
 at  "foxpath-constants.xqm";
-
-(: declare variable $f:OPTION_MODELS := prof:time(opt:buildOptionMaps()); :)
-declare variable $f:OPTION_MODELS := opt:buildOptionMaps();
-declare variable $f:PARAM_MODELS := opt:buildParamMaps();
 
 (:
     c o n s o l i d a t e d
@@ -59,8 +55,8 @@ declare function f:frequenciesNew($values as item()*,
         as item()* {
     if (empty($values)) then () else
     
-    let $ops := ($f:OPTION_MODELS?frequencies !
-                 f:getOpsMapC2($fnOptions, ., 'frequencies'), map{})[1]
+    let $ops := ($op:OPTION_MODELS?frequencies !
+                 util:optionsMap($fnOptions, ., 'frequencies'), map{})[1]
     (: let $_DEBUG := trace($ops, '_ frequencies, ops: ') :)
     
     (: Function return the frequency representation :)
@@ -203,8 +199,8 @@ declare function f:namePathNew($nodes as node()*,
                                $options as map(*))
         as xs:string* {
         
-    let $ops := ($f:OPTION_MODELS?name-path !
-                 f:getOpsMapC2($fnOptions, ., 'namePath'), map{})[1]
+    let $ops := ($op:OPTION_MODELS?name-path !
+                 util:optionsMap($fnOptions, ., 'namePath'), map{})[1]
     (: let $_DEBUG := trace($ops, '_ namePath, ops: ') :) 
     
     let $len := $ops?length
@@ -317,8 +313,8 @@ declare function f:pathContent($context as item()*,
         as item()* {
 
     let $ops :=
-        let $opsModel := $f:OPTION_MODELS?path-content
-        return f:getOpsMapC2($fnOptions, $opsModel, 'path-content')
+        let $opsModel := $op:OPTION_MODELS?path-content
+        return util:optionsMap($fnOptions, $opsModel, 'path-content')
     (: let $_DEBUG := trace($ops, '_ pathContent, ops: ') :)         
 
     let $isJ := $ops?namekind eq 'jname'
@@ -414,8 +410,8 @@ declare function f:truncate($strings as xs:string*,
                             $fnOptions as xs:string?)
         as xs:string* {
     let $ops :=
-        let $opsModel := $f:OPTION_MODELS?truncate
-        return f:getOpsMapC2($fnOptions, $opsModel, 'truncate')
+        let $opsModel := $op:OPTION_MODELS?truncate
+        return util:optionsMap($fnOptions, $opsModel, 'truncate')
     (: let $_DEBUG := trace($ops, '_ pathContent, ops: ') :)         
         
     for $string in $strings
@@ -4158,6 +4154,7 @@ declare function f:subsetFraction(
     return $result
 };        
 
+(:
 (:~
  : Transforms a sequence of values into a table. Each value is a concatenated 
  : list of items, created using function tuple().
@@ -4263,10 +4260,10 @@ declare function f:table($rows as item()*,
             $frameLine
         ), '&#xA;')            
 };
-
+:)
+(:
 (:~
- : Transforms a sequence of values into a table. Each value is a concatenated 
- : list of items, created using function tuple().
+ : Transforms a sequence of tuples into a table.
  :)
 declare function f:table2($rows as item()*, 
                          $headers as xs:string*,
@@ -4274,8 +4271,8 @@ declare function f:table2($rows as item()*,
                          $fnOptions as xs:string?)
         as item() {
     let $countCols := $rows ! array:size(.) => max()        
-    let $ops := ($f:OPTION_MODELS?table2 !
-                 f:getOpsMapC2($fnOptions, ., 'table2'), map{})[1]
+    let $ops := ($const:OPTION_MODELS?table2 !
+                 util:optionsMap($fnOptions, ., 'table2'), map{})[1]
     (: let $_DEBUG := trace($ops, '_ namePath, ops: ') :)
     
     (: Column models :)
@@ -4290,13 +4287,42 @@ declare function f:table2($rows as item()*,
             $ops?width ! map:entry('width', .)))
         for $i in 1 to $countCols 
         return map:merge((
-            $f:PARAM_MODELS?colspec ! f:getOpsMapC2($cspecs[$i], ., 'table2'),        
+            $const:PARAM_MODELS?colspec ! util:optionsMap($cspecs[$i], ., 'table2'),        
             $defaultValues))            
     let $_DEBUG := trace($cmodels, '_ cmodels: ')
     
     (: Order models :)    
-    let $omodels := ()
-    
+    let $ospecs :=
+        let $parts := $ops?order ! tokenize(., '\.')
+        for $part in $parts
+        let $col := replace($part, '^(\d+).*', '$1') ! xs:integer(.)
+        let $spec := replace($part, '^\d+(.*)', '$1')[. ne $part]
+        return
+            map{'col': $col, 'spec': $spec}
+    let $omodels :=
+        for $ospec in $ospecs 
+        let $col := $ospec?col
+        let $spec := $ospec?spec[normalize-space(.)]
+        let $fn :=
+            if (ends-with($spec, 'n')) then
+                function($row) {
+                    try {$row/*[$col]/normalize-space(.)[1] 
+                         ! number(.)} catch * {()}}
+            else if (ends-with($spec, 'c')) then
+                function($row) {
+                     $row/*[$col]/normalize-space(.) ! lower-case(.) 
+                     => string-join(',')}
+            else function($row) {
+                     $row/*[$col]/normalize-space(.) 
+                     => string-join(',')}
+        let $direction :=
+            if (empty($spec) or $spec = ('n', 'c')) then 'a' 
+            else substring($spec, 1, 1)
+        return map{'fn': $fn, 'direction': $direction}
+    (:
+    let $_DEBUG := trace($ospecs, '_ ospecs: ')
+    let $_DEBUG := trace($omodels, '_ omodels: ')
+     :)
     let $headersPlus :=
         if (count($headers) eq 1) then tokenize($headers, ',\s*') else $headers
     let $maxLengths :=
@@ -4339,21 +4365,6 @@ declare function f:table2($rows as item()*,
                     }}
         let $rows :=
             if (empty($omodels)) then $rows else f:table_sort($rows, $omodels)
-(:                    
-        let $rows :=
-            if (not($ops?distinct)) then $rows else
-            for $row in $rows
-            group by $content := string-join($row/*, '~~~')
-            return $row
-        let $rows :=
-            if (not($ops?order = ('sort', 'sortd'))) then $rows 
-            else if ($ops = 'sort') then 
-            for $row in $rows order by string-join($row/*, '~~~') 
-                return $row
-            else 
-            for $row in $rows order by string-join($row/*, '~~~') descending
-                return $row
-:)                
         return
             element {$tableName} {$rows}
     return if ($ops?format eq 'xml') then $xtable else
@@ -4409,68 +4420,6 @@ declare function f:table2($rows as item()*,
             $rowLines,
             $frameLine
         ), '&#xA;')
-            
-(:            
-        return concat(
-            '| ',
-            string-join(
-                for $i in 1 to $countCols return 
-                    $row($i) ! util:rpad(., $widths[$i], ' '), ' | '),
-            ' |')
-:)
-(:    
-    else
-    let $widths :=
-        for $i in 1 to $countCols return
-        ($rows?($i) ! string() ! string-length(.)) => max()
-    let $startPos :=
-        for $i in 1 to $countCols
-        let $preColWidth := subsequence($widths, 1, $i - 1) => sum()
-        let $preSepWidth := 2 + 3 * ($i - 1)
-        return 1 + $preColWidth + $preSepWidth
-    let $rowLines :=        
-        for $row in $rows
-        return concat(
-            '| ',
-            string-join(
-                for $i in 1 to $countCols return 
-                    $row($i) ! util:rpad(., $widths[$i], ' '), ' | '),
-            ' |')
-    let $rowLines := 
-        if ($distinct) then $rowLines => distinct-values() 
-        else $rowLines 
-    let $rowLines :=
-        if ($sort or $sortd) then 
-            let $sorted := $rowLines => sort()
-            return if ($sort) then $sorted else $sorted => reverse()
-        else $rowLines
-    let $tableWidth := 4 + sum($widths) + ($countCols - 1) * 3
-    let $frameLine := '#'||f:repeat('-', $tableWidth - 2)||'#'
-    let $headLines :=
-        if (empty($headers)) then ()
-        else if (every $i in (1 to count($headers)) satisfies 
-                    string-length($headers[$i]) lt $widths[$i] + 1) then
-                concat(
-                    '| ', 
-                    string-join(
-                        for $header at $pos in $headers return 
-                            util:rpad($header, $widths[$pos] - 0, ' '), ' | '),
-                ' |')        
-        else ( 
-            for $header at $pos in $headers
-            let $prefix := f:repeat(' ', $startPos[$pos] - 3) ! replace(., '^.', '|')
-            return ($prefix || '| '||$header) ! (util:rpad(., $tableWidth - 1, ' ')||'|')
-        )
-   
-    return 
-        string-join((    
-            if (empty($headLines)) then () else        
-            ($frameLine, $headLines),
-            $frameLine,
-            $rowLines,
-            $frameLine
-        ), '&#xA;')
-:)        
 };
 
 (:~
@@ -4491,11 +4440,12 @@ declare function f:table_sort($rows as element()*, $omodels as map(*)*)
     return if (empty($remainder)) then $sorted else
         
     for $row in $sorted
-    group by $key := $fn($row)
+    group by $key := $fn($row) => string-join(',')
     return
         if (count($row) eq 1) then $row
         else $row => f:table_sort($remainder)
-};        
+}; 
+:)
 
 (:~
  : Transforms a sequence of rows into a CSV text document.
@@ -5857,6 +5807,7 @@ declare function f:getOpsMapC($options as item()?,
     return $mapFinal
 };        
 
+(:
 (:~
  : Returns the options encoded by an $options parameter
  : as a map.
@@ -5917,6 +5868,8 @@ declare function f:getOpsMapC2($options as item()?,
             let $omodel := $omap($name)
             let $otype := $omodel?type
             let $ovalues := $omodel?values
+            let $opattern := $omodel?pattern
+            let $opatternExplanation := $omodel?patternExplanation
             
             let $value := 
                 if (not(contains($item, '='))) then () 
@@ -5960,8 +5913,22 @@ declare function f:getOpsMapC2($options as item()?,
                                 'Invalid value "'||$value||'" for option "'||
                                 $name||'"; cannot cast to type "'||$otype||'".')
                         }
+                    let $valueETP :=
+                        if ($opattern) then
+                            let $matches := matches($valueET, $opattern)
+                            return
+                                if (not($matches)) then
+                                    error(QName((), 'INVALID_OPTION'),
+                                        'Invalid value "'||$value||'" '||
+                                        'for option "'||$name||'". '||
+                                        (if (not($opatternExplanation)) then 
+                                        'It must match the regular expression "'
+                                        ||$opattern||'".'
+                                        else ($opatternExplanation ! (' '||.))))
+                                else $valueET
+                         else $valueET
                     return
-                        map:entry($name, $valueET)
+                        map:entry($name, $valueETP)
         return map:merge($entries)
     
     (: Finalize map :)
@@ -5999,6 +5966,7 @@ declare function f:getOpsMap_getSelName($name, $names) {
     if ($name = $names) then $name
     else $names[starts-with(., $name)]
 };
+:)
 
 (:~
  : Create a dcat document (document catalog).

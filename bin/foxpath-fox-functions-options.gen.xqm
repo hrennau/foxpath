@@ -1,6 +1,11 @@
 (: Function options models :)
-module namespace f="http://www.foxpath.org/ns/fox-functions-options";
-declare function f:buildOptionMaps() {
+module namespace op="http://www.foxpath.org/ns/fox-functions-options";
+
+(: declare variable $f:OPTION_MODELS := prof:time(opt:buildOptionMaps()); :)
+declare variable $op:OPTION_MODELS := op:buildOptionMaps();
+declare variable $op:PARAM_MODELS := op:buildParamMaps();
+        
+declare function op:buildOptionMaps() {
   map{
     'basedir-name': map{
       'options': map{},
@@ -215,7 +220,7 @@ declare function f:buildOptionMaps() {
         'count': 'info'
       }
     },
-    'table2': map{
+    'table': map{
       'options': map{
         'format': map{
           'type': 'string',
@@ -226,10 +231,15 @@ declare function f:buildOptionMaps() {
           'type': 'integer'
         },
         'initial-prefix': map{
-          'type': 'integer'
+          'type': 'string'
         },
         'nil': map{
           'type': 'string'
+        },
+        'order': map{
+          'type': 'string',
+          'pattern': '^\d+(a|d|c|an|dn|ac|dc)?(\.\d+(a|d|c|an|dn|ac|dc)?)*$',
+          'patternExplanation': 'The value must consists of one or more dot-separated items, each one consisting of a column number, optionally followed by a|d|n|c|an|dn|ac|dc, meaning ascending, descending, ascending numeric, descending numeric, ascending case-insensitive, descending case-insensitive. Examples: 3, 3.1, 3c.1c, 3dn.1c, 3dn.1c.4'
         },
         'split': map{
           'type': 'string'
@@ -245,7 +255,7 @@ declare function f:buildOptionMaps() {
     }
   }
 };
-declare function f:buildParamMaps() {
+declare function op:buildParamMaps() {
   map{
     'colspec': map{
       'options': map{
