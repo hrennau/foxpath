@@ -280,6 +280,9 @@
             <option name="initial-prefix" type="integer">
                 <documentation>Default value for column property 'initial prefix'.</documentation>
             </option>
+            <option name="nil" type="string">
+                <documentation>Default value for representing an absent column value.</documentation>
+            </option>
             <option name="split" type="string">
                 <documentation>Default value for column property 'newline split regex'.</documentation>
             </option>

@@ -17,6 +17,9 @@
             <option name="initial-prefix" type="string">
                 <documentation/>
             </option>
+            <option name="nil" type="string">
+                <documentation/>
+            </option>
             <option name="split" type="string">
                 <documentation/>
             </option>

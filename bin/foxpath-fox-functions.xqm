@@ -4273,33 +4273,32 @@ declare function f:table2($rows as item()*,
                          $colspecs as xs:string?,
                          $fnOptions as xs:string?)
         as item() {
+    let $countCols := $rows ! array:size(.) => max()        
     let $ops := ($f:OPTION_MODELS?table2 !
                  f:getOpsMapC2($fnOptions, ., 'table2'), map{})[1]
     (: let $_DEBUG := trace($ops, '_ namePath, ops: ') :)
     
-    let $cspecs := $colspecs ! tokenize(., ',\s*')
+    (: Column models :)
+    let $cspecs := $colspecs ! tokenize(., ',\s*')    
     let $cmodels :=
         let $defaultValues := map:merge((
+            $ops?leftalign ! map:entry('leftalign', .),        
             $ops?hanging ! map:entry('hanging', .),
             $ops?initial-prefix ! map:entry('initial-prefix', .),
+            $ops?nil ! map:entry('nil', .),            
             $ops?split ! map:entry('split', .),
             $ops?width ! map:entry('width', .)))
-        for $cspec in $cspecs 
+        for $i in 1 to $countCols 
         return map:merge((
-            $defaultValues,
-            $f:PARAM_MODELS?colspec !
-            f:getOpsMapC2($cspec, ., 'table2')))
-    (: let $_DEBUG := trace($cmodels, '_ cmodels: ') :)
+            $f:PARAM_MODELS?colspec ! f:getOpsMapC2($cspecs[$i], ., 'table2'),        
+            $defaultValues))            
+    let $_DEBUG := trace($cmodels, '_ cmodels: ')
+    
+    (: Order models :)    
+    let $omodels := ()
+    
     let $headersPlus :=
         if (count($headers) eq 1) then tokenize($headers, ',\s*') else $headers
-    return if (($rows ! array:size(.)) => distinct-values() => count() gt 1) then
-        error(QName((), 'INVALID_ARG'), concat('Invalid call of "table" - ',
-            'all rows must contain the same number of columns; use string(...) ',
-            'in order to enforce a column in case of an empty column value; ',
-            'example: tuple(string(foo), string(bar))'))
-        else
-
-    let $countCols := $rows[1] ! array:size(.)
     let $maxLengths :=
         for $i in 1 to $countCols return
         ($rows?($i) ! util:flatten(.) ! string-length(.)) => max()
@@ -4316,10 +4315,13 @@ declare function f:table2($rows as item()*,
             else (1 to $countCols) ! ('col'||.)
         let $rows :=
             for $row in $rows return element {$rowName}{
+                let $size := array:size($row)            
                 for $c in 1 to $countCols 
                 let $colModel := $cmodels[$c]
                 let $width := $colModel?width
-                let $items := $row($c) ! util:flatten(.)
+                let $items := 
+                    if ($c gt $size) then () else $row($c) ! util:flatten(.)
+                let $items := if (empty($items)) then $colModel?nil else $items
                 let $nitems := count($items)
                 let $elemName := $colnames[$c] ! replace(., '\s', '_')
                 let $elemName := ($elemName, 'Column')[1]
@@ -4336,6 +4338,9 @@ declare function f:table2($rows as item()*,
                             <item>{$itemContent2}</item>
                     }}
         let $rows :=
+            if (empty($omodels)) then $rows else f:table_sort($rows, $omodels)
+(:                    
+        let $rows :=
             if (not($ops?distinct)) then $rows else
             for $row in $rows
             group by $content := string-join($row/*, '~~~')
@@ -4348,6 +4353,7 @@ declare function f:table2($rows as item()*,
             else 
             for $row in $rows order by string-join($row/*, '~~~') descending
                 return $row
+:)                
         return
             element {$tableName} {$rows}
     return if ($ops?format eq 'xml') then $xtable else
@@ -4466,6 +4472,30 @@ declare function f:table2($rows as item()*,
         ), '&#xA;')
 :)        
 };
+
+(:~
+ : Helper function of function `table`. Recursive processes all
+ : sort models.
+ :)
+declare function f:table_sort($rows as element()*, $omodels as map(*)*)
+        as element()* {
+    let $omodel := head($omodels)
+    let $remainder := tail($omodels)
+    let $fn := $omodel?fn
+    let $direction := $omodel?direction
+    let $sorted := 
+        let $prelim := $rows => sort((), $fn)
+        return
+            if ($direction eq 'd') then reverse($prelim)
+            else $prelim
+    return if (empty($remainder)) then $sorted else
+        
+    for $row in $sorted
+    group by $key := $fn($row)
+    return
+        if (count($row) eq 1) then $row
+        else $row => f:table_sort($remainder)
+};        
 
 (:~
  : Transforms a sequence of rows into a CSV text document.

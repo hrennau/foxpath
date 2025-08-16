@@ -1797,7 +1797,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 for $c in $call/*
                 let $item := $c ! f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
                 return 
-                    if (empty($item)) then ''
+                    if (empty($item)) then array{}
                     else if (count($item) gt 1) then array{$item}
                     else $item
             return foxf:tuple($items)

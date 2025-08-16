@@ -228,6 +228,9 @@ declare function f:buildOptionMaps() {
         'initial-prefix': map{
           'type': 'integer'
         },
+        'nil': map{
+          'type': 'string'
+        },
         'split': map{
           'type': 'string'
         },
@@ -252,6 +255,9 @@ declare function f:buildParamMaps() {
         'items': (),
         'leftalign': (),
         'initial-prefix': map{
+          'type': 'string'
+        },
+        'nil': map{
           'type': 'string'
         },
         'split': map{
