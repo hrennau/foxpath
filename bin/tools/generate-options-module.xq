@@ -2,10 +2,10 @@ declare namespace f="http://www.foxpath.org/ns/generate-options";
 
 declare variable $format external := 'module';
 declare variable $fconfig external := '../../functions/functions.xml';
-declare variable $pconfig external := '../../functions/params.xml'; 
-declare variable $skipwrite as xs:boolean external := false();
-declare variable $moduleUri external := '../foxpath-fox-functions-options.gen.xqm'
+declare variable $pconfig external := '../../functions/params.xml';
+declare variable $moduleUri external := '../options-model.xqm'
     ! resolve-uri(.);
+declare variable $skipwrite as xs:boolean external := false();
 
 (:~
  : Generates the XQuery module providing the function option models.
@@ -18,13 +18,13 @@ declare function f:writeModule($fconfig as element(),
     let $fmapx := $fconfige/f:writeMapx(.)
     let $pmapx := $pconfige/f:writeMapx(.)
     let $ffunction :=
-'declare function op:buildOptionMaps() {
+'declare function opm:buildOptionMaps() {
 '
 ||'  '||($fmapx ! f:serializeMap(., '  '))
 ||'&#xA;};'
     let $pfunction := if (not($pconfig)) then () else
 '
-declare function op:buildParamMaps() {
+declare function opm:buildParamMaps() {
 '
 ||'  '||($pmapx ! f:serializeMap(., '  '))
 ||'&#xA;};'
@@ -33,11 +33,10 @@ declare function op:buildParamMaps() {
         if ($format eq 'mapx') then $fmapx
         else 
 '(: Function options models :)
-module namespace op="http://www.foxpath.org/ns/fox-functions-options";
+module namespace opm="http://www.parsqube.de/xquery/util/options-model";
 
-(: declare variable $f:OPTION_MODELS := prof:time(opt:buildOptionMaps()); :)
-declare variable $op:OPTION_MODELS := op:buildOptionMaps();
-declare variable $op:PARAM_MODELS := op:buildParamMaps();
+declare variable $opm:OPTION_MODELS := opm:buildOptionMaps();
+declare variable $opm:PARAM_MODELS := opm:buildParamMaps();
         
 '||$ffunction
 ||$pfunction

@@ -277,8 +277,14 @@
             <option name="hanging" type="integer">
                 <documentation>Default value for column property 'hanging indent width'.</documentation>
             </option>
+            <option name="hlist" type="boolean">
+                <documentation>Switch indicating an hlist table.</documentation>
+            </option>
             <option name="initial-prefix" type="string">
                 <documentation>Default value for column property 'initial prefix'.</documentation>
+            </option>
+            <option name="left-align" type="boolean">
+                <documentation>Default value for column property 'left-align'.</documentation>
             </option>
             <option name="nil" type="string">
                 <documentation>Default value for representing an absent column value.</documentation>

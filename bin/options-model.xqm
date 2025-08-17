@@ -1,6 +1,10 @@
 (: Function options models :)
-module namespace f="http://www.foxpath.org/ns/fox-functions-options";
-declare function f:buildOptionMaps() {
+module namespace opm="http://www.parsqube.de/xquery/util/options-model";
+
+declare variable $opm:OPTION_MODELS := opm:buildOptionMaps();
+declare variable $opm:PARAM_MODELS := opm:buildParamMaps();
+        
+declare function opm:buildOptionMaps() {
   map{
     'basedir-name': map{
       'options': map{},
@@ -225,6 +229,7 @@ declare function f:buildOptionMaps() {
         'hanging': map{
           'type': 'integer'
         },
+        'hlist': (),
         'initial-prefix': map{
           'type': 'string'
         },
@@ -233,7 +238,9 @@ declare function f:buildOptionMaps() {
           'type': 'string'
         },
         'order': map{
-          'type': 'string'
+          'type': 'string',
+          'pattern': '^\d+(a|d|c|an|dn|ac|dc)?(\.\d+(a|d|c|an|dn|ac|dc)?)*$',
+          'patternExplanation': 'The value must consists of one or more dot-separated items, each one consisting of a column number, optionally followed by a|d|n|c|an|dn|ac|dc, meaning ascending, descending, ascending numeric, descending numeric, ascending case-insensitive, descending case-insensitive. Examples: 3, 3.1, 3c.1c, 3dn.1c, 3dn.1c.4'
         },
         'split': map{
           'type': 'string'
@@ -246,6 +253,32 @@ declare function f:buildOptionMaps() {
         'txt': 'format',
         'xml': 'format'
       }
+    }
+  }
+};
+declare function opm:buildParamMaps() {
+  map{
+    'colspec': map{
+      'options': map{
+        'hanging': map{
+          'type': 'integer'
+        },
+        'items': (),
+        'leftalign': (),
+        'initial-prefix': map{
+          'type': 'string'
+        },
+        'nil': map{
+          'type': 'string'
+        },
+        'split': map{
+          'type': 'string'
+        },
+        'width': map{
+          'type': 'integer'
+        }
+      },
+      'optionValues': map{}
     }
   }
 };

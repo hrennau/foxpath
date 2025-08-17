@@ -4,6 +4,9 @@ import module namespace i="http://www.ttools.org/xquery-functions"
 at "foxpath-processorDependent.xqm",
    "foxpath-uri-operations.xqm";
 
+import module namespace ta="http://www.parsqube.de/xquery/util/table"
+at "table.xqm";
+
 import module namespace uth="http://www.foxpath.org/ns/urithmetic" 
 at  "foxpath-urithmetic.xqm";
  
@@ -1846,7 +1849,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $colspecs := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             let $options := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)                            
             return
-                util:table($values, $headers, $colspecs, $options)
+                ta:table($values, $headers, $colspecs, $options)
 
         (: function `csv` 
            ============== :)
