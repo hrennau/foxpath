@@ -19,10 +19,16 @@ declare function ta:table($rows as item()*,
                           $fnOptions as xs:string?)
         as item() {
     let $countCols := $rows ! array:size(.) => max()  
+    let $maxLengths :=
+        for $i in 1 to $countCols return
+        (: ($rows!?($i) ! ta:flatten(.) ! string-length(.)) => max() :)
+        ($rows!?($i) ! ta:flatten(.) ! string-length(.)) => max()        
+
+    (: Evaluate options :)
     let $ops := ($opm:OPTION_MODELS?table !
                  op:optionsMap($fnOptions, ., 'table'), map{})[1]
     
-    (: Edit $ops in case of option 'hlist' :)
+    (: ... edit $ops in case of option 'hlist' :)
     let $ops :=
         if (not($ops?hlist)) then $ops 
         else
@@ -41,8 +47,9 @@ declare function ta:table($rows as item()*,
             $ops?width ! map:entry('width', .)))
         for $i in 1 to $countCols 
         return map:merge((
-            $opm:PARAM_MODELS?colspec ! op:optionsMap($cspecs[$i], ., 'table2'),        
+            $opm:PARAM_MODELS?colspec ! op:optionsMap($cspecs[$i], ., 'table'),        
             $defaultValues))            
+    let $cmodels := ta:table_adaptColWidths($cmodels, $maxLengths)
     
     (: Order models :)    
     let $ospecs :=
@@ -75,16 +82,16 @@ declare function ta:table($rows as item()*,
     let $headersPlus :=
         if (count($headers) eq 1) then tokenize($headers, ',\s*') else $headers
 
-    let $maxLengths :=
-        for $i in 1 to $countCols return
-        (: ($rows!?($i) ! ta:flatten(.) ! string-length(.)) => max() :)
-        ($rows!?($i) ! ta:flatten(.) ! string-length(.)) => max()
-        
-    let $widths :=
-        for $i in 1 to $countCols 
-        let $plus := string-length($cmodels[$i]?initial-prefix)
+    (: Determine effective column widths :) 
+    let $colWidths :=
+        for $cmodel at $cnr in $cmodels
+        let $width := $cmodel?width
         return
-            ($cmodels[$i]?width, $maxLengths[$i] + $plus, 10)[1]
+            if (exists($width)) then $width else
+                let $plus := ($cmodel?initial-prefix ! string-length(.), 0)[1]
+                return $maxLengths[$cnr] + $plus
+
+    (: Write XML "table" :)
     let $xtable :=    
         let $tableName := ($headersPlus[starts-with(., 'table=')] 
                           ! replace(., '^table=', ''), 'table')[1]
@@ -126,20 +133,20 @@ declare function ta:table($rows as item()*,
 
     let $headersXml :=
         for $header at $pos in $headersPlus
-        let $width := $widths[$pos]
+        let $width := $colWidths[$pos]
         let $lines := $header ! ta:foldText(., $width, '\s+', ()) ! <line>{.}</line>
         return
             <header>{$lines}</header>
     
     let $frameline :=
         concat('|', string-join(for $i in 1 to $countCols return 
-          ta:repeat('-', $widths[$i] + 2), '|'), '|')
+          ta:repeat('-', $colWidths[$i] + 2), '|'), '|')
 
-    let $fnWriteLine := function($ncols, $cols, $widths) {
+    let $fnWriteLine := function($ncols, $cols, $cwidths) {
         concat('| ', string-join(for $i in 1 to $ncols return 
-          $cols[$i] ! ta:rpad(., $widths[$i], ' '), ' | '), ' |')
+          $cols[$i] ! ta:rpad(., $cwidths[$i], ' '), ' | '), ' |')
     }
-    let $fnFramelineHlist := function($row) {
+    let $fnFramelineHlist := function($row, $cwidths) {
         let $nextRow := $row/following-sibling::*[1]
         let $firstColChange := (
             for $i in 1 to $countCols
@@ -151,9 +158,9 @@ declare function ta:table($rows as item()*,
           let $char :=
               if ($i eq $countCols or $i ge $firstColChange) then '-'
               else ' '
-          return ta:repeat($char, $widths[$i] + 2)||'|', ''))
+          return ta:repeat($char, $cwidths[$i] + 2)||'|', ''))
     }    
-    let $fnWriteLineHlist := function($ncols, $cols, $widths, $row) {
+    let $fnWriteLineHlist := function($ncols, $cols, $cwidths, $row) {
         let $prevRow := $row/preceding-sibling::*[1]
         let $firstColChange := (
             for $i in 1 to $countCols
@@ -166,7 +173,7 @@ declare function ta:table($rows as item()*,
               if ($i eq $countCols or $i ge $firstColChange) then $cols[$i]
               else ' '
           return
-            $value ! ta:rpad(., $widths[$i], ' '), ' | '), ' |')
+            $value ! ta:rpad(., $cwidths[$i], ' '), ' | '), ' |')
     }
     let $headLines :=
         if (not($headersXml)) then () else
@@ -174,7 +181,7 @@ declare function ta:table($rows as item()*,
         let $nlines := $headersXml/count(line) => max()
         for $lnr in 1 to $nlines
         let $values := $headersXml/string(line[$lnr])
-        return $fnWriteLine($countCols, $values, $widths)
+        return $fnWriteLine($countCols, $values, $colWidths)
         
     let $rowLines :=
         let $nrows := count($xtable/row)
@@ -185,12 +192,12 @@ declare function ta:table($rows as item()*,
         let $values := $row/*/string(descendant::line[$lnr])
         return
             if ($ops?hlist) then
-                $fnWriteLineHlist($countCols, $values, $widths, $row)
+                $fnWriteLineHlist($countCols, $values, $colWidths, $row)
             else 
-                $fnWriteLine($countCols, $values, $widths)
+                $fnWriteLine($countCols, $values, $colWidths)
         ,
         if ($ops?hlist) then
-            $fnFramelineHlist($row)[$rnr ne $nrows]
+            $fnFramelineHlist($row, $colWidths)[$rnr ne $nrows]
         else
             $frameline[$rnr ne $nrows]
         )                
@@ -203,7 +210,7 @@ declare function ta:table($rows as item()*,
             let $sorted := $rowLines => sort()
             return if ($ops?order eq 'a') then $sorted else $sorted => reverse()
         else $rowLines
-    let $tableWidth := 4 + sum($widths) + ($countCols - 1) * 3
+    let $tableWidth := 4 + sum($colWidths) + ($countCols - 1) * 3
     let $frameLine := '#'||ta:repeat('-', $tableWidth - 2)||'#'
     return 
         string-join((    
@@ -215,6 +222,32 @@ declare function ta:table($rows as item()*,
         ), '&#xA;')
 };
 
+(:~
+ : Adapt the column value 'width'. Rules:
+ : - value missing: no change
+ : - value a number: no change
+ : - value '*': remove value
+ : - value '*number': replace with the minimum of number and maximum col width
+ :)
+declare function ta:table_adaptColWidths($cmodels as map(*)*, 
+                                         $maxLengths as xs:integer*)
+        as map(*)* {
+    for $cmodel at $cnr in $cmodels
+    let $spec := $cmodel?width
+    return
+        if (empty($spec)) then $cmodel
+        else if ($spec eq '*') then map:remove($cmodel, 'width') 
+        else if ($spec castable as xs:integer) then 
+            $spec ! xs:integer(.) ! map:put($cmodel, 'width', .)
+        else if (matches($spec, '^\*\d+')) then
+            let $num := substring($spec, 2) ! xs:integer(.)
+            let $plus := ($cmodel?initial-prefix ! string-length(.), 0)[1]
+            let $maxLen := $maxLengths[$cnr] + $plus
+            let $useWidth := min(($maxLen, $num))
+            return map:put($cmodel, 'width', $useWidth)
+        else $cmodel
+};        
+                                         
 (:~
  : Helper function of function `table`. Recursive processes all
  : sort models.

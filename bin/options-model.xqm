@@ -246,7 +246,9 @@ declare function opm:buildOptionMaps() {
           'type': 'string'
         },
         'width': map{
-          'type': 'integer'
+          'type': 'string',
+          'pattern': '^\*|(\*)?\d+$',
+          'patternExplanation': 'The value must be an integer number, or a number preceded by a * character, or only a * character. A number means a width equal to the number; a number preceded * means a width which is the minimum of the number and the maximum string length occurring in the column; a * means a width equal to the maximum string length.'
         }
       },
       'optionValues': map{
@@ -275,7 +277,9 @@ declare function opm:buildParamMaps() {
           'type': 'string'
         },
         'width': map{
-          'type': 'integer'
+          'type': 'string',
+          'pattern': '^\*|(\*)?\d+$',
+          'patternExplanation': 'The value must be an integer number, or a number preceded by a * character, or only a * character. A number means a width equal to the number; a number preceded * means a width which is the minimum of the number and the maximum string length occurring in the column; a * means a width equal to the maximum string length.'
         }
       },
       'optionValues': map{}

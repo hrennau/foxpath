@@ -36,14 +36,14 @@ declare function op:optionsMap($options as item()?,
         let $entries :=
             for $item in $items
             let $item :=
-                if (not(matches($item, '^\i\c*?\d+$'))) then $item else
+                if (not(matches($item, '^\i\c*?\C?\d+$'))) then $item else
                     let $name := 
-                        replace($item, '^(\i\c*?)\d+$', '$1')
+                        replace($item, '^(\i\c*?)\C?\d+$', '$1')
                         ! op:optionsMap_getSelName(., $names)
                     let $itemName := $item !  op:optionsMap_getSelName(., $names)
                     return 
-                        if (not($name) or $itemName) then $item
-                        else replace($item, '^(\i\c*?)(\d+)$', '$1=$2')
+                        if (empty($name) or exists($itemName)) then $item
+                        else replace($item, '^(\i\c*?)(\C?\d+)$', '$1=$2')
             let $nameU := $item ! replace(., '=.*', '')
             let $name := op:optionsMap_getSelName($nameU, $names)
             return 
