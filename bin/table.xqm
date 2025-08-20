@@ -36,49 +36,9 @@ declare function ta:table($rows as item()*,
             return map:put($ops, 'order', $order)
     
     (: Column models :)
-    let $cspecs := $colspecs ! tokenize(., ',\s*')    
-    let $cmodels :=
-        let $defaultValues := map:merge((
-            $ops?leftalign ! map:entry('leftalign', .),        
-            $ops?hanging ! map:entry('hanging', .),
-            $ops?initial-prefix ! map:entry('initial-prefix', .),
-            $ops?nil ! map:entry('nil', .),            
-            $ops?split ! map:entry('split', .),
-            $ops?width ! map:entry('width', .)))
-        for $i in 1 to $countCols 
-        return map:merge((
-            $opm:PARAM_MODELS?colspec ! op:optionsMap($cspecs[$i], ., 'table'),        
-            $defaultValues))            
-    let $cmodels := ta:table_adaptColWidths($cmodels, $maxLengths)
-    
-    (: Order models :)    
-    let $ospecs :=
-        let $parts := $ops?order ! tokenize(., '\.')
-        for $part in $parts
-        let $col := replace($part, '^(\d+).*', '$1') ! xs:integer(.)
-        let $spec := replace($part, '^\d+(.*)', '$1')[. ne $part]
-        return
-            map{'col': $col, 'spec': $spec}
-    let $omodels :=
-        for $ospec in $ospecs 
-        let $col := $ospec?col
-        let $spec := $ospec?spec[normalize-space(.)]
-        let $fn :=
-            if (ends-with($spec, 'n')) then
-                function($row) {
-                    try {$row/*[$col]/normalize-space(.)[1] 
-                         ! number(.)} catch * {()}}
-            else if (ends-with($spec, 'c')) then
-                function($row) {
-                     $row/*[$col]/normalize-space(.) ! lower-case(.) 
-                     => string-join(',')}
-            else function($row) {
-                     $row/*[$col]/normalize-space(.) 
-                     => string-join(',')}
-        let $direction :=
-            if (empty($spec) or $spec = ('n', 'c')) then 'a' 
-            else substring($spec, 1, 1)
-        return map{'fn': $fn, 'direction': $direction}
+    let $cmodels := ta:table_getColModels($colspecs, $countCols, $maxLengths, $ops)
+    (: Order models :) 
+    let $omodels := ta:table_getOrderModel($ops)
     let $headersPlus :=
         if (count($headers) eq 1) then tokenize($headers, ',\s*') else $headers
 
@@ -92,52 +52,11 @@ declare function ta:table($rows as item()*,
                 return $maxLengths[$cnr] + $plus
 
     (: Write XML "table" :)
-    let $xtable :=    
-        let $tableName := ($headersPlus[starts-with(., 'table=')] 
-                          ! replace(., '^table=', ''), 'table')[1]
-        let $rowName := ($headersPlus[starts-with(., 'row=')] 
-                          ! replace(., '^row=', ''), 'row')[1]        
-        let $colnames :=
-            if (exists($headersPlus)) then $headersPlus
-            else (1 to $countCols) ! ('col'||.)
-        let $rows :=
-            for $row in $rows return element {$rowName}{
-                let $size := array:size($row)            
-                for $c in 1 to $countCols 
-                let $colModel := $cmodels[$c]
-                let $width := $colModel?width
-                let $items := 
-                    if ($c gt $size) then () else $row($c) ! ta:flatten(.)
-                let $items := 
-                    if (empty($items) or count($items) eq 1 and $items = '') then $colModel?nil else $items
-                let $nitems := count($items)
-                let $elemName := $colnames[$c] ! replace(., '\s', '_')
-                let $elemName := ($elemName, 'Column')[1]
-                return
-                    element {$elemName} {
-                        for $item at $inr in $items ! normalize-space(.)
-                        let $regex := ($colModel?split, $ops?split, '\s+')[1]
-                        let $itemContent := $item ! 
-                            ta:foldText(., $width, $regex, $colModel) ! <line>{.}</line>
-                        let $itemContent2 :=
-                            for $line in $itemContent
-                            return tokenize($line, '&#xA;') ! <line>{.}</line>
-                        return
-                            <item>{$itemContent2}</item>
-                    }}
-        let $rows :=
-            if (empty($omodels)) then $rows else ta:table_sort($rows, $omodels)
-        return
-            element {$tableName} {$rows}
+    let $xtable := ta:table_getXmlTable(
+        $rows, $cmodels, $omodels, $headersPlus, $ops)
     return if ($ops?format eq 'xml') then $xtable else
 
-    let $headersXml :=
-        for $header at $pos in $headersPlus
-        let $width := $colWidths[$pos]
-        let $lines := $header ! ta:foldText(., $width, '\s+', ()) ! <line>{.}</line>
-        return
-            <header>{$lines}</header>
-    
+    (: Transform XMl table in text table :)
     let $frameline :=
         concat('|', string-join(for $i in 1 to $countCols return 
           ta:repeat('-', $colWidths[$i] + 2), '|'), '|')
@@ -176,7 +95,13 @@ declare function ta:table($rows as item()*,
             $value ! ta:rpad(., $cwidths[$i], ' '), ' | '), ' |')
     }
     let $headLines :=
-        if (not($headersXml)) then () else
+        let $headersXml :=
+            for $header at $pos in $headersPlus
+            let $width := $colWidths[$pos]
+            let $lines := $header ! ta:foldText(., $width, '\s+', ()) ! <line>{.}</line>
+            return
+                <header>{$lines}</header>
+        return if (not($headersXml)) then () else
         
         let $nlines := $headersXml/count(line) => max()
         for $lnr in 1 to $nlines
@@ -205,11 +130,6 @@ declare function ta:table($rows as item()*,
     let $rowLines := 
         if ($ops?distinct) then $rowLines => distinct-values() 
         else $rowLines 
-    let $rowLines :=
-        if ($ops?order = ('a', 'd')) then 
-            let $sorted := $rowLines => sort()
-            return if ($ops?order eq 'a') then $sorted else $sorted => reverse()
-        else $rowLines
     let $tableWidth := 4 + sum($colWidths) + ($countCols - 1) * 3
     let $frameLine := '#'||ta:repeat('-', $tableWidth - 2)||'#'
     return 
@@ -220,6 +140,123 @@ declare function ta:table($rows as item()*,
             $rowLines,
             $frameLine
         ), '&#xA;')
+};
+
+declare function ta:table_getColModels($colspecs as xs:string?,
+                                       $countCols as xs:integer,
+                                       $maxLengths as xs:integer*,
+                                       $ops as map(*))                                       
+        as item()* {
+    (: Write preliminary models :)
+    let $cspecs := $colspecs ! tokenize(., ',\s*')    
+    let $cmodels :=
+        let $defaultValues := map:merge((
+            $ops?leftalign ! map:entry('leftalign', .),        
+            $ops?hanging ! map:entry('hanging', .),
+            $ops?initial-prefix ! map:entry('initial-prefix', .),
+            $ops?nil ! map:entry('nil', .),            
+            $ops?split ! map:entry('split', .),
+            $ops?width ! map:entry('width', .)))
+        for $i in 1 to $countCols 
+        return map:merge((
+            $opm:PARAM_MODELS?colspec ! op:optionsMap($cspecs[$i], ., 'table'),        
+            $defaultValues))            
+ 
+    (: Adapt model parameter 'width' :)
+    for $cmodel at $cnr in $cmodels
+    let $spec := $cmodel?width
+    return
+        if (empty($spec)) then $cmodel
+        else if ($spec eq '*') then map:remove($cmodel, 'width') 
+        else if ($spec castable as xs:integer) then 
+            $spec ! xs:integer(.) ! map:put($cmodel, 'width', .)
+        else if (matches($spec, '^\*\d+')) then
+            let $num := substring($spec, 2) ! xs:integer(.)
+            let $plus := ($cmodel?initial-prefix ! string-length(.), 0)[1]
+            let $maxLen := $maxLengths[$cnr] + $plus
+            let $useWidth := min(($maxLen, $num))
+            return map:put($cmodel, 'width', $useWidth)
+        else $cmodel
+};
+
+declare function ta:table_getOrderModel($ops as map(*))
+        as item()* {
+    let $ospecs :=
+        let $parts := $ops?order ! tokenize(., '\.')
+        for $part in $parts
+        let $col := replace($part, '^(\d+).*', '$1') ! xs:integer(.)
+        let $spec := replace($part, '^\d+(.*)', '$1')[. ne $part]
+        return
+            map{'col': $col, 'spec': $spec}
+    let $omodels :=
+        for $ospec in $ospecs 
+        let $col := $ospec?col
+        let $spec := $ospec?spec[normalize-space(.)]
+        let $fn :=
+            if (ends-with($spec, 'n')) then
+                function($row) {
+                    try {$row/*[$col]/normalize-space(.)[1] 
+                         ! number(.)} catch * {()}}
+            else if (ends-with($spec, 'c')) then
+                function($row) {
+                     $row/*[$col]/normalize-space(.) ! lower-case(.) 
+                     => string-join(',')}
+            else function($row) {
+                     $row/*[$col]/normalize-space(.) 
+                     => string-join(',')}
+        let $direction :=
+            if (empty($spec) or $spec = ('n', 'c')) then 'a' 
+            else substring($spec, 1, 1)
+        return map{'fn': $fn, 'direction': $direction}
+    return $omodels        
+};
+
+declare function ta:table_getXmlTable($rows as array(*)*,
+                                      $colModels as map(*)*,
+                                      $orderModels as map(*)*,
+                                      $headersPlus as xs:string*,
+                                      $ops as map(*))
+        as element() {
+    let $countCols := count($colModels)        
+    let $xtable :=    
+        let $tableName := ($headersPlus[starts-with(., 'table=')] 
+                          ! replace(., '^table=', ''), 'table')[1]
+        let $rowName := ($headersPlus[starts-with(., 'row=')] 
+                          ! replace(., '^row=', ''), 'row')[1]        
+        let $colnames :=
+            if (exists($headersPlus)) then $headersPlus
+            else (1 to $countCols) ! ('col'||.)
+        let $rows :=
+            for $row in $rows return element {$rowName}{
+                let $size := array:size($row)            
+                for $c in 1 to $countCols 
+                let $colModel := $colModels[$c]
+                let $width := $colModel?width
+                let $items := 
+                    if ($c gt $size) then () else $row($c) ! ta:flatten(.)
+                let $items := 
+                    if (empty($items) or count($items) eq 1 and $items = '') then $colModel?nil else $items
+                let $nitems := count($items)
+                let $elemName := $colnames[$c] ! replace(., '\s', '_')
+                let $elemName := ($elemName, 'Column')[1]
+                return
+                    element {$elemName} {
+                        for $item at $inr in $items ! normalize-space(.)
+                        let $regex := ($colModel?split, $ops?split, '\s+')[1]
+                        let $itemContent := $item ! 
+                            ta:foldText(., $width, $regex, $colModel) ! <line>{.}</line>
+                        let $itemContent2 :=
+                            for $line in $itemContent
+                            return tokenize($line, '&#xA;') ! <line>{.}</line>
+                        return
+                            <item>{$itemContent2}</item>
+                    }}
+        let $rows :=
+            if (empty($orderModels)) then $rows 
+            else ta:table_sort($rows, $orderModels)
+        return
+            element {$tableName} {$rows}
+    return $xtable          
 };
 
 (:~

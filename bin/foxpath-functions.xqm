@@ -1399,6 +1399,23 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 if (empty($nodes)) then () else 
                     foxf:namePathNew($nodes, (), $fnOptions, $options)
                     
+        (: function `name-path-in-context` 
+           =============================== :)
+        else if ($fname = ('name-path-in-context', 'name-path-in-context-ec')) then  
+            let $da := if (ends-with($fname, '-ec')) then 1 else 0
+            let $args := $call/*
+            let $nodes :=
+                if (not($da)) then $context 
+                else $args[1]/f:resolveFoxpathRC(
+                    ., false(), $context, $position, $last, $vars, $options)
+            let $context := $args[1 + $da]/
+                f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $args[2 + $da]/
+                f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                if (empty($nodes)) then () else 
+                    foxf:namePathNew($nodes, $context, $fnOptions, $options)
+                    
         (: function `node-deep-equal` 
            ========================= :)
         else if ($fname = ('node-deep-equal', 'node-deep-equal-ec')) then

@@ -85,6 +85,9 @@ declare function f:compileUSE(
         $addAnchorsDefault, $qualifiedMatching, $namespaceBindings, ())        
 };        
 
+(:~
+ : Compiles a Unified String Expression into a structured representation.
+ :)
 declare function f:compileUSE(
                     $uexpr as xs:string?, 
                     $addAnchorsDefault as xs:boolean?,
@@ -92,9 +95,9 @@ declare function f:compileUSE(
                     $namespaceBindings as map(*)?,
                     $options as xs:string?) 
         as map(xs:string, item()*)? {
-    let $itemsAndFlags := f:splitStringIntoItemsAndFlags($uexpr)
-    let $flags := $itemsAndFlags[1]  
-    let $items := subsequence($itemsAndFlags, 2)
+    let $ifmap := f:splitStringIntoItemsAndFlags($uexpr)
+    let $flags := $ifmap?flags  
+    let $items := $ifmap?items
     
     let $isFulltext := $flags ! tokenize(.) = ('fulltext', 'ftext', 'ft')
     return
@@ -111,6 +114,7 @@ declare function f:compileUSE(
         else if (contains($flags, 'a')) then true()
         else ($addAnchorsDefault, true())[1]
     
+    (: Trim patterns :)
     let $patterns := $items ! replace(., '^\s+|\s+$', '')
     return if (empty($patterns)) then () else
     
@@ -159,10 +163,12 @@ declare function f:compileGlorexPatternSet(
     let $patterns := $patterns ! normalize-space(.)[string()]
     return if (empty($patterns)) then () else
     
+    (: Pattern kind: literal (do not contain wildcard, @ or \) :)
     let $literals := 
         if ($patternIsRegex) then () else $patterns[not(matches(., '[@*?\\]'))]
     let $useLiterals := 
         if (not($ignoreCase)) then $literals else $literals ! lower-case(.)
+    (: Pattern kind: regular expression :)
     let $regexes := 
         for $pattern in $patterns[not(. = $literals)]
         let $regexAndFlags := 
@@ -427,14 +433,14 @@ declare function f:matchesGlorexPatternSet(
  : If flags are used and contain one of the tokens 'fulltext', 'ftext', 'ft',
  : the item text is interpreted as a single item. Otherwise, the item text
  : is tokenized into items separated by whitespace (default) or one of the
- : characters ,;:/. A non-whitespace separator is assumed if contained by
+ : characters ,;:/ . A non-whitespace separator is assumed if contained by
  : the flag string.
  :
  : Example: "foo bar zoo"
  : => flags="", three items="foo", "bar", "zoo"
  :
  : Example: "foo##bar#c"
- : => flags="c", oe item="foo#bar"
+ : => flags="c", one item="foo#bar"
  :
  : Example: "foo bar, zoo #,c"
  : => flags=",c", two items="foo bar", "zoo"
@@ -446,25 +452,26 @@ declare function f:matchesGlorexPatternSet(
  : => flags=":", two items="foo", "bar, zoo"
  :
  : @param string the string to be split
- : @return a sequence of strings; the first one represents the flags, which
- :   may be a zero-length string; all following items represent the item
- :   extracted from the string
+ : @return a map with entries 'items' and 'flags'.
  :)
 declare function f:splitStringIntoItemsAndFlags($string as xs:string) 
-        as xs:string+ {
+        as map(*) {
     let $concatAndFlags := f:splitStringAtDoubleEscapableChar($string, '#')        
     let $concat := $concatAndFlags[1]
     let $flags := $concatAndFlags[2]
     return
-        if (tokenize($flags) = ('fulltext', 'ftext', 'ft')) then ($flags, $concat)
+        if (tokenize($flags) = ('fulltext', 'ftext', 'ft')) then 
+            map{'flags': $flags, 'items': $concat}
         else
         
     let $sep := 
         if (not(matches($flags, '[,;:/]'))) then () else
             replace($flags, '^.*([,;:/]).*', '$1') ! substring(., 1, 1)
-    return (
-        $flags,
-        if ($sep) then tokenize($concat, '\s*'||$sep||'\s*') else tokenize($concat))
+    return map{
+        'flags': $flags,
+        'items':
+            if ($sep) then tokenize($concat, '\s*'||$sep||'\s*') 
+            else tokenize($concat)}
 };
 
 (:~
