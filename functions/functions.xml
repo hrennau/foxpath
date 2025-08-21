@@ -312,4 +312,56 @@
             </option>
         </options>
     </function>
+    <function name="xsd.inheritance-report" group="module-xsd" withEc="true">
+        <documentation>
+            <summary>Reports type inheritance in a set of XSDs.</summary> 
+            <params>
+                <param name="xsds" type="xs:anyAtomicType*" onlyEc="true"/>
+                <param name="options" type="xs:string?" optional="true"/>
+            </params>
+        </documentation>        
+        <options>
+            <option name="base" type="string">
+                <documentation>Filter selecting ultimate base types - consider only type 
+                hierarchies with a selected ultimate base type</documentation>
+            </option>
+            <option name="tsummary" type="string">
+                <documentation>Filter selecting type summary attributes. The available tokens are: 
+                    bbase (built-in base), co (type content), aeg (type content names),
+                    ki (type kind), sg (substitution group info), use (type usage).</documentation>
+            </option>
+        </options>
+    </function>
+    <function name="xsd.type-summary-report" group="module-xsd" withEc="true">
+        <documentation>
+            <summary>Provides type summaries.</summary> 
+            <params>
+                <param name="xsds" type="xs:anyAtomicType*" onlyEc="true"/>
+                <param name="options" type="xs:string?" optional="true"/>
+            </params>
+        </documentation>        
+        <options>
+            <option name="scope" type="string">
+                <documentation>The scope of types to be considered - global, local, all</documentation>
+                <values>
+                    <value string="global"/>
+                    <value string="local"/>
+                    <value string="all"/>
+                </values>                
+            </option>
+            <option name="base" type="string">
+                <documentation>Filter selecting base types - consider only types directly
+                    derived from these types</documentation>
+            </option>
+            <option name="name" type="string">
+                <documentation>Filter types by name - consider only types with a matching name</documentation>
+            </option>
+            <option name="tsummary" type="string">
+                <documentation>Filter selecting type summary attributes. The available tokens are: 
+                    bbase (built-in base), co (type content), aeg (type content names),
+                    ki (type kind), sg (substitution group info), use (type usage).</documentation>
+            </option>
+        </options>
+    </function>
+    
 </functions>

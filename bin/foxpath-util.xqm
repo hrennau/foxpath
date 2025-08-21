@@ -52,6 +52,13 @@ declare function f:getModuleFunction($fname as xs:string)
             'modules/check/check-namespaces.xqm'
         case 'replaceAndMarkChars' return
             'modules/characters/char-marker.xqm'
+            
+        (: XSD analysis tools :)
+        case 'typeSummaryReport' return
+            'modules/xsd/lib/type-inheritance.xqm'        
+        case 'getInheritanceReport' return
+            'modules/xsd/lib/type-inheritance.xqm'
+            
         default return error((), 'Unknown function name: '||$fname)
     return
         inspect:functions($module)

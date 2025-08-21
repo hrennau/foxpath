@@ -255,6 +255,39 @@ declare function opm:buildOptionMaps() {
         'txt': 'format',
         'xml': 'format'
       }
+    },
+    'xsd.inheritance-report': map{
+      'options': map{
+        'base': map{
+          'type': 'string'
+        },
+        'tsummary': map{
+          'type': 'string'
+        }
+      },
+      'optionValues': map{}
+    },
+    'xsd.type-summary-report': map{
+      'options': map{
+        'scope': map{
+          'type': 'string',
+          'values': ('global', 'local', 'all')
+        },
+        'base': map{
+          'type': 'string'
+        },
+        'name': map{
+          'type': 'string'
+        },
+        'tsummary': map{
+          'type': 'string'
+        }
+      },
+      'optionValues': map{
+        'global': 'scope',
+        'local': 'scope',
+        'all': 'scope'
+      }
     }
   }
 };

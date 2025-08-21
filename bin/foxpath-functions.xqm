@@ -22,6 +22,9 @@ at  "foxpath-unified-string-expression.xqm";
 import module namespace foxf="http://www.foxpath.org/ns/fox-functions" 
 at "foxpath-fox-functions.xqm";
 
+import module namespace modf="http://www.foxpath.org/ns/module-functions" 
+at "foxpath-module-functions.xqm";
+
 (: 
  : ===============================================================================
  :
@@ -1575,6 +1578,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
                 $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options))
             let $options := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return foxf:pathMultiDiff($items, $options, $fname)
+
+        (: function `pattern-object` 
+           ========================= :)
+        else if ($fname = ('pattern-object')) then   
+            let $pattern := 
+                $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $addAnchorsDefault := 
+                $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return use:compileUSE($pattern, $addAnchorsDefault)
 
         (: function `percent` 
            ================== :)
@@ -3191,7 +3203,25 @@ let $contents := $call/*[1] ! f:resolveFoxpathRC(., false(), $context, $position
                            
             let $fn := util:getModuleFunction('replaceAndMarkChars') 
             return try {$fn($items, $replace, $mark, $flags, ())} catch * {$err:code, $err:description}
-        
+
+        else if ($fname = ('xsd.inheritance-report',
+                           'xsd.inheritance-report-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $args := $call/*
+            let $xsds := if ($da eq 0) then $context else
+                $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $args[$da + 1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                modf:xsd.getInheritanceReport($xsds, $fnOptions, $options)
+        else if ($fname = ('xsd.type-summary-report',
+                           'xsd.type-summary-report-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0
+            let $args := $call/*
+            let $xsds := if ($da eq 0) then $context else
+                $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $args[$da + 1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                modf:xsd.getTypeSummaryReport($xsds, $fnOptions, $options)
         else
         error(QName((), 'NOT_YET_IMPLEMENTED'),
             concat('Unexpected function name: ', $fname))
