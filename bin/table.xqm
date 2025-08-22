@@ -27,121 +27,58 @@ declare function ta:table($rows as item()*,
     (: Evaluate options :)
     let $ops := ($opm:OPTION_MODELS?table !
                  op:optionsMap($fnOptions, ., 'table'), map{})[1]
-    
-    (: ... edit $ops in case of option 'hlist' :)
-    let $ops :=
-        if (not($ops?hlist)) then $ops 
-        else
-            let $order := (for $i in 1 to $countCols return string($i)) => string-join('.')
-            return map:put($ops, 'order', $order)
+                 
+    (: Finalize options :)
+    let $ops := ta:table_finalizeOptions($ops, $countCols)
     
     (: Column models :)
     let $cmodels := ta:table_getColModels($colspecs, $countCols, $maxLengths, $ops)
+    
     (: Order models :) 
     let $omodels := ta:table_getOrderModel($ops)
     let $headersPlus :=
         if (count($headers) eq 1) then tokenize($headers, ',\s*') else $headers
-
-    (: Determine effective column widths :) 
-    let $colWidths :=
-        for $cmodel at $cnr in $cmodels
-        let $width := $cmodel?width
-        return
-            if (exists($width)) then $width else
-                let $plus := ($cmodel?initial-prefix ! string-length(.), 0)[1]
-                return $maxLengths[$cnr] + $plus
-
+        
     (: Write XML "table" :)
     let $xtable := ta:table_getXmlTable(
         $rows, $cmodels, $omodels, $headersPlus, $ops)
     return if ($ops?format eq 'xml') then $xtable else
 
     (: Transform XMl table in text table :)
-    let $frameline :=
-        concat('|', string-join(for $i in 1 to $countCols return 
-          ta:repeat('-', $colWidths[$i] + 2), '|'), '|')
-
-    let $fnWriteLine := function($ncols, $cols, $cwidths) {
-        concat('| ', string-join(for $i in 1 to $ncols return 
-          $cols[$i] ! ta:rpad(., $cwidths[$i], ' '), ' | '), ' |')
-    }
-    let $fnFramelineHlist := function($row, $cwidths) {
-        let $nextRow := $row/following-sibling::*[1]
-        let $firstColChange := (
-            for $i in 1 to $countCols
-            where not($row/*[$i] eq $nextRow/*[$i])
-            return $i)[1]
-        return
-          concat('|', string-join( 
-          for $i in 1 to $countCols
-          let $char :=
-              if ($i eq $countCols or $i ge $firstColChange) then '-'
-              else ' '
-          return ta:repeat($char, $cwidths[$i] + 2)||'|', ''))
-    }    
-    let $fnWriteLineHlist := function($ncols, $cols, $cwidths, $row) {
-        let $prevRow := $row/preceding-sibling::*[1]
-        let $firstColChange := (
-            for $i in 1 to $countCols
-            where not($row/*[$i] eq $prevRow/*[$i])
-            return $i)[1]
-        return
-          concat('| ', string-join(
-          for $i in 1 to $countCols
-          let $value := 
-              if ($i eq $countCols or $i ge $firstColChange) then $cols[$i]
-              else ' '
-          return
-            $value ! ta:rpad(., $cwidths[$i], ' '), ' | '), ' |')
-    }
-    let $headLines :=
-        let $headersXml :=
-            for $header at $pos in $headersPlus
-            let $width := $colWidths[$pos]
-            let $lines := $header ! ta:foldText(., $width, '\s+', ()) ! <line>{.}</line>
-            return
-                <header>{$lines}</header>
-        return if (not($headersXml)) then () else
-        
-        let $nlines := $headersXml/count(line) => max()
-        for $lnr in 1 to $nlines
-        let $values := $headersXml/string(line[$lnr])
-        return $fnWriteLine($countCols, $values, $colWidths)
-        
-    let $rowLines :=
-        let $nrows := count($xtable/row)
-        for $row at $rnr in $xtable/row return (
-        let $nlines := $row/*/count(descendant::line) => max()
-        
-        for $lnr in 1 to $nlines
-        let $values := $row/*/string(descendant::line[$lnr])
-        return
-            if ($ops?hlist) then
-                $fnWriteLineHlist($countCols, $values, $colWidths, $row)
-            else 
-                $fnWriteLine($countCols, $values, $colWidths)
-        ,
-        if ($ops?hlist) then
-            $fnFramelineHlist($row, $colWidths)[$rnr ne $nrows]
-        else
-            $frameline[$rnr ne $nrows]
-        )                
-            
-    let $rowLines := 
-        if ($ops?distinct) then $rowLines => distinct-values() 
-        else $rowLines 
-    let $tableWidth := 4 + sum($colWidths) + ($countCols - 1) * 3
-    let $frameLine := '#'||ta:repeat('-', $tableWidth - 2)||'#'
-    return 
-        string-join((    
-            if (empty($headLines)) then () else        
-            ($frameLine, $headLines),
-            $frameLine,
-            $rowLines,
-            $frameLine
-        ), '&#xA;')
+    let $table := ta:table_xmlTableToText($xtable, $cmodels, $headersPlus, $ops)
+    return $table
 };
 
+(:~ 
+ : Finalizes the options.
+ :)
+declare function ta:table_finalizeOptions($ops as map(*), 
+                                          $countCols as xs:integer)
+        as map(*) {
+    let $ops :=
+        if (not($ops?hlist)) then $ops else 
+
+        let $order := 
+            (for $i in 1 to $countCols return string($i)) => string-join('.')
+        return map:put($ops, 'order', $order)
+        
+    (: ... augment 'reorder', if used :)
+    let $ops :=
+        let $reorder := $ops?reorder
+        return if (not($reorder)) then $ops else
+        
+        let $items := tokenize($reorder, '\.') ! xs:integer(.) 
+                      => distinct-values()
+        let $missingCols :=
+            if (count($items) eq $countCols) then () 
+            else (1 to $countCols)[not(. = $items)]
+        return map:put($ops, 'reorder', ($items, $missingCols))
+    return $ops    
+};
+
+(:~ 
+ : Create the column models.
+ :)
 declare function ta:table_getColModels($colspecs as xs:string?,
                                        $countCols as xs:integer,
                                        $maxLengths as xs:integer*,
@@ -163,28 +100,53 @@ declare function ta:table_getColModels($colspecs as xs:string?,
             $defaultValues))            
  
     (: Adapt model parameter 'width' :)
-    for $cmodel at $cnr in $cmodels
-    let $spec := $cmodel?width
-    return
-        if (empty($spec)) then $cmodel
-        else if ($spec eq '*') then map:remove($cmodel, 'width') 
-        else if ($spec castable as xs:integer) then 
-            $spec ! xs:integer(.) ! map:put($cmodel, 'width', .)
-        else if (matches($spec, '^\*\d+')) then
-            let $num := substring($spec, 2) ! xs:integer(.)
+    let $cmodels :=
+        for $cmodel at $cnr in $cmodels
+        let $spec := $cmodel?width
+        return
+            if (empty($spec)) then $cmodel
+            else if ($spec eq '*') then map:remove($cmodel, 'width') 
+            else if ($spec castable as xs:integer) then 
+                $spec ! xs:integer(.) ! map:put($cmodel, 'width', .)
+            else if (matches($spec, '^\*\d+')) then
+                let $num := substring($spec, 2) ! xs:integer(.)
+                let $plus := ($cmodel?initial-prefix ! string-length(.), 0)[1]
+                let $maxLen := $maxLengths[$cnr] + $plus
+                let $useWidth := min(($maxLen, $num))
+                return map:put($cmodel, 'width', $useWidth)
+            else $cmodel
+
+    (: Add parameter 'maxwidth' :)
+    let $cmodels :=    
+        for $cmodel at $cnr in $cmodels
+        let $width := $cmodel?width
+        let $maxwidth := if (exists($width)) then $width else
             let $plus := ($cmodel?initial-prefix ! string-length(.), 0)[1]
-            let $maxLen := $maxLengths[$cnr] + $plus
-            let $useWidth := min(($maxLen, $num))
-            return map:put($cmodel, 'width', $useWidth)
-        else $cmodel
+            return $maxLengths[$cnr] + $plus
+        return map:put($cmodel, 'maxwidth', $maxwidth)
+    return $cmodels        
 };
 
+(:~
+ : Create the order model.
+ : Note: if option "reorder" is specified, the order spec
+ : refers to the reordered columns, as the XML table contains
+ : reordered columns.
+ :)
 declare function ta:table_getOrderModel($ops as map(*))
         as item()* {
+    let $reorder := $ops?reorder
+    let $colMapping :=
+        if (empty($reorder)) then ()
+        else for $i in 1 to count($reorder) return index-of($reorder, $i)
+        
     let $ospecs :=
         let $parts := $ops?order ! tokenize(., '\.')
         for $part in $parts
-        let $col := replace($part, '^(\d+).*', '$1') ! xs:integer(.)
+        let $col := 
+            let $prelim := replace($part, '^(\d+).*', '$1') ! xs:integer(.)
+            return 
+              if (empty($colMapping)) then $prelim else $colMapping[$prelim]
         let $spec := replace($part, '^\d+(.*)', '$1')[. ne $part]
         return
             map{'col': $col, 'spec': $spec}
@@ -211,13 +173,19 @@ declare function ta:table_getOrderModel($ops as map(*))
     return $omodels        
 };
 
+(:~
+ : Write the XML table.
+ :)
 declare function ta:table_getXmlTable($rows as array(*)*,
                                       $colModels as map(*)*,
                                       $orderModels as map(*)*,
                                       $headersPlus as xs:string*,
                                       $ops as map(*))
         as element() {
-    let $countCols := count($colModels)        
+    let $countCols := count($colModels)     
+    let $reorder := $ops?reorder
+    let $colseq := if (exists($reorder)) then $reorder else 1 to $countCols
+
     let $xtable :=    
         let $tableName := ($headersPlus[starts-with(., 'table=')] 
                           ! replace(., '^table=', ''), 'table')[1]
@@ -228,14 +196,16 @@ declare function ta:table_getXmlTable($rows as array(*)*,
             else (1 to $countCols) ! ('col'||.)
         let $rows :=
             for $row in $rows return element {$rowName}{
-                let $size := array:size($row)            
-                for $c in 1 to $countCols 
+                let $size := array:size($row) 
+                for $c in $colseq 
                 let $colModel := $colModels[$c]
                 let $width := $colModel?width
                 let $items := 
                     if ($c gt $size) then () else $row($c) ! ta:flatten(.)
                 let $items := 
-                    if (empty($items) or count($items) eq 1 and $items = '') then $colModel?nil else $items
+                    if (empty($items) or count($items) eq 1 and $items = '') 
+                    then $colModel?nil 
+                    else $items
                 let $nitems := count($items)
                 let $elemName := $colnames[$c] ! replace(., '\s', '_')
                 let $elemName := ($elemName, 'Column')[1]
@@ -259,6 +229,107 @@ declare function ta:table_getXmlTable($rows as array(*)*,
     return $xtable          
 };
 
+(:~
+ : Transforms the XML table into a text representation.
+ :)
+declare function ta:table_xmlTableToText($xtable as element(),
+                                         (: $colMWidths as xs:integer+, :)
+                                         $cmodels as map(*)+,
+                                         $headers as xs:string*,
+                                         $ops as map(*))
+        as xs:string {
+    let $countCols := count($cmodels)
+    let $colseq := 
+        let $reorder := $ops?reorder
+        return if (exists($reorder)) then $reorder else 1 to $countCols
+    let $cmodelsReo := for $i in 1 to $countCols return $cmodels[$colseq[$i]]
+    let $maxwidths := for $i in 1 to $countCols return $cmodelsReo[$i]?maxwidth
+    let $widths := for $i in 1 to $countCols return $cmodelsReo[$i]?width
+    
+    let $frameline := '|'||
+        string-join($maxwidths ! ta:repeat('-', . + 2), '|')||'|'
+    
+    let $fnWriteLine := function($ncols, $cols, $cwidths) {
+        '| '||string-join(for $i in 1 to $ncols return 
+                  ta:rpad($cols[$i], $cwidths[$i], ' '), ' | ')||' |'
+    }
+    let $fnFramelineHlist := function($row, $cwidths) {
+        let $nextRow := $row/following-sibling::*[1]
+        let $firstColChange := (
+            for $i in 1 to $countCols
+            where not($row/*[$i] eq $nextRow/*[$i])
+            return $i)[1]
+        return
+          '|'||string-join(for $i in 1 to $countCols
+              let $char :=
+                  if ($i eq $countCols or $i ge $firstColChange) then '-'
+                  else ' '
+              return ta:repeat($char, $cwidths[$i] + 2)||'|', '')
+    }    
+    let $fnWriteLineHlist := function($ncols, $cols, $cwidths, $row) {
+        let $prevRow := $row/preceding-sibling::*[1]
+        let $firstColChange := (
+            for $i in 1 to $countCols
+            where not($row/*[$i] eq $prevRow/*[$i])
+            return $i)[1]
+        return
+          '| '||string-join(
+          for $i in 1 to $countCols
+          let $value := 
+              if ($i eq $countCols or $i ge $firstColChange) then $cols[$i]
+              else ' '
+          return
+            ta:rpad($value, $cwidths[$i], ' '), ' | ')||' |'
+    }
+    let $headLines :=
+        let $headersXml :=
+            for $pos in $colseq
+            let $header := $headers[$pos]
+            let $width := $maxwidths[$pos]
+            let $lines := $header ! ta:foldText(., $width, '\s+', ()) 
+                                  ! <line>{.}</line>
+            return 
+                <header>{$lines}</header>
+        return if (not($headersXml)) then () else
+        
+        let $nlines := $headersXml/count(line) => max()
+        for $lnr in 1 to $nlines
+        let $values := $headersXml/string(line[$lnr])
+        return 
+            $fnWriteLine($countCols, $values, $maxwidths)
+        
+    let $rowLines :=
+        let $nrows := count($xtable/row)
+        for $row at $rnr in $xtable/row return (
+        let $nlines := $row/*/count(descendant::line) => max()
+        
+        for $lnr in 1 to $nlines
+        let $values := $row/*/string(descendant::line[$lnr])
+        return
+            if ($ops?hlist) then
+                $fnWriteLineHlist($countCols, $values, $maxwidths, $row)
+            else 
+                $fnWriteLine($countCols, $values, $maxwidths)
+        ,
+        if ($ops?hlist) then
+            $fnFramelineHlist($row, $maxwidths)[$rnr ne $nrows]
+        else
+            $frameline[$rnr ne $nrows]
+        )
+        
+    let $tableWidth := 4 + sum($maxwidths) + ($countCols - 1) * 3
+    let $frameLine := '#'||ta:repeat('-', $tableWidth - 2)||'#'
+    return 
+        string-join((    
+            if (empty($headLines)) then () else        
+            ($frameLine, $headLines),
+            $frameLine,
+            $rowLines,
+            $frameLine
+        ), '&#xA;')
+};        
+
+(:
 (:~
  : Adapt the column value 'width'. Rules:
  : - value missing: no change
@@ -284,7 +355,8 @@ declare function ta:table_adaptColWidths($cmodels as map(*)*,
             return map:put($cmodel, 'width', $useWidth)
         else $cmodel
 };        
-                                         
+:)
+
 (:~
  : Helper function of function `table`. Recursive processes all
  : sort models.

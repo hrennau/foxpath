@@ -298,6 +298,15 @@
                       3, 3.1, 3c.1c, 3dn.1c, 3dn.1c.4">
                 <documentation>Default value for representing an absent column value.</documentation>
             </option>
+            <option name="reorder" type="string" pattern="^\d+(\.\d+)*$">
+                <documentation>Reorder the sequence of columns. The value is a dot-separated
+                     list of column numbers, indicating their position in the new ordering.
+                     Example: "3.1.2" means: display from left to right the third, first, 
+                     second column. If the table has more columns than specified by the new 
+                     order, the remaining columns will be appended in the original order. 
+                     Example: when the table has five columns, "4.1.2" means a new order
+                     4., 1., 2., 3., 5.</documentation>
+            </option>
             <option name="split" type="string">
                 <documentation>Default value for column property 'newline split regex'.</documentation>
             </option>

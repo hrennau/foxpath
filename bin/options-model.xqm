@@ -242,6 +242,10 @@ declare function opm:buildOptionMaps() {
           'pattern': '^\d+(a|d|c|an|dn|ac|dc)?(\.\d+(a|d|c|an|dn|ac|dc)?)*$',
           'patternExplanation': 'The value must consists of one or more dot-separated items, each one consisting of a column number, optionally followed by a|d|n|c|an|dn|ac|dc, meaning ascending, descending, ascending numeric, descending numeric, ascending case-insensitive, descending case-insensitive. Examples: 3, 3.1, 3c.1c, 3dn.1c, 3dn.1c.4'
         },
+        'reorder': map{
+          'type': 'string',
+          'pattern': '^\d+(\.\d+)*$'
+        },
         'split': map{
           'type': 'string'
         },
