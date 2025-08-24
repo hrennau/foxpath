@@ -247,12 +247,12 @@ declare function opm:buildOptionMaps() {
           'pattern': '^\d+(\.\d+)*$'
         },
         'split': map{
-          'type': 'string'
+          'type': 'string*'
         },
         'width': map{
-          'type': 'string',
-          'pattern': '^\*|(\*)?\d+$',
-          'patternExplanation': 'The value must be an integer number, or a number preceded by a * character, or only a * character. A number means a width equal to the number; a number preceded * means a width which is the minimum of the number and the maximum string length occurring in the column; a * means a width equal to the maximum string length.'
+          'type': 'string*',
+          'pattern': '^(\*|(\*)?\d+)$',
+          'patternExplanation': 'The value must be a dot-separated list of items, which are an integer number, or a number preceded by a * character, or only a * character. A number means a width equal to the number; a number preceded by * means a width which is the minimum of the number and the maximum string length occurring in the column; a * means a width equal to the maximum string length.'
         }
       },
       'optionValues': map{

@@ -15,11 +15,7 @@ declare function op:optionsMap($options as item()?,
     let $names := ($onames, $vnames) 
     return if (empty($names)) then map{} else
     
-    let $namesWD := 
-        for $name in $onames
-        let $desc := $omap($name) ?default
-        where exists($desc)
-        return $name
+    let $namesWD := $onames[exists($omap(.)?default)] 
     return 
         if (empty($namesWD) and (
             $options instance of map(*) or empty($options))) then 
@@ -35,14 +31,15 @@ declare function op:optionsMap($options as item()?,
         let $items := $o ! tokenize(.)
         let $entries :=
             for $item in $items
-            let $item :=
+            (: Special treatment of option-name+number, e.g. "width20" :)
+            let $item :=                
                 if (not(matches($item, '^\i\c*?\C?\d+$'))) then $item else
-                    let $name := 
+                    let $namePruned := 
                         replace($item, '^(\i\c*?)\C?\d+$', '$1')
                         ! op:optionsMap_getSelName(., $names)
-                    let $itemName := $item !  op:optionsMap_getSelName(., $names)
+                    let $nameOrig := $item !  op:optionsMap_getSelName(., $names)
                     return 
-                        if (empty($name) or exists($itemName)) then $item
+                        if (empty($namePruned) or exists($nameOrig)) then $item
                         else replace($item, '^(\i\c*?)(\C?\d+)$', '$1=$2')
             let $nameU := $item ! replace(., '=.*', '')
             let $name := op:optionsMap_getSelName($nameU, $names)
@@ -50,7 +47,7 @@ declare function op:optionsMap($options as item()?,
                 if (count($name) gt 1) then
                     error(QName((), 'AMBIGUOUS_OPTION'), concat(
                     'Function "', $functionName, '" - abbreviated option ("'||$nameU||'")'||  
-                    '; ambiguous; matches: ', ($name => sort() => string-join(', '), '.')))
+                    ' ambiguous; it matches: ', ($name => sort() => string-join(', '), '.')))
                 else if (count($name) eq 0) then                
                     error(QName((), 'UNKNOWN_OPTION'), concat(
                         'Function "', $functionName, '" - invalid option ("'||$nameU||'")'||  
@@ -61,66 +58,80 @@ declare function op:optionsMap($options as item()?,
             let $otype := $omodel?type
             let $ovalues := $omodel?values
             let $opattern := $omodel?pattern
-            let $opatternExplanation := $omodel?patternExplanation
             
-            let $value := 
+            let $valueString := 
                 if (not(contains($item, '='))) then () 
                 else $item ! replace(., '.*?=', '') ! replace(., '\\s', ' ')
             return 
-                if (empty($value)) then
+                if (empty($valueString)) then
                     if (exists($omodel)) then
                         error(QName((), 'INVALID_OPTION'), 'Option "'||$name||
                             '" must have a value ('||$name||'=...)') 
                     else map:entry($name, true())
                 else
-                    (: Constraints: type, values :)
-                    let $valueE :=
-                        if (empty($ovalues) or $value = $ovalues) then $value 
-                        else
-                            let $selected := op:optionsMap_getSelName($value, $ovalues)
+                    let $values :=
+                        if (not(ends-with($otype, '*'))) then $valueString
+                        else tokenize($valueString, '\.')    
+                        (: To do: do not use 'tokenize', use special function allowing doubled sep :)
+                    let $valuesChecked := 
+                        for $value in $values
+                        
+                        (: Constraints: type, values :)
+                        let $valueE :=
+                            if (empty($ovalues) or $value = $ovalues) then $value 
+                            else
+                                let $selected := op:optionsMap_getSelName($value, $ovalues)
+                                return
+                                    if (count($selected) eq 1) then $selected
+                                    else if (count($selected) gt 1) then
+                                        error(QName((), 'AMBIGUOUS_OPTION_VALUE'), 
+                                            'Ambiguous value "'||$value||'" for option "'||
+                                            $name||'"; matches: '||
+                                            (($selected => sort()) ! xs:string(.) 
+                                            => string-join(', ')))
+                                    else
+                                        error(QName((), 'INVALID_OPTION_VALUE'), 
+                                            'Invalid value "'||$value||'" for option "'||
+                                            $name||'"; must be one of: '||
+                                            (($ovalues => sort()) ! xs:string(.) 
+                                            => string-join(', ')))
+                        let $valueET :=
+                            if (not($otype)) then $valueE else
+                            let $itemType := $otype ! replace(., '[*+]', '')
                             return
-                                if (count($selected) eq 1) then $selected
-                                else if (count($selected) gt 1) then
-                                    error(QName((), 'AMBIGUOUS_OPTION_VALUE'), 
-                                        'Ambiguous value "'||$value||'" for option "'||
-                                        $name||'"; matches: '||
-                                        (($selected => sort()) ! xs:string(.) => string-join(', ')))
-                                else
-                                    error(QName((), 'INVALID_OPTION_VALUE'), 
-                                        'Invalid value "'||$value||'" for option "'||
-                                        $name||'"; must be one of: '||
-                                        (($ovalues => sort()) ! xs:string(.) => string-join(', ')))
-                    let $valueET :=
-                        if (not($otype)) then $valueE else
-                        try {
-                            switch($otype)
-                            case 'integer' return xs:integer($valueE)
-                            case 'decimal' return xs:decimal($valueE)
-                            case 'text' return $valueE ! replace(., '\\s', ' ')
-                            case 'string' return $valueE ! replace(., '\\s', ' ')
-                            default return error(QName((), 'INVALID_MODEL'), 
-                                'Invalid model, unknown type: '||$otype)
-                        } catch * {
-                            error(QName((), 'INVALID_OPTION'),
-                                'Invalid value "'||$value||'" for option "'||
-                                $name||'"; cannot cast to type "'||$otype||'".')
-                        }
-                    let $valueETP :=
-                        if ($opattern) then
-                            let $matches := matches($valueET, $opattern)
-                            return
-                                if (not($matches)) then
+                                try {
+                                    switch($itemType)
+                                    case 'integer' return xs:integer($valueE)
+                                    case 'decimal' return xs:decimal($valueE)
+                                    case 'text' return $valueE ! replace(., '\\s', ' ')
+                                    case 'string' return $valueE ! replace(., '\\s', ' ')
+                                    default return error(QName((), 'INVALID_MODEL'), 
+                                        'Invalid model, unknown type: '||$itemType)
+                                } catch * {
                                     error(QName((), 'INVALID_OPTION'),
-                                        'Invalid value "'||$value||'" '||
-                                        'for option "'||$name||'". '||
-                                        (if (not($opatternExplanation)) then 
-                                        'It must match the regular expression "'
-                                        ||$opattern||'".'
-                                        else ($opatternExplanation ! (' '||.))))
-                                else $valueET
-                         else $valueET
-                    return
-                        map:entry($name, $valueETP)
+                                        'Invalid value "'||$value||'" for option "'||
+                                        $name||'"; cannot cast to type "'||$itemType||'".')
+                                }
+                        let $valueETP :=
+                            if ($opattern) then
+                                let $matches := matches($valueET, $opattern)
+                                return
+                                    if (not($matches)) then
+                                        let $opatternExplanation := 
+                                            $omodel?patternExplanation
+                                        return
+                                          error(QName((), 'INVALID_OPTION'),
+                                              'Invalid value "'||$value||'" '||
+                                              'for option "'||$name||'". '||
+                                              (if (not($opatternExplanation)) then 
+                                              'It must match the regular expression "'
+                                              ||$opattern||'".'
+                                              else ($opatternExplanation ! (' '||.))))
+                                    else $valueET
+                             else $valueET
+                        return $valueETP
+                    
+                    return map:entry($name, $valuesChecked)
         return map:merge($entries)
     
     (: Finalize map :)

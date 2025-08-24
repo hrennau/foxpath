@@ -307,17 +307,24 @@
                      Example: when the table has five columns, "4.1.2" means a new order
                      4., 1., 2., 3., 5.</documentation>
             </option>
-            <option name="split" type="string">
-                <documentation>Default value for column property 'newline split regex'.</documentation>
+            <option name="split" type="string*">
+                <documentation>Dot-separated list of values for column property 'newline split regex'.
+                  If the number of values is smaller than the number of columns, the list value is 
+                  applied to all remaining columns.</documentation>
             </option>
-            <option name="width" type="string"
-                    pattern="^\*|(\*)?\d+$"
-                    patternExplanation="The value must be an integer number, or a number preceded by a * 
-                      character, or only a * character. A number means a width equal to the number; 
-                      a number preceded * means a width which is the minimum of the number and the
-                      maximum string length occurring in the column; a * means a width equal to the
-                      maximum string length.">
-                <documentation>Default value for column widths.</documentation>
+            <option name="width" type="string*" 
+                    pattern="^(\*|(\*)?\d+)$"
+                    patternExplanation="The value must be a dot-separated list 
+                      of items, which are an integer number, or a number 
+                      preceded by a * character, or only a * character. A 
+                      number means a width equal to the number; a number 
+                      preceded by * means a width which is the minimum of the 
+                      number and the maximum string length occurring in the 
+                      column; a * means a width equal to the maximum string 
+                      length.">
+                <documentation>Dot-separated list of column widths. If the number of values is smaller
+                  than the number of columns, the last value is applied to all remaining columns.
+                </documentation>
             </option>
         </options>
     </function>

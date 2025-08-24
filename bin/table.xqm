@@ -86,17 +86,30 @@ declare function ta:table_getColModels($colspecs as xs:string?,
         as item()* {
     (: Write preliminary models :)
     let $cspecs := $colspecs ! tokenize(., ',\s*')    
+    let $defaultWidth :=
+         let $expl := $ops?width
+         where exists($expl)
+         return ($expl, for $i in 1 to $countCols - count($expl) 
+                        return $expl[last()])
+                ! map:entry('width', .)
+    let $defaultSplit :=
+         let $expl := $ops?split
+         where exists($expl)
+         return ($expl, for $i in 1 to $countCols - count($expl) 
+                        return $expl[last()])
+                ! map:entry('split', .)
     let $cmodels :=
         let $defaultValues := map:merge((
             $ops?leftalign ! map:entry('leftalign', .),        
             $ops?hanging ! map:entry('hanging', .),
             $ops?initial-prefix ! map:entry('initial-prefix', .),
             $ops?nil ! map:entry('nil', .),            
-            $ops?split ! map:entry('split', .),
-            $ops?width ! map:entry('width', .)))
-        for $i in 1 to $countCols 
+            $ops?split ! map:entry('split', .)))
+        for $i in 1 to $countCols
         return map:merge((
             $opm:PARAM_MODELS?colspec ! op:optionsMap($cspecs[$i], ., 'table'),        
+            $defaultWidth[$i],
+            $defaultSplit[$i],
             $defaultValues))            
  
     (: Adapt model parameter 'width' :)
