@@ -3461,38 +3461,32 @@ declare function f:deleteNodes($items as item()*,
  : @param excludedNamePattern optional name patterns selecting child elements to be ignored
  : @return the names as a sequence, or as a concatenated string
  :)
-declare function f:relatedNames($nodesOrUris as item()*, 
+declare function f:relatedNames(
+                            $nodesOrUris as item()*, 
                             $relationship as xs:string,
                             $nameKind as xs:string?,   (: name | lname | jname :)
                             $nameFilter as xs:string?,
-                            $options as xs:string?)
+                            $efunctionName as xs:string?,
+                            $fnOptions as xs:string?,
+                            $options as map(*))
         as xs:string* {
-    let $ops := f:getOptions($options, ('nosort', 'duplicates'), 'child-names')        
+    let $ops := 
+        let $key := ($efunctionName, 'related-names')[1]
+        return
+            ($opm:OPTION_MODELS($key) !
+                 op:optionsMap($fnOptions, ., $key), map{})[1]
     let $nodes :=
         for $item in $nodesOrUris return
             if ($item instance of node()) then $item else 
                 i:fox-doc($item, ())        
-    let $nosort := $ops = 'nosort' 
-    let $duplicates := $ops = 'duplicates'    
     let $cnameFilter := $nameFilter ! use:compileUSE(., true())
-    (:
-    let $_DEBUG := trace($nameFilter, '_FILTER_STRING: ')    
-    let $_DEBUG := trace($cnameFilter, '_FILTER_ELEM: ')
-     :)
     let $fnName := 
-        if ($relationship = ('content')) then
-        switch($nameKind)
+        switch($ops?namekind)
         case 'name' return function($node) {'@'[$node/self::attribute()]||name($node)}
         case 'jname' return function($node) {convert:decode-key(local-name(.))}
         default return function($node) {'@'[$node/self::attribute()]||local-name($node)}
-        
-        else
-        switch($nameKind)
-        case 'name' return function($node) {name($node)}
-        case 'jname' return function($node) {convert:decode-key(local-name(.))}
-        default return function($node) {local-name($node)}
     
-    let $separator := ', '
+    let $separator := if ($ops?sep eq 'newline') then '&#xA;' else ', '
 
     for $node in $nodes
     let $items :=
@@ -3510,8 +3504,8 @@ declare function f:relatedNames($nodesOrUris as item()*,
             if (empty($cnameFilter)) then $unfiltered
             else $unfiltered[$fnName(.) ! replace(., '^@', '') ! use:matchesUSE(., $cnameFilter)]
     let $names := for $item in $items return $fnName($item)
-    let $names := if ($duplicates) then $names else $names => distinct-values()
-    let $names := if ($nosort) then $names else $names => sort()        
+    let $names := if (not($ops?distinct)) then $names else $names => distinct-values()
+    let $names := if (not($ops?sort)) then $names else $names => sort()        
     let $nameseq := string-join($names, $separator)
     order by $nameseq        
     return

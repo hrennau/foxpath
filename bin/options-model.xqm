@@ -46,6 +46,64 @@ declare function opm:buildOptionMaps() {
       'options': map{},
       'optionValues': map{}
     },
+    'child-name-seq': map{
+      'options': map{
+        'sort': map{
+          'type': 'boolean',
+          'default': '0'
+        },
+        'distinct': map{
+          'type': 'boolean',
+          'default': '0'
+        },
+        'sep': map{
+          'type': 'string',
+          'default': 'comma',
+          'values': ('comma', 'newline')
+        },
+        'namekind': map{
+          'type': 'string',
+          'default': 'lname',
+          'values': ('name', 'lname', 'jname')
+        }
+      },
+      'optionValues': map{
+        'comma': 'sep',
+        'newline': 'sep',
+        'name': 'namekind',
+        'lname': 'namekind',
+        'jname': 'namekind'
+      }
+    },
+    'related-names': map{
+      'options': map{
+        'sort': map{
+          'type': 'boolean',
+          'default': '1'
+        },
+        'distinct': map{
+          'type': 'boolean',
+          'default': '1'
+        },
+        'sep': map{
+          'type': 'string',
+          'default': 'comma',
+          'values': ('comma', 'newline')
+        },
+        'namekind': map{
+          'type': 'string',
+          'default': 'lname',
+          'values': ('name', 'lname', 'jname')
+        }
+      },
+      'optionValues': map{
+        'comma': 'sep',
+        'newline': 'sep',
+        'name': 'namekind',
+        'lname': 'namekind',
+        'jname': 'namekind'
+      }
+    },
     'filter-items': map{
       'options': map{},
       'optionValues': map{}

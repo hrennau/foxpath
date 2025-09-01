@@ -50,6 +50,62 @@
             <summary>Returns for each input node its base URI.</summary>
         </documentation>
     </function>
+    <function name="child-name-seq" group="explore" withEc="true">
+        <documentation>
+            <summary>Returns for each input node the concatenated list of child element names.</summary>
+        </documentation>
+        <params>
+            <param name="nodes" type="node()*" onlyEc="true"/>
+            <param name="nameFilter" type="xs:string?" optional="true"/>
+            <param name="options" type="xs:string?" optional="true"/>                                 
+        </params> 
+        <options>
+            <option name="distinct" type="boolean" default="0"/>            
+            <option name="namekind" type="string" default="lname">
+                <documentation/>
+                <values>
+                    <value string="name"/>
+                    <value string="lname"/>
+                    <value string="jname"/>
+                </values>
+            </option>            
+            <option name="sep" type="string" default="comma">
+                <values>
+                    <value string="comma"/>
+                    <value string="newline"/>
+                </values>
+            </option>
+            <option name="sort" type="boolean" default="0"/>            
+        </options>
+    </function>
+    <function name="related-names" group="explore" withEc="true">
+        <documentation>
+            <summary>Returns for each input node the concatenated list of structurally related element names.</summary>
+        </documentation>
+        <params>
+            <param name="nodes" type="node()*" onlyEc="true"/>
+            <param name="nameFilter" type="xs:string?" optional="true"/>
+            <param name="options" type="xs:string?" optional="true"/>                                 
+        </params> 
+        <options>
+            <option name="sort" type="boolean" default="1"/>
+            <option name="distinct" type="boolean" default="1"/>            
+            <option name="sep" type="string" default="comma">
+                <values>
+                    <value string="comma"/>
+                    <value string="newline"/>
+                </values>
+            </option>
+            <option name="namekind" type="string" default="lname">
+                <documentation/>
+                <values>
+                    <value string="name"/>
+                    <value string="lname"/>
+                    <value string="jname"/>
+                </values>
+            </option>            
+        </options>
+    </function>
     <function name="filter-items" group="matching">
         <documentation>
             <summary>Filters a sequence of items and retains only those with a string value 

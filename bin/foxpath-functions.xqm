@@ -356,16 +356,18 @@ declare function f:resolveStaticFunctionCall($call as element(),
             ])
             let $nodes := if ($da) then $args(1) else $context
             let $nameFilter := $args(1 + $da)
-            let $flags := $args(2 + $da)
+            let $fnOptions := $args(2 + $da)
             let $nameKind := 
                 if (contains($fname, '-name')) then 'name' 
                 else if (contains($fname, '-jname')) then 'jname' 
                 else 'lname'
             let $relationship := replace($fname, '^(.*?)-.*(-ec)?', '$1')                
-            return foxf:relatedNames($nodes, $relationship, $nameKind, $nameFilter, $flags)            
+            return foxf:relatedNames(
+                $nodes, $relationship, $nameKind, $nameFilter, 'related-names', 
+                $fnOptions, $options)            
 
-        (: function `child-name-flow`  
-           ========================== :)
+        (: function `child-name-seq`  
+           ========================= :)
         else if ($fname = ('child-name-seq', 'child-name-seq-ec',
                            'child-lname-seq', 'child-lname-seq-ec',
                            'child-jname-seq', 'child-jname-seq-ec')) then
@@ -378,13 +380,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             ])
             let $nodes := if ($da) then $args(1) else $context
             let $nameFilter := $args(1 + $da)
-            let $flags := ($args(2 + $da), 'NOSORT DUPLICATES') => string-join(' ')
+            let $fnOptions := $args(2 + $da)
             let $nameKind := 
                 if (contains($fname, '-name')) then 'name' 
                 else if (contains($fname, '-jname')) then 'jname' 
                 else 'lname'
             let $relationship := 'child'                
-            return foxf:relatedNames($nodes, $relationship, $nameKind, $nameFilter, $flags)            
+            return foxf:relatedNames(
+                $nodes, $relationship, $nameKind, $nameFilter, 'child-name-seq', 
+                $fnOptions, $options)            
 
         (: function `clark-name` 
            ===================== :)

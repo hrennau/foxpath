@@ -64,7 +64,7 @@ declare function op:optionsMap($options as item()?,
                 else $item ! replace(., '.*?=', '') ! replace(., '\\s', ' ')
             return 
                 if (empty($valueString)) then
-                    if (exists($omodel)) then
+                    if (exists($omodel) and not($omodel?type eq 'boolean')) then
                         error(QName((), 'INVALID_OPTION'), 'Option "'||$name||
                             '" must have a value ('||$name||'=...)') 
                     else map:entry($name, true())
@@ -105,6 +105,9 @@ declare function op:optionsMap($options as item()?,
                                     case 'decimal' return xs:decimal($valueE)
                                     case 'text' return $valueE ! replace(., '\\s', ' ')
                                     case 'string' return $valueE ! replace(., '\\s', ' ')
+                                    case 'boolean' return
+                                        if ($valueE = ('0', 'false', 'no')) then false()
+                                        else true()
                                     default return error(QName((), 'INVALID_MODEL'), 
                                         'Invalid model, unknown type: '||$itemType)
                                 } catch * {
@@ -142,16 +145,19 @@ declare function op:optionsMap($options as item()?,
         $usedNamesO,
         $usedNamesV ! $vmap(.)) => distinct-values()
     let $namesMissing := $onames[not(. = $usedNames2)][. = $namesWD]
-    (:
-    let $_DEBUG := trace($usedNamesV, '_ used names V: ')
-    let $_DEBUG := trace($namesWD, '_ names WD: ')
-    let $_DEBUG := trace($namesMissing, '_ names missing: ')
-    :)
     (: add entries #1: options which have been supplied as values :)
     let $addEntries1 := $usedNamesV ! map:entry($vmap(.), .)
-    (: let $_DEBUG := trace($addEntries1, '_ addEntries1: ') :)
     (: add entries #2: options missing, having a default value :)    
-    let $addEntries2 := $namesMissing ! map:entry(., $omap(.)('default'))
+    let $addEntries2 := 
+        for $name in $namesMissing
+        let $default := $omap($name)('default')
+        let $type := $omap($name)('type')
+        let $value :=
+            switch($type)
+            case 'boolean' return xs:boolean($default)
+            case 'integer' return xs:integer($default)
+            default return $default
+        return map:entry($name, $value)
     (: let $_DEBUG := trace($addEntries2, '_ addEntries2: ') :)
     
     (: Finalize map :)
