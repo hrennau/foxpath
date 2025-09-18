@@ -1383,8 +1383,8 @@ declare function f:resolveIntersectExceptExpr($intersectExcept as element(inters
             if ($op eq 'except') then $args1 except $args2
             else $args1 intersect $args2
         else
-            let $args1 := if ($itemKinds eq 'atoms') then $args1 else $args1 | string(.)
-            let $args2 := if ($itemKinds eq 'atoms') then $args2 else $args2 | string(.)            
+            let $args1 := if ($itemKinds eq 'atoms') then $args1 else $args1 ! string(.)
+            let $args2 := if ($itemKinds eq 'atoms') then $args2 else $args2 ! string(.)            
             let $values :=
                 if ($op eq 'except') then $args1[not(. = $args2)]
                 else $args1[. = $args2]
