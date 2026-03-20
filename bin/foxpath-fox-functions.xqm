@@ -3492,7 +3492,12 @@ declare function f:relatedNames(
     let $items :=
         let $unfiltered :=
             switch($relationship)
-            case 'child' return $node/*
+            case 'sibling' return $node/(
+                preceding-sibling::*, following-sibling::*,
+                if (not($ops?text)) then () else ../text()[normalize-space(.)]
+            )            
+            case 'child' return $node/(
+                *, if (not($ops?text)) then () else text()[normalize-space(.)]) 
             case 'parent' return $node/..
             case 'att' return $node/@*
             case 'content' return $node/(@*, *)
@@ -3503,7 +3508,7 @@ declare function f:relatedNames(
         return 
             if (empty($cnameFilter)) then $unfiltered
             else $unfiltered[$fnName(.) ! replace(., '^@', '') ! use:matchesUSE(., $cnameFilter)]
-    let $names := for $item in $items return $fnName($item)
+    let $names := for $item in $items return if ($item/self::text()) then '#text' else $fnName($item)
     let $names := if (not($ops?distinct)) then $names else $names => distinct-values()
     let $names := if (not($ops?sort)) then $names else $names => sort()        
     let $nameseq := string-join($names, $separator)

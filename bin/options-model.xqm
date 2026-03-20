@@ -48,31 +48,31 @@ declare function opm:buildOptionMaps() {
     },
     'child-name-seq': map{
       'options': map{
-        'sort': map{
-          'type': 'boolean',
-          'default': '0'
-        },
         'distinct': map{
           'type': 'boolean',
           'default': '0'
+        },
+        'namekind': map{
+          'type': 'string',
+          'default': 'lname',
+          'values': ('name', 'lname', 'jname')
         },
         'sep': map{
           'type': 'string',
           'default': 'comma',
           'values': ('comma', 'newline')
         },
-        'namekind': map{
-          'type': 'string',
-          'default': 'lname',
-          'values': ('name', 'lname', 'jname')
+        'sort': map{
+          'type': 'boolean',
+          'default': '0'
         }
       },
       'optionValues': map{
-        'comma': 'sep',
-        'newline': 'sep',
         'name': 'namekind',
         'lname': 'namekind',
-        'jname': 'namekind'
+        'jname': 'namekind',
+        'comma': 'sep',
+        'newline': 'sep'
       }
     },
     'related-names': map{
@@ -94,6 +94,10 @@ declare function opm:buildOptionMaps() {
           'type': 'string',
           'default': 'lname',
           'values': ('name', 'lname', 'jname')
+        },
+        'text': map{
+          'type': 'boolean',
+          'default': '0'
         }
       },
       'optionValues': map{

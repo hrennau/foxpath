@@ -329,23 +329,12 @@ declare function f:resolveStaticFunctionCall($call as element(),
         (: function `child-names`, `att-names`, `content-names`, `parent-name`  
            =================================================================== :)
         else if ($fname = ('child-names', 'child-names-ec',
-                           'child-lnames', 'child-lnames-ec',
-                           'child-jnames', 'child-jnames-ec',
+                           'sibling-names', 'sibling-names-ec',
                            'descendant-names', 'descendant-names-ec',
-                           'descendant-lnames', 'descendant-lnames-ec',
-                           'descendant-jnames', 'descendant-jnames-ec',
                            'parent-name', 'parent-name-ec',
-                           'parent-lname', 'parent-lname-ec',
-                           'parent-jname', 'parent-jname-ec',
                            'ancestor-names', 'ancestor-names-ec',
-                           'ancestor-lnames', 'ancestor-lnames-ec',
-                           'ancestor-jnames', 'ancestor-jnames-ec',
                            'att-names', 'att-names-ec',
-                           'att-lnames', 'att-lnames-ec',
-                           'att-jnames', 'att-jnames-ec',
-                           'content-names', 'content-names-ec',
-                           'content-lnames', 'content-lnames-ec',
-                           'content-jnames', 'content-jnames-ec'                           
+                           'content-names', 'content-names-ec'
                            )) then
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0
             let $narg := count($call/*)

@@ -103,7 +103,8 @@
                     <value string="lname"/>
                     <value string="jname"/>
                 </values>
-            </option>            
+            </option> 
+            <option name="text" type="boolean" default="0"/>            
         </options>
     </function>
     <function name="filter-items" group="matching">
