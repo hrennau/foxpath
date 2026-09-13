@@ -97,7 +97,7 @@ declare function op:optionsMap($options as item()?,
                                             => string-join(', ')))
                         let $valueET :=
                             if (not($otype)) then $valueE else
-                            let $itemType := $otype ! replace(., '[*+]', '')
+                            let $itemType := $otype ! replace(., '[*+?]', '')
                             return
                                 try {
                                     switch($itemType)

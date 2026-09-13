@@ -383,11 +383,11 @@ declare function f:pathContent($context as item()*,
         (: Descendants 5 - inner nodes added :)
         let $descendants5 :=
             if (not($ops?withinner)) then $descendants4
-            else $descendants4/ancestor-or-self::node()[. >> $cnode] 
+            else $descendants4/ancestor-or-self::node()[. >> $cnode]
         return
             f:namePathNew($descendants5, $cnode, $ops, $options)
-        
-    let $frequencies := f:frequenciesNew($paths, $ops, $options)  
+       
+    let $frequencies := f:frequenciesNew($paths, $ops, $options)
     return
         if ($ops?format eq 'txt') then (
         '=== path-content ===============================',
@@ -515,9 +515,10 @@ declare function f:annotate($value as item()?,
         as xs:string? {
     if (empty($value)) then () else
     
-    let $prefix := ($prefix, ' (')[1]
-    let $postfix := ($postfix, ')')[1]
-    return $value||$prefix||$anno||$postfix
+    let $prefix2 := ($prefix, ' (')[1]
+    let $postfix2 := 
+        if ($prefix and not($postfix)) then () else ($postfix, ')')[1]
+    return $value||$prefix2||$anno||$postfix2
 };        
 
 (:~
@@ -670,59 +671,73 @@ declare function f:bslash($arg as xs:string?)
  :)
 declare function f:charClassReport($items as item()*,
                                    $classes as xs:string?,
-                                   $options as xs:string?)
+                                   $fnOptions as xs:string?)
         as element(charClassReport) {
-    let $ops := f:getOptions($options, ('example', 'parent', 'fname', 'text', 'att'), 'char-class-report')
+    let $ops := 
+        let $key := 'char-classes' return
+            ($opm:OPTION_MODELS($key) ! 
+            op:optionsMap($fnOptions, ., $key), map{})[1]
+    let $_DEBUG := trace($ops, '_ ops: ')
+    let $itemsN :=
+        for $item in $items return
+            if ($ops?uri and not($item instance of node())) 
+            then $item ! (try {file:resolve-path(.) ! doc(.)} catch * {()})
+            else $item
+    let $nodeItems := $itemsN[. instance of node()]
+    let $stringItems := $itemsN[not(. instance of node())]
+    
+    (: $nodes is needed if examples of character occurrence is requested :)
     let $nodes := 
-        if (not($ops = 'example')) then ()
+        if (not($ops?example)) then () else
+        
+        if ($ops?nodekind eq 'text') then $nodeItems/descendant-or-self::text()
+        else if ($ops?nodekind eq 'att') then $nodeItems//@*
+        else if ($ops?nodekind eq 'any') then (
+                 $nodeItems/descendant-or-self::text(), $nodeItems//@*)        
+    let $texts := (
+        if ($ops?nodekind eq 'text') then 
+            $nodeItems/descendant-or-self::text() => string-join('')
+        else if ($ops?nodekind eq 'att') then 
+            $nodeItems//@* => string-join('')
         else 
-            let $wrapperNodes := $items[. instance of node()]
-            return
-                if ($ops = 'att') then $wrapperNodes//@*
-                else $wrapperNodes/descendant-or-self::text()
-    let $texts :=
-        for $item in $items
-        return
-            if (not($item instance of node())) then string($item)
-            else if ($ops = 'att') then $item//@* => string-join('')
-            else if ($ops = 'anynode') then $item/string()||($item//@* => string-join(''))
-            else $item/string()
+            $nodeItems/descendant-or-self::text()||($nodeItems//@* => string-join(''))
+        )||$stringItems => string-join('')
     let $classes := $classes ! lower-case(.)
     let $classes :=
         let $letters :=
             if ($classes and not(contains($classes, 'l'))) then () else
             let $charStat :=
-                $texts ! replace(., '\P{L}', '') => f:charStat($nodes, $options)
+                $texts ! replace(., '\P{L}', '') => f:charStat($nodes, $ops)
             return <letters>{$charStat}</letters>
         let $marks :=
             if ($classes and not(contains($classes, 'm'))) then () else
             let $charStat :=
-                $texts ! replace(., '\P{M}', '') => f:charStat($nodes, $options)
+                $texts ! replace(., '\P{M}', '') => f:charStat($nodes, $ops)
             return <marks>{$charStat}</marks>
         let $numbers :=
             if ($classes and not(contains($classes, 'n'))) then () else
             let $charStat :=
-                $texts ! replace(., '\P{N}', '') => f:charStat($nodes, $options)
+                $texts ! replace(., '\P{N}', '') => f:charStat($nodes, $ops)
             return <numbers>{$charStat}</numbers>
         let $punctuation :=
             if ($classes and not(contains($classes, 'p'))) then () else
             let $charStat :=
-                $texts ! replace(., '\P{P}', '') => f:charStat($nodes, $options)
+                $texts ! replace(., '\P{P}', '') => f:charStat($nodes, $ops)
             return <punctuation>{$charStat}</punctuation>
         let $separators :=
             if ($classes and not(contains($classes, 'z'))) then () else
             let $charStat :=
-                $texts ! replace(., '\P{Z}', '') => f:charStat($nodes, $options)
+                $texts ! replace(., '\P{Z}', '') => f:charStat($nodes, $ops)
             return <separators>{$charStat}</separators>
         let $symbols :=
             if ($classes and not(contains($classes, 's'))) then () else
             let $charStat :=
-                $texts ! replace(., '\P{S}', '') => f:charStat($nodes, $options)
+                $texts ! replace(., '\P{S}', '') => f:charStat($nodes, $ops)
             return <symbols>{$charStat}</symbols>
         let $other :=
             if ($classes and not(contains($classes, 'c'))) then () else
             let $charStat :=
-                $texts ! replace(., '\P{C}', '') => f:charStat($nodes, $options)
+                $texts ! replace(., '\P{C}', '') => f:charStat($nodes, $ops)
             return <other>{$charStat}</other>
         return
             <classes>{
@@ -733,6 +748,7 @@ declare function f:charClassReport($items as item()*,
         <charClassReport>{
             $classes
         }</charClassReport>
+        ! util:prettyNode(., ())
 };
 
 (:~
@@ -742,32 +758,38 @@ declare function f:charClassReport($items as item()*,
  :)
 declare function f:charStat($texts as xs:string*,
                             $nodes as node()*,
-                            $options as xs:string?) {
-    let $ops := f:getOptions($options, ('example', 'parent', 'fname', 'text', 'att'), 'char-stat')                            
+                            $ops as map(*)) {
+    (: let $ops := f:getOptions($options, ('example', 'parent', 'fname', 'text', 'att'), 'char-stat') :)                            
     let $fnGetExamples :=
-        if (not($ops = 'example')) then () else
-        let $size := 3 return
+        if (not($ops?example)) then () 
+        else if (not($nodes)) then () else
+        
+        let $size := $ops?numex return
         function($charval) {
             for $node in $nodes[contains(., $charval)][position() le $size]
-            let $node := if ($ops = 'parent') then $node/../.. else $node
+            let $node := if ($ops?elem) then $node/ancestor-or-self::element()[1] else $node
+            let $node := if (empty($ops?ancestors)) then $node else $node/ancestor::*[$ops?ancestors]
             let $charpos := substring-before($node, $charval) ! (1 + string-length(.))
             let $fname :=
-                if (not($ops = 'fname')) then () else
+                if (not($ops?fname)) then () else
                     $node ! base-uri(.) ! file:name(.) ! (attribute fname {.})
             return
-                $node ! <example charpos="{$charpos}">{$fname, $node/string()}</example>
+                $node ! <example charpos="{$charpos}">{$fname, $node}</example>
         }
     let $chars := 
         for $text in $texts
         for $i in 1 to string-length($text) 
         return substring($text, $i, 1)  
     let $charReports := 
+        let $codes := $ops?codes
         for $char in $chars
         let $charval := $char
         group by $charval
+        let $codepoint := string-to-codepoints($charval)
+        where empty($codes) or $codepoint = $codes
         order by $charval
         return <char s="{$charval}" 
-                     code="{string-to-codepoints($charval)}" n="{count($char)}">{
+                     code="{$codepoint}" n="{count($char)}">{
                    $fnGetExamples ! .($charval)                     
                }</char>
     return
@@ -4814,6 +4836,7 @@ declare function f:xsdValidate($docs as item()*,
                                $options as xs:string?)
         as item()* {
     if (empty($xsds)) then error(QName((), 'INVALID_CALL'), 'Function validate-xsd - no XSDs specified')
+    else if (empty($docs)) then ()    
     else
 
     let $ops := f:getOptions($options, ('fname', 'summary'), 'xsd-validate')

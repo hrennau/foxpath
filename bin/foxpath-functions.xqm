@@ -742,7 +742,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $sourceUri := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $rename := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $flags := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $_DEBUG := trace($resources?uri, '_ resources: ') 
+            (:let $_DEBUG := trace($resources?uri, '_ resources: '):) 
             return
                 foxf:fileTreeCopy($resources, $targetUri, $sourceUri, $rename, $flags)
 

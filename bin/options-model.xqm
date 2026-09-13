@@ -46,6 +46,46 @@ declare function opm:buildOptionMaps() {
       'options': map{},
       'optionValues': map{}
     },
+    'char-classes': map{
+      'options': map{
+        'ancestors': map{
+          'type': 'integer?'
+        },
+        'codes': map{
+          'type': 'integer*'
+        },
+        'elem': map{
+          'type': 'boolean',
+          'default': '0'
+        },
+        'example': map{
+          'type': 'boolean',
+          'default': '0'
+        },
+        'fname': map{
+          'type': 'boolean',
+          'default': '0'
+        },
+        'nodekind': map{
+          'type': 'string',
+          'default': 'text',
+          'values': ('text', 'att', 'any')
+        },
+        'numex': map{
+          'type': 'integer?',
+          'default': 3
+        },
+        'uri': map{
+          'type': 'boolean',
+          'default': '0'
+        }
+      },
+      'optionValues': map{
+        'text': 'nodekind',
+        'att': 'nodekind',
+        'any': 'nodekind'
+      }
+    },
     'child-name-seq': map{
       'options': map{
         'distinct': map{
@@ -164,7 +204,7 @@ declare function opm:buildOptionMaps() {
         'atts': map{
           'type': 'string'
         },
-        'indexed': (),
+        'indexed': '',
         'length': map{
           'type': 'integer',
           'default': 60
@@ -185,8 +225,8 @@ declare function opm:buildOptionMaps() {
         'steps': map{
           'type': 'integer'
         },
-        'text': (),
-        'withcontext': ()
+        'text': '',
+        'withcontext': ''
       },
       'optionValues': map{
         'name': 'namekind',
@@ -242,7 +282,7 @@ declare function opm:buildOptionMaps() {
         'width': map{
           'type': 'integer'
         },
-        'withinner': ()
+        'withinner': ''
       },
       'optionValues': map{
         'txt': 'format',
@@ -268,7 +308,7 @@ declare function opm:buildOptionMaps() {
     },
     'truncate': map{
       'options': map{
-        'strict': (),
+        'strict': '',
         'info': map{
           'type': 'string',
           'default': 'dots',
@@ -291,11 +331,11 @@ declare function opm:buildOptionMaps() {
         'hanging': map{
           'type': 'integer'
         },
-        'hlist': (),
+        'hlist': '',
         'initial-prefix': map{
           'type': 'string'
         },
-        'left-align': (),
+        'left-align': '',
         'nil': map{
           'type': 'string'
         },
@@ -364,8 +404,8 @@ declare function opm:buildParamMaps() {
         'hanging': map{
           'type': 'integer'
         },
-        'items': (),
-        'leftalign': (),
+        'items': '',
+        'leftalign': '',
         'initial-prefix': map{
           'type': 'string'
         },

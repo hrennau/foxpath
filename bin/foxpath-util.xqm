@@ -15,6 +15,7 @@ declare variable $f:PREDECLARED_NAMESPACE_BINDINGS := map{
     "docbook": "http://docbook.org/ns/docbook",
     "drg": "http://www.drugbank.ca",
     "fox": "http://www.foxpath.org/ns/1.0", 
+    "fhir": "http://hl7.org/fhir",
     "math": "http://www.w3.org/1998/Math/MathML",
     "owl": "http://www.w3.org/2002/07/owl#",    
     "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
