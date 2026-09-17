@@ -526,13 +526,38 @@ declare function f:prettyFoxPrint($n as node())
 
 declare function f:prettyNode($n as node(), $options as xs:string*)
         as node()? {
-    copy $n_ := $n
+    copy $n_ := $n    
     modify
         if ($options = 'weak') then
             delete nodes $n_//text()[not(matches(., '\S'))][../*][empty(../text()[matches(., '\S')])]
         else
             delete nodes $n_//text()[not(matches(., '\S'))][../*]
     return $n_
+};        
+
+(:~
+ : Shifts namespace declarations to the root element.
+ :)
+declare function f:namespacesToRoot($node as node())
+        as node() {
+    let $root := $node/descendant-or-self::element()[1]
+    let $origPrefixes := in-scope-prefixes($root)
+    let $prefixuris :=
+        for $elem in $root/descendant-or-self::element()
+        let $prefixes := in-scope-prefixes($elem)[string()][not(. = $origPrefixes)]
+        for $p in $prefixes return $p||'#'||namespace-uri-for-prefix($p, $elem)
+    let $nsnodes :=
+        for $pu in $prefixuris
+        let $p := substring-before($pu, '#')
+        where not($p = $origPrefixes)
+        let $uri := $pu[1] ! substring-after($pu, '#')
+        return namespace {$p} {$uri}
+    return
+        if (empty($nsnodes)) then $node else
+        let $newdoc := element {node-name($root)} {$nsnodes, $node/node()}
+        return
+            if ($node/self::document-node()) then document {$newdoc}
+            else $newdoc
 };        
 
 declare function f:removeIndent($n as node(), $options as xs:string*)

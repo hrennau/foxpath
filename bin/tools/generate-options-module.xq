@@ -165,7 +165,7 @@ declare function f:serializeMap($map as element(map), $indent as xs:string)
         let $label := "'"||$entry/@name||"': "
         let $type := $entry/@type ! replace(., '[*+?]', '')
         let $value := $entry ! (
-            switch($type)
+            switch(string($type))
             case 'empty'
             case '' return '()'
             case 'map' return (map/f:serializeMap(., "  "))

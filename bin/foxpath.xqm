@@ -14,6 +14,9 @@ at  "foxpath-urithmetic.xqm";
 import module namespace is="http://www.foxpath.org/ns/ispace"
         at "foxpath-ispace.xqm";
 
+import module namespace he="http://www.foxpath.org/ns/help"
+        at "foxpath-help.xqm";
+
 (:~
  : Resolves a foxpath query text to a value.
  :
@@ -33,6 +36,8 @@ declare function f:resolveFoxpathQuery(
                                   $externalVariableBindings as map(xs:QName, item()*)?,
                                   $options as map(*)?)
         as item()* {
+    if (starts-with($queryText, 'help ')) then he:help($queryText, $options) else
+    
     let $DEBUG := util:trace($queryText, 'parse.resolve_foxpath_query', 'INTEXT_RESOLVE_FOXPATH_QUERY: ')
     let $context := f:editInitialContext($context)
     let $tree := util:trace(i:parseFoxpath($queryText, $options), 'parse', 'FOXPATH_ELEM: ')

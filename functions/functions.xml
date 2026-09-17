@@ -55,25 +55,57 @@
             <summary>Reports the character classes used in input text.</summary>
         </documentation>
         <params>
-            <param name="items" type="item()*" onlyEc="true"/>
-            <param name="charClasses" type="xs:string?" optional="true"/>
-            <param name="options" type="xs:string?" optional="true"/>                                 
+            <param name="items" type="item()*" onlyEc="true">
+                <documentation>The items to be evaluated - document URIs, nodes
+                    or strings; unless option "string" is used, strings
+                    are interpreted as document URIs of documents to
+                    be parsed.</documentation>
+            </param>
+            <param name="charClasses" type="xs:string?" optional="true">
+                <documentation>Character classes to be reported. Each letter
+                  of the option value identifies a class.</documentation>
+            </param>
+            <param name="options" type="xs:string?" optional="true">
+                <documentation>Options controlling details of the processing.</documentation>
+            </param>                                 
         </params> 
         <options>
-            <option name="ancestors" type="integer?"/>      
-            <option name="codes" type="integer*"/>
-            <option name="elem" type="boolean" default="0"/>            
-            <option name="example" type="boolean" default="0"/>
-            <option name="fname" type="boolean" default="0"/>            
+            <option name="ancestors" type="integer?" dependsOn="example">
+                <documentation>If examples are given (option "example"): the number 
+                    of ancestors to include</documentation>
+            </option>            
+            <option name="codes" type="integer*">
+                <documentation>A list of unicode codepoints to be reported; other
+                    codepoints will be ignored.
+                </documentation>
+            </option>
+            <option name="elem" type="boolean" default="0" dependsOn="example">
+                <documentation>If examples are given (option "example"): the example 
+                    data includes the parent element.</documentation>
+            </option>            
+            <option name="example" type="boolean" default="0">
+                <documentation>The report includes for each codepoint reported
+                    example text nodes or attributes containing it.</documentation>
+            </option>            
+            <option name="fname" type="boolean" default="0" dependsOn="example">
+                <documentation>If examples are given (option "example"): each example is 
+                    annotated with the name of the containing file.</documentation>
+            </option>            
             <option name="nodekind" type="string" default="text">
                 <values>
                     <value string="text"/>
                     <value string="att"/>
                     <value string="any"/>
                 </values>
+                <documentation>The nodes to be eveluated: text nodes, attribute nodes, or both.</documentation>
             </option>
-            <option name="numex" type="integer?" default="3"/>
-            <option name="uri" type="boolean" default="0"/>            
+            <option name="numex" type="integer?" default="3" dependsOn="example">
+                <documentation>If examples are given (option "example"): the maximum 
+                    number of examples per codepoint.</documentation>
+            </option>
+            <option name="string" type="boolean" default="0">
+                <documentation>Atomic input items are treated as text, not as document URIs.</documentation>
+            </option>            
         </options>
     </function>
     
@@ -144,13 +176,19 @@
         <documentation>
             <summary>Returns distinct values and their frequences.</summary>
             <params>
-                <param name="values" type="item()*" onlyEc="true"/>
-                <param name="options" type="xs:string?" optional="true"/>                                 
+                <param name="values" type="item()*" onlyEc="true">
+                    <documentation>The values to be analyzed.</documentation>
+                </param>
+                <param name="options" type="xs:string?" optional="true">
+                    <documentation>Options controlling the processing.</documentation>
+                </param>                                 
             </params>
         </documentation>
         <options>
             <option name="format" type="string" default="txt">
-                <documentation/>
+                <documentation>
+                    The output format - text, xml, json, or a sequence of text lines.
+                </documentation>
                 <values>
                     <value string="txt"/>
                     <value string="xml"/>
@@ -159,7 +197,10 @@
                 </values>
             </option>
             <option name="freq" type="string" default="count">
-                <documentation/>
+                <documentation>
+                    The representation of frequency - number of items,
+                    the fraction of all items, percent of all items.
+                </documentation>
                 <values>
                     <value string="count"/>
                     <value string="fraction"/>
@@ -167,7 +208,12 @@
                 </values>
             </option>
             <option name="order" type="string" default="a">
-                <documentation/>
+                <documentation>
+                    Sort order:<br/>
+                    * ascending, descending;<br/> 
+                    * ascending numerical; descending numerical;<br/>
+                    * ascending frequency; descending frequency 
+                </documentation>
                 <values>
                     <value string="a"/>
                     <value string="d"/>
@@ -178,13 +224,21 @@
                 </values>
             </option>
             <option name="min" type="integer">
-                <documentation/>
+                <documentation>
+                    Minimum count - only items with at least this number of occurrences
+                    are reported.
+                </documentation>
             </option>
             <option name="max" type="integer">
-                <documentation/>
+                <documentation>
+                    Maximum count - only items with at most this number of occurrences
+                    are reported.
+                </documentation>
             </option>
             <option name="width" type="integer">
-                <documentation/>
+                <documentation>
+                    Items are padded to this width. 
+                </documentation>
             </option>
         </options>
     </function>

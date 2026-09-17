@@ -680,7 +680,7 @@ declare function f:charClassReport($items as item()*,
     let $_DEBUG := trace($ops, '_ ops: ')
     let $itemsN :=
         for $item in $items return
-            if ($ops?uri and not($item instance of node())) 
+            if (not($item instance of node()) and not($ops?string)) 
             then $item ! (try {file:resolve-path(.) ! doc(.)} catch * {()})
             else $item
     let $nodeItems := $itemsN[. instance of node()]
@@ -749,6 +749,7 @@ declare function f:charClassReport($items as item()*,
             $classes
         }</charClassReport>
         ! util:prettyNode(., ())
+        ! util:namespacesToRoot(.)
 };
 
 (:~
