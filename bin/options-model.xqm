@@ -46,17 +46,22 @@ declare function opm:buildOptionMaps() {
       'options': map{},
       'optionValues': map{}
     },
-    'char-classes': map{
+    'char-stat': map{
       'options': map{
         'ancestors': map{
-          'type': 'integer?'
+          'type': 'integer?',
+          'dependsOn': 'example'
+        },
+        'classes': map{
+          'type': 'string?'
         },
         'codes': map{
           'type': 'integer*'
         },
         'elem': map{
           'type': 'boolean',
-          'default': '0'
+          'default': '0',
+          'dependsOn': 'example'
         },
         'example': map{
           'type': 'boolean',
@@ -64,7 +69,8 @@ declare function opm:buildOptionMaps() {
         },
         'fname': map{
           'type': 'boolean',
-          'default': '0'
+          'default': '0',
+          'dependsOn': 'example'
         },
         'nodekind': map{
           'type': 'string',
@@ -73,7 +79,8 @@ declare function opm:buildOptionMaps() {
         },
         'numex': map{
           'type': 'integer?',
-          'default': 3
+          'default': 3,
+          'dependsOn': 'example'
         },
         'string': map{
           'type': 'boolean',

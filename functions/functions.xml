@@ -50,20 +50,16 @@
             <summary>Returns for each input node its base URI.</summary>
         </documentation>
     </function>
-    <function name="char-classes" group="explore" withEc="true">
+    <function name="char-stat" group="explore" withEc="true">
         <documentation>
-            <summary>Reports the character classes used in input text.</summary>
+            <summary>Reports the characters used in a given set of documents, nodes or strings. </summary>
         </documentation>
         <params>
             <param name="items" type="item()*" onlyEc="true">
-                <documentation>The items to be evaluated - document URIs, nodes
-                    or strings; unless option "string" is used, strings
-                    are interpreted as document URIs of documents to
+                <documentation>The items to be evaluated - document URIs, 
+                    nodes or strings. Unless option "string" is used, 
+                    strings are interpreted as document URIs of documents to 
                     be parsed.</documentation>
-            </param>
-            <param name="charClasses" type="xs:string?" optional="true">
-                <documentation>Character classes to be reported. Each letter
-                  of the option value identifies a class.</documentation>
             </param>
             <param name="options" type="xs:string?" optional="true">
                 <documentation>Options controlling details of the processing.</documentation>
@@ -71,16 +67,23 @@
         </params> 
         <options>
             <option name="ancestors" type="integer?" dependsOn="example">
-                <documentation>If examples are given (option "example"): the number 
+                <documentation>If examples are given (option "example"):<br/> the number 
                     of ancestors to include</documentation>
             </option>            
+            <option name="classes" type="string?">
+                <documentation>A string restricting the character classes to 
+                    be included. Each letter identifies a character class:
+                    l letter, m marks, n numbers, p punctuation, z separators, 
+                    s symbols, o other. Examples: s, mso, lnz.
+                </documentation>
+            </option>
             <option name="codes" type="integer*">
                 <documentation>A list of unicode codepoints to be reported; other
                     codepoints will be ignored.
                 </documentation>
             </option>
             <option name="elem" type="boolean" default="0" dependsOn="example">
-                <documentation>If examples are given (option "example"): the example 
+                <documentation>If examples are given (option "example"):<br/> the example 
                     data includes the parent element.</documentation>
             </option>            
             <option name="example" type="boolean" default="0">
@@ -88,7 +91,7 @@
                     example text nodes or attributes containing it.</documentation>
             </option>            
             <option name="fname" type="boolean" default="0" dependsOn="example">
-                <documentation>If examples are given (option "example"): each example is 
+                <documentation>If examples are given (option "example"):<br/> each example is 
                     annotated with the name of the containing file.</documentation>
             </option>            
             <option name="nodekind" type="string" default="text">
@@ -100,7 +103,7 @@
                 <documentation>The nodes to be eveluated: text nodes, attribute nodes, or both.</documentation>
             </option>
             <option name="numex" type="integer?" default="3" dependsOn="example">
-                <documentation>If examples are given (option "example"): the maximum 
+                <documentation>If examples are given (option "example"):<br/> the maximum 
                     number of examples per codepoint.</documentation>
             </option>
             <option name="string" type="boolean" default="0">

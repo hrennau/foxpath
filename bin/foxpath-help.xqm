@@ -28,7 +28,8 @@ declare function he:help($request as xs:string,
     let $dict := $he:FUNCTIONS_DICT ! doc(.)
     let $fn := ($request ! replace(., '^\s*help\s*', '') ! app:glob2regex(.),
                 '*')[1] 
-    let $functions := $dict//function/@name[matches(., $fn)]        
+    let $functions := $dict//function/@name[matches(., $fn)] 
+    let $_DEBUG := trace($functions, '_ functions: ')
     let $countFunctions := count($functions)
     return
         if ($countFunctions eq 0) then ('No matching function found.', '')

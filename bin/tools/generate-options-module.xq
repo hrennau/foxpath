@@ -43,7 +43,7 @@ declare variable $opm:PARAM_MODELS := opm:buildParamMaps();
 };
 
 (:~
- : Expands the function options contig.
+ : Expands the function options config.
  :)
 declare function f:expandConfig($functions as element(functions))
         as node() {
@@ -136,6 +136,7 @@ declare function f:writeMapx_option($o as element(option))
                            type="string" 
                            value="{normalize-space(.)}"/>,
                 $o/@default ! <entry name="default" type="{$o/@type}" value="{.}"/>,
+                $o/@dependsOn ! <entry name="dependsOn" type="string" value="{.}"/>,
                 let $values := $o/values/value
                 where exists($values)
                 return

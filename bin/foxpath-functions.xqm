@@ -181,7 +181,7 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $values := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             let $fnOptions := $args[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:frequenciesNew($values, $fnOptions, $options)
+                foxf:frequencies($values, $fnOptions, $options)
 
         (: function `path-content` 
            ======================= :)
@@ -310,19 +310,20 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:bothValues($leftValue, $rightValue)
 
-       (: function `char-classes` 
+       (: function `char-stat` 
           =========================== :)
-        else if ($fname = ('char-classes', 'char-classes-ec', 'char-class-report', 'char-class-report-ec')) then
+        else if ($fname = ('char-stat', 'char-stat-ec')) then
             let $da := if (f:hasExplicitContext($fname)) then 1 else 0
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(
+                ., false(), $context, $position, $last, $vars, $options)            
             let $text := if ($da) then $arg1 else $context
-            let $classes := $call/*[1 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $fnOptions := $call/*[2 + $da]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
-            return
-                foxf:charClassReport($text, $classes, $fnOptions)
+            let $fnOptions := $call/*[1 + $da]/f:resolveFoxpathRC(
+                ., false(), $context, $position, $last, $vars, $options)
+            return foxf:charStat($text, $fnOptions)
 
         else if ($fname eq 'chars') then
-            let $arg1 := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $arg1 := $call/*[1]/f:resolveFoxpathRC(
+                ., false(), $context, $position, $last, $vars, $options)
             let $text := ($arg1, $context)[1]
             return foxf:chars($text)
             

@@ -35,6 +35,139 @@ at  "foxpath-constants.xqm";
  :)
  
 (:~
+ : Creates a character statistics report.
+ :)
+declare function f:charStat($items as item()*,
+                            $fnOptions as xs:string?)
+        as element(charStat) {
+    let $ops := 
+        let $key := 'char-stat' return
+            ($opm:OPTION_MODELS($key) ! 
+            op:optionsMap($fnOptions, ., $key), map{})[1]
+    (: let $_DEBUG := trace($ops, '_ ops: ') :)
+    let $classes := $ops?classes
+    let $itemsN :=
+        for $item in $items return
+            if (not($item instance of node()) and not($ops?string)) 
+            then $item ! (try {file:resolve-path(.) ! doc(.)} catch * {()})
+            else $item
+    let $nodeItems := $itemsN[. instance of node()]
+    let $stringItems := $itemsN[not(. instance of node())]
+    
+    (: $nodes is needed if examples of character occurrence is requested :)
+    let $nodes := 
+        if (not($ops?example)) then () else
+        
+        if ($ops?nodekind eq 'text') then $nodeItems/descendant-or-self::text()
+        else if ($ops?nodekind eq 'att') then $nodeItems//@*
+        else if ($ops?nodekind eq 'any') then (
+                 $nodeItems/descendant-or-self::text(), $nodeItems//@*)        
+    let $texts := (
+        if ($ops?nodekind eq 'text') then 
+            $nodeItems/descendant-or-self::text() => string-join('')
+        else if ($ops?nodekind eq 'att') then 
+            $nodeItems//@* => string-join('')
+        else 
+            $nodeItems/descendant-or-self::text()||($nodeItems//@* => string-join(''))
+        )||$stringItems => string-join('')
+    let $classes := $classes ! lower-case(.)
+    let $classes :=
+        let $letters :=
+            if ($classes and not(contains($classes, 'l'))) then () else
+            let $charStat :=
+                $texts ! replace(., '\P{L}', '') => f:charStat_aux($nodes, $ops)
+            return <letters>{$charStat}</letters>
+        let $marks :=
+            if ($classes and not(contains($classes, 'm'))) then () else
+            let $charStat :=
+                $texts ! replace(., '\P{M}', '') => f:charStat_aux($nodes, $ops)
+            return <marks>{$charStat}</marks>
+        let $numbers :=
+            if ($classes and not(contains($classes, 'n'))) then () else
+            let $charStat :=
+                $texts ! replace(., '\P{N}', '') => f:charStat_aux($nodes, $ops)
+            return <numbers>{$charStat}</numbers>
+        let $punctuation :=
+            if ($classes and not(contains($classes, 'p'))) then () else
+            let $charStat :=
+                $texts ! replace(., '\P{P}', '') => f:charStat_aux($nodes, $ops)
+            return <punctuation>{$charStat}</punctuation>
+        let $separators :=
+            if ($classes and not(contains($classes, 'z'))) then () else
+            let $charStat :=
+                $texts ! replace(., '\P{Z}', '') => f:charStat_aux($nodes, $ops)
+            return <separators>{$charStat}</separators>
+        let $symbols :=
+            if ($classes and not(contains($classes, 's'))) then () else
+            let $charStat :=
+                $texts ! replace(., '\P{S}', '') => f:charStat_aux($nodes, $ops)
+            return <symbols>{$charStat}</symbols>
+        let $other :=
+            if ($classes and not(contains($classes, 'c'))) then () else
+            let $charStat :=
+                $texts ! replace(., '\P{C}', '') => f:charStat_aux($nodes, $ops)
+            return <other>{$charStat}</other>
+        return
+            <classes>{
+                $letters, $marks, $numbers, $punctuation,
+                $separators, $symbols, $other
+            }</classes>
+    return 
+        <charStat>{
+            op:getOptionsAtts($ops),
+            $classes
+        }</charStat>
+        ! util:prettyNode(., ())
+        ! util:namespacesToRoot(.)
+};
+
+(:~
+ : Creates a simple character usage statistic. For each character
+ : the string representation, the unicode codepoint and the number
+ : of occurrences is given.
+ :)
+declare function f:charStat_aux($texts as xs:string*,
+                                $nodes as node()*,
+                                $ops as map(*)) {
+    let $fnGetExamples :=
+        if (not($ops?example)) then () 
+        else if (not($nodes)) then () else
+        
+        let $size := $ops?numex return
+        function($charval) {
+            for $node in $nodes[contains(., $charval)][position() le $size]
+            let $node := if ($ops?elem) then $node/ancestor-or-self::element()[1] else $node
+            let $node := if (empty($ops?ancestors)) then $node else $node/ancestor::*[$ops?ancestors]
+            let $charpos := substring-before($node, $charval) ! (1 + string-length(.))
+            let $fname :=
+                if (not($ops?fname)) then () else
+                    $node ! base-uri(.) ! file:name(.) ! (attribute fname {.})
+            return
+                $node ! <example charpos="{$charpos}">{$fname, $node}</example>
+        }
+    let $chars := 
+        for $text in $texts
+        for $i in 1 to string-length($text) 
+        return substring($text, $i, 1)  
+    let $charReports := 
+        let $codes := $ops?codes
+        for $char in $chars
+        let $charval := $char
+        group by $charval
+        let $codepoint := string-to-codepoints($charval)
+        where empty($codes) or $codepoint = $codes
+        order by $charval
+        return <char s="{$charval}" 
+                     code="{$codepoint}" n="{count($char)}">{
+                   $fnGetExamples ! .($charval)                     
+               }</char>
+    return
+        <chars n="{count($charReports)}">{
+            $charReports
+        }</chars>
+};
+
+(:~
  : Filters a sequence of items against a unified string expression.
  :
  : @param items the items to be filtered
@@ -59,9 +192,9 @@ declare function f:filterItems($items as item()*,
  : @param processing options
  : @return the frequency distribution
  :)
-declare function f:frequenciesNew($values as item()*, 
-                                  $fnOptions as item()?,
-                                  $options as map(*))
+declare function f:frequencies($values as item()*, 
+                               $fnOptions as item()?,
+                               $options as map(*))
         as item()* {
     if (empty($values)) then () else
     
@@ -387,7 +520,7 @@ declare function f:pathContent($context as item()*,
         return
             f:namePathNew($descendants5, $cnode, $ops, $options)
        
-    let $frequencies := f:frequenciesNew($paths, $ops, $options)
+    let $frequencies := f:frequencies($paths, $ops, $options)
     return
         if ($ops?format eq 'txt') then (
         '=== path-content ===============================',
@@ -665,139 +798,6 @@ declare function f:bslash($arg as xs:string?)
         as xs:string? {
     replace($arg, '/', '\\')        
 };      
-
-(:~
- : Creates a character class report.
- :)
-declare function f:charClassReport($items as item()*,
-                                   $classes as xs:string?,
-                                   $fnOptions as xs:string?)
-        as element(charClassReport) {
-    let $ops := 
-        let $key := 'char-classes' return
-            ($opm:OPTION_MODELS($key) ! 
-            op:optionsMap($fnOptions, ., $key), map{})[1]
-    let $_DEBUG := trace($ops, '_ ops: ')
-    let $itemsN :=
-        for $item in $items return
-            if (not($item instance of node()) and not($ops?string)) 
-            then $item ! (try {file:resolve-path(.) ! doc(.)} catch * {()})
-            else $item
-    let $nodeItems := $itemsN[. instance of node()]
-    let $stringItems := $itemsN[not(. instance of node())]
-    
-    (: $nodes is needed if examples of character occurrence is requested :)
-    let $nodes := 
-        if (not($ops?example)) then () else
-        
-        if ($ops?nodekind eq 'text') then $nodeItems/descendant-or-self::text()
-        else if ($ops?nodekind eq 'att') then $nodeItems//@*
-        else if ($ops?nodekind eq 'any') then (
-                 $nodeItems/descendant-or-self::text(), $nodeItems//@*)        
-    let $texts := (
-        if ($ops?nodekind eq 'text') then 
-            $nodeItems/descendant-or-self::text() => string-join('')
-        else if ($ops?nodekind eq 'att') then 
-            $nodeItems//@* => string-join('')
-        else 
-            $nodeItems/descendant-or-self::text()||($nodeItems//@* => string-join(''))
-        )||$stringItems => string-join('')
-    let $classes := $classes ! lower-case(.)
-    let $classes :=
-        let $letters :=
-            if ($classes and not(contains($classes, 'l'))) then () else
-            let $charStat :=
-                $texts ! replace(., '\P{L}', '') => f:charStat($nodes, $ops)
-            return <letters>{$charStat}</letters>
-        let $marks :=
-            if ($classes and not(contains($classes, 'm'))) then () else
-            let $charStat :=
-                $texts ! replace(., '\P{M}', '') => f:charStat($nodes, $ops)
-            return <marks>{$charStat}</marks>
-        let $numbers :=
-            if ($classes and not(contains($classes, 'n'))) then () else
-            let $charStat :=
-                $texts ! replace(., '\P{N}', '') => f:charStat($nodes, $ops)
-            return <numbers>{$charStat}</numbers>
-        let $punctuation :=
-            if ($classes and not(contains($classes, 'p'))) then () else
-            let $charStat :=
-                $texts ! replace(., '\P{P}', '') => f:charStat($nodes, $ops)
-            return <punctuation>{$charStat}</punctuation>
-        let $separators :=
-            if ($classes and not(contains($classes, 'z'))) then () else
-            let $charStat :=
-                $texts ! replace(., '\P{Z}', '') => f:charStat($nodes, $ops)
-            return <separators>{$charStat}</separators>
-        let $symbols :=
-            if ($classes and not(contains($classes, 's'))) then () else
-            let $charStat :=
-                $texts ! replace(., '\P{S}', '') => f:charStat($nodes, $ops)
-            return <symbols>{$charStat}</symbols>
-        let $other :=
-            if ($classes and not(contains($classes, 'c'))) then () else
-            let $charStat :=
-                $texts ! replace(., '\P{C}', '') => f:charStat($nodes, $ops)
-            return <other>{$charStat}</other>
-        return
-            <classes>{
-                $letters, $marks, $numbers, $punctuation,
-                $separators, $symbols, $other
-            }</classes>
-    return 
-        <charClassReport>{
-            $classes
-        }</charClassReport>
-        ! util:prettyNode(., ())
-        ! util:namespacesToRoot(.)
-};
-
-(:~
- : Creates a simple character usage statistic. For each character
- : the string representation, the unicode codepoint and the number
- : of occurrences is given.
- :)
-declare function f:charStat($texts as xs:string*,
-                            $nodes as node()*,
-                            $ops as map(*)) {
-    (: let $ops := f:getOptions($options, ('example', 'parent', 'fname', 'text', 'att'), 'char-stat') :)                            
-    let $fnGetExamples :=
-        if (not($ops?example)) then () 
-        else if (not($nodes)) then () else
-        
-        let $size := $ops?numex return
-        function($charval) {
-            for $node in $nodes[contains(., $charval)][position() le $size]
-            let $node := if ($ops?elem) then $node/ancestor-or-self::element()[1] else $node
-            let $node := if (empty($ops?ancestors)) then $node else $node/ancestor::*[$ops?ancestors]
-            let $charpos := substring-before($node, $charval) ! (1 + string-length(.))
-            let $fname :=
-                if (not($ops?fname)) then () else
-                    $node ! base-uri(.) ! file:name(.) ! (attribute fname {.})
-            return
-                $node ! <example charpos="{$charpos}">{$fname, $node}</example>
-        }
-    let $chars := 
-        for $text in $texts
-        for $i in 1 to string-length($text) 
-        return substring($text, $i, 1)  
-    let $charReports := 
-        let $codes := $ops?codes
-        for $char in $chars
-        let $charval := $char
-        group by $charval
-        let $codepoint := string-to-codepoints($charval)
-        where empty($codes) or $codepoint = $codes
-        order by $charval
-        return <char s="{$charval}" 
-                     code="{$codepoint}" n="{count($char)}">{
-                   $fnGetExamples ! .($charval)                     
-               }</char>
-    return
-        <chars n="{count($charReports)}">{
-            $charReports
-        }</chars>
-};
 
 (:~
  : Maps a string to a sequence of characters, represented
@@ -5730,7 +5730,7 @@ declare function f:dcat($uris as xs:string*,
  :     d e p r e c a t e d
  :
  : ============================================================================ :)
- 
+(: 
 declare function f:frequenciesOld($values as item()*, 
                                $format as xs:string?)
         as item()* {
@@ -5850,6 +5850,7 @@ declare function f:frequenciesOld($values as item()*,
         case 'text' return $items/$fn_itemText(@text, @f) => string-join('&#xA;')
         default return $items => string-join('&#xA;')
 };  
+:)
 
 (:~
  : Returns for given nodes their plain name paths.

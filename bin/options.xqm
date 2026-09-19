@@ -1,5 +1,8 @@
 module namespace op="http://www.parsqube.de/xquery/util/options";
 
+import module namespace opm="http://www.parsqube.de/xquery/util/options-model"
+    at "options-model.xqm";
+
 (:~
  : Returns the options encoded by an $options parameter
  : as a map.
@@ -135,7 +138,8 @@ declare function op:optionsMap($options as item()?,
                         return $valueETP
                     
                     return map:entry($name, $valuesChecked)
-        return map:merge($entries)
+        let $entries2 := map:entry('__function', $functionName)                    
+        return map:merge(($entries, $entries2))
     
     (: Finalize map :)
     let $usedNames := map:keys($mapPrelim)
@@ -175,4 +179,22 @@ declare function op:optionsMap_getSelName($name, $names) {
     if ($name = $names) then $name
     else $names[starts-with(., $name)]
 };
+
+
+(:~
+ : Returns info attributes describing the options used.
+ :)
+declare function op:getOptionsAtts($ops as map(*))
+        as attribute()* {
+    let $functionName := $ops?__function
+    let $omodel := $opm:OPTION_MODELS($functionName)?options
+    
+    for $key in map:keys($ops) => sort()
+    where not(starts-with($key, '__'))
+    let $dependsOn := $omodel($key)?dependsOn
+    let $dependsOnTarget := $dependsOn ! $ops(.)
+    where not($dependsOn) or $dependsOnTarget
+    let $value := $ops($key)
+    return attribute {$key} {$value}
+};        
 
