@@ -108,6 +108,7 @@ declare function op:optionsMap($options as item()?,
                                     case 'decimal' return xs:decimal($valueE)
                                     case 'text' return $valueE ! replace(., '\\s', ' ')
                                     case 'string' return $valueE ! replace(., '\\s', ' ')
+                                    case 'intrange' return $valueE ! replace(., '\\s', '')
                                     case 'boolean' return
                                         if ($valueE = ('0', 'false', 'no')) then false()
                                         else true()

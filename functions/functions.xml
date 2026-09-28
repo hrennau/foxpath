@@ -110,9 +110,11 @@
                     s symbols, o other. Examples: s, mso, lnz.
                 </documentation>
             </option>
-            <option name="codes" type="integer*">
-                <documentation>A list of unicode codepoints to be reported; other
-                    codepoints will be ignored.
+            <option name="codes" type="intrange?">
+                <documentation>A filter of unicode codepoints to be reported; other
+                    codepoints will be ignored. The filter is a collection of
+                    individual numbers and intervals, closed or half-open. <br/>
+                    Example: 165.167.8000-9000.60000- 
                 </documentation>
             </option>
             <option name="elem" type="boolean" default="0" dependsOn="example">

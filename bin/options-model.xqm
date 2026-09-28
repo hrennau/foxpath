@@ -68,7 +68,7 @@ declare function opm:buildOptionMaps() {
           'type': 'string?'
         },
         'codes': map{
-          'type': 'integer*'
+          'type': 'intrange?'
         },
         'elem': map{
           'type': 'boolean',

@@ -75,7 +75,7 @@ declare function f:charStat($items as item()*,
         let $key := 'char-stat' return
             ($opm:OPTION_MODELS($key) ! 
             op:optionsMap($fnOptions, ., $key), map{})[1]
-    (: let $_DEBUG := trace($ops, '_ ops: ') :)
+    let $_DEBUG := trace($ops, '_ ops: ')
     let $classes := $ops?classes
     let $itemsN :=
         for $item in $items return
@@ -176,6 +176,7 @@ declare function f:charStat_aux($texts as xs:string*,
             return
                 $node ! <example charpos="{$charpos}">{$fname, $node}</example>
         }
+    let $codeRanges := $ops?codes ! util:compileIntRanges(.)
     let $chars := 
         for $text in $texts
         for $i in 1 to string-length($text) 
@@ -186,7 +187,7 @@ declare function f:charStat_aux($texts as xs:string*,
         let $charval := $char
         group by $charval
         let $codepoint := string-to-codepoints($charval)
-        where empty($codes) or $codepoint = $codes
+        where empty($codeRanges) or $codeRanges ! util:matchesIntRanges($codepoint, .)
         order by $charval
         return <char s="{$charval}" 
                      code="{$codepoint}" n="{count($char)}">{
@@ -197,43 +198,6 @@ declare function f:charStat_aux($texts as xs:string*,
             $charReports
         }</chars>
 };
-
-declare function f:charStat_codeFilter($ops as map(*))
-        as map(*)? {
-    let $codes := $ops?codes
-    return if (empty($codes)) then () else
-    
-    let $items := tokenize($codes, '\.')
-    let $points := $items[not(contains(., '-'))]
-    let $ge := 
-        let $myItems := $items[starts-with(., '-')]
-        let $startPoint := 
-            $myItems ! replace(., '^-\s*', '')[. castable as xs:integer] 
-            ! xs:integer(.) => min()
-        return $startPoint
-    let $le := 
-        let $myItems := $items[ends-with(., '-')]
-        let $endPoint := 
-            $myItems ! replace(., '\s*-$', '')[. castable as xs:integer] 
-            ! xs:integer(.) => max()
-        return $endPoint
-    let $intervals := 
-        let $myItems := $items[matches(., '.-.')]
-        for $item in $myItems
-        let $nums := tokenize($item, '-')[. castable as xs:integer] ! xs:integer(.)
-        where count($nums) eq 2
-        return map{'num1': $nums[1], 'num2': $nums[2]}
-    let $codeFilter :=
-        map:merge((
-            if (empty($points)) then () else map:entry('points', $points),
-            if (empty($ge)) then () else map:entry('ge', $ge),
-            if (empty($le)) then () else map:entry('le', $le),
-            if (empty($intervals)) then () else map:entry('intervals', $intervals)
-        ))
-    return
-        if (map:size($codeFilter) eq 0) then ()
-        else $codeFilter
-};        
 
 (:~
  : Filters a sequence of items against a unified string expression.

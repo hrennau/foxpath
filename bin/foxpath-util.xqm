@@ -95,6 +95,67 @@ declare function f:atomIntersection($sequences as array(item()*)*)
 };
 
 (:~
+ : Compiles a string encoding integer ranges into a
+ : map representation. The string consists of dot-separated
+ : items which can be
+ : - an integer number
+ : number-(meaning: ge number)
+ : -number (meaning: le number)
+ : number1-number2 (meaning ge number1 and le number2)
+ :)
+declare function f:compileIntRanges($codes as xs:string?)
+        as map(*)? {
+    if (empty($codes)) then () else
+    
+    let $items := tokenize($codes, '\.')
+    let $points := $items[not(contains(., '-'))] ! number(.)
+    let $le := 
+        let $myItems := $items[starts-with(., '-')]
+        let $startPoint := 
+            $myItems ! replace(., '^-\s*', '')[. castable as xs:integer] 
+            ! xs:integer(.) => min()
+        return $startPoint
+    let $ge := 
+        let $myItems := $items[ends-with(., '-')]
+        let $endPoint := 
+            $myItems ! replace(., '\s*-$', '')[. castable as xs:integer] 
+            ! xs:integer(.) => max()
+        return $endPoint
+    let $intervals := 
+        let $myItems := $items[matches(., '.-.')]
+        for $item in $myItems
+        let $nums := tokenize($item, '-')[. castable as xs:integer] ! xs:integer(.)
+        where count($nums) eq 2
+        return array{$nums[1], $nums[2]} (: map{'n1': $nums[1], 'n2': $nums[2]} :)
+    let $codeFilter :=
+        map:merge((
+            if (empty($points)) then () else map:entry('points', distinct-values($points) => sort()),
+            if (empty($ge)) then () else map:entry('ge', $ge),
+            if (empty($le)) then () else map:entry('le', $le),
+            if (empty($intervals)) then () else map:entry('intervals', $intervals)
+        ))
+    return
+        if (map:size($codeFilter) eq 0) then ()
+        else $codeFilter
+};        
+
+(:~
+ : Checks whether a given number matches integer ranges.
+ :)
+declare function f:matchesIntRanges($num as xs:integer, 
+                                    $ranges as map(xs:string, item()*)?)
+        as xs:boolean {
+    if (not($ranges ! map:size(.) gt 0)) then true()
+    else if ($ranges?points = $num) then true()
+    else if ($ranges?ge le $num) then true()
+    else if ($ranges?le gt $num) then true()
+    else if (some $interval in $ranges?intervals satisfies
+             $interval(1) le $num and $interval(2) ge $num) then true()
+    else false()
+        
+};        
+
+(:~
  : Returns the substring preceding or following the first occurrence
  : of a character ($char) which is not escaped by a preceding backslash,
  : or the empty sequence if such a character is not found.

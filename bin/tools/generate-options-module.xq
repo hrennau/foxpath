@@ -1,5 +1,8 @@
 declare namespace f="http://www.foxpath.org/ns/generate-options";
 
+import module namespace util="http://www.ttools.org/xquery-functions/util"
+at "../foxpath-util.xqm";
+
 declare variable $format external := 'module';
 declare variable $fconfig external := '../../functions/functions.xml';
 declare variable $pconfig external := '../../functions/params.xml';

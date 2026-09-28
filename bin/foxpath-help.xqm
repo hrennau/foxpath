@@ -29,7 +29,6 @@ declare function he:help($request as xs:string,
     let $fn := ($request ! replace(., '^\s*help\s*', '') ! app:glob2regex(.),
                 '*')[1] 
     let $functions := $dict//function/@name[matches(., $fn)] 
-    let $_DEBUG := trace($functions, '_ functions: ')
     let $countFunctions := count($functions)
     return
         if ($countFunctions eq 0) then ('No matching function found.', '')
@@ -64,7 +63,7 @@ declare function he:help($request as xs:string,
             return
                 foxf:tuple(($name, $type, $default, $documentation))
         let $table := ta:table(
-            $tuples, 'Name, Type, Default, Explanation', (), $tableOptions) 
+            $tuples, 'NAME, TYPE, DEFAULT, EXPLANATION', (), $tableOptions) 
         return $table
     let $help_options :=
         if (not($options)) then () else
@@ -87,7 +86,7 @@ declare function he:help($request as xs:string,
             return
                 foxf:tuple(($name, $type, $default, $documentation))
         let $table := ta:table(
-            $tuples, 'Name, Type, Default, Explanation', (), $tableOptions) 
+            $tuples, 'NAME, TYPE, DEFAULT, EXPLANATION', (), $tableOptions) 
         return $table
     let $uline := 
         (for $i in 1 to (10 + string-length($functions)) return '=')
@@ -99,12 +98,12 @@ declare function he:help($request as xs:string,
         $help_summary,
         '',
         if (not($help_params)) then () else (
-          'PARAMS: ',
+          'P A R A M S : ',
           $help_params
         ),
         if (not($help_options)) then () else (
           '',        
-          'OPTIONS: ',
+          'O P T I O N S: ',
           $help_options
         )
     )
