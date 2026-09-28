@@ -138,8 +138,7 @@ declare function op:optionsMap($options as item()?,
                         return $valueETP
                     
                     return map:entry($name, $valuesChecked)
-        let $entries2 := map:entry('__function', $functionName)                    
-        return map:merge(($entries, $entries2))
+        return map:merge($entries)
     
     (: Finalize map :)
     let $usedNames := map:keys($mapPrelim)
@@ -162,10 +161,11 @@ declare function op:optionsMap($options as item()?,
             case 'integer' return xs:integer($default)
             default return $default
         return map:entry($name, $value)
+    let $addEntries3 := map:entry('__function', $functionName)        
     (: let $_DEBUG := trace($addEntries2, '_ addEntries2: ') :)
     
     (: Finalize map :)
-    let $addEntries := ($addEntries1, $addEntries2)
+    let $addEntries := ($addEntries1, $addEntries2, $addEntries3)
     let $mapFinal :=
         if (empty($addEntries) and empty($usedNamesV)) then $mapPrelim
         else map:merge((

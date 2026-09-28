@@ -155,7 +155,21 @@ declare function f:resolveStaticFunctionCall($call as element(),
             let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
             let $items := if ($da) then $arg1 else $context
             return uth:baseUri($items, $options)
-            
+
+        (: function `build-path` 
+           ===================== :)
+        else if ($fname = ('build-path', 'build-path-ec')) then
+            let $da := if (f:hasExplicitContext($fname)) then 1 else 0        
+            let $args := $call/*
+            let $arg1 := $args[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $items := if ($da) then $arg1 else $context
+            let $dir := $args[$da + 1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $replaceFrom := $args[$da + 2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)            
+            let $replaceTo := $args[$da + 3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $args[$da + 4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return foxf:buildPath(
+                $items, $dir, $replaceFrom, $replaceTo, $fnOptions)
+
         (: function `current-dir` 
            ====================== :)
         else if ($fname eq 'current-dir') then

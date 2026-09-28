@@ -50,6 +50,39 @@
             <summary>Returns for each input node its base URI.</summary>
         </documentation>
     </function>
+    <function name="build-path" group="uri" withEc="true">
+        <documentation>
+            <summary>Maps strings to file system paths or file URIs. </summary>
+        </documentation>
+        <params>
+            <param name="items" type="item()*" onlyEc="true">
+                <documentation>Strings interpreted as file names.
+                If parameter 'replaceFrom' is provided, the string is
+                edited by replacing or deleting a substring (see options 'replaceFrom' 
+                and 'replaceTo').</documentation>
+            </param>
+            <param name="dir" type="string" optional="false">
+                <documentation>The file system path or file URI of the folder containing the file.</documentation>
+            </param>                                 
+            <param name="replaceFrom" type="string?" optional="true">
+                <documentation>The strings are modified by replacing or deleting this substring.</documentation>
+            </param>                                 
+            <param name="replaceTo" type="string?" optional="true">
+                <documentation>A string replacing substring 'replaceFrom'.</documentation>
+            </param>                                 
+            <param name="options" type="string?" optional="true">
+                <documentation>Options controlling details of the processing.</documentation>
+            </param>                                 
+        </params> 
+        <options>
+            <option name="flags" type="string?" dependsOnArg="replaceFrom">
+                <documentation>Flags to be used when replacing substrings.</documentation>
+            </option>            
+            <option name="uri" type="boolean" default="0">
+                <documentation>If true, file URIs are created, rather than file system paths.</documentation>
+            </option>            
+        </options>
+    </function>
     <function name="char-stat" group="explore" withEc="true">
         <documentation>
             <summary>Reports the characters used in a given set of documents, nodes or strings. </summary>

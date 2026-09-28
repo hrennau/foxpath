@@ -46,6 +46,18 @@ declare function opm:buildOptionMaps() {
       'options': map{},
       'optionValues': map{}
     },
+    'build-path': map{
+      'options': map{
+        'flags': map{
+          'type': 'string?'
+        },
+        'uri': map{
+          'type': 'boolean',
+          'default': '0'
+        }
+      },
+      'optionValues': map{}
+    },
     'char-stat': map{
       'options': map{
         'ancestors': map{

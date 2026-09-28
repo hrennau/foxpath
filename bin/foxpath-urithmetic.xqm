@@ -1,4 +1,4 @@
-module namespace f="http://www.foxpath.org/ns/urithmetic";
+module namespace ur="http://www.foxpath.org/ns/urithmetic";
 
 import module namespace i="http://www.ttools.org/xquery-functions" 
 at "foxpath-uri-operations.xqm";
@@ -12,34 +12,34 @@ at  "foxpath-util.xqm";
 (:~
  : Returns for each input node the name of the folder containing it.
  :)
-declare function f:basedirName($items as item()*,
+declare function ur:basedirName($items as item()*,
                                $options as map(*))
         as xs:string* {
-    $items ! f:basedirPath(., $options) ! file:name(.)
+    $items ! ur:basedirPath(., $options) ! file:name(.)
 };
 
 (:~
  : Returns for each input node the file path of the folder containing it.
  :)
-declare function f:basedirPath($items as item()*,
+declare function ur:basedirPath($items as item()*,
                                $options as map(*))
         as xs:string* {
-    $items ! f:basePath(., $options) ! f:parentPath(.)
+    $items ! ur:basePath(., $options) ! ur:parentPath(.)
 };
 
 (:~
  : Returns for each input node the file URI of the folder containing it.
  :)
-declare function f:basedirUri($items as item()*,
+declare function ur:basedirUri($items as item()*,
                               $options as map(*))
         as xs:string* {
-    f:baseUri($items, $options) ! f:parentPath(.)
+    ur:baseUri($items, $options) ! ur:parentPath(.)
 };
 
 (:~
  : Returns for each input node the name of the file containing it.
  :)
-declare function f:baseName($items as item()*,
+declare function ur:baseName($items as item()*,
                             $options as map(*))
         as xs:string* {
     $items ! (
@@ -51,14 +51,14 @@ declare function f:baseName($items as item()*,
 (:~
  : Returns for each input node the file path of the file containing it. 
  :)
-declare function f:basePath($items as item()*,
+declare function ur:basePath($items as item()*,
                             $options as map(*))
         as xs:string* {
     $items ! (
     if (. instance of node()) then . else i:fox-doc(., $options)) !
     base-uri(.) !
     file:path-to-native(.) !
-    f:normalizedFilePath(.)
+    ur:normalizedFilePath(.)
 };
 
 (:~
@@ -67,7 +67,7 @@ declare function f:basePath($items as item()*,
  : It can be specified as a name pattern - the context is the closest 
  : containing folder matching the pattern.
  :)
-declare function f:baseRelpath($items as item()*, 
+declare function ur:baseRelpath($items as item()*, 
                                $contextName as xs:string?,
                                $basedir as xs:boolean?,
                                $options as map(*))
@@ -76,13 +76,13 @@ declare function f:baseRelpath($items as item()*,
         if (. instance of node()) then . else i:fox-doc(., $options))
     let $baseUris := 
         $nodes ! base-uri(.) ! file:path-to-native(.) ! (
-        if (not($basedir)) then f:normalizedFilePath(.)
-        else f:parentPath(.))
+        if (not($basedir)) then ur:normalizedFilePath(.)
+        else ur:parentPath(.))
     return
       if (not($contextName)) then
-         let $curDir := f:currentDir()
-         return $baseUris ! f:relPath($curDir, .)
-      else $baseUris ! f:relPathToContext($contextName, .)
+         let $curDir := ur:currentDir()
+         return $baseUris ! ur:relPath($curDir, .)
+      else $baseUris ! ur:relPathToContext($contextName, .)
 };
 
 (:~
@@ -97,7 +97,7 @@ declare function f:baseRelpath($items as item()*,
  : @param options the processing options
  : @return relative URI
  :)
-declare function f:baseReluri($items as item()*, 
+declare function ur:baseReluri($items as item()*, 
                               $contextName as xs:string?,
                               $basedir as xs:boolean?,
                               $options as map(*))
@@ -106,18 +106,18 @@ declare function f:baseReluri($items as item()*,
         if (. instance of node()) then . else i:fox-doc(., $options))
     let $baseUris :=
          $nodes ! base-uri(.) ! (
-         if (not($basedir)) then . else f:parentPath(.))
+         if (not($basedir)) then . else ur:parentPath(.))
     return    
       if (not($contextName)) then
-         let $curUri := f:currentUri()      
-         return $baseUris ! f:relPath($curUri, .)
-      else $baseUris ! f:relPathToContext($contextName, .)
+         let $curUri := ur:currentUri()      
+         return $baseUris ! ur:relPath($curUri, .)
+      else $baseUris ! ur:relPathToContext($contextName, .)
 };
 
 (:~
  : Returns for each input node its base URI. 
  :)
-declare function f:baseUri($items as item()*,
+declare function ur:baseUri($items as item()*,
                            $options as map(*))
         as xs:string* {
     $items ! (
@@ -128,22 +128,22 @@ declare function f:baseUri($items as item()*,
 (:~
  : Returns the normalized file path of the current directory.
  :) 
-declare function f:currentDir()
+declare function ur:currentDir()
         as xs:string {
     file:current-dir() ! 
     file:path-to-native(.) !
-    f:normalizedFilePath(.)
+    ur:normalizedFilePath(.)
 };
 
 (:~
  : Returns the URI of the current directory.
  :) 
-declare function f:currentUri()
+declare function ur:currentUri()
         as xs:string {
     file:current-dir() ! 
     file:path-to-native(.) !
     file:path-to-uri(.) !
-    f:normalizePath(.)
+    ur:normalizePath(.)
 };
 
 (:~
@@ -155,13 +155,13 @@ declare function f:currentUri()
  :
  : @param pathOrUri a relative or absolute path or URI
  :)
-declare function f:absoluteUri($uriOrPath as xs:string?) as xs:string? {
+declare function ur:absoluteUri($uriOrPath as xs:string?) as xs:string? {
     if (not($uriOrPath)) then () else    
-    if (f:isAbsoluteUri($uriOrPath)) then $uriOrPath else
+    if (ur:isAbsoluteUri($uriOrPath)) then $uriOrPath else
     
     let $apath :=
         if (starts-with($uriOrPath, '/') or file:is-absolute($uriOrPath)) then $uriOrPath
-        else file:resolve-path($uriOrPath) ! f:normalizePath(.)
+        else file:resolve-path($uriOrPath) ! ur:normalizePath(.)
     return (
         if (starts-with($apath, '/')) then 'file://' else 'file:///')
         ||$apath
@@ -172,7 +172,7 @@ declare function f:absoluteUri($uriOrPath as xs:string?) as xs:string? {
  : a "doc resource" wrapper, which is a map containing
  : a node and a URI.
  :)
-declare function f:resourceUri($resource as item()) as xs:string {
+declare function ur:resourceUri($resource as item()) as xs:string {
     typeswitch($resource)
     case map(*) return $resource?uri
     case node() return $resource/base-uri(.)
@@ -182,18 +182,18 @@ declare function f:resourceUri($resource as item()) as xs:string {
 (:~
  : Returns the closest ancestor URI containing a sequence of URIs.
  :)
-declare function f:commonContextUri($uris as item()*) as xs:string? {
-    let $uris := $uris ! f:resourceUri(.)
-    let $try := $uris[1] ! f:parentPath(.)
-    return f:commonContextUriREC($uris, $try)
+declare function ur:commonContextUri($uris as item()*) as xs:string? {
+    let $uris := $uris ! ur:resourceUri(.)
+    let $try := $uris[1] ! ur:parentPath(.)
+    return ur:commonContextUriREC($uris, $try)
 };
 
-declare function f:commonContextUriREC($uris as xs:string*, $try as xs:string) 
+declare function ur:commonContextUriREC($uris as xs:string*, $try as xs:string) 
         as xs:string? {
     if (every $uri in $uris satisfies starts-with($uri, $try||'/')) then $try else
-    let $try2 := $try ! f:parentPath(.)
+    let $try2 := $try ! ur:parentPath(.)
     return
-        if ($try2 eq $try) then () else f:commonContextUriREC($uris, $try2)
+        if ($try2 eq $try) then () else ur:commonContextUriREC($uris, $try2)
 };
 
 (:~
@@ -203,9 +203,9 @@ declare function f:commonContextUriREC($uris as xs:string*, $try as xs:string)
  : @param uriOrPath a relative or absolute URI or path
  : @return the normalized path
  :)
-declare function f:extractUriPath($uriOrPath as xs:string?) as xs:string? {
-    if (not(f:isAbsoluteUri($uriOrPath))) then f:normalizePath($uriOrPath) 
-    else f:removeUriScheme($uriOrPath) ! f:normalizePath(.)                 
+declare function ur:extractUriPath($uriOrPath as xs:string?) as xs:string? {
+    if (not(ur:isAbsoluteUri($uriOrPath))) then ur:normalizePath($uriOrPath) 
+    else ur:removeUriScheme($uriOrPath) ! ur:normalizePath(.)                 
 };    
 
 (:~
@@ -215,8 +215,8 @@ declare function f:extractUriPath($uriOrPath as xs:string?) as xs:string? {
  : @param pathOrUri a relative or absolute path or URI
  : @return the URI scheme, or the empty sequence
  :)
-declare function f:extractUriScheme($uriOrPath as xs:string?) as xs:string? {
-    if (not(f:isAbsoluteUri($uriOrPath))) then () else
+declare function ur:extractUriScheme($uriOrPath as xs:string?) as xs:string? {
+    if (not(ur:isAbsoluteUri($uriOrPath))) then () else
     replace($uriOrPath, '^([a-z][a-z]+):/.*', '$1')
 };
 
@@ -226,7 +226,7 @@ declare function f:extractUriScheme($uriOrPath as xs:string?) as xs:string? {
  : @param uri a URI or file path
  : @return the file base name
  :)
-declare function f:fileName($uri as xs:string?) as xs:string? {
+declare function ur:fileName($uri as xs:string?) as xs:string? {
     replace($uri, '.*[/\\]', '')
 };
 
@@ -236,8 +236,8 @@ declare function f:fileName($uri as xs:string?) as xs:string? {
  : @param uri a URI or file path
  : @return the file base name
  :)
-declare function f:fileBaseName($uri as xs:string?) as xs:string? {
-    f:fileName($uri) ! replace(., '\.[^.]+$', '')  
+declare function ur:fileBaseName($uri as xs:string?) as xs:string? {
+    ur:fileName($uri) ! replace(., '\.[^.]+$', '')  
 };
 
 (:~
@@ -247,7 +247,7 @@ declare function f:fileBaseName($uri as xs:string?) as xs:string? {
  : @param pathOrUri a relative or absolute path or URI
  : @return true or false
  :)
-declare function f:isAbsoluteUri($uriOrPath as xs:string?) as xs:boolean {
+declare function ur:isAbsoluteUri($uriOrPath as xs:string?) as xs:boolean {
     matches($uriOrPath, '^[a-z][a-z]+:/')
 };
 
@@ -261,7 +261,7 @@ declare function f:isAbsoluteUri($uriOrPath as xs:string?) as xs:boolean {
  : @param path a path
  : @return the normalized path
  :)
-declare function f:normalizePath($path as xs:string?) as xs:string? {
+declare function ur:normalizePath($path as xs:string?) as xs:string? {
     $path ! replace(., '\\', '/') ! replace(., '/$', '')                 
 };    
 
@@ -277,7 +277,7 @@ declare function f:normalizePath($path as xs:string?) as xs:string? {
  : @param path a file system path or a file URI
  : @return the normalized path
  :) 
-declare function f:normalizedFilePath($path as xs:string)
+declare function ur:normalizedFilePath($path as xs:string)
         as xs:string {
     $path
     ! replace(., '\\', '/')
@@ -289,15 +289,15 @@ declare function f:normalizedFilePath($path as xs:string)
 (:~
  : Returns the parent path of a given path.
  :)
-declare function f:parentPath($path as xs:string?) as xs:string? {
-    $path ! f:normalizePath(.) ! replace(., '/[^/]*$', '')
+declare function ur:parentPath($path as xs:string?) as xs:string? {
+    $path ! ur:normalizePath(.) ! replace(., '/[^/]*$', '')
 };
 
 (:~
  : Returns the parent path of a given path, as a normalized path.
  :)
-declare function f:parentFilePath($path as xs:string?) as xs:string? {
-    f:parentPath($path) ! f:normalizedFilePath(.)
+declare function ur:parentFilePath($path as xs:string?) as xs:string? {
+    ur:parentPath($path) ! ur:normalizedFilePath(.)
 };
 
 (:~
@@ -307,14 +307,14 @@ declare function f:parentFilePath($path as xs:string?) as xs:string? {
  : @param path2 another path
  : @return the relative path leading from $path1 to $path2
  :)
-declare function f:relPath($path1 as xs:string, $path2 as xs:string)
+declare function ur:relPath($path1 as xs:string, $path2 as xs:string)
         as xs:string? {
-    let $path1 := f:normalizePath($path1)        
-    let $path2 := f:normalizePath($path2)
-    return if ($path1 eq $path2) then '.' else f:relPathREC($path1, $path2)
+    let $path1 := ur:normalizePath($path1)        
+    let $path2 := ur:normalizePath($path2)
+    return if ($path1 eq $path2) then '.' else ur:relPathREC($path1, $path2)
 };
 
-declare function f:relPathToContext($context as xs:string, 
+declare function ur:relPathToContext($context as xs:string, 
                                     $path as xs:string)
         as xs:string {
     let $filter := $context ! use:compileUSE(., true())
@@ -332,7 +332,7 @@ declare function f:relPathToContext($context as xs:string,
 (:~
  : Recursive helper function of function 'relPath'.
  :)
-declare function f:relPathREC($path1 as xs:string, $path2 as xs:string)
+declare function ur:relPathREC($path1 as xs:string, $path2 as xs:string)
         as xs:string? {
     if ($path1 eq $path2) then '.' else
     
@@ -342,23 +342,23 @@ declare function f:relPathREC($path1 as xs:string, $path2 as xs:string)
         else if (not(matches($path1Slash, '/.*/'))) then ()
         else string-join(
             let $nextPath1 := (replace($path1Slash, '^(.*)/.*?/$', '$1')[string()], '/')[1]
-            return ('..', f:relPathREC($nextPath1, $path2)[. ne '.'][string()]), '/')       
+            return ('..', ur:relPathREC($nextPath1, $path2)[. ne '.'][string()]), '/')       
 };
 
 (:~
  : Returns the relative path leading from $uri1 to $uri2.
  :)
-declare function f:relUri($uriOrPath1 as xs:string, $uriOrPath2 as xs:string)
+declare function ur:relUri($uriOrPath1 as xs:string, $uriOrPath2 as xs:string)
         as xs:string? {
     if ($uriOrPath1 eq $uriOrPath2) then '.' else
     
-    let $scheme1 := f:extractUriScheme($uriOrPath1)
-    let $scheme2 := f:extractUriScheme($uriOrPath2)
+    let $scheme1 := ur:extractUriScheme($uriOrPath1)
+    let $scheme2 := ur:extractUriScheme($uriOrPath2)
     return if ($scheme1 ne $scheme2 or $scheme2 ne 'file') then $uriOrPath2 else
     
-    let $path1 := f:removeUriScheme($uriOrPath1)
-    let $path2 := f:removeUriScheme($uriOrPath2)
-    return f:relPath($path1, $path2)
+    let $path1 := ur:removeUriScheme($uriOrPath1)
+    let $path2 := ur:removeUriScheme($uriOrPath2)
+    return ur:relPath($path1, $path2)
 };    
 (:~
  : Removes the URI schema from a URI or path.
@@ -366,7 +366,7 @@ declare function f:relUri($uriOrPath1 as xs:string, $uriOrPath2 as xs:string)
  : @param pathOrUri a relative or absolute path or URI
  : @return the URI scheme, or the empty sequence
  :)
-declare function f:removeUriScheme($uriOrPath as xs:string?) as xs:string? {
+declare function ur:removeUriScheme($uriOrPath as xs:string?) as xs:string? {
     replace($uriOrPath, '^[a-z][a-z]+:/+([a-zA-Z]:.*|/.*)', '$1')
 };
 
@@ -374,7 +374,7 @@ declare function f:removeUriScheme($uriOrPath as xs:string?) as xs:string? {
  : Returns a "doc resource", which is a map with entries
  : '_objecttype', 'doc' and 'uri'.
  :)
-declare function f:docResource($resource as item()?,
+declare function ur:docResource($resource as item()?,
                                $options as map(*))
         as map(*)? {
     if ($resource instance of map(*)) then $resource else
@@ -390,7 +390,7 @@ declare function f:docResource($resource as item()?,
  : Returns a "textfile resource", which is a map with entries
  : '_objecttype', 'content' and 'uri'.
  :)
-declare function f:textfileResource($resource as item()?)
+declare function ur:textfileResource($resource as item()?)
         as map(*)? {
     if ($resource instance of map(*)) then $resource else
     
@@ -405,7 +405,7 @@ declare function f:textfileResource($resource as item()?)
 (:~
  : Replaces a doc-resource's content node with another node.
  :)
-declare function f:updateDocResourceContent($resource as map(*), 
+declare function ur:updateDocResourceContent($resource as map(*), 
                                             $doc as node())
         as map(*) {
     map:put($resource, 'doc', $doc)            
@@ -414,7 +414,7 @@ declare function f:updateDocResourceContent($resource as map(*),
 (:~
  : Returns true if a given item is an instance of a doc-resource.
  :)
-declare function f:instanceOfDocResource($item as item())
+declare function ur:instanceOfDocResource($item as item())
         as xs:boolean {
     if ($item instance of map(*)) then
         if ($item?_objecttype eq 'doc-resource') then true()
@@ -430,10 +430,10 @@ declare function f:instanceOfDocResource($item as item())
  : as a document URI and the corresponding document node is
  : returned. 
  :) 
-declare function f:itemToNode($item as item(), $options as map(*))
+declare function ur:itemToNode($item as item(), $options as map(*))
         as node()? {
     if ($item instance of node()) then $item 
-    else if (f:instanceOfDocResource($item))then $item?doc
+    else if (ur:instanceOfDocResource($item))then $item?doc
     else i:fox-doc($item, $options)
 };        
 
@@ -441,7 +441,7 @@ declare function f:itemToNode($item as item(), $options as map(*))
  : Returns true if a file exists, false otherwise.
  : Wraps the file:exists function, catching exceptions.
  :)
-declare function f:fileExists($uri as xs:string)
+declare function ur:fileExists($uri as xs:string)
         as xs:boolean {
     try {file:exists($uri)} catch * {false()}        
 };
@@ -449,7 +449,7 @@ declare function f:fileExists($uri as xs:string)
 (:~
  : Writes a document resource to the file system.
  :)
-declare function f:writeDocResource($path as xs:string, 
+declare function ur:writeDocResource($path as xs:string, 
                                     $resource as map(*), 
                                     $flags as xs:string?)
         as empty-sequence() {
@@ -466,7 +466,7 @@ declare function f:writeDocResource($path as xs:string,
 (:~
  : Writes a document resource to the file system.
  :)
-declare function f:writeTextfileResource($path as xs:string, 
+declare function ur:writeTextfileResource($path as xs:string, 
                                          $resource as map(*), 
                                          $flags as xs:string?)
         as empty-sequence() {

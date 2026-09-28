@@ -17,7 +17,7 @@ import module namespace op="http://www.foxpath.org/ns/fox-functions-options"
 at "foxpath-fox-functions-options.gen.xqm";
 :)
 
-import module namespace uth="http://www.foxpath.org/ns/urithmetic" 
+import module namespace ur="http://www.foxpath.org/ns/urithmetic" 
 at  "foxpath-urithmetic.xqm";
 
 import module namespace util="http://www.ttools.org/xquery-functions/util" 
@@ -33,7 +33,38 @@ at  "foxpath-constants.xqm";
     c o n s o l i d a t e d
     =======================
  :)
- 
+
+(:~
+ : Maps strings to a file system paths or file URIs. The strings are 
+ : interpreted as file names, optionally to be modified by replacing 
+ : a substring. The folder containing the path is provided as a parameter. 
+ :)
+declare function f:buildPath($items as item()*,
+                             $dir as xs:string,
+                             $replaceFrom as xs:string?,
+                             $replaceTo as xs:string?,
+                             $fnOptions as xs:string?)
+        as xs:string {
+    let $ops := 
+        let $key := 'build-path' return
+            ($opm:OPTION_MODELS($key) ! 
+            op:optionsMap($fnOptions, ., $key), map{})[1]
+    (: let $_DEBUG := trace($ops, '_ ops: ') :)            
+    let $dir := 
+        let $uri := $ops?uri
+        return
+            if ($uri) then $dir ! file:path-to-uri(.) ! ur:normalizePath(.)
+            else $dir ! file:resolve-path(.) ! ur:normalizePath(.)
+    for $item in $items
+    let $itemMod :=
+        if (not($replaceFrom)) then $item
+        else 
+            let $flags := $ops?flags
+            return $item ! replace(., $replaceFrom, $replaceTo, $flags)
+    let $fpath := $dir||'/'||$itemMod
+    return $fpath
+};        
+
 (:~
  : Creates a character statistics report.
  :)
@@ -66,7 +97,7 @@ declare function f:charStat($items as item()*,
         if ($ops?nodekind eq 'text') then 
             $nodeItems/descendant-or-self::text() => string-join('')
         else if ($ops?nodekind eq 'att') then 
-            $nodeItems//@* => string-join('')
+            $nodeItems/descendant-or-self::attribute() => string-join('')
         else 
             $nodeItems/descendant-or-self::text()||($nodeItems//@* => string-join(''))
         )||$stringItems => string-join('')
@@ -166,6 +197,43 @@ declare function f:charStat_aux($texts as xs:string*,
             $charReports
         }</chars>
 };
+
+declare function f:charStat_codeFilter($ops as map(*))
+        as map(*)? {
+    let $codes := $ops?codes
+    return if (empty($codes)) then () else
+    
+    let $items := tokenize($codes, '\.')
+    let $points := $items[not(contains(., '-'))]
+    let $ge := 
+        let $myItems := $items[starts-with(., '-')]
+        let $startPoint := 
+            $myItems ! replace(., '^-\s*', '')[. castable as xs:integer] 
+            ! xs:integer(.) => min()
+        return $startPoint
+    let $le := 
+        let $myItems := $items[ends-with(., '-')]
+        let $endPoint := 
+            $myItems ! replace(., '\s*-$', '')[. castable as xs:integer] 
+            ! xs:integer(.) => max()
+        return $endPoint
+    let $intervals := 
+        let $myItems := $items[matches(., '.-.')]
+        for $item in $myItems
+        let $nums := tokenize($item, '-')[. castable as xs:integer] ! xs:integer(.)
+        where count($nums) eq 2
+        return map{'num1': $nums[1], 'num2': $nums[2]}
+    let $codeFilter :=
+        map:merge((
+            if (empty($points)) then () else map:entry('points', $points),
+            if (empty($ge)) then () else map:entry('ge', $ge),
+            if (empty($le)) then () else map:entry('le', $le),
+            if (empty($intervals)) then () else map:entry('intervals', $intervals)
+        ))
+    return
+        if (map:size($codeFilter) eq 0) then ()
+        else $codeFilter
+};        
 
 (:~
  : Filters a sequence of items against a unified string expression.
@@ -424,7 +492,7 @@ declare function f:namePathNew($nodes as node()*,
             case 'base-name' return $node/(i:fox-base-uri(.) ! 
                      (try {file:name(.)} catch * {.}))||'#'||$path
             default return
-                ($node/uth:baseRelpath(., (), false(), $options))||'#'||$path
+                ($node/ur:baseRelpath(., (), false(), $options))||'#'||$path
 };        
 
 (:~
@@ -696,8 +764,8 @@ declare function f:insertNodes($items as item()*,
     let $foreach := $ops = 'foreach'
     
     for $item in $items   
-    let $isDocResource := uth:instanceOfDocResource($item)
-    let $node := uth:itemToNode($item, $options)
+    let $isDocResource := ur:instanceOfDocResource($item)
+    let $node := ur:itemToNode($item, $options)
     let $resultDoc :=  
         copy $node_ := $node
         modify
@@ -729,7 +797,7 @@ declare function f:insertNodes($items as item()*,
             )                        
         return $node_
     let $result :=
-        if ($isDocResource) then uth:updateDocResourceContent($item, $resultDoc)
+        if ($isDocResource) then ur:updateDocResourceContent($item, $resultDoc)
         else $resultDoc
     return $result
  };
@@ -1250,9 +1318,9 @@ declare function f:fileTreeCopy($resources as item()*,
     let $fnCopy := function($resource, $path) {
         if ($resource instance of map(*)) then
                 if ($resource?_objecttype eq 'doc-resource') then 
-                    uth:writeDocResource($path, $resource, $flags)
+                    ur:writeDocResource($path, $resource, $flags)
                 else if ($resource?_objecttype eq 'textfile-resource') then 
-                    uth:writeTextfileResource($path, $resource, $flags)
+                    ur:writeTextfileResource($path, $resource, $flags)
                 else if ($resource?_objecttype eq 'cssdoc-resource') then
                     let $fn := util:getModuleFunction('writeCssdocResource') 
                     return try {$fn($path, $resource, $flags)} catch * {$err:code, $err:description}
@@ -1266,15 +1334,15 @@ declare function f:fileTreeCopy($resources as item()*,
        (note that URI format is required, in order to
         support source locations not in the file system :)    
     let $srcContextEff := (
-       if ($srcContext) then $srcContext else uth:commonContextUri($resources))
-       ! uth:absoluteUri(.)
+       if ($srcContext) then $srcContext else ur:commonContextUri($resources))
+       ! ur:absoluteUri(.)
     return
         if (empty($srcContextEff)) then
         error(QName((), 'INVALID_SET_OF_RESOURCES'), 'The resources do not '||
             'have a common root URI') else
             
     (: The target context :)
-    let $targetUriEff := $targetUri ! uth:absoluteUri(.)
+    let $targetUriEff := $targetUri ! ur:absoluteUri(.)
     let $fnRename :=
         if (not($rename)) then () else
         let $from := $rename ! replace(., '\s*=.*', '')
@@ -1285,17 +1353,17 @@ declare function f:fileTreeCopy($resources as item()*,
                 let $name2 := $name ! replace(., $from, $to)
                 return ($path ! file:parent(.))||'/'||$name2}
     for $resource in $resources 
-    let $uri := uth:resourceUri($resource) ! uth:absoluteUri(.)   (: Normalized URIs required :)
+    let $uri := ur:resourceUri($resource) ! ur:absoluteUri(.)   (: Normalized URIs required :)
     return if (not(starts-with($uri, $srcContextEff||'/'))) then
         error(QName((), 'INVALID_SOURCE_CONTEXT'), 
           'Invalid argument - the source context ('||$srcContextEff||') must '||
           'contain all '||'resources, but resource "'||$uri||'" is not contained.')
         else
-    let $relpath := uth:relPath($srcContextEff, $uri)
+    let $relpath := ur:relPath($srcContextEff, $uri)
     let $tpath := $targetUriEff||'/'||$relpath    
     let $tpath2 := if (empty($fnRename)) then $tpath else $tpath ! $fnRename(.)
     let $_CREATE_DIR := 
-        let $folder := $tpath ! uth:parentPath(.)
+        let $folder := $tpath ! ur:parentPath(.)
         return if (file:exists($folder)) then () else file:create-dir($folder)
     let $_COPY := $fnCopy($resource, $tpath2)
     let $_CHECK := if (($_COPY, $_CREATE_DIR) eq 'NEVER') then error() else ()
@@ -3407,11 +3475,11 @@ declare function f:prettyNode($items as item()*,
         as item()* {
     let $ops := $processingOptions ! tokenize(.)
     for $item in $items
-    let $isDocResource := uth:instanceOfDocResource($item)
-    let $node := uth:itemToNode($item, $options)
+    let $isDocResource := ur:instanceOfDocResource($item)
+    let $node := ur:itemToNode($item, $options)
     let $resultNode := $node ! util:prettyNode(., $ops)
     let $result :=
-        if ($isDocResource) then uth:updateDocResourceContent($item, $resultNode)
+        if ($isDocResource) then ur:updateDocResourceContent($item, $resultNode)
         else $resultNode
     return $result
 };
@@ -3440,8 +3508,8 @@ declare function f:deleteNodes($items as item()*,
     let $withBaseUri := $ops = 'base'
     
     for $item in $items   
-    let $isDocResource := uth:instanceOfDocResource($item)
-    let $node := uth:itemToNode($item, $options)
+    let $isDocResource := ur:instanceOfDocResource($item)
+    let $node := ur:itemToNode($item, $options)
     let $resultDoc :=  
         copy $node_ := $node
         modify (
@@ -3461,7 +3529,7 @@ declare function f:deleteNodes($items as item()*,
         return $node_
     let $resultDoc := if ($keepWS) then $resultDoc else $resultDoc ! util:prettyFoxPrint(.) 
     let $result :=
-        if ($isDocResource) then uth:updateDocResourceContent($item, $resultDoc)
+        if ($isDocResource) then ur:updateDocResourceContent($item, $resultDoc)
         else $resultDoc
     return $result
  };
@@ -3621,8 +3689,8 @@ declare function f:replaceValues($items as item()*,
     let $ops := f:getOptions($options, ('base'), 'replace-values')
     let $withBaseUri := $ops = 'base'
     for $item in $items
-    let $isDocResource := uth:instanceOfDocResource($item)
-    let $node := uth:itemToNode($item, $options)
+    let $isDocResource := ur:instanceOfDocResource($item)
+    let $node := ur:itemToNode($item, $options)
     
     let $resultDoc :=  
         copy $node_ := $node
@@ -3644,7 +3712,7 @@ declare function f:replaceValues($items as item()*,
             )                        
         return $node_
     let $result :=
-        if ($isDocResource) then uth:updateDocResourceContent($item, $resultDoc)
+        if ($isDocResource) then ur:updateDocResourceContent($item, $resultDoc)
         else $resultDoc
     return $result
  };
@@ -3669,8 +3737,8 @@ declare function f:iexpandNodes($items as item()*,
     let $ops := f:getOptions($fnOptions, ('base', 'pretty'), 'iexpand-nodes')
     let $withBaseUri := $ops = 'base'
     for $item in $items
-    let $isDocResource := uth:instanceOfDocResource($item)
-    let $node := uth:itemToNode($item, $options)
+    let $isDocResource := ur:instanceOfDocResource($item)
+    let $node := ur:itemToNode($item, $options)
     
     let $resultDoc :=  
         copy $node_ := $node
@@ -3707,7 +3775,7 @@ declare function f:iexpandNodes($items as item()*,
     let $resultDoc := if ($ops = 'pretty') then $resultDoc/util:prettyNode(., ()) 
                       else $resultDoc        
     let $result :=
-        if ($isDocResource) then uth:updateDocResourceContent($item, $resultDoc)
+        if ($isDocResource) then ur:updateDocResourceContent($item, $resultDoc)
         else $resultDoc
     return $result
  };
@@ -3732,8 +3800,8 @@ declare function f:renameNodes($items as item()*,
     let $ops := f:getOptions($options, ('base'), 'rename-nodes')
     let $withBaseUri := $ops = 'base'
     for $item in $items
-    let $isDocResource := uth:instanceOfDocResource($item)
-    let $node := uth:itemToNode($item, $options)
+    let $isDocResource := ur:instanceOfDocResource($item)
+    let $node := ur:itemToNode($item, $options)
     let $resultDoc :=  
         copy $node_ := $node
         modify (
@@ -3753,7 +3821,7 @@ declare function f:renameNodes($items as item()*,
             )                        
         return $node_
     let $result :=
-        if ($isDocResource) then uth:updateDocResourceContent($item, $resultDoc)
+        if ($isDocResource) then ur:updateDocResourceContent($item, $resultDoc)
         else $resultDoc        
     return $result
  };
@@ -4729,7 +4797,7 @@ declare function f:xwrap($items as item()*,
                 if (not(matches($flags, '[bB]'))) then () else
                     if (contains($flags, 'B')) then
                         let $baseUriRel := 
-                            uth:baseReluri($item, (), false(), $options)
+                            ur:baseReluri($item, (), false(), $options)
                         return attribute xml:base {$baseUriRel}
                     else attribute xml:base {$item/base-uri(.)},
                 if (not(contains($flags, 'n'))) then () else
@@ -5950,7 +6018,7 @@ declare function f:namePath($nodes as node()*,
                  then $node/i:fox-base-uri(.)||'#'||$path
             else if ($withBaseUri eq 'fname') 
                  then $node/(i:fox-base-uri(.) ! (try {file:name(.)} catch * {.}))||'#'||$path
-            else (uth:relUri(file:current-dir(), $node/i:fox-base-uri(.)))||'#'||$path
+            else (ur:relUri(file:current-dir(), $node/i:fox-base-uri(.)))||'#'||$path
 };        
 
 
