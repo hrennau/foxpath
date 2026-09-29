@@ -754,12 +754,9 @@ declare function f:resolveStaticFunctionCall($call as element(),
         else if ($fname = ('file-tree-copy', 'ftcopy')) then
             let $resources := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
             let $targetUri := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $sourceUri := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $rename := $call/*[4]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            let $flags := $call/*[5]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
-            (:let $_DEBUG := trace($resources?uri, '_ resources: '):) 
+            let $fnOptions := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
             return
-                foxf:fileTreeCopy($resources, $targetUri, $sourceUri, $rename, $flags)
+                foxf:fileTreeCopy($resources, $targetUri, $fnOptions)
 
         (: function `doc-resource` 
            ======================= :)

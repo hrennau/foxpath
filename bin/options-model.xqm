@@ -105,6 +105,30 @@ declare function opm:buildOptionMaps() {
         'any': 'nodekind'
       }
     },
+    'file-tree-copy': map{
+      'options': map{
+        'what': map{
+          'type': 'string',
+          'default': 'files',
+          'values': ('files', 'folders', 'all')
+        },
+        'indent': map{
+          'type': 'boolean',
+          'default': '0'
+        },
+        'rename': map{
+          'type': 'string?'
+        },
+        'sourceContext': map{
+          'type': 'string?'
+        }
+      },
+      'optionValues': map{
+        'files': 'what',
+        'folders': 'what',
+        'all': 'what'
+      }
+    },
     'child-name-seq': map{
       'options': map{
         'distinct': map{

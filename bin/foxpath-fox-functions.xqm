@@ -44,7 +44,7 @@ declare function f:buildPath($items as item()*,
                              $replaceFrom as xs:string?,
                              $replaceTo as xs:string?,
                              $fnOptions as xs:string?)
-        as xs:string {
+        as xs:string* {
     let $ops := 
         let $key := 'build-path' return
             ($opm:OPTION_MODELS($key) ! 
@@ -197,6 +197,81 @@ declare function f:charStat_aux($texts as xs:string*,
         <chars n="{count($charReports)}">{
             $charReports
         }</chars>
+};
+
+(:~
+ : Copies resources as a file tree, preserving their folder structure.
+ :
+ : Errors:
+ : - INVALID_SOURCE_CONTEXT - the source context specified does not
+ :     contain all resources 
+ : - INVALID_SET_OF_RESOURCES - the resources are not all contained
+ :     by a single context
+ :)
+declare function f:fileTreeCopy($resources as item()*,
+                                $targetUri as xs:string,
+                                $fnOptions as xs:string?)
+        as empty-sequence() {
+    if (empty($resources)) then () else     
+    
+    let $ops := let $key := 'file-tree-copy' return
+        ($opm:OPTION_MODELS($key) ! 
+        op:optionsMap($fnOptions, ., $key), map{})[1]
+    let $_DEBUG := trace($ops, '_ ops: ')             
+
+    let $rename := $ops?rename
+    let $srcContext := $ops?sourceContext
+    let $what := $ops?what
+    let $flags := ('indent'[$ops?indent])
+    (: Function copying a resource :)
+    let $fnCopy := function($resource, $path) {
+        if ($resource instance of map(*)) then
+            switch($resource?_objecttype)
+            case 'doc-resource' return ur:writeDocResource($path, $resource, $flags)
+            case 'textfile-resource' return ur:writeTextfileResource($path, $resource, $flags)
+            case 'cssdoc-resource' return
+                let $fn := util:getModuleFunction('writeCssdocResource') 
+                return try {$fn($path, $resource, $flags)} catch * {$err:code, $err:description}
+            default return error()
+        else try {file:copy($resource, $path)} catch * {trace((), '* Failed to copy resource: '||$path)},
+        'yes'    (: dummy return value, assuring execution :)
+    }
+    
+    (: The source context is either provided explicitly, or it is determined 
+       as the closest common ancestor (note that URI format is required, in 
+       order to support source locations not in the file system :)    
+    let $srcContextR := (
+       if ($srcContext) then $srcContext else ur:commonContextUri($resources))
+       ! ur:absoluteUri(.) ! replace(., '\s', '%20')
+    return
+        if (empty($srcContextR)) then
+        error(QName((), 'INVALID_SET_OF_RESOURCES'), 'The resources do not '||
+            'have a common root URI') else
+            
+    (: The target context :)
+    let $targetUriR := $targetUri ! ur:absoluteUri(.)
+    let $fnRename := $rename ! op:fnRename(.)
+    for $resource in $resources 
+    let $uri := ur:resourceUri($resource) 
+                ! ur:absoluteUri(.) ! replace(., '\s', '%20')
+    where $what eq 'files' and file:is-file($uri) or
+          $what eq 'folders' and file:is-dir($uri) or
+          true()
+    return if (not(starts-with($uri, $srcContextR||'/'))) then
+        error(QName((), 'INVALID_SOURCE_CONTEXT'), 
+          'Invalid argument - the source context ('||$srcContextR||') must '||
+          'contain all '||'resources, but resource "'||$uri||'" is not contained.')
+        else
+    let $relpath := ur:relPath($srcContextR, $uri)
+    let $tpath := let $raw := $targetUriR||'/'||$relpath return    
+        (if (empty($fnRename)) then $raw else 
+             $raw ! (ur:parentPath(.)||'/'||$fnRename(file:name(.)))
+        ) ! replace(., '\s', '%20')
+    let $_CREATE_DIR := 
+        ur:parentPath($tpath)[not(file:exists(.))] ! file:create-dir(.)
+    let $_COPY := $fnCopy($uri, $tpath)
+    let $_CHECK := if (($_COPY, $_CREATE_DIR) eq 'NEVER') then error() else ()
+    return ()
 };
 
 (:~
@@ -1261,78 +1336,6 @@ declare function f:fileCopy($sourceUris as xs:string*,
         return
             file:copy($sourceUri, $targetUri)
 };        
-
-(:~
- : Copies resources as a file tree, preserving their folder structure.
- :
- : Errors:
- : - INVALID_SOURCE_CONTEXT - the source context specified does not
- :     contain all resources 
- : - INVALID_SET_OF_RESOURCES - the resources are not all contained
- :     by a single context
- :)
-declare function f:fileTreeCopy($resources as item()*,
-                                $targetUri as xs:string,
-                                $srcContext as xs:string?,
-                                $rename as xs:string?,
-                                $flags as xs:string?)
-        as empty-sequence() {
-    if (empty($resources)) then () else     
-    
-    let $fnCopy := function($resource, $path) {
-        if ($resource instance of map(*)) then
-                if ($resource?_objecttype eq 'doc-resource') then 
-                    ur:writeDocResource($path, $resource, $flags)
-                else if ($resource?_objecttype eq 'textfile-resource') then 
-                    ur:writeTextfileResource($path, $resource, $flags)
-                else if ($resource?_objecttype eq 'cssdoc-resource') then
-                    let $fn := util:getModuleFunction('writeCssdocResource') 
-                    return try {$fn($path, $resource, $flags)} catch * {$err:code, $err:description}
-                else error()
-        else try {file:copy($resource, $path)} catch * {trace((), '* Failed to copy resource: '||$path)},
-        'yes'    (: dummy return value, assuring execution :)
-    }
-    
-    (: The source context is either provided explicitly,
-       or it is determined as the closest common ancestor 
-       (note that URI format is required, in order to
-        support source locations not in the file system :)    
-    let $srcContextEff := (
-       if ($srcContext) then $srcContext else ur:commonContextUri($resources))
-       ! ur:absoluteUri(.)
-    return
-        if (empty($srcContextEff)) then
-        error(QName((), 'INVALID_SET_OF_RESOURCES'), 'The resources do not '||
-            'have a common root URI') else
-            
-    (: The target context :)
-    let $targetUriEff := $targetUri ! ur:absoluteUri(.)
-    let $fnRename :=
-        if (not($rename)) then () else
-        let $from := $rename ! replace(., '\s*=.*', '')
-        let $to := $rename ! replace(., '.*?=\s*', '')
-        return 
-            function ($path) {
-                let $name := file:name($path)
-                let $name2 := $name ! replace(., $from, $to)
-                return ($path ! file:parent(.))||'/'||$name2}
-    for $resource in $resources 
-    let $uri := ur:resourceUri($resource) ! ur:absoluteUri(.)   (: Normalized URIs required :)
-    return if (not(starts-with($uri, $srcContextEff||'/'))) then
-        error(QName((), 'INVALID_SOURCE_CONTEXT'), 
-          'Invalid argument - the source context ('||$srcContextEff||') must '||
-          'contain all '||'resources, but resource "'||$uri||'" is not contained.')
-        else
-    let $relpath := ur:relPath($srcContextEff, $uri)
-    let $tpath := $targetUriEff||'/'||$relpath    
-    let $tpath2 := if (empty($fnRename)) then $tpath else $tpath ! $fnRename(.)
-    let $_CREATE_DIR := 
-        let $folder := $tpath ! ur:parentPath(.)
-        return if (file:exists($folder)) then () else file:create-dir($folder)
-    let $_COPY := $fnCopy($resource, $tpath2)
-    let $_CHECK := if (($_COPY, $_CREATE_DIR) eq 'NEVER') then error() else ()
-    return ()
-};
 
 (:~
  : Returns a string describing a resource identified by a URI.

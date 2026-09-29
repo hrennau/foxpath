@@ -199,3 +199,24 @@ declare function op:getOptionsAtts($ops as map(*))
     return attribute {$key} {$value}
 };        
 
+(: === Functions "compiling" option and parameter values === :)
+(:~
+ : Maps a replacement spec to a function.
+ : Syntax of the spec: 
+ : - from
+ : - from/to
+ : - from/to/flags
+ : Character / within "from" or "to" must be escaped (~/).
+ : Character ~ within "from" or "to" must be escaped (~~).
+ : @param rename the replacement spec
+ : @return the function executing the replacement
+ :)
+declare function op:fnRename($rename as xs:string)
+        as item()* {
+    let $as := analyze-string($rename, '( [^/~] | ~~ | ~/ )+', 'x')        
+    let $from := $as/fn:match[1] ! replace(., '~/', '/') ! replace(., '~~', '~')
+    let $to := $as/fn:match[2] ! replace(., '~/', '/') ! replace(., '~~', '~')
+    let $flags := $as/fn:match[3]
+    let $fn := replace(?, $from, $to, $flags)
+    return $fn
+};        

@@ -1,8 +1,4 @@
 module namespace f="http://www.ttools.org/xquery-functions/util";
-
-import module namespace op="http://www.parsqube.de/xquery/util/options-model" 
-at "options-model.xqm";
-
 declare namespace fox="http://www.foxpath.org/ns/annotations";
 
 declare variable $f:DEBUG := ''; 

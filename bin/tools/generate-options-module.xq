@@ -70,6 +70,7 @@ declare function f:expandConfigREC($n as node())
             <optionValues count="{count($optionValues)}">{
                 $optionValues
             }</optionValues>
+        let $_DEBUG := trace($optionValuesElem, '_ optionValuesElem: ')
         return
             element {node-name($n)} {
                 $n/@* ! f:expandConfigREC(.),
