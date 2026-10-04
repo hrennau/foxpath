@@ -749,6 +749,15 @@ declare function f:resolveStaticFunctionCall($call as element(),
             return
                 foxf:fileCopy($file, $target, $flags)
 
+        (: function `file-list-copy` 
+           ========================= :)
+        else if ($fname = ('file-list-copy', 'flcopy')) then
+            let $resources := $call/*[1]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)        
+            let $targetUri := $call/*[2]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            let $fnOptions := $call/*[3]/f:resolveFoxpathRC(., false(), $context, $position, $last, $vars, $options)
+            return
+                foxf:fileListCopy($resources, $targetUri, $fnOptions)
+
         (: function `file-tree-copy` 
            ========================= :)
         else if ($fname = ('file-tree-copy', 'ftcopy')) then

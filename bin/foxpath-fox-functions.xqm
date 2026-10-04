@@ -200,6 +200,74 @@ declare function f:charStat_aux($texts as xs:string*,
 };
 
 (:~
+ : Copies a list of resources into a folder.
+ :
+ : Errors:
+ : - INVALID_SOURCE_CONTEXT - the source context specified does not
+ :     contain all resources 
+ : - INVALID_SET_OF_RESOURCES - the resources are not all contained
+ :     by a single context
+ :)
+declare function f:fileListCopy($resources as item()*,
+                                $targetUri as xs:string,
+                                $fnOptions as xs:string?)
+        as empty-sequence() {
+    if (empty($resources)) then () else     
+    
+    let $ops := let $key := 'file-list-copy' return
+        ($opm:OPTION_MODELS($key) ! 
+        op:optionsMap($fnOptions, ., $key), map{})[1]
+    let $_DEBUG := trace($ops, '_ ops: ')             
+
+    let $replaceFname := $ops?replaceFname
+    let $insertFname := $ops?insertFname
+    let $srcContext := $ops?sourceContext
+    let $what := $ops?what
+    let $flags := ('indent'[$ops?indent])
+    
+    (: Function copying a resource :)
+    let $fnCopy := function($resource, $path) {
+        if ($resource instance of map(*)) then
+            switch($resource?_objecttype)
+            case 'doc-resource' return ur:writeDocResource($path, $resource, $flags)
+            case 'textfile-resource' return ur:writeTextfileResource($path, $resource, $flags)
+            case 'cssdoc-resource' return
+                let $fn := util:getModuleFunction('writeCssdocResource') 
+                return try {$fn($path, $resource, $flags)} catch * {$err:code, $err:description}
+            default return error()
+        else try {file:copy($resource, $path)} catch * {trace((), 
+            '* Copy failed; code='||$err:code||'; msg='||$err:description||
+            '; source: '||$resource||'; target: '||$path)},
+            '0' (: dummy return value, assuring execution :)
+    }
+    
+    (: The target context :)
+    let $targetUriR := $targetUri ! ur:absoluteUri(.)
+    let $fnRename := 
+        if ($replaceFname) then $replaceFname ! op:fnReplace(.)
+        else if ($insertFname) then $insertFname ! op:fnInsertFname(.)
+        
+    let $_CREATE_DIR :=
+        if (file:exists($targetUriR)) then
+            if (file:is-file($targetUriR)) then error((), 
+                'INVALID_ARG - target path not a folder: '||$targetUri)
+            else ()
+        else file:create-dir($targetUriR)
+        
+    for $resource in $resources 
+    let $uri := ur:resourceUri($resource) 
+                ! ur:absoluteUri(.) ! replace(., '\s', '%20')
+    where $what eq 'files' and file:is-file($uri) or
+          $what eq 'folders' and file:is-dir($uri) or
+          true()
+    let $fname := file:name($uri) ! 
+        (if (empty($fnRename)) then . else $fnRename(.))
+    let $tpath := $targetUriR||'/'||$fname ! replace(., '\s', '%20')
+    let $_COPY := $fnCopy($uri, $tpath)    
+    return if ($_COPY eq 'NEVERNEVER') then error() else ()
+};
+
+(:~
  : Copies resources as a file tree, preserving their folder structure.
  :
  : Errors:
@@ -219,7 +287,8 @@ declare function f:fileTreeCopy($resources as item()*,
         op:optionsMap($fnOptions, ., $key), map{})[1]
     let $_DEBUG := trace($ops, '_ ops: ')             
 
-    let $rename := $ops?rename
+    let $replaceFname := $ops?replaceFname
+    let $insertFname := $ops?insertFname
     let $srcContext := $ops?sourceContext
     let $what := $ops?what
     let $flags := ('indent'[$ops?indent])
@@ -233,8 +302,10 @@ declare function f:fileTreeCopy($resources as item()*,
                 let $fn := util:getModuleFunction('writeCssdocResource') 
                 return try {$fn($path, $resource, $flags)} catch * {$err:code, $err:description}
             default return error()
-        else try {file:copy($resource, $path)} catch * {trace((), '* Failed to copy resource: '||$path)},
-        'yes'    (: dummy return value, assuring execution :)
+        else try {file:copy($resource, $path)} catch * {trace((), 
+            '* Copy failed; code='||$err:code||'; msg='||$err:description||
+            '; source: '||$resource||'; target: '||$path)},
+            'yes'    (: dummy return value, assuring execution :)
     }
     
     (: The source context is either provided explicitly, or it is determined 
@@ -250,7 +321,9 @@ declare function f:fileTreeCopy($resources as item()*,
             
     (: The target context :)
     let $targetUriR := $targetUri ! ur:absoluteUri(.)
-    let $fnRename := $rename ! op:fnRename(.)
+    let $fnRename := 
+        if ($replaceFname) then $replaceFname ! op:fnReplace(.)
+        else if ($insertFname) then $insertFname ! op:fnInsertFname(.)
     for $resource in $resources 
     let $uri := ur:resourceUri($resource) 
                 ! ur:absoluteUri(.) ! replace(., '\s', '%20')
@@ -1288,45 +1361,45 @@ declare function f:fileCopy($sourceUris as xs:string*,
                             $targetUri as xs:string,
                             $flags as xs:string?)
         as empty-sequence() {
-    if (empty($sourceUris)) then () else        
-    for $sourceUri in $sourceUris return
+    if (empty($sourceUris)) then () else 
     
+    for $sourceUri in $sourceUris
     let $sourceUriDomain := i:uriDomain($sourceUri, ())
-    return
-        if (not($sourceUriDomain eq 'FILE_SYSTEM')) then 
-            error(QName((), 'INVALID_CALL'),
-                concat('Function file-copy() expects a source file from the ',
-                  'file system; file URI: ', $sourceUri))
-            else
-
+    return if (not($sourceUriDomain eq 'FILE_SYSTEM')) then 
+        error(QName((), 'INVALID_CALL'),
+            concat('Function file-copy() expects a source file from the ',
+            'file system; file URI: ', $sourceUri))
+        else
     let $targetUriDomain := i:uriDomain($targetUri, ())
-    return
-        if (not($targetUriDomain eq 'FILE_SYSTEM')) then 
-            error(QName((), 'INVALID_CALL'),
-                concat('Function file-copy() expects a target folder in the ',
-                  'file system; target dir URI: ', $targetUri))
-            else
+    return if (not($targetUriDomain eq 'FILE_SYSTEM')) then 
+        error(QName((), 'INVALID_CALL'),
+            concat('Function file-copy() expects a target folder in the ',
+             'file system; target dir URI: ', $targetUri))
+        else
             
     (: Target URI exists :)        
     if (i:fox-file-exists($targetUri, ())) then
+        (: Error: folder -> file :)
         if (i:fox-is-file($targetUri, ()) and i:fox-is-dir($sourceUri, ())) then
              error(QName((), 'INVALID_CALL'), concat('Cannot copy a folder URI ',
                  'to a file URI; target URI: ', $targetUri))
+        (: Error: target file exists, no overwrite flag :)
         else if (i:fox-is-file($targetUri, ()) and not(contains($flags, 'o'))) then
              error(QName((), 'INVALID_CALL'), concat('Target file exists; use flag "o" ',
                  'if you want to overwrite existing files; file URI: ', $targetUri))
         else file:copy($sourceUri, $targetUri)
         
-    (: Target URI non-existing, with flag 'd' :)    
+    (: Target URI non-existing, with directory flag :)    
     else if (contains($flags, 'd')) then (
         file:create-dir($targetUri),
         file:copy($sourceUri, $targetUri)
     )
-    (: Target URI non-existing, without flag 'd' :)
+    (: Target URI non-existing, no directory flag :)
     else
         let $targetParentUri := file:parent($targetUri)
         let $_CREATE_PARENT := 
             if (i:fox-file-exists($targetParentUri, ())) then ()
+            (: Error: target parent does not exist, missing create flag :)
             else if (not(contains($flags, 'c'))) then
                 error(QName((), 'INVALID_CALL'), concat('Target URI is a file URI belonging ',
                     'to a non existent folder; use flag "c" if you want automatic creation of ',

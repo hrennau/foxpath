@@ -146,17 +146,18 @@
             </option>            
         </options>
     </function>
-    <function name="file-tree-copy" group="file" withEc="false">
+    <function name="file-list-copy" group="file" withEc="false">
         <documentation>
-            <summary>Copies resources as a file tree. </summary>
+            <summary>Copies a list of resources into a folder. </summary>
         </documentation>
         <params>
             <param name="items" type="item()*" onlyEc="true">
                 <documentation>Resource URIs.</documentation>
             </param>
             <param name="target" type="string" optional="false">
-                <documentation>File path of the target folder.<br/>
-                    Relative paths are resolved against the current working directory.</documentation>
+                <documentation>File path of the target folder. <br/>
+                    The folder may or may not exist. <br/>
+                    A relative path is resolved against the current working directory.</documentation>
             </param>                                 
             <param name="options" type="string?" optional="true">
                 <documentation>Options controlling details of the processing.</documentation>
@@ -177,9 +178,68 @@
             <option name="indent" type="boolean" default="0">
                 <documentation>If true, node resources are indented.</documentation>
             </option>            
-            <option name="rename" type="string?">
+            <option name="insertFname" type="string?">
+                <documentation>File names are modified by inserting a string (the option value)
+                    before the name extension.<br/> 
+                    Example: file name: "abc.xml"; option: "ins=.rev" => file name changed to "abc.rev.xml"
+                </documentation>
+            </option>            
+            <option name="replaceFname" type="string?">
                 <documentation>File names are modified by replacing or deleting a substring.
-                    The value is a string specifying a replacement or deletion, one of the patterns:<br/> 
+                    The value is a string specifying a replacement or deletion, one of the 
+                    using one of three patterns:<br/> 
+                    "from", "from/to", "from/to/flags".<br/>
+                    Example: "ren=test\. - remove substring "test."<br/>
+                    Example: "ren=rev/checked - replace substring "rev" with "checked"<br/>
+                    Example: "ren=a~/b~/c/x~/y~/z/i - replace "a/b/c" with "x/y/z", use flag "i"<br/>
+                    In the "from" and "to" strings / must be escaped by ~/, ~ must be escaped
+                    by ~~.<br/>
+                </documentation>
+            </option>            
+        </options>
+    </function>
+    
+    <function name="file-tree-copy" group="file" withEc="false">
+        <documentation>
+            <summary>Copies resources as a file tree. </summary>
+        </documentation>
+        <params>
+            <param name="items" type="item()*" onlyEc="true">
+                <documentation>Resource URIs.</documentation>
+            </param>
+            <param name="target" type="string" optional="false">
+                <documentation>File path of the target folder.<br/>
+                    A relative path is resolved against the current working directory.</documentation>
+            </param>                                 
+            <param name="options" type="string?" optional="true">
+                <documentation>Options controlling details of the processing.</documentation>
+            </param>                                 
+        </params> 
+        <options>
+            <option name="what" type="string" default="files">
+                <values>
+                    <value string="files"/>
+                    <value string="folders"/>
+                    <value string="all"/>
+                </values>
+                <documentation>Kinds of resources to be copied:<br/>
+                    files - only files<br/>
+                    folders - only folders<br/>
+                    all - all resouves</documentation>
+            </option>            
+            <option name="indent" type="boolean" default="0">
+                <documentation>If true, node resources are indented.</documentation>
+            </option>            
+            <option name="insertFname" type="string?">
+                <documentation>File names are modified by inserting a string (the option value)
+                    before the name extension.<br/> 
+                    Example: file name: "abc.xml"; option: "ins=.rev" => file name changed to "abc.rev.xml"
+                </documentation>
+            </option>            
+            <option name="replaceFname" type="string?">
+                <documentation>File names are modified by replacing or deleting a substring.
+                    The value is a string specifying a replacement or deletion, one of the 
+                    using one of three patterns:<br/> 
                     "from", "from/to", "from/to/flags".<br/>
                     Example: "ren=test\. - remove substring "test."<br/>
                     Example: "ren=rev/checked - replace substring "rev" with "checked"<br/>

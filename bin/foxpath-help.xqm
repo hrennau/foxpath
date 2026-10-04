@@ -98,12 +98,12 @@ declare function he:help($request as xs:string,
         $help_summary,
         '',
         if (not($help_params)) then () else (
-          'P A R A M S : ',
+          '    P A R A M S : ',
           $help_params
         ),
         if (not($help_options)) then () else (
           '',        
-          'O P T I O N S: ',
+          '    O P T I O N S: ',
           $help_options
         )
     )

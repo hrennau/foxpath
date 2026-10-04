@@ -47,6 +47,12 @@ declare variable $opm:PARAM_MODELS := opm:buildParamMaps();
 
 (:~
  : Expands the function options config.
+ :
+ : Changes: any parameter or option containing a
+ : <values> element is modified by replacing
+ : the element with an augmented <optionValues>
+ : element. Inside, the <optionValue> elements
+ : have an attribute giving the name of the option.
  :)
 declare function f:expandConfig($functions as element(functions))
         as node() {
@@ -60,6 +66,8 @@ declare function f:expandConfigREC($n as node())
         as node()? {
     typeswitch($n)
     case document-node() return document {$n/node() ! f:expandConfigREC(.)}
+    
+    (: A copy with augmented <optionValues> element. :)
     case element(function) | element(param) return
         let $optionValues :=
             for $v in $n/options/option//value 
@@ -70,7 +78,6 @@ declare function f:expandConfigREC($n as node())
             <optionValues count="{count($optionValues)}">{
                 $optionValues
             }</optionValues>
-        let $_DEBUG := trace($optionValuesElem, '_ optionValuesElem: ')
         return
             element {node-name($n)} {
                 $n/@* ! f:expandConfigREC(.),
@@ -123,7 +130,15 @@ declare function f:writeMapx($configExt as element())
 };    
 
 (:~
- : Helper function of `writeMapx`.
+ : Helper function of `writeMapx`. Maps an <option> element
+ : to a mapx representation. 
+ :
+ : Evaluates the attributes: name, type, pattern, patternExplanation,
+ :   default, dependsOn.
+ : Evaluates the elements: $o/values/value.
+ :
+ : Returns an <entry> element with @name, @type and an optional
+ : <entry> child containing values.
  :)
 declare function f:writeMapx_option($o as element(option))
         as element() {

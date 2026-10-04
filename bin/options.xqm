@@ -20,6 +20,9 @@ declare function op:optionsMap($options as item()?,
     
     let $namesWD := $onames[exists($omap(.)?default)] 
     return 
+        (: If the model does not define default values, 
+           an input map is returned without changes,
+           and an empty input string becomes an empty map :)
         if (empty($namesWD) and (
             $options instance of map(*) or empty($options))) then 
                 ($options, map{})[1]
@@ -208,15 +211,29 @@ declare function op:getOptionsAtts($ops as map(*))
  : - from/to/flags
  : Character / within "from" or "to" must be escaped (~/).
  : Character ~ within "from" or "to" must be escaped (~~).
- : @param rename the replacement spec
+ : @param replace the replacement spec
  : @return the function executing the replacement
  :)
-declare function op:fnRename($rename as xs:string)
+declare function op:fnReplace($replace as xs:string)
         as item()* {
-    let $as := analyze-string($rename, '( [^/~] | ~~ | ~/ )+', 'x')        
+    let $as := analyze-string($replace, '( [^/~] | ~~ | ~/ )+', 'x')        
     let $from := $as/fn:match[1] ! replace(., '~/', '/') ! replace(., '~~', '~')
     let $to := $as/fn:match[2] ! replace(., '~/', '/') ! replace(., '~~', '~')
     let $flags := $as/fn:match[3]
     let $fn := replace(?, $from, $to, $flags)
     return $fn
+};        
+
+(:~
+ : Maps a file name insertion spec to a function.
+ : The insertiong string is prepended before the file name extension. 
+ : @param insert the string to be inserted
+ : @return the function executing the insertion
+ :)
+declare function op:fnInsertFname($insert as xs:string)
+        as item()* {
+    function ($name) {
+        if (not(contains($name, '.'))) then $name||'.'||$insert
+        else replace($name, '\.[^.]+$', '.'||$insert||'$0')
+    }
 };        
