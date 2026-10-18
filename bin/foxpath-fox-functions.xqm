@@ -203,10 +203,7 @@ declare function f:charStat_aux($texts as xs:string*,
  : Copies a list of resources into a folder.
  :
  : Errors:
- : - INVALID_SOURCE_CONTEXT - the source context specified does not
- :     contain all resources 
- : - INVALID_SET_OF_RESOURCES - the resources are not all contained
- :     by a single context
+ : - INVALID_TARGET_PATH - target path not a folder
  :)
 declare function f:fileListCopy($resources as item()*,
                                 $targetUri as xs:string,
@@ -214,15 +211,16 @@ declare function f:fileListCopy($resources as item()*,
         as empty-sequence() {
     if (empty($resources)) then () else     
     
+    (: Read options :)
     let $ops := let $key := 'file-list-copy' return
         ($opm:OPTION_MODELS($key) ! 
         op:optionsMap($fnOptions, ., $key), map{})[1]
-    let $_DEBUG := trace($ops, '_ ops: ')             
+    (: let $_DEBUG := trace($ops, '_ ops: ') :)             
 
+    (: Evaluate options :)
     let $replaceFname := $ops?replaceFname
     let $insertFname := $ops?insertFname
     let $srcContext := $ops?sourceContext
-    let $what := $ops?what
     let $flags := ('indent'[$ops?indent])
     
     (: Function copying a resource :)
@@ -243,27 +241,28 @@ declare function f:fileListCopy($resources as item()*,
     
     (: The target context :)
     let $targetUriR := $targetUri ! ur:absoluteUri(.)
+    let $_CREATE_DIR :=
+        if (file:exists($targetUriR)) then
+            if (file:is-file($targetUriR)) then error((), 
+                'INVALID_TARGET_PATH - target path not a folder: '||$targetUri)
+            else ()
+        else file:create-dir($targetUriR)
+
+    (: Function for renaming files :)
     let $fnRename := 
         if ($replaceFname) then $replaceFname ! op:fnReplace(.)
         else if ($insertFname) then $insertFname ! op:fnInsertFname(.)
         
-    let $_CREATE_DIR :=
-        if (file:exists($targetUriR)) then
-            if (file:is-file($targetUriR)) then error((), 
-                'INVALID_ARG - target path not a folder: '||$targetUri)
-            else ()
-        else file:create-dir($targetUriR)
-        
+    (: Process resources :)        
     for $resource in $resources 
     let $uri := ur:resourceUri($resource) 
                 ! ur:absoluteUri(.) ! replace(., '\s', '%20')
-    where $what eq 'files' and file:is-file($uri) or
-          $what eq 'folders' and file:is-dir($uri) or
-          true()
-    let $fname := file:name($uri) ! 
-        (if (empty($fnRename)) then . else $fnRename(.))
+    let $fname := file:name($uri) 
+                  ! (if (empty($fnRename)) then . else $fnRename(.))
     let $tpath := $targetUriR||'/'||$fname ! replace(., '\s', '%20')
-    let $_COPY := $fnCopy($uri, $tpath)    
+    let $object := 
+        if ($resource instance of map(*)) then $resource else $uri    
+    let $_COPY := $fnCopy($object, $tpath)    
     return if ($_COPY eq 'NEVERNEVER') then error() else ()
 };
 
@@ -342,7 +341,9 @@ declare function f:fileTreeCopy($resources as item()*,
         ) ! replace(., '\s', '%20')
     let $_CREATE_DIR := 
         ur:parentPath($tpath)[not(file:exists(.))] ! file:create-dir(.)
-    let $_COPY := $fnCopy($uri, $tpath)
+    let $object := 
+        if ($resource instance of map(*)) then $resource else $uri        
+    let $_COPY := $fnCopy($object, $tpath)
     let $_CHECK := if (($_COPY, $_CREATE_DIR) eq 'NEVER') then error() else ()
     return ()
 };

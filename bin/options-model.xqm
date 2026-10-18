@@ -107,11 +107,6 @@ declare function opm:buildOptionMaps() {
     },
     'file-list-copy': map{
       'options': map{
-        'what': map{
-          'type': 'string',
-          'default': 'files',
-          'values': ('files', 'folders', 'all')
-        },
         'indent': map{
           'type': 'boolean',
           'default': '0'
@@ -123,11 +118,7 @@ declare function opm:buildOptionMaps() {
           'type': 'string?'
         }
       },
-      'optionValues': map{
-        'files': 'what',
-        'folders': 'what',
-        'all': 'what'
-      }
+      'optionValues': map{}
     },
     'file-tree-copy': map{
       'options': map{

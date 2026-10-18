@@ -457,7 +457,7 @@ declare function ur:writeDocResource($path as xs:string,
     return if (not($doc)) then () else
     
     let $flagItems := $flags ! tokenize(.)  
-    let $_DEBUG := trace($flags, '_ flags: ')
+    (: let $_DEBUG := trace($flags, '_ flags: ') :)
     let $ser := map:merge(
         if (not($flagItems = 'indent')) then () else map:entry('indent', 'yes')
     )

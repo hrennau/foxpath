@@ -164,17 +164,6 @@
             </param>                                 
         </params> 
         <options>
-            <option name="what" type="string" default="files">
-                <values>
-                    <value string="files"/>
-                    <value string="folders"/>
-                    <value string="all"/>
-                </values>
-                <documentation>Kinds of resources to be copied:<br/>
-                    files - only files<br/>
-                    folders - only folders<br/>
-                    all - all resouves</documentation>
-            </option>            
             <option name="indent" type="boolean" default="0">
                 <documentation>If true, node resources are indented.</documentation>
             </option>            
