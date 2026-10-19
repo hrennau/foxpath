@@ -241,6 +241,49 @@ declare function ur:fileBaseName($uri as xs:string?) as xs:string? {
 };
 
 (:~
+ : Returns the file name extension, or the empty string if the
+ : file name does not contain a dot.
+ :
+ : @param path a file path or file name
+ : @return the file name extension
+ :)
+declare function ur:fileNameExtension($path as xs:string)
+        as xs:string? {
+    let $fname := $path ! file:name(.)        
+    return $fname ! replace(., '.*?(\.[^.]+$)', '$1')[. ne $fname]
+};
+
+(:~
+ : Edits a file name or file path, removing the file name extension.
+ :
+ : @param path a file path or file name
+ : @return the result of removing the file name extension
+ :)
+declare function ur:removeFileNameExtension($path as xs:string)
+        as xs:string {
+    let $ext := $path ! ur:fileNameExtension(.)
+    return substring($path, 1, string-length($path) - string-length($ext))
+};
+
+(:~
+ : Inserts a label before the file name extension. If the file
+ : name does not contain a dot, the label is appended to the
+ : file name.
+ :
+ : @param path a file path or file name
+ : @param label a label to be inserted
+ : @return the file path or file name, with the label inserted before the
+ :   file name extension
+ :) 
+declare function ur:insertBeforeFileNameExtension($path as xs:string, 
+                                                  $label as xs:string)
+        as xs:string {
+    let $ext := $path ! ur:fileNameExtension(.) return 
+        if (not($ext)) then $path||$label 
+        else $path ! ur:removeFileNameExtension(.) ! (.||$label||$ext)
+};
+
+(:~
  : Returns true if a given URI or path is an absolute URI, starting
  : with a URI schema.
  :

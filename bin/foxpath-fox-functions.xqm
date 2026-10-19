@@ -9,13 +9,6 @@ import module namespace op="http://www.parsqube.de/xquery/util/options"
 
 import module namespace opm="http://www.parsqube.de/xquery/util/options-model"
     at "options-model.xqm";
-(:
-import module namespace opm="http://www.parsqube.de/xquery/util/options-model"
-    at "options-model.xqm";
-
-import module namespace op="http://www.foxpath.org/ns/fox-functions-options" 
-at "foxpath-fox-functions-options.gen.xqm";
-:)
 
 import module namespace ur="http://www.foxpath.org/ns/urithmetic" 
 at  "foxpath-urithmetic.xqm";
@@ -252,18 +245,37 @@ declare function f:fileListCopy($resources as item()*,
     let $fnRename := 
         if ($replaceFname) then $replaceFname ! op:fnReplace(.)
         else if ($insertFname) then $insertFname ! op:fnInsertFname(.)
-        
+    let $copies :=
+    
     (: Process resources :)        
     for $resource in $resources 
     let $uri := ur:resourceUri($resource) 
                 ! ur:absoluteUri(.) ! replace(., '\s', '%20')
+    where file:is-file($uri)
     let $fname := file:name($uri) 
                   ! (if (empty($fnRename)) then . else $fnRename(.))
+    group by $fname                  
     let $tpath := $targetUriR||'/'||$fname ! replace(., '\s', '%20')
-    let $object := 
-        if ($resource instance of map(*)) then $resource else $uri    
+    let $needsCopy := file:exists($tpath) or count($resource) gt 1
+    for $rInst at $pos in $resource
+    let $tpath := if (not($needsCopy)) then $tpath else 
+        ur:insertBeforeFileNameExtension($tpath, '.copy'||string($pos))
+    let $uriInst := $uri[$pos]
+    let $object := if ($rInst instance of map(*)) then $rInst else $uriInst    
     let $_COPY := $fnCopy($object, $tpath)    
-    return if ($_COPY eq 'NEVERNEVER') then error() else ()
+    return if ($_COPY eq 'NEVERNEVER') then error() else 
+        <copy to="{$tpath ! file:name(.)}" from="{$uriInst}"/>
+    let $copyReport := 
+        <copies count="{count($copies)}" 
+                xml:base-uri="{$targetUriR}"
+                time="{current-dateTime()}">{
+            for $copy in $copies
+            order by $copy/@to/lower-case(.)
+            return $copy
+        }</copies>
+    let $fpathCopyReport := $targetUriR||'/_file_list_copy_report_.xml'
+    let $_WRITE_FILE := file:write($fpathCopyReport, $copyReport, map{'indent': 'yes'})
+    return ()
 };
 
 (:~
